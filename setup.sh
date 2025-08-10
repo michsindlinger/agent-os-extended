@@ -5,7 +5,7 @@
 
 set -e
 
-REPO_URL="https://raw.githubusercontent.com/buildermethods/agent-os/main"
+REPO_URL="https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main"
 OVERWRITE_INSTRUCTIONS=false
 OVERWRITE_STANDARDS=false
 
@@ -108,4 +108,4 @@ echo "1. Customize standards/ files for your project"
 echo "2. Configure your AI coding assistant to use these files"
 echo "3. Start using structured AI development workflows"
 echo ""
-echo "For more information, visit: https://buildermethods.com/agent-os"
+echo "For more information, visit: https://github.com/michsindlinger/agent-os-extended"
