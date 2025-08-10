@@ -90,19 +90,21 @@ your-project/
 ## Usage
 
 ### With Claude Code
-Use commands like `/plan-product`, `/create-spec`, `/execute-tasks`, and `/analyze-product`.
+Use commands like `/plan-product`, `/create-spec`, `/execute-tasks`, `/analyze-product`, `/plan-b2b-application`, and `/analyze-b2b-application`.
 
 ### With Cursor
-Use commands like `@plan-product`, `@create-spec`, `@execute-tasks`, and `@analyze-product`.
+Use commands like `@plan-product`, `@create-spec`, `@execute-tasks`, `@analyze-product`, `@plan-b2b-application`, and `@analyze-b2b-application`.
 
 ## Enterprise Features
 
 This extended version provides additional capabilities for enterprise development:
 
-- Project-specific configuration management
-- Enhanced workflow automation
-- Scalable team collaboration patterns
-- Advanced development standards enforcement
+- **Project-specific configuration management** - Each project maintains its own Agent OS configuration
+- **B2B Enterprise Planning** - Specialized workflows for B2B application development
+- **Compliance & Security Integration** - Built-in support for regulatory requirements (GDPR, SOX, HIPAA)
+- **Enterprise Integration Strategy** - Structured approach to system integration and migration
+- **Enhanced workflow automation** - Enterprise-grade development processes
+- **Scalable team collaboration patterns** - Multi-stakeholder coordination support
 
 ## Original Agent OS
 
