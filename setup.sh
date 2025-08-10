@@ -48,9 +48,9 @@ echo ""
 
 # Create project-level directories
 echo "Creating project directories..."
-mkdir -p standards/code-style
-mkdir -p instructions/core
-mkdir -p instructions/meta
+mkdir -p .agent-os/standards/code-style
+mkdir -p .agent-os/instructions/core
+mkdir -p .agent-os/instructions/meta
 
 # Function to download file if it doesn't exist or if overwrite is enabled
 download_file() {
@@ -75,33 +75,35 @@ download_file() {
 # Download standards files
 echo ""
 echo "Setting up standards..."
-download_file "$REPO_URL/standards/tech-stack.md" "standards/tech-stack.md" "standards"
-download_file "$REPO_URL/standards/code-style.md" "standards/code-style.md" "standards"
-download_file "$REPO_URL/standards/best-practices.md" "standards/best-practices.md" "standards"
+download_file "$REPO_URL/standards/tech-stack.md" ".agent-os/standards/tech-stack.md" "standards"
+download_file "$REPO_URL/standards/code-style.md" ".agent-os/standards/code-style.md" "standards"
+download_file "$REPO_URL/standards/best-practices.md" ".agent-os/standards/best-practices.md" "standards"
 
 # Download code style files
-download_file "$REPO_URL/standards/code-style/javascript-style.md" "standards/code-style/javascript-style.md" "standards"
-download_file "$REPO_URL/standards/code-style/css-style.md" "standards/code-style/css-style.md" "standards"
-download_file "$REPO_URL/standards/code-style/html-style.md" "standards/code-style/html-style.md" "standards"
+download_file "$REPO_URL/standards/code-style/javascript-style.md" ".agent-os/standards/code-style/javascript-style.md" "standards"
+download_file "$REPO_URL/standards/code-style/css-style.md" ".agent-os/standards/code-style/css-style.md" "standards"
+download_file "$REPO_URL/standards/code-style/html-style.md" ".agent-os/standards/code-style/html-style.md" "standards"
 
 # Download instruction files
 echo ""
 echo "Setting up instructions..."
-download_file "$REPO_URL/instructions/core/analyze-product.md" "instructions/core/analyze-product.md" "instructions"
-download_file "$REPO_URL/instructions/core/create-spec.md" "instructions/core/create-spec.md" "instructions"
-download_file "$REPO_URL/instructions/core/execute-task.md" "instructions/core/execute-task.md" "instructions"
-download_file "$REPO_URL/instructions/core/execute-tasks.md" "instructions/core/execute-tasks.md" "instructions"
-download_file "$REPO_URL/instructions/core/plan-product.md" "instructions/core/plan-product.md" "instructions"
+download_file "$REPO_URL/instructions/core/analyze-product.md" ".agent-os/instructions/core/analyze-product.md" "instructions"
+download_file "$REPO_URL/instructions/core/analyze-b2b-application.md" ".agent-os/instructions/core/analyze-b2b-application.md" "instructions"
+download_file "$REPO_URL/instructions/core/create-spec.md" ".agent-os/instructions/core/create-spec.md" "instructions"
+download_file "$REPO_URL/instructions/core/execute-task.md" ".agent-os/instructions/core/execute-task.md" "instructions"
+download_file "$REPO_URL/instructions/core/execute-tasks.md" ".agent-os/instructions/core/execute-tasks.md" "instructions"
+download_file "$REPO_URL/instructions/core/plan-product.md" ".agent-os/instructions/core/plan-product.md" "instructions"
+download_file "$REPO_URL/instructions/core/plan-b2b-application.md" ".agent-os/instructions/core/plan-b2b-application.md" "instructions"
 
 # Download meta instruction files
-download_file "$REPO_URL/instructions/meta/pre-flight.md" "instructions/meta/pre-flight.md" "instructions"
+download_file "$REPO_URL/instructions/meta/pre-flight.md" ".agent-os/instructions/meta/pre-flight.md" "instructions"
 
 echo ""
 echo "✅ Agent OS Extended setup complete!"
 echo ""
 echo "Project structure created:"
-echo "  standards/          - Coding standards and best practices"
-echo "  instructions/       - Core workflow instructions"
+echo "  .agent-os/standards/     - Coding standards and best practices"
+echo "  .agent-os/instructions/  - Core workflow instructions"
 echo ""
 echo "Next steps:"
 echo "1. Customize standards/ files for your project"
