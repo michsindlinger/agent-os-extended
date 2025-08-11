@@ -52,39 +52,47 @@ After installation, your project will contain:
 
 ```
 your-project/
-├── standards/
-│   ├── tech-stack.md
-│   ├── code-style.md
-│   ├── best-practices.md
-│   └── code-style/
-│       ├── javascript-style.md
-│       ├── css-style.md
-│       └── html-style.md
-├── instructions/
-│   ├── core/
-│   │   ├── analyze-product.md
+├── CLAUDE.md (Claude Code configuration)
+├── .agent-os/
+│   ├── standards/
+│   │   ├── tech-stack.md
+│   │   ├── code-style.md
+│   │   ├── best-practices.md
+│   │   └── code-style/
+│   │       ├── javascript-style.md
+│   │       ├── css-style.md
+│   │       └── html-style.md
+│   │   instructions/
+│   │   ├── core/
+│   │   │   ├── analyze-product.md
+│   │   │   ├── analyze-b2b-application.md
+│   │   │   ├── create-spec.md
+│   │   │   ├── execute-task.md
+│   │   │   ├── execute-tasks.md
+│   │   │   ├── plan-product.md
+│   │   │   └── plan-b2b-application.md
+│   │   └── meta/
+│   │       └── pre-flight.md
+│   ├── commands/ (Claude Code)
+│   │   ├── plan-product.md
+│   │   ├── plan-b2b-application.md
 │   │   ├── create-spec.md
-│   │   ├── execute-task.md
 │   │   ├── execute-tasks.md
-│   │   └── plan-product.md
-│   └── meta/
-│       └── pre-flight.md
-├── commands/ (Claude Code)
-│   ├── plan-product.md
-│   ├── create-spec.md
-│   ├── execute-tasks.md
-│   └── analyze-product.md
-├── agents/ (Claude Code)
-│   ├── test-runner.md
-│   ├── context-fetcher.md
-│   ├── git-workflow.md
-│   ├── file-creator.md
-│   └── date-checker.md
+│   │   ├── analyze-product.md
+│   │   └── analyze-b2b-application.md
+│   └── agents/ (Claude Code)
+│       ├── test-runner.md
+│       ├── context-fetcher.md
+│       ├── git-workflow.md
+│       ├── file-creator.md
+│       └── date-checker.md
 └── .cursor/rules/ (Cursor)
     ├── plan-product.mdc
+    ├── plan-b2b-application.mdc
     ├── create-spec.mdc
     ├── execute-tasks.mdc
-    └── analyze-product.mdc
+    ├── analyze-product.mdc
+    └── analyze-b2b-application.mdc
 ```
 
 ## Usage
@@ -94,6 +102,19 @@ Use commands like `/plan-product`, `/create-spec`, `/execute-tasks`, `/analyze-p
 
 ### With Cursor
 Use commands like `@plan-product`, `@create-spec`, `@execute-tasks`, `@analyze-product`, `@plan-b2b-application`, and `@analyze-b2b-application`.
+
+## Customization
+
+### CLAUDE.md Configuration
+The setup script installs a `CLAUDE.md` template that needs project-specific customization:
+
+- Replace `[PROJECT_NAME]` with your project name
+- Add your specific development agents and tech stack
+- Configure MCP server integrations  
+- Define production safety rules
+- Add essential project commands
+
+If you already have a `CLAUDE.md`, the script creates `CLAUDE.md.template` for reference.
 
 ## Enterprise Features
 

@@ -98,6 +98,19 @@ download_file "$REPO_URL/instructions/core/plan-b2b-application.md" ".agent-os/i
 # Download meta instruction files
 download_file "$REPO_URL/instructions/meta/pre-flight.md" ".agent-os/instructions/meta/pre-flight.md" "instructions"
 
+# Handle CLAUDE.md - copy template if not exists, suggest merge if exists
+echo ""
+echo "Setting up CLAUDE.md..."
+if [[ -f "CLAUDE.md" ]]; then
+    echo "CLAUDE.md already exists - creating CLAUDE.md.template for reference"
+    download_file "$REPO_URL/CLAUDE.md" "CLAUDE.md.template" "claude"
+    echo "💡 Consider merging CLAUDE.md.template into your existing CLAUDE.md"
+else
+    echo "Creating CLAUDE.md from template..."
+    download_file "$REPO_URL/CLAUDE.md" "CLAUDE.md" "claude"
+    echo "📝 Please customize CLAUDE.md with your project-specific information"
+fi
+
 echo ""
 echo "✅ Agent OS Extended setup complete!"
 echo ""
@@ -106,8 +119,9 @@ echo "  .agent-os/standards/     - Coding standards and best practices"
 echo "  .agent-os/instructions/  - Core workflow instructions"
 echo ""
 echo "Next steps:"
-echo "1. Customize standards/ files for your project"
-echo "2. Configure your AI coding assistant to use these files"
-echo "3. Start using structured AI development workflows"
+echo "1. Customize CLAUDE.md with your project-specific information"
+echo "2. Customize .agent-os/standards/ files for your project"
+echo "3. Configure your AI coding assistant to use these files"
+echo "4. Start using structured AI development workflows"
 echo ""
 echo "For more information, visit: https://github.com/michsindlinger/agent-os-extended"
