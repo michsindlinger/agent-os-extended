@@ -29,27 +29,24 @@ curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/mai
 curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/setup-cursor.sh | bash
 ```
 
-## Update Scripts
+## Updates
 
-Update only standards:
-```bash
-curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/update-standards.sh | bash
-```
-
-Update only instructions:
-```bash
-curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/update-instructions.sh | bash
-```
-
-Update everything:
-```bash
-curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/update-all.sh | bash
-```
-
-### Feature Management System Updates
-Update Agent OS Extended installations with new Feature Management capabilities:
+### Main Update Script
+Update your Agent OS Extended installation (recommended):
 ```bash
 curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/update-agent-os.sh | bash
+```
+*Includes: instructions, commands, standards, and automatic tool detection*
+
+### Selective Updates
+For specific component updates only:
+
+```bash
+# Standards only
+curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/update-standards.sh | bash
+
+# Instructions only  
+curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/update-instructions.sh | bash
 ```
 
 ## Project Structure
