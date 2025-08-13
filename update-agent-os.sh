@@ -177,12 +177,14 @@ update_file "$REPO_URL/instructions/meta/pre-flight.md" \
             "$AGENT_OS_PATH/instructions/meta/pre-flight.md" \
             "meta instruction: pre-flight.md"
 
-# Update commands if using command structure
-if [[ -d "$BASE_PATH/commands" || "$FORCE_UPDATE" == true ]]; then
-    echo ""
-    echo "🎯 Updating commands..."
+# Update commands for different AI tools
+echo ""
+
+# Check for Claude Code installation (.claude/commands/)
+if [[ -d "$BASE_PATH/.claude/commands" || -f "$BASE_PATH/CLAUDE.md" || "$FORCE_UPDATE" == true ]]; then
+    echo "🎯 Updating Claude Code commands..."
     
-    mkdir -p "$BASE_PATH/commands"
+    mkdir -p "$BASE_PATH/.claude/commands"
     
     # Get list of command files
     command_files=(
@@ -199,8 +201,54 @@ if [[ -d "$BASE_PATH/commands" || "$FORCE_UPDATE" == true ]]; then
     
     for file in "${command_files[@]}"; do
         update_file "$REPO_URL/commands/$file" \
+                    "$BASE_PATH/.claude/commands/$file" \
+                    "Claude Code command: $file"
+    done
+fi
+
+# Check for legacy commands/ directory (for backward compatibility)
+if [[ -d "$BASE_PATH/commands" ]]; then
+    echo "🎯 Updating legacy commands..."
+    
+    command_files=(
+        "analyze-product.md"
+        "analyze-b2b-application.md"
+        "create-spec.md"
+        "update-feature.md"
+        "document-feature.md"
+        "retroactive-doc.md"
+        "execute-tasks.md"
+        "plan-product.md"
+        "plan-b2b-application.md"
+    )
+    
+    for file in "${command_files[@]}"; do
+        update_file "$REPO_URL/commands/$file" \
                     "$BASE_PATH/commands/$file" \
-                    "command: $file"
+                    "legacy command: $file"
+    done
+fi
+
+# Check for Cursor installation (.cursor/rules/)
+if [[ -d "$BASE_PATH/.cursor" || "$FORCE_UPDATE" == true ]]; then
+    echo "🎯 Updating Cursor rules..."
+    
+    mkdir -p "$BASE_PATH/.cursor/rules"
+    
+    # Note: Cursor uses .mdc format, but we'll provide .md files for now
+    # Users can convert them if needed
+    cursor_files=(
+        "create-spec.md"
+        "update-feature.md"
+        "document-feature.md"
+        "retroactive-doc.md"
+        "execute-tasks.md"
+    )
+    
+    for file in "${cursor_files[@]}"; do
+        update_file "$REPO_URL/commands/$file" \
+                    "$BASE_PATH/.cursor/rules/$file" \
+                    "Cursor rule: $file"
     done
 fi
 
