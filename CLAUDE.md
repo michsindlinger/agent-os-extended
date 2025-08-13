@@ -21,6 +21,9 @@ Essential guidance for Claude Code development in the [PROJECT_NAME] repository.
 
 ### Agent OS Commands
 - **Plan Features**: @.agent-os/instructions/create-spec.md
+- **Update Features**: @.agent-os/instructions/update-feature.md
+- **Document Features**: @.agent-os/instructions/document-feature.md
+- **Retroactive Documentation**: @.agent-os/instructions/retroactive-doc.md
 - **Execute Tasks**: @.agent-os/instructions/execute-tasks.md
 
 
@@ -64,6 +67,13 @@ Essential guidance for Claude Code development in the [PROJECT_NAME] repository.
 ## Essential Commands
 
 ```bash
+# Feature Development Lifecycle
+create-spec              # Create detailed specifications for new features
+update-feature           # Update existing features with changes/enhancements  
+document-feature         # Create user-facing documentation for completed features
+retroactive-doc          # Document existing features that lack specifications
+execute-tasks            # Execute planned implementation tasks
+
 # CUSTOMIZE: Add your project-specific commands
 # Development
 [COMMAND]                # [DESCRIPTION]
@@ -96,6 +106,29 @@ Essential guidance for Claude Code development in the [PROJECT_NAME] repository.
 - Never deploy [SENSITIVE_COMPONENT] without approval  
 - Never create automatic Git commits
 - Always ask before infrastructure changes
+
+## Feature Development Workflow
+
+**Complete Feature Lifecycle Management:**
+
+1. **New Feature Development:**
+   - `create-spec` → Development → `document-feature`
+   - Creates spec in `.agent-os/specs/YYYY-MM-DD-feature-name/`
+   - Generates user docs in `.agent-os/docs/Feature-Name/`
+
+2. **Feature Updates:**
+   - `update-feature` → Development → `document-feature` (updates)
+   - Adds change tracking in `specs/existing-feature/changes/`
+   - Updates existing documentation structure
+
+3. **Retroactive Documentation:**
+   - `retroactive-doc` (for existing features without specs)
+   - Analyzes existing code to create both specs and documentation
+   - Perfect for documenting legacy features in established projects
+
+**Directory Structure:**
+- `.agent-os/specs/` - Development-oriented (timestamped, change history)
+- `.agent-os/docs/` - User-oriented (hierarchical, feature-focused)
 
 ## Development Notes
 

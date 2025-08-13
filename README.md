@@ -46,6 +46,12 @@ Update everything:
 curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/update-all.sh | bash
 ```
 
+### Feature Management System Updates
+Update Agent OS Extended installations with new Feature Management capabilities:
+```bash
+curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/update-agent-os.sh | bash
+```
+
 ## Project Structure
 
 After installation, your project will contain:
@@ -54,6 +60,8 @@ After installation, your project will contain:
 your-project/
 ├── CLAUDE.md (Claude Code configuration)
 ├── .agent-os/
+│   ├── specs/ (Feature specifications - timestamped)
+│   ├── docs/ (User documentation - hierarchical)
 │   ├── standards/
 │   │   ├── tech-stack.md
 │   │   ├── code-style.md
@@ -67,6 +75,9 @@ your-project/
 │   │   │   ├── analyze-product.md
 │   │   │   ├── analyze-b2b-application.md
 │   │   │   ├── create-spec.md
+│   │   │   ├── update-feature.md
+│   │   │   ├── document-feature.md
+│   │   │   ├── retroactive-doc.md
 │   │   │   ├── execute-task.md
 │   │   │   ├── execute-tasks.md
 │   │   │   ├── plan-product.md
@@ -77,6 +88,9 @@ your-project/
 │   │   ├── plan-product.md
 │   │   ├── plan-b2b-application.md
 │   │   ├── create-spec.md
+│   │   ├── update-feature.md
+│   │   ├── document-feature.md
+│   │   ├── retroactive-doc.md
 │   │   ├── execute-tasks.md
 │   │   ├── analyze-product.md
 │   │   └── analyze-b2b-application.md
@@ -98,10 +112,47 @@ your-project/
 ## Usage
 
 ### With Claude Code
-Use commands like `/plan-product`, `/create-spec`, `/execute-tasks`, `/analyze-product`, `/plan-b2b-application`, and `/analyze-b2b-application`.
+Use commands like:
+- `/plan-product`, `/analyze-product` - Product planning and analysis
+- `/create-spec`, `/update-feature`, `/document-feature`, `/retroactive-doc` - Feature lifecycle management
+- `/execute-tasks` - Implementation execution
+- `/plan-b2b-application`, `/analyze-b2b-application` - B2B application workflows
 
 ### With Cursor
 Use commands like `@plan-product`, `@create-spec`, `@execute-tasks`, `@analyze-product`, `@plan-b2b-application`, and `@analyze-b2b-application`.
+
+## Feature Management System
+
+Agent OS Extended includes a comprehensive Feature Lifecycle Management System:
+
+### 🔄 Complete Workflows
+
+1. **New Feature Development**
+   ```
+   /create-spec → Development → /document-feature
+   ```
+   - Creates timestamped spec in `.agent-os/specs/YYYY-MM-DD-feature-name/`
+   - Generates user documentation in `.agent-os/docs/Feature-Name/`
+
+2. **Feature Updates**
+   ```
+   /update-feature → Development → /document-feature
+   ```
+   - Adds comprehensive change tracking in `specs/feature/changes/`
+   - Updates existing documentation with new capabilities
+
+3. **Retroactive Documentation**
+   ```
+   /retroactive-doc
+   ```
+   - Perfect for existing projects with undocumented features
+   - Analyzes existing code to generate both specs and user documentation
+   - Ideal for documenting legacy features step by step
+
+### 📁 Directory Structure
+
+- **`.agent-os/specs/`** - Development-oriented specifications (timestamped, includes change history)
+- **`.agent-os/docs/`** - User-oriented documentation (hierarchical, feature-focused)
 
 ## Customization
 
