@@ -160,6 +160,7 @@ instruction_files=(
     "update-feature.md"
     "document-feature.md"
     "retroactive-doc.md"
+    "update-changelog.md"
     "execute-task.md"
     "execute-tasks.md"
     "plan-product.md"
@@ -194,6 +195,7 @@ if [[ -d "$BASE_PATH/.claude/commands" || -f "$BASE_PATH/CLAUDE.md" || "$FORCE_U
         "update-feature.md"
         "document-feature.md"
         "retroactive-doc.md"
+        "update-changelog.md"
         "execute-tasks.md"
         "plan-product.md"
         "plan-b2b-application.md"
@@ -217,6 +219,7 @@ if [[ -d "$BASE_PATH/commands" ]]; then
         "update-feature.md"
         "document-feature.md"
         "retroactive-doc.md"
+        "update-changelog.md"
         "execute-tasks.md"
         "plan-product.md"
         "plan-b2b-application.md"
@@ -242,6 +245,7 @@ if [[ -d "$BASE_PATH/.cursor" || "$FORCE_UPDATE" == true ]]; then
         "update-feature.md"
         "document-feature.md"
         "retroactive-doc.md"
+        "update-changelog.md"
         "execute-tasks.md"
     )
     

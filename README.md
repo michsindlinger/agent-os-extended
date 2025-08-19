@@ -75,6 +75,7 @@ your-project/
 │   │   │   ├── update-feature.md
 │   │   │   ├── document-feature.md
 │   │   │   ├── retroactive-doc.md
+│   │   │   ├── update-changelog.md
 │   │   │   ├── execute-task.md
 │   │   │   ├── execute-tasks.md
 │   │   │   ├── plan-product.md
@@ -88,6 +89,7 @@ your-project/
 │   │   ├── update-feature.md
 │   │   ├── document-feature.md
 │   │   ├── retroactive-doc.md
+│   │   ├── update-changelog.md
 │   │   ├── execute-tasks.md
 │   │   ├── analyze-product.md
 │   │   └── analyze-b2b-application.md
@@ -112,6 +114,7 @@ your-project/
 Use commands like:
 - `/plan-product`, `/analyze-product` - Product planning and analysis
 - `/create-spec`, `/update-feature`, `/document-feature`, `/retroactive-doc` - Feature lifecycle management
+- `/update-changelog` - Automatic changelog generation from documented features
 - `/execute-tasks` - Implementation execution
 - `/plan-b2b-application`, `/analyze-b2b-application` - B2B application workflows
 
@@ -145,6 +148,14 @@ Agent OS Extended includes a comprehensive Feature Lifecycle Management System:
    - Perfect for existing projects with undocumented features
    - Analyzes existing code to generate both specs and user documentation
    - Ideal for documenting legacy features step by step
+
+4. **Changelog Management**
+   ```
+   /update-changelog
+   ```
+   - Automatic changelog generation from documented features
+   - Tracks features since last update with intelligent date filtering
+   - Includes both main features and sub-features in chronological order
 
 ### 📁 Directory Structure
 
