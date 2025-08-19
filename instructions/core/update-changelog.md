@@ -10,7 +10,7 @@ encoding: UTF-8
 
 ## Overview
 
-Erstelle oder aktualisiere automatisch ein Changelog basierend auf dokumentierten Features in .agent-os/docs/, die seit dem letzten Update hinzugekommen sind.
+Erstelle oder aktualisiere automatisch zweisprachige Changelogs (Deutsch und Englisch) basierend auf dokumentierten Features in .agent-os/docs/, die seit dem letzten Update hinzugekommen sind.
 
 <pre_flight_check>
   EXECUTE: @~/.agent-os/instructions/meta/pre-flight.md
@@ -30,20 +30,26 @@ Use the date-checker subagent to determine today's date for changelog update tra
 
 <step number="2" subagent="context-fetcher" name="existing_changelog_analysis">
 
-### Step 2: Bestehenden Changelog analysieren
+### Step 2: Bestehende Changelogs analysieren
 
-Use the context-fetcher subagent to check for existing changelog and determine last update date.
+Use the context-fetcher subagent to check for existing changelogs and determine last update date.
 
-<changelog_location>.agent-os/docs/changelog.md</changelog_location>
+<changelog_locations>
+  - .agent-os/docs/changelog.md (Deutsch)
+  - .agent-os/docs/changelog-en.md (English)
+</changelog_locations>
 
 <existing_changelog_check>
-  IF changelog_exists:
-    READ changelog.md
-    EXTRACT last_update_date from "Last Updated: YYYY-MM-DD" line
-    SET baseline_date to last_update_date
-  ELSE:
-    SET baseline_date to null (include all documented features)
-    PREPARE for new changelog creation
+  FOR each changelog_file in [changelog.md, changelog-en.md]:
+    IF changelog_file_exists:
+      READ changelog_file
+      EXTRACT last_update_date from "Last Updated: YYYY-MM-DD" line
+      STORE baseline_date for that language
+    ELSE:
+      SET baseline_date to null for that language
+      PREPARE for new changelog creation
+  
+  USE most_recent_baseline_date from both files as reference
 </existing_changelog_check>
 
 <last_update_extraction>
@@ -133,15 +139,17 @@ Filter features based on creation date relative to last changelog update.
 
 <step number="5" subagent="context-fetcher" name="feature_description_extraction">
 
-### Step 5: Feature-Beschreibungen extrahieren
+### Step 5: Feature-Beschreibungen extrahieren (Zweisprachig)
 
-Use the context-fetcher subagent to extract concise descriptions from each new feature.
+Use the context-fetcher subagent to extract concise descriptions from each new feature in both German and English.
 
 <description_extraction>
   FOR each new_feature:
     READ feature.md or sub-feature.md file
     EXTRACT concise description from overview section
-    LIMIT description to 1-2 sentences maximum
+    CREATE German description (primary)
+    TRANSLATE to English description (secondary)
+    LIMIT both descriptions to 1-2 sentences maximum
     FOCUS on user benefit, not technical details
 </description_extraction>
 
@@ -158,7 +166,7 @@ Use the context-fetcher subagent to extract concise descriptions from each new f
 </description_sources>
 
 <description_optimization>
-  <length_limit>Maximum 120 characters per feature description</length_limit>
+  <length_limit>Maximum 120 characters per feature description (both DE and EN)</length_limit>
   <content_focus>
     - User-facing benefits
     - Core functionality
@@ -169,6 +177,11 @@ Use the context-fetcher subagent to extract concise descriptions from each new f
     - Action-oriented language
     - Professional tone
   </style>
+  <translation_quality>
+    - Maintain meaning and tone across languages
+    - Use appropriate technical terminology per language
+    - Ensure cultural appropriateness
+  </translation_quality>
 </description_optimization>
 
 </step>
@@ -205,88 +218,130 @@ Group new features by their creation date for organized changelog presentation.
 
 <step number="7" subagent="file-creator" name="changelog_update">
 
-### Step 7: Changelog erstellen oder aktualisieren
+### Step 7: Zweisprachige Changelogs erstellen oder aktualisieren
 
-Use the file-creator subagent to create or update the changelog.md file.
+Use the file-creator subagent to create or update both German and English changelog files.
 
-<changelog_template>
-  <header>
+<changelog_templates>
+  <german_template>
     # Changelog
     
     > Feature Release History
     > Last Updated: [CURRENT_DATE]
     
     Dieses Changelog dokumentiert alle implementierten und dokumentierten Features chronologisch.
-  </header>
-  
-  <entry_format>
-    ## [YYYY-MM-DD] - [FORMATTED_DATE]
+    
+    ## [YYYY-MM-DD] - [FORMATTED_DATE_DE]
     
     ### Features
-    - **[Feature-Name]**: [concise_description]
+    - **[Feature-Name]**: [german_description]
     
     ### Sub-Features
-    - **[Parent-Feature]** → **[Sub-Feature-Name]**: [concise_description]
-  </entry_format>
-</changelog_template>
+    - **[Parent-Feature]** → **[Sub-Feature-Name]**: [german_description]
+  </german_template>
+  
+  <english_template>
+    # Changelog
+    
+    > Feature Release History
+    > Last Updated: [CURRENT_DATE]
+    
+    This changelog documents all implemented and documented features chronologically.
+    
+    ## [YYYY-MM-DD] - [FORMATTED_DATE_EN]
+    
+    ### Features
+    - **[Feature-Name]**: [english_description]
+    
+    ### Sub-Features
+    - **[Parent-Feature]** → **[Sub-Feature-Name]**: [english_description]
+  </english_template>
+</changelog_templates>
 
 <update_strategy>
-  IF existing_changelog:
-    UPDATE header with new Last Updated date
-    INSERT new date sections at top (after header)
-    PRESERVE existing entries below
-  ELSE:
-    CREATE new changelog with header
-    ADD all documented features grouped by date
+  FOR each language [de, en]:
+    IF existing_changelog_for_language:
+      UPDATE header with new Last Updated date
+      INSERT new date sections at top (after header)
+      PRESERVE existing entries below
+    ELSE:
+      CREATE new changelog with appropriate language template
+      ADD all documented features grouped by date
 </update_strategy>
 
 <formatting_rules>
   <date_formatting>
-    - Section header: ## YYYY-MM-DD - Readable Date
-    - Example: ## 2025-08-19 - 19. August 2025
+    <german>
+      - Section header: ## YYYY-MM-DD - Readable Date (German)
+      - Example: ## 2025-08-19 - 19. August 2025
+    </german>
+    <english>
+      - Section header: ## YYYY-MM-DD - Readable Date (English)  
+      - Example: ## 2025-08-19 - August 19, 2025
+    </english>
   </date_formatting>
   
   <feature_formatting>
     - Main features: **[Feature-Name]**: Description
     - Sub-features: **[Parent]** → **[Sub-Feature]**: Description
     - Maintain alphabetical order within each category
+    - Use same feature names across both languages
   </feature_formatting>
   
   <description_style>
     - Start with action verb where possible
-    - Keep under 120 characters
+    - Keep under 120 characters per language
     - Focus on user value
+    - Maintain consistency in terminology across languages
   </description_style>
+  
+  <file_locations>
+    - German: .agent-os/docs/changelog.md
+    - English: .agent-os/docs/changelog-en.md
+  </file_locations>
 </formatting_rules>
 
 </step>
 
 <step number="8" name="changelog_validation">
 
-### Step 8: Changelog validieren
+### Step 8: Zweisprachige Changelogs validieren
 
-Validate the updated changelog for completeness and accuracy.
+Validate both updated changelogs for completeness and accuracy.
 
 <validation_checks>
   <content_validation>
-    - [ ] All new features included
-    - [ ] Descriptions are concise and user-focused
-    - [ ] Dates are properly formatted
-    - [ ] No duplicate entries
+    FOR each language [de, en]:
+      - [ ] All new features included
+      - [ ] Descriptions are concise and user-focused
+      - [ ] Dates are properly formatted for language
+      - [ ] No duplicate entries
+      - [ ] Translation quality maintained
   </content_validation>
   
   <format_validation>
-    - [ ] Header contains correct Last Updated date
-    - [ ] Date sections in descending order
-    - [ ] Consistent formatting throughout
-    - [ ] Sub-features properly nested under parents
+    FOR each language [de, en]:
+      - [ ] Header contains correct Last Updated date
+      - [ ] Date sections in descending order
+      - [ ] Consistent formatting throughout
+      - [ ] Sub-features properly nested under parents
+      - [ ] Language-appropriate date formatting
   </format_validation>
   
   <completeness_validation>
-    - [ ] All documented features since baseline_date included
+    - [ ] All documented features since baseline_date included in both files
     - [ ] No features missed from same-day check
-    - [ ] Existing changelog entries preserved
+    - [ ] Existing changelog entries preserved in both files
+    - [ ] Feature names consistent across languages
+    - [ ] Same feature count in both changelogs
   </completeness_validation>
+  
+  <cross_language_validation>
+    - [ ] Both changelogs contain identical feature sets
+    - [ ] Descriptions convey same meaning across languages
+    - [ ] Date formatting appropriate for each language
+    - [ ] No missing translations
+  </cross_language_validation>
 </validation_checks>
 
 </step>
@@ -295,10 +350,10 @@ Validate the updated changelog for completeness and accuracy.
 
 ### Step 9: Benutzer-Zusammenfassung
 
-Present summary of changelog update to user.
+Present summary of bilingual changelog update to user.
 
 <summary_template>
-  Changelog wurde erfolgreich aktualisiert:
+  Zweisprachige Changelogs wurden erfolgreich aktualisiert:
   
   **Neue Features hinzugefügt:** [COUNT]
   **Neue Sub-Features hinzugefügt:** [COUNT]
@@ -307,14 +362,16 @@ Present summary of changelog update to user.
   **Hinzugefügte Features:**
   [LIST_OF_NEW_FEATURES_WITH_DATES]
   
-  **Changelog-Datei:** @.agent-os/docs/changelog.md
+  **Changelog-Dateien:** 
+  - Deutsch: @.agent-os/docs/changelog.md
+  - English: @.agent-os/docs/changelog-en.md
   
-  Das Changelog ist jetzt auf dem aktuellen Stand mit allen dokumentierten Features.
+  Beide Changelogs sind jetzt auf dem aktuellen Stand mit allen dokumentierten Features.
 </summary_template>
 
 <no_updates_scenario>
   IF no_new_features_found:
-    OUTPUT: "Keine neuen Features seit dem letzten Changelog-Update ([LAST_UPDATE_DATE]) gefunden. Das Changelog ist bereits aktuell."
+    OUTPUT: "Keine neuen Features seit dem letzten Changelog-Update ([LAST_UPDATE_DATE]) gefunden. Beide Changelogs sind bereits aktuell."
 </no_updates_scenario>
 
 </step>
