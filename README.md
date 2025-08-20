@@ -59,6 +59,7 @@ your-project/
 ├── .agent-os/
 │   ├── specs/ (Feature specifications - timestamped)
 │   ├── docs/ (User documentation - hierarchical)
+│   ├── bugs/ (Bug tracking and resolution)
 │   ├── standards/
 │   │   ├── tech-stack.md
 │   │   ├── code-style.md
@@ -72,6 +73,8 @@ your-project/
 │   │   │   ├── analyze-product.md
 │   │   │   ├── analyze-b2b-application.md
 │   │   │   ├── create-spec.md
+│   │   │   ├── create-bug.md
+│   │   │   ├── execute-bug.md
 │   │   │   ├── update-feature.md
 │   │   │   ├── document-feature.md
 │   │   │   ├── retroactive-doc.md
@@ -86,6 +89,8 @@ your-project/
 │   │   ├── plan-product.md
 │   │   ├── plan-b2b-application.md
 │   │   ├── create-spec.md
+│   │   ├── create-bug.md
+│   │   ├── execute-bug.md
 │   │   ├── update-feature.md
 │   │   ├── document-feature.md
 │   │   ├── retroactive-doc.md
@@ -114,7 +119,8 @@ your-project/
 Use commands like:
 - `/plan-product`, `/analyze-product` - Product planning and analysis
 - `/create-spec`, `/update-feature`, `/document-feature`, `/retroactive-doc` - Feature lifecycle management
-- `/update-changelog` - Automatic changelog generation from documented features
+- `/create-bug`, `/execute-bug` - Bug management and resolution
+- `/update-changelog` - Automatic changelog generation from documented features and resolved bugs
 - `/execute-tasks` - Implementation execution
 - `/plan-b2b-application`, `/analyze-b2b-application` - B2B application workflows
 
@@ -149,18 +155,29 @@ Agent OS Extended includes a comprehensive Feature Lifecycle Management System:
    - Analyzes existing code to generate both specs and user documentation
    - Ideal for documenting legacy features step by step
 
-4. **Changelog Management**
+4. **Bug Management**
+   ```
+   /create-bug → /execute-bug
+   ```
+   - Interactive bug reporting with structured documentation
+   - Systematic investigation and resolution workflow
+   - Root cause analysis and solution tracking
+   - Comprehensive resolution documentation
+
+5. **Changelog Management**
    ```
    /update-changelog
    ```
-   - Automatic changelog generation from documented features
-   - Tracks features since last update with intelligent date filtering
-   - Includes both main features and sub-features in chronological order
+   - Automatic changelog generation from documented features and resolved bugs
+   - Tracks features and bug fixes since last update with intelligent date filtering
+   - Bilingual support (German/English) with proper categorization
+   - Includes main features, sub-features, and bug fixes in chronological order
 
 ### 📁 Directory Structure
 
 - **`.agent-os/specs/`** - Development-oriented specifications (timestamped, includes change history)
 - **`.agent-os/docs/`** - User-oriented documentation (hierarchical, feature-focused)
+- **`.agent-os/bugs/`** - Bug tracking with investigation, reproduction, and resolution documentation
 
 ## Customization
 
