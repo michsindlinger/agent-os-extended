@@ -18,13 +18,29 @@ Erstelle oder aktualisiere automatisch zweisprachige Changelogs (Deutsch und Eng
 
 <process_flow>
 
-<step number="1" subagent="date-checker" name="current_date_determination">
+<step number="1" subagent="date-checker" name="current_date_and_version_determination">
 
-### Step 1: Aktuelles Datum ermitteln
+### Step 1: Aktuelles Datum und Version ermitteln
 
-Use the date-checker subagent to determine today's date for changelog update tracking.
+Use the date-checker subagent to determine today's date and check for version information.
 
 <date_format>YYYY-MM-DD</date_format>
+
+<version_check>
+  IF public/version.json exists:
+    READ public/version.json
+    EXTRACT version from "version" field
+    USE format: [version] - YYYY-MM-DD
+  ELSE:
+    USE format: [YYYY-MM-DD] (date only, no version)
+</version_check>
+
+<version_format>
+  {
+    "version": "2.3.0",
+    "buildTime": "2025-08-19T11:41:53.346Z"
+  }
+</version_format>
 
 </step>
 
@@ -72,13 +88,17 @@ Use the context-fetcher subagent to identify all documented features in .agent-o
   <main_features>
     SCAN .agent-os/docs/*/feature.md files
     EXTRACT creation_date from "Created: YYYY-MM-DD" line in each file
+    EXTRACT last_updated_date from "Last Updated: YYYY-MM-DD" line in each file
     EXTRACT feature_name from folder name and first header
+    DETERMINE change_type based on dates and baseline comparison
   </main_features>
   
   <sub_features>
     SCAN .agent-os/docs/*/sub-features/*.md files
     EXTRACT creation_date from "Created: YYYY-MM-DD" line in each file
+    EXTRACT last_updated_date from "Last Updated: YYYY-MM-DD" line in each file
     EXTRACT sub_feature_name and parent_feature from file structure
+    DETERMINE change_type based on dates and baseline comparison
   </sub_features>
 </scan_strategy>
 
@@ -94,6 +114,8 @@ Use the context-fetcher subagent to identify all documented features in .agent-o
   {
     "feature_name": "string",
     "creation_date": "YYYY-MM-DD",
+    "last_updated_date": "YYYY-MM-DD|null",
+    "change_type": "new|changed",
     "type": "main_feature|sub_feature",
     "parent_feature": "string (for sub_features)",
     "file_path": "string",
@@ -149,27 +171,46 @@ Use the context-fetcher subagent to identify all resolved bugs in .agent-os/bugs
 
 ### Step 4: Features und Bugs seit letztem Update filtern
 
-Filter features and bugs based on their dates relative to last changelog update.
+Filter features and bugs based on their dates relative to last changelog update and determine change types.
 
 <filtering_logic>
   IF baseline_date is null:
     INCLUDE all documented features and resolved bugs
+    FOR each feature:
+      SET change_type = "new" (first changelog generation)
   ELSE:
     FOR each feature:
+      # New features
       IF feature.creation_date > baseline_date:
-        INCLUDE in new_features list
+        SET change_type = "new"
+        INCLUDE in changelog with section "Added"
+      
+      # Changed features 
+      ELSE IF feature.last_updated_date EXISTS AND feature.last_updated_date > baseline_date:
+        SET change_type = "changed" 
+        INCLUDE in changelog with section "Changed"
+      
+      # Same day check for new features
       ELSE IF feature.creation_date == baseline_date:
         CHECK if feature already exists in current changelog
         IF not_in_changelog:
-          INCLUDE in new_features list
+          SET change_type = "new"
+          INCLUDE in changelog with section "Added"
+      
+      # Same day check for changed features  
+      ELSE IF feature.last_updated_date == baseline_date:
+        CHECK if feature change already exists in current changelog
+        IF not_in_changelog:
+          SET change_type = "changed"
+          INCLUDE in changelog with section "Changed"
     
     FOR each bug:
       IF bug.resolution_date > baseline_date:
-        INCLUDE in resolved_bugs list
+        INCLUDE in resolved_bugs list with section "Fixed"
       ELSE IF bug.resolution_date == baseline_date:
         CHECK if bug already exists in current changelog
         IF not_in_changelog:
-          INCLUDE in resolved_bugs list
+          INCLUDE in resolved_bugs list with section "Fixed"
 </filtering_logic>
 
 <same_day_check>
@@ -255,26 +296,35 @@ Use the context-fetcher subagent to extract concise descriptions from each new f
 
 ### Step 6: Features und Bugs nach Datum gruppieren
 
-Group new features and resolved bugs by their dates for organized changelog presentation.
+Group new features, changed features, and resolved bugs by their dates for organized changelog presentation.
 
 <grouping_strategy>
-  GROUP features by creation_date and bugs by resolution_date (descending order)
+  GROUP by relevant_date (descending order):
+    - New features: use creation_date
+    - Changed features: use last_updated_date
+    - Bugs: use resolution_date
   WITHIN each date group:
-    LIST new features first
-    LIST resolved bugs second
-    LIST sub-features under their parent features
+    SECTION "Added": new features and sub-features
+    SECTION "Changed": updated features and sub-features  
+    SECTION "Fixed": resolved bugs
 </grouping_strategy>
 
 <date_structure>
   {
     "2025-08-19": {
-      "features": {
-        "main_features": [feature1, feature2],
+      "added": {
+        "main_features": [new_feature1, new_feature2],
         "sub_features": {
-          "Parent-Feature-Name": [sub1, sub2]
+          "Parent-Feature-Name": [new_sub1, new_sub2]
         }
       },
-      "bugs": [
+      "changed": {
+        "main_features": [updated_feature1],
+        "sub_features": {
+          "Parent-Feature-Name": [updated_sub1]
+        }
+      },
+      "fixed": [
         {
           "title": "Bug Title",
           "severity": "High",
@@ -283,11 +333,15 @@ Group new features and resolved bugs by their dates for organized changelog pres
       ]
     },
     "2025-08-18": {
-      "features": {
-        "main_features": [feature3],
+      "added": {
+        "main_features": [new_feature3],
         "sub_features": {}
       },
-      "bugs": []
+      "changed": {
+        "main_features": [],
+        "sub_features": {}
+      },
+      "fixed": []
     }
   }
 </date_structure>
@@ -309,16 +363,15 @@ Use the file-creator subagent to create or update both German and English change
     
     Dieses Changelog dokumentiert alle implementierten Features und gelösten Bugs chronologisch.
     
-    ## [YYYY-MM-DD] - [FORMATTED_DATE_DE]
-    
-    ### Features
+    ## [VERSION] - [YYYY-MM-DD]
+    ### Added
     - **[Feature-Name]**: [german_description]
     
-    ### Sub-Features
+    ### Changed
     - **[Parent-Feature]** → **[Sub-Feature-Name]**: [german_description]
     
-    ### Bug Fixes
-    - **[Bug-Title]** ([Severity]): [german_fix_description]
+    ### Fixed
+    - **[Bug-Title]**: [german_fix_description]
   </german_template>
   
   <english_template>
@@ -329,16 +382,15 @@ Use the file-creator subagent to create or update both German and English change
     
     This changelog documents all implemented features and resolved bugs chronologically.
     
-    ## [YYYY-MM-DD] - [FORMATTED_DATE_EN]
-    
-    ### Features
+    ## [VERSION] - [YYYY-MM-DD]
+    ### Added
     - **[Feature-Name]**: [english_description]
     
-    ### Sub-Features
+    ### Changed
     - **[Parent-Feature]** → **[Sub-Feature-Name]**: [english_description]
     
-    ### Bug Fixes
-    - **[Bug-Title]** ([Severity]): [english_fix_description]
+    ### Fixed
+    - **[Bug-Title]**: [english_fix_description]
   </english_template>
 </changelog_templates>
 
@@ -356,32 +408,35 @@ Use the file-creator subagent to create or update both German and English change
 <formatting_rules>
   <date_formatting>
     <german>
-      - Section header: ## YYYY-MM-DD - Readable Date (German)
-      - Example: ## 2025-08-19 - 19. August 2025
+      - Section header: ## [VERSION] - YYYY-MM-DD
+      - With version: ## [2.3.0] - 2025-08-19
+      - Without version: ## [2025-08-19]
     </german>
     <english>
-      - Section header: ## YYYY-MM-DD - Readable Date (English)  
-      - Example: ## 2025-08-19 - August 19, 2025
+      - Section header: ## [VERSION] - YYYY-MM-DD
+      - With version: ## [2.3.0] - 2025-08-19
+      - Without version: ## [2025-08-19]
     </english>
   </date_formatting>
   
   <content_formatting>
-    - Features: **[Feature-Name]**: Description
-    - Sub-features: **[Parent]** → **[Sub-Feature]**: Description
-    - Bug fixes: **[Bug-Title]** ([Severity]): Fixed description
+    - Added: **[Feature-Name]**: Description
+    - Changed: **[Parent]** → **[Sub-Feature]**: Description  
+    - Fixed: **[Bug-Title]**: Fixed description
     - Maintain alphabetical order within each category
     - Use same names across both languages
   </content_formatting>
   
   <section_order>
-    1. Features (new functionality)
-    2. Sub-Features (enhancements to existing features)
-    3. Bug Fixes (issue resolutions)
+    1. Added (new functionality and features)
+    2. Changed (enhancements to existing features)
+    3. Fixed (bug fixes and issue resolutions)
   </section_order>
   
   <description_style>
-    - Features: Start with action verb where possible
-    - Bug fixes: Start with "Fixed issue where..." or similar
+    - Added: Start with action verb where possible
+    - Changed: Focus on improvement and enhancement
+    - Fixed: Start with description of what was fixed
     - Keep under 120 characters per language
     - Focus on user value and impact
     - Maintain consistency in terminology across languages
@@ -421,7 +476,7 @@ Validate both updated changelogs for completeness and accuracy including bug fix
       - [ ] Sub-features properly nested under parents
       - [ ] Bug fixes properly formatted with severity
       - [ ] Language-appropriate date formatting
-      - [ ] Section order: Features → Sub-Features → Bug Fixes
+      - [ ] Section order: Added → Changed → Fixed
   </format_validation>
   
   <completeness_validation>

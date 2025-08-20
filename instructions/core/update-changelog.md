@@ -10,7 +10,7 @@ encoding: UTF-8
 
 ## Overview
 
-Erstelle oder aktualisiere automatisch zweisprachige Changelogs (Deutsch und Englisch) basierend auf dokumentierten Features in .agent-os/docs/, die seit dem letzten Update hinzugekommen sind.
+Erstelle oder aktualisiere automatisch zweisprachige Changelogs (Deutsch und Englisch) basierend auf dokumentierten Features in .agent-os/docs/ und gelösten Bugs in .agent-os/bugs/, die seit dem letzten Update hinzugekommen sind.
 
 <pre_flight_check>
   EXECUTE: @~/.agent-os/instructions/meta/pre-flight.md
@@ -18,13 +18,29 @@ Erstelle oder aktualisiere automatisch zweisprachige Changelogs (Deutsch und Eng
 
 <process_flow>
 
-<step number="1" subagent="date-checker" name="current_date_determination">
+<step number="1" subagent="date-checker" name="current_date_and_version_determination">
 
-### Step 1: Aktuelles Datum ermitteln
+### Step 1: Aktuelles Datum und Version ermitteln
 
-Use the date-checker subagent to determine today's date for changelog update tracking.
+Use the date-checker subagent to determine today's date and check for version information.
 
 <date_format>YYYY-MM-DD</date_format>
+
+<version_check>
+  IF public/version.json exists:
+    READ public/version.json
+    EXTRACT version from "version" field
+    USE format: [version] - YYYY-MM-DD
+  ELSE:
+    USE format: [YYYY-MM-DD] (date only, no version)
+</version_check>
+
+<version_format>
+  {
+    "version": "2.3.0",
+    "buildTime": "2025-08-19T11:41:53.346Z"
+  }
+</version_format>
 
 </step>
 
@@ -72,13 +88,17 @@ Use the context-fetcher subagent to identify all documented features in .agent-o
   <main_features>
     SCAN .agent-os/docs/*/feature.md files
     EXTRACT creation_date from "Created: YYYY-MM-DD" line in each file
+    EXTRACT last_updated_date from "Last Updated: YYYY-MM-DD" line in each file
     EXTRACT feature_name from folder name and first header
+    DETERMINE change_type based on dates and baseline comparison
   </main_features>
   
   <sub_features>
     SCAN .agent-os/docs/*/sub-features/*.md files
     EXTRACT creation_date from "Created: YYYY-MM-DD" line in each file
+    EXTRACT last_updated_date from "Last Updated: YYYY-MM-DD" line in each file
     EXTRACT sub_feature_name and parent_feature from file structure
+    DETERMINE change_type based on dates and baseline comparison
   </sub_features>
 </scan_strategy>
 
@@ -94,6 +114,8 @@ Use the context-fetcher subagent to identify all documented features in .agent-o
   {
     "feature_name": "string",
     "creation_date": "YYYY-MM-DD",
+    "last_updated_date": "YYYY-MM-DD|null",
+    "change_type": "new|changed",
     "type": "main_feature|sub_feature",
     "parent_feature": "string (for sub_features)",
     "file_path": "string",
@@ -103,45 +125,112 @@ Use the context-fetcher subagent to identify all documented features in .agent-o
 
 </step>
 
-<step number="4" name="feature_filtering">
+<step number="3b" subagent="context-fetcher" name="resolved_bugs_scan">
 
-### Step 4: Features seit letztem Update filtern
+### Step 3b: Gelöste Bugs scannen
 
-Filter features based on creation date relative to last changelog update.
+Use the context-fetcher subagent to identify all resolved bugs in .agent-os/bugs/ and their resolution dates.
+
+<bug_scan_strategy>
+  <resolved_bugs>
+    SCAN .agent-os/bugs/*/bug-report.md files
+    FILTER by Status: "Resolved" or "Closed"
+    EXTRACT resolution_date from "Resolved Date:" line in resolution/ files
+    EXTRACT bug_title from main header
+    EXTRACT bug_summary from "Summary" section
+  </resolved_bugs>
+</bug_scan_strategy>
+
+<bug_date_extraction>
+  <search_patterns>
+    - "Resolved Date: ([0-9]{4}-[0-9]{2}-[0-9]{2})" (from resolution documentation)
+    - "**Status**: Resolved" + look for date in resolution/ directory
+    - "**Status**: Closed" + look for date in resolution/ directory
+  </search_patterns>
+  <fallback>
+    IF no_resolution_date_found:
+      USE last_modified_date of resolution/ directory
+  </fallback>
+</bug_date_extraction>
+
+<bug_data_structure>
+  {
+    "bug_title": "string",
+    "resolution_date": "YYYY-MM-DD",
+    "type": "bug_fix",
+    "severity": "Critical|High|Medium|Low",
+    "file_path": "string",
+    "summary": "string (extracted from bug summary)",
+    "solution_summary": "string (extracted from resolution)"
+  }
+</bug_data_structure>
+
+</step>
+
+<step number="4" name="content_filtering">
+
+### Step 4: Features und Bugs seit letztem Update filtern
+
+Filter features and bugs based on their dates relative to last changelog update and determine change types.
 
 <filtering_logic>
   IF baseline_date is null:
-    INCLUDE all documented features
+    INCLUDE all documented features and resolved bugs
+    FOR each feature:
+      SET change_type = "new" (first changelog generation)
   ELSE:
     FOR each feature:
+      # New features
       IF feature.creation_date > baseline_date:
-        INCLUDE in new_features list
+        SET change_type = "new"
+        INCLUDE in changelog with section "Added"
+      
+      # Changed features 
+      ELSE IF feature.last_updated_date EXISTS AND feature.last_updated_date > baseline_date:
+        SET change_type = "changed" 
+        INCLUDE in changelog with section "Changed"
+      
+      # Same day check for new features
       ELSE IF feature.creation_date == baseline_date:
         CHECK if feature already exists in current changelog
         IF not_in_changelog:
-          INCLUDE in new_features list
-        ELSE:
-          SKIP (already documented)
+          SET change_type = "new"
+          INCLUDE in changelog with section "Added"
+      
+      # Same day check for changed features  
+      ELSE IF feature.last_updated_date == baseline_date:
+        CHECK if feature change already exists in current changelog
+        IF not_in_changelog:
+          SET change_type = "changed"
+          INCLUDE in changelog with section "Changed"
+    
+    FOR each bug:
+      IF bug.resolution_date > baseline_date:
+        INCLUDE in resolved_bugs list with section "Fixed"
+      ELSE IF bug.resolution_date == baseline_date:
+        CHECK if bug already exists in current changelog
+        IF not_in_changelog:
+          INCLUDE in resolved_bugs list with section "Fixed"
 </filtering_logic>
 
 <same_day_check>
   <duplicate_detection>
-    IF feature.creation_date == baseline_date:
-      SEARCH existing changelog for feature_name
+    IF item.date == baseline_date:
+      SEARCH existing changelog for item_name
       IF found:
-        SKIP feature
+        SKIP item
       ELSE:
-        INCLUDE feature
+        INCLUDE item
   </duplicate_detection>
 </same_day_check>
 
 </step>
 
-<step number="5" subagent="context-fetcher" name="feature_description_extraction">
+<step number="5" subagent="context-fetcher" name="content_description_extraction">
 
-### Step 5: Feature-Beschreibungen extrahieren (Zweisprachig)
+### Step 5: Feature- und Bug-Beschreibungen extrahieren (Zweisprachig)
 
-Use the context-fetcher subagent to extract concise descriptions from each new feature in both German and English.
+Use the context-fetcher subagent to extract concise descriptions from each new feature and resolved bug in both German and English.
 
 <description_extraction>
   FOR each new_feature:
@@ -151,6 +240,14 @@ Use the context-fetcher subagent to extract concise descriptions from each new f
     TRANSLATE to English description (secondary)
     LIMIT both descriptions to 1-2 sentences maximum
     FOCUS on user benefit, not technical details
+  
+  FOR each resolved_bug:
+    READ bug-report.md and resolution files
+    EXTRACT concise description from summary and solution
+    CREATE German description (primary)
+    TRANSLATE to English description (secondary)
+    LIMIT both descriptions to 1-2 sentences maximum
+    FOCUS on user impact and fix benefit
 </description_extraction>
 
 <description_sources>
@@ -163,12 +260,19 @@ Use the context-fetcher subagent to extract concise descriptions from each new f
     EXTRACT from "## Purpose" section
     FALLBACK to first paragraph of file
   </sub_features>
+  
+  <resolved_bugs>
+    EXTRACT from "## Summary" and "## Solution Implemented"
+    COMBINE bug impact and fix description
+    FOCUS on "Fixed issue where..." format
+  </resolved_bugs>
 </description_sources>
 
 <description_optimization>
-  <length_limit>Maximum 120 characters per feature description (both DE and EN)</length_limit>
+  <length_limit>Maximum 120 characters per item description (both DE and EN)</length_limit>
   <content_focus>
-    - User-facing benefits
+    - User-facing benefits (features)
+    - Issue resolution (bugs)
     - Core functionality
     - Avoid technical implementation details
   </content_focus>
@@ -176,6 +280,8 @@ Use the context-fetcher subagent to extract concise descriptions from each new f
     - Clear and concise
     - Action-oriented language
     - Professional tone
+    - "Fixed:" prefix for bug fixes
+    - "Added:" prefix for new features
   </style>
   <translation_quality>
     - Maintain meaning and tone across languages
@@ -188,28 +294,54 @@ Use the context-fetcher subagent to extract concise descriptions from each new f
 
 <step number="6" name="changelog_date_grouping">
 
-### Step 6: Features nach Datum gruppieren
+### Step 6: Features und Bugs nach Datum gruppieren
 
-Group new features by their creation date for organized changelog presentation.
+Group new features, changed features, and resolved bugs by their dates for organized changelog presentation.
 
 <grouping_strategy>
-  GROUP features by creation_date (descending order)
+  GROUP by relevant_date (descending order):
+    - New features: use creation_date
+    - Changed features: use last_updated_date
+    - Bugs: use resolution_date
   WITHIN each date group:
-    LIST main features first
-    LIST sub-features under their parent features
+    SECTION "Added": new features and sub-features
+    SECTION "Changed": updated features and sub-features  
+    SECTION "Fixed": resolved bugs
 </grouping_strategy>
 
 <date_structure>
   {
     "2025-08-19": {
-      "main_features": [feature1, feature2],
-      "sub_features": {
-        "Parent-Feature-Name": [sub1, sub2]
-      }
+      "added": {
+        "main_features": [new_feature1, new_feature2],
+        "sub_features": {
+          "Parent-Feature-Name": [new_sub1, new_sub2]
+        }
+      },
+      "changed": {
+        "main_features": [updated_feature1],
+        "sub_features": {
+          "Parent-Feature-Name": [updated_sub1]
+        }
+      },
+      "fixed": [
+        {
+          "title": "Bug Title",
+          "severity": "High",
+          "summary": "Fixed issue where..."
+        }
+      ]
     },
     "2025-08-18": {
-      "main_features": [feature3],
-      "sub_features": {}
+      "added": {
+        "main_features": [new_feature3],
+        "sub_features": {}
+      },
+      "changed": {
+        "main_features": [],
+        "sub_features": {}
+      },
+      "fixed": []
     }
   }
 </date_structure>
@@ -220,41 +352,45 @@ Group new features by their creation date for organized changelog presentation.
 
 ### Step 7: Zweisprachige Changelogs erstellen oder aktualisieren
 
-Use the file-creator subagent to create or update both German and English changelog files.
+Use the file-creator subagent to create or update both German and English changelog files including features and bug fixes.
 
 <changelog_templates>
   <german_template>
     # Changelog
     
-    > Feature Release History
+    > Feature Release History & Bug Fixes
     > Last Updated: [CURRENT_DATE]
     
-    Dieses Changelog dokumentiert alle implementierten und dokumentierten Features chronologisch.
+    Dieses Changelog dokumentiert alle implementierten Features und gelösten Bugs chronologisch.
     
-    ## [YYYY-MM-DD] - [FORMATTED_DATE_DE]
-    
-    ### Features
+    ## [VERSION] - [YYYY-MM-DD]
+    ### Added
     - **[Feature-Name]**: [german_description]
     
-    ### Sub-Features
+    ### Changed
     - **[Parent-Feature]** → **[Sub-Feature-Name]**: [german_description]
+    
+    ### Fixed
+    - **[Bug-Title]**: [german_fix_description]
   </german_template>
   
   <english_template>
     # Changelog
     
-    > Feature Release History
+    > Feature Release History & Bug Fixes
     > Last Updated: [CURRENT_DATE]
     
-    This changelog documents all implemented and documented features chronologically.
+    This changelog documents all implemented features and resolved bugs chronologically.
     
-    ## [YYYY-MM-DD] - [FORMATTED_DATE_EN]
-    
-    ### Features
+    ## [VERSION] - [YYYY-MM-DD]
+    ### Added
     - **[Feature-Name]**: [english_description]
     
-    ### Sub-Features
+    ### Changed
     - **[Parent-Feature]** → **[Sub-Feature-Name]**: [english_description]
+    
+    ### Fixed
+    - **[Bug-Title]**: [english_fix_description]
   </english_template>
 </changelog_templates>
 
@@ -266,32 +402,43 @@ Use the file-creator subagent to create or update both German and English change
       PRESERVE existing entries below
     ELSE:
       CREATE new changelog with appropriate language template
-      ADD all documented features grouped by date
+      ADD all documented features and resolved bugs grouped by date
 </update_strategy>
 
 <formatting_rules>
   <date_formatting>
     <german>
-      - Section header: ## YYYY-MM-DD - Readable Date (German)
-      - Example: ## 2025-08-19 - 19. August 2025
+      - Section header: ## [VERSION] - YYYY-MM-DD
+      - With version: ## [2.3.0] - 2025-08-19
+      - Without version: ## [2025-08-19]
     </german>
     <english>
-      - Section header: ## YYYY-MM-DD - Readable Date (English)  
-      - Example: ## 2025-08-19 - August 19, 2025
+      - Section header: ## [VERSION] - YYYY-MM-DD
+      - With version: ## [2.3.0] - 2025-08-19
+      - Without version: ## [2025-08-19]
     </english>
   </date_formatting>
   
-  <feature_formatting>
-    - Main features: **[Feature-Name]**: Description
-    - Sub-features: **[Parent]** → **[Sub-Feature]**: Description
+  <content_formatting>
+    - Added: **[Feature-Name]**: Description
+    - Changed: **[Parent]** → **[Sub-Feature]**: Description  
+    - Fixed: **[Bug-Title]**: Fixed description
     - Maintain alphabetical order within each category
-    - Use same feature names across both languages
-  </feature_formatting>
+    - Use same names across both languages
+  </content_formatting>
+  
+  <section_order>
+    1. Added (new functionality and features)
+    2. Changed (enhancements to existing features)
+    3. Fixed (bug fixes and issue resolutions)
+  </section_order>
   
   <description_style>
-    - Start with action verb where possible
+    - Added: Start with action verb where possible
+    - Changed: Focus on improvement and enhancement
+    - Fixed: Start with description of what was fixed
     - Keep under 120 characters per language
-    - Focus on user value
+    - Focus on user value and impact
     - Maintain consistency in terminology across languages
   </description_style>
   
@@ -307,16 +454,18 @@ Use the file-creator subagent to create or update both German and English change
 
 ### Step 8: Zweisprachige Changelogs validieren
 
-Validate both updated changelogs for completeness and accuracy.
+Validate both updated changelogs for completeness and accuracy including bug fixes.
 
 <validation_checks>
   <content_validation>
     FOR each language [de, en]:
       - [ ] All new features included
+      - [ ] All resolved bugs included
       - [ ] Descriptions are concise and user-focused
       - [ ] Dates are properly formatted for language
       - [ ] No duplicate entries
       - [ ] Translation quality maintained
+      - [ ] Bug severity levels are included
   </content_validation>
   
   <format_validation>
@@ -325,22 +474,26 @@ Validate both updated changelogs for completeness and accuracy.
       - [ ] Date sections in descending order
       - [ ] Consistent formatting throughout
       - [ ] Sub-features properly nested under parents
+      - [ ] Bug fixes properly formatted with severity
       - [ ] Language-appropriate date formatting
+      - [ ] Section order: Added → Changed → Fixed
   </format_validation>
   
   <completeness_validation>
     - [ ] All documented features since baseline_date included in both files
-    - [ ] No features missed from same-day check
+    - [ ] All resolved bugs since baseline_date included in both files
+    - [ ] No items missed from same-day check
     - [ ] Existing changelog entries preserved in both files
-    - [ ] Feature names consistent across languages
-    - [ ] Same feature count in both changelogs
+    - [ ] Item names consistent across languages
+    - [ ] Same feature and bug count in both changelogs
   </completeness_validation>
   
   <cross_language_validation>
-    - [ ] Both changelogs contain identical feature sets
+    - [ ] Both changelogs contain identical feature and bug sets
     - [ ] Descriptions convey same meaning across languages
     - [ ] Date formatting appropriate for each language
     - [ ] No missing translations
+    - [ ] Bug severity levels translated appropriately
   </cross_language_validation>
 </validation_checks>
 
@@ -350,28 +503,32 @@ Validate both updated changelogs for completeness and accuracy.
 
 ### Step 9: Benutzer-Zusammenfassung
 
-Present summary of bilingual changelog update to user.
+Present summary of bilingual changelog update to user including features and bug fixes.
 
 <summary_template>
   Zweisprachige Changelogs wurden erfolgreich aktualisiert:
   
-  **Neue Features hinzugefügt:** [COUNT]
-  **Neue Sub-Features hinzugefügt:** [COUNT]
+  **Neue Features hinzugefügt:** [FEATURE_COUNT]
+  **Neue Sub-Features hinzugefügt:** [SUB_FEATURE_COUNT]
+  **Gelöste Bugs hinzugefügt:** [BUG_COUNT]
   **Zeitraum:** [OLDEST_NEW_DATE] bis [NEWEST_NEW_DATE]
   
   **Hinzugefügte Features:**
   [LIST_OF_NEW_FEATURES_WITH_DATES]
   
+  **Gelöste Bugs:**
+  [LIST_OF_RESOLVED_BUGS_WITH_DATES_AND_SEVERITY]
+  
   **Changelog-Dateien:** 
   - Deutsch: @.agent-os/docs/changelog.md
   - English: @.agent-os/docs/changelog-en.md
   
-  Beide Changelogs sind jetzt auf dem aktuellen Stand mit allen dokumentierten Features.
+  Beide Changelogs sind jetzt auf dem aktuellen Stand mit allen dokumentierten Features und gelösten Bugs.
 </summary_template>
 
 <no_updates_scenario>
-  IF no_new_features_found:
-    OUTPUT: "Keine neuen Features seit dem letzten Changelog-Update ([LAST_UPDATE_DATE]) gefunden. Beide Changelogs sind bereits aktuell."
+  IF no_new_features_and_no_resolved_bugs_found:
+    OUTPUT: "Keine neuen Features oder gelösten Bugs seit dem letzten Changelog-Update ([LAST_UPDATE_DATE]) gefunden. Beide Changelogs sind bereits aktuell."
 </no_updates_scenario>
 
 </step>
@@ -385,55 +542,72 @@ Present summary of bilingual changelog update to user.
     - Beschreibungen für Endbenutzer, nicht Entwickler
     - Fokus auf praktischen Nutzen und Vorteilen
     - Vermeidung technischer Implementierungsdetails
+    - Bug fixes: Fokus auf gelöste Probleme und Verbesserungen
   </user_focus>
   
   <conciseness>
     - Maximale Beschreibungslänge: 120 Zeichen
     - Kernfunktionalität in einem Satz
     - Aktive Sprache verwenden
+    - Bug fixes: "Fixed issue where..." Format verwenden
   </conciseness>
   
   <chronological_organization>
-    - Neueste Features zuerst
-    - Gruppierung nach Erstellungsdatum
+    - Neueste Einträge zuerst
+    - Gruppierung nach Datum (Features und Bugs zusammen)
     - Konsistente Datumsformatierung
+    - Separate Abschnitte für Features und Bug fixes pro Datum
   </chronological_organization>
 </content_standards>
 
 <integration_rules>
-  <feature_detection>
+  <content_detection>
     - Nur dokumentierte Features in .agent-os/docs/ berücksichtigen
-    - Features ohne "Created:" Datum ignorieren oder nachfragen
+    - Nur gelöste Bugs in .agent-os/bugs/ berücksichtigen (Status: Resolved/Closed)
+    - Items ohne Datum ignorieren oder nachfragen
     - Sub-Features ihren Hauptfeatures zuordnen
-  </feature_detection>
+  </content_detection>
   
   <duplicate_prevention>
     - Bei gleichem Datum: Existing changelog auf Duplikate prüfen
-    - Feature-Namen als Identifikation verwenden
+    - Feature-Namen und Bug-Titel als Identifikation verwenden
     - Case-insensitive Vergleich für robuste Erkennung
   </duplicate_prevention>
+  
+  <bug_integration>
+    - Bug fixes in separatem Abschnitt pro Datum
+    - Severity level in Klammern nach Titel
+    - Fokus auf Lösung und Benutzernutzen
+    - Verknüpfung zu Bug-ID für Nachverfolgung
+  </bug_integration>
 </integration_rules>
 
 <error_handling>
   <missing_dates>
-    IF feature_has_no_creation_date:
+    IF item_has_no_date:
       LOG warning
       ASK user for clarification
-      SUGGEST adding creation date to feature documentation
+      SUGGEST adding date to documentation
   </missing_dates>
   
   <malformed_docs>
-    IF feature_documentation_incomplete:
+    IF documentation_incomplete:
       LOG warning
-      INCLUDE feature with generic description
-      SUGGEST improving feature documentation
+      INCLUDE item with generic description
+      SUGGEST improving documentation
   </malformed_docs>
   
   <file_access_errors>
-    IF cannot_read_docs_directory:
-      ERROR: "Kann .agent-os/docs/ nicht lesen. Stelle sicher, dass Dokumentationsstruktur existiert."
-      SUGGEST running document-feature command first
+    IF cannot_read_directories:
+      ERROR: "Kann .agent-os/docs/ oder .agent-os/bugs/ nicht lesen."
+      SUGGEST running document-feature oder create-bug command first
   </file_access_errors>
+  
+  <unresolved_bugs>
+    IF bug_status_not_resolved:
+      SKIP bug from changelog
+      LOG info about open bugs not included
+  </unresolved_bugs>
 </error_handling>
 
 <final_checklist>
@@ -441,10 +615,11 @@ Present summary of bilingual changelog update to user.
     - [ ] Aktuelles Datum korrekt ermittelt
     - [ ] Bestehendes Changelog analysiert
     - [ ] Alle dokumentierten Features gescannt
-    - [ ] Features seit letztem Update gefiltert
+    - [ ] Alle gelösten Bugs gescannt
+    - [ ] Content seit letztem Update gefiltert
     - [ ] Beschreibungen extrahiert und optimiert
-    - [ ] Features nach Datum gruppiert
-    - [ ] Changelog korrekt aktualisiert
+    - [ ] Features und Bugs nach Datum gruppiert
+    - [ ] Changelog korrekt aktualisiert (Features + Bugs)
     - [ ] Validierung erfolgreich
     - [ ] Benutzer-Zusammenfassung präsentiert
   </verify>
