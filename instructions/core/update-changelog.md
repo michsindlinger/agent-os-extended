@@ -228,37 +228,39 @@ Filter features and bugs based on their dates relative to last changelog update 
 
 <step number="5" subagent="context-fetcher" name="content_description_extraction">
 
-### Step 5: Feature- und Bug-Beschreibungen extrahieren (Zweisprachig)
+### Step 5: Feature and Bug Descriptions Extraction
 
-Use the context-fetcher subagent to extract concise descriptions from each new feature and resolved bug in both German and English.
+Use the context-fetcher subagent to extract concise descriptions from each new feature and resolved bug for changelog entries.
 
 <description_extraction>
   FOR each new_feature:
     READ feature.md or sub-feature.md file
-    EXTRACT concise description from overview section
-    CREATE German description (primary)
-    TRANSLATE to English description (secondary)
+    EXTRACT only the FIRST content block (## Purpose OR ## Overview)
+    USE extracted English text directly for English changelog
+    TRANSLATE to German for German changelog
     LIMIT both descriptions to 1-2 sentences maximum
     FOCUS on user benefit, not technical details
   
   FOR each resolved_bug:
     READ bug-report.md and resolution files
     EXTRACT concise description from summary and solution
-    CREATE German description (primary)
-    TRANSLATE to English description (secondary)
+    USE English text directly for English changelog
+    TRANSLATE to German for German changelog
     LIMIT both descriptions to 1-2 sentences maximum
     FOCUS on user impact and fix benefit
 </description_extraction>
 
 <description_sources>
   <main_features>
-    EXTRACT from "## Overview" section first paragraph
-    FALLBACK to "## What This Feature Does" summary
+    EXTRACT from "## Purpose" section ONLY (first content block)
+    IF no "## Purpose" found, EXTRACT from "## Overview" section ONLY
+    STOP after first block - do not read further sections
   </main_features>
   
   <sub_features>
-    EXTRACT from "## Purpose" section
-    FALLBACK to first paragraph of file
+    EXTRACT from "## Purpose" section ONLY (first content block)
+    IF no "## Purpose" found, EXTRACT from "## Overview" section ONLY
+    STOP after first block - do not read further sections
   </sub_features>
   
   <resolved_bugs>
@@ -292,59 +294,51 @@ Use the context-fetcher subagent to extract concise descriptions from each new f
 
 </step>
 
-<step number="6" name="changelog_date_grouping">
+<step number="6" name="changelog_content_grouping">
 
-### Step 6: Features und Bugs nach Datum gruppieren
+### Step 6: Features and Bugs in Single Version Block
 
-Group new features, changed features, and resolved bugs by their dates for organized changelog presentation.
+Group ALL new features, changed features, and resolved bugs into a SINGLE version block for the current release.
 
 <grouping_strategy>
-  GROUP by relevant_date (descending order):
-    - New features: use creation_date
-    - Changed features: use last_updated_date
-    - Bugs: use resolution_date
-  WITHIN each date group:
-    SECTION "Added": new features and sub-features
-    SECTION "Changed": updated features and sub-features  
-    SECTION "Fixed": resolved bugs
+  CREATE single version block with current version and date:
+    - Use version from public/version.json (if exists)
+    - Use current date for the version block
+    - Group ALL changes since last update into this ONE block
+  
+  WITHIN the single version block:
+    SECTION "Added": ALL new features and sub-features (sorted alphabetically)
+    SECTION "Changed": ALL updated features and sub-features (sorted alphabetically)
+    SECTION "Fixed": ALL resolved bugs (sorted by severity then alphabetically)
 </grouping_strategy>
 
-<date_structure>
+<single_version_structure>
   {
-    "2025-08-19": {
+    "current_version": {
+      "version": "2.3.0",  // from public/version.json
+      "date": "2025-08-21",  // current date
       "added": {
-        "main_features": [new_feature1, new_feature2],
+        "main_features": [all_new_features_since_last_update],
         "sub_features": {
-          "Parent-Feature-Name": [new_sub1, new_sub2]
+          "Parent-Feature-Name": [all_new_sub_features]
         }
       },
       "changed": {
-        "main_features": [updated_feature1],
+        "main_features": [all_updated_features_since_last_update],
         "sub_features": {
-          "Parent-Feature-Name": [updated_sub1]
+          "Parent-Feature-Name": [all_updated_sub_features]
         }
       },
       "fixed": [
         {
           "title": "Bug Title",
-          "severity": "High",
+          "severity": "Critical|High|Medium|Low",
           "summary": "Fixed issue where..."
         }
       ]
-    },
-    "2025-08-18": {
-      "added": {
-        "main_features": [new_feature3],
-        "sub_features": {}
-      },
-      "changed": {
-        "main_features": [],
-        "sub_features": {}
-      },
-      "fixed": []
     }
   }
-</date_structure>
+</single_version_structure>
 
 </step>
 
@@ -398,26 +392,33 @@ Use the file-creator subagent to create or update both German and English change
   FOR each language [de, en]:
     IF existing_changelog_for_language:
       UPDATE header with new Last Updated date
-      INSERT new date sections at top (after header)
-      PRESERVE existing entries below
+      INSERT single new version block at top (after header)
+      PRESERVE all existing version blocks below
     ELSE:
       CREATE new changelog with appropriate language template
-      ADD all documented features and resolved bugs grouped by date
+      ADD single version block with all documented features and resolved bugs
+  
+  IMPORTANT: Create only ONE version block per update with ALL changes since last update
 </update_strategy>
 
 <formatting_rules>
-  <date_formatting>
+  <version_block_formatting>
+    <single_block_rule>
+      - Create ONLY ONE version block per changelog update
+      - ALL changes go into this single block
+      - Version from public/version.json OR current date if no version
+    </single_block_rule>
     <german>
       - Section header: ## [VERSION] - YYYY-MM-DD
-      - With version: ## [2.3.0] - 2025-08-19
-      - Without version: ## [2025-08-19]
+      - With version: ## [2.3.0] - 2025-08-21
+      - Without version: ## [2025-08-21]
     </german>
     <english>
       - Section header: ## [VERSION] - YYYY-MM-DD
-      - With version: ## [2.3.0] - 2025-08-19
-      - Without version: ## [2025-08-19]
+      - With version: ## [2.3.0] - 2025-08-21
+      - Without version: ## [2025-08-21]
     </english>
-  </date_formatting>
+  </version_block_formatting>
   
   <content_formatting>
     - Added: **[Feature-Name]**: Description
@@ -471,12 +472,13 @@ Validate both updated changelogs for completeness and accuracy including bug fix
   <format_validation>
     FOR each language [de, en]:
       - [ ] Header contains correct Last Updated date
-      - [ ] Date sections in descending order
+      - [ ] SINGLE version block created with current version/date
+      - [ ] ALL changes in ONE block (not multiple date blocks)
       - [ ] Consistent formatting throughout
       - [ ] Sub-features properly nested under parents
       - [ ] Bug fixes properly formatted with severity
-      - [ ] Language-appropriate date formatting
-      - [ ] Section order: Added → Changed → Fixed
+      - [ ] Language-appropriate formatting
+      - [ ] Section order within block: Added → Changed → Fixed
   </format_validation>
   
   <completeness_validation>

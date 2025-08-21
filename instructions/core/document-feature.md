@@ -12,6 +12,8 @@ encoding: UTF-8
 
 Create comprehensive user-facing documentation for completed features in the hierarchical docs/ structure, transforming development specs into application documentation.
 
+**IMPORTANT: All feature documentation must be written in English, regardless of the application's target language or market.**
+
 <pre_flight_check>
   EXECUTE: @~/.agent-os/instructions/meta/pre-flight.md
 </pre_flight_check>
@@ -162,7 +164,7 @@ Use the file-creator subagent to create the primary feature.md file with compreh
   </header>
   
   <required_sections>
-    - Overview
+    - Purpose (PRIMARY - first content block)
     - What This Feature Does
     - How to Use
     - Key Benefits
@@ -173,13 +175,14 @@ Use the file-creator subagent to create the primary feature.md file with compreh
 
 <overview_section>
   <template>
-    ## Overview
+    ## Purpose
     
-    [USER_FOCUSED_DESCRIPTION_OF_FEATURE_PURPOSE_AND_VALUE]
+    [USER_FOCUSED_DESCRIPTION_OF_FEATURE_PURPOSE_AND_VALUE_IN_ENGLISH]
     
     This feature was implemented to [PRIMARY_USER_BENEFIT] and [SECONDARY_BENEFITS].
   </template>
   <writing_style>
+    - language: English (all documentation must be in English)
     - audience: end users, not developers
     - tone: clear and helpful
     - focus: what the user gains
@@ -329,13 +332,13 @@ Use the file-creator subagent to create individual sub-feature documentation fil
   <purpose_section>
     ## Purpose
     
-    [SPECIFIC_PURPOSE_OF_THIS_SUB_FEATURE_WITHIN_MAIN_FEATURE]
+    [SPECIFIC_PURPOSE_OF_THIS_SUB_FEATURE_WITHIN_MAIN_FEATURE_IN_ENGLISH]
   </purpose_section>
   
   <how_it_works_section>
     ## How It Works
     
-    [FOCUSED_EXPLANATION_OF_THIS_SPECIFIC_FUNCTIONALITY]
+    [FOCUSED_EXPLANATION_OF_THIS_SPECIFIC_FUNCTIONALITY_IN_ENGLISH]
   </how_it_works_section>
   
   <user_instructions_section>
@@ -478,13 +481,18 @@ Present the completed documentation structure for user review.
 ## Documentation Standards
 
 <writing_principles>
+  <language_requirement>
+    - ALL documentation must be written in English
+    - consistent English terminology throughout
+    - no mixed language content
+  </language_requirement>
   <user_focused>
     - write for end users, not developers
     - focus on practical benefits and usage
     - avoid technical implementation details
   </user_focused>
   <clarity>
-    - use clear, simple language
+    - use clear, simple English language
     - provide concrete examples
     - structure information logically
   </clarity>
