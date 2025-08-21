@@ -88,6 +88,9 @@ your-project/
 │   ├── commands/ (Claude Code)
 │   │   ├── plan-product.md
 │   │   ├── plan-b2b-application.md
+│   │   ├── start-brainstorming.md
+│   │   ├── transfer-and-create-spec.md
+│   │   ├── transfer-and-create-bug.md
 │   │   ├── create-spec.md
 │   │   ├── create-bug.md
 │   │   ├── execute-bug.md
@@ -118,6 +121,8 @@ your-project/
 ### With Claude Code
 Use commands like:
 - `/plan-product`, `/analyze-product` - Product planning and analysis
+- `/start-brainstorming` - Interactive idea exploration before formal documentation
+- `/transfer-and-create-spec`, `/transfer-and-create-bug` - Convert brainstorming sessions to formal specs/bugs
 - `/create-spec`, `/update-feature`, `/document-feature`, `/retroactive-doc` - Feature lifecycle management
 - `/create-bug`, `/execute-bug` - Bug management and resolution
 - `/update-changelog` - Automatic changelog generation from documented features and resolved bugs
@@ -164,7 +169,18 @@ Agent OS Extended includes a comprehensive Feature Lifecycle Management System:
    - Root cause analysis and solution tracking
    - Comprehensive resolution documentation
 
-5. **Changelog Management**
+5. **Brainstorming & Ideation**
+   ```
+   /start-brainstorming
+   /transfer-and-create-spec
+   /transfer-and-create-bug
+   ```
+   - Interactive brainstorming sessions for exploring ideas before formal documentation
+   - Automatic gap detection when transferring to specs/bugs
+   - Intelligent questionnaire to fill missing information
+   - Preserves brainstorming context and decisions
+
+6. **Changelog Management**
    ```
    /update-changelog
    ```
@@ -178,6 +194,7 @@ Agent OS Extended includes a comprehensive Feature Lifecycle Management System:
 - **`.agent-os/specs/`** - Development-oriented specifications (timestamped, includes change history)
 - **`.agent-os/docs/`** - User-oriented documentation (hierarchical, feature-focused)
 - **`.agent-os/bugs/`** - Bug tracking with investigation, reproduction, and resolution documentation
+- **`.agent-os/brainstorming/`** - Brainstorming sessions for feature and bug ideation
 
 ## Customization
 
