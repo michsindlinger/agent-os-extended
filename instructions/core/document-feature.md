@@ -128,9 +128,21 @@ Use the context-fetcher subagent to determine optimal documentation structure ba
 
 </step>
 
-<step number="4" subagent="file-creator" name="docs_structure_creation">
+<step number="4" subagent="date-checker" name="date_determination">
 
-### Step 4: Documentation Structure Creation
+### Step 4: Date Determination
+
+Use the date-checker subagent to determine the current date in YYYY-MM-DD format for documentation headers. The subagent will output today's date which will be used in subsequent steps.
+
+<subagent_output>
+  The date-checker subagent will provide the current date in YYYY-MM-DD format at the end of its response. Store this date for use in documentation headers in subsequent steps.
+</subagent_output>
+
+</step>
+
+<step number="5" subagent="file-creator" name="docs_structure_creation">
+
+### Step 5: Documentation Structure Creation
 
 Use the file-creator subagent to create the necessary directory structure in .agent-os/docs/.
 
@@ -148,18 +160,18 @@ Use the file-creator subagent to create the necessary directory structure in .ag
 
 </step>
 
-<step number="5" subagent="file-creator" name="main_feature_documentation">
+<step number="6" subagent="file-creator" name="main_feature_documentation">
 
-### Step 5: Main Feature Documentation
+### Step 6: Main Feature Documentation
 
-Use the file-creator subagent to create the primary feature.md file with comprehensive user-facing documentation.
+Use the file-creator subagent to create the primary feature.md file with comprehensive user-facing documentation using the date from step 4.
 
 <file_template>
   <header>
     # [FEATURE_NAME]
     
     > Feature Documentation
-    > Last Updated: [CURRENT_DATE]
+    > Last Updated: [DATE_FROM_STEP_4]
     > Implementation: Completed
   </header>
   
@@ -298,9 +310,9 @@ Use the file-creator subagent to create the primary feature.md file with compreh
 
 </step>
 
-<step number="6" subagent="file-creator" name="sub_feature_documentation">
+<step number="7" subagent="file-creator" name="sub_feature_documentation">
 
-### Step 6: Sub-Feature Documentation (Conditional)
+### Step 7: Sub-Feature Documentation (Conditional)
 
 Use the file-creator subagent to create individual sub-feature documentation files if hierarchical structure was planned.
 
@@ -317,7 +329,7 @@ Use the file-creator subagent to create individual sub-feature documentation fil
     
     > Sub-Feature of: [MAIN_FEATURE_NAME]
     > Part of: @.agent-os/docs/[MAIN_FEATURE_NAME]/feature.md
-    > Last Updated: [CURRENT_DATE]
+    > Last Updated: [DATE_FROM_STEP_4]
   </header>
   
   <focused_sections>
@@ -362,9 +374,9 @@ Use the file-creator subagent to create individual sub-feature documentation fil
 
 </step>
 
-<step number="7" subagent="file-creator" name="documentation_index_update">
+<step number="8" subagent="file-creator" name="documentation_index_update">
 
-### Step 7: Documentation Index Update (Conditional)
+### Step 8: Documentation Index Update (Conditional)
 
 Use the file-creator subagent to update or create a documentation index if multiple features are now documented.
 
@@ -382,7 +394,7 @@ Use the file-creator subagent to update or create a documentation index if multi
     # Feature Documentation Index
     
     > Application Feature Documentation
-    > Generated: [CURRENT_DATE]
+    > Generated: [DATE_FROM_STEP_4]
   </header>
   
   <feature_listing>
@@ -418,9 +430,9 @@ Use the file-creator subagent to update or create a documentation index if multi
 
 </step>
 
-<step number="8" name="cross_reference_creation">
+<step number="9" name="cross_reference_creation">
 
-### Step 8: Cross-Reference Creation
+### Step 9: Cross-Reference Creation
 
 Create references between the original spec and the new documentation.
 
@@ -446,9 +458,9 @@ Create references between the original spec and the new documentation.
 
 </step>
 
-<step number="9" name="user_review">
+<step number="10" name="user_review">
 
-### Step 9: User Review
+### Step 10: User Review
 
 Present the completed documentation structure for user review.
 
