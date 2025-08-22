@@ -91,6 +91,7 @@ your-project/
 │   │   ├── start-brainstorming.md
 │   │   ├── transfer-and-create-spec.md
 │   │   ├── transfer-and-create-bug.md
+│   │   ├── transfer-and-plan-product.md
 │   │   ├── create-spec.md
 │   │   ├── create-bug.md
 │   │   ├── execute-bug.md
@@ -122,7 +123,7 @@ your-project/
 Use commands like:
 - `/plan-product`, `/analyze-product` - Product planning and analysis
 - `/start-brainstorming` - Interactive idea exploration before formal documentation
-- `/transfer-and-create-spec`, `/transfer-and-create-bug` - Convert brainstorming sessions to formal specs/bugs
+- `/transfer-and-create-spec`, `/transfer-and-create-bug`, `/transfer-and-plan-product` - Convert brainstorming sessions to formal specs/bugs/product plans
 - `/create-spec`, `/update-feature`, `/document-feature`, `/retroactive-doc` - Feature lifecycle management
 - `/create-bug`, `/execute-bug` - Bug management and resolution
 - `/update-changelog` - Automatic changelog generation from documented features and resolved bugs
@@ -174,9 +175,10 @@ Agent OS Extended includes a comprehensive Feature Lifecycle Management System:
    /start-brainstorming
    /transfer-and-create-spec
    /transfer-and-create-bug
+   /transfer-and-plan-product
    ```
    - Interactive brainstorming sessions for exploring ideas before formal documentation
-   - Automatic gap detection when transferring to specs/bugs
+   - Automatic gap detection when transferring to specs/bugs/product plans
    - Intelligent questionnaire to fill missing information
    - Preserves brainstorming context and decisions
 
