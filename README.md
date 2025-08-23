@@ -82,7 +82,10 @@ your-project/
 │   │   │   ├── execute-task.md
 │   │   │   ├── execute-tasks.md
 │   │   │   ├── plan-product.md
-│   │   │   └── plan-b2b-application.md
+│   │   │   ├── plan-b2b-application.md
+│   │   │   ├── init-base-setup.md
+│   │   │   ├── validate-base-setup.md
+│   │   │   └── extend-setup.md
 │   │   └── meta/
 │   │       └── pre-flight.md
 │   ├── commands/ (Claude Code)
@@ -101,7 +104,10 @@ your-project/
 │   │   ├── update-changelog.md
 │   │   ├── execute-tasks.md
 │   │   ├── analyze-product.md
-│   │   └── analyze-b2b-application.md
+│   │   ├── analyze-b2b-application.md
+│   │   ├── init-base-setup.md
+│   │   ├── validate-base-setup.md
+│   │   └── extend-setup.md
 │   └── agents/ (Claude Code)
 │       ├── test-runner.md
 │       ├── context-fetcher.md
@@ -121,6 +127,13 @@ your-project/
 
 ### With Claude Code
 Use commands like:
+
+#### Base Setup & Project Initialization
+- `/init-base-setup` - Initialize project with pre-configured templates (Next.js + shadcn + Tailwind + Supabase)
+- `/validate-base-setup` - AI-powered validation of your setup with security and performance checks
+- `/extend-setup` - Add modular extensions (authentication, database, UI components, etc.)
+
+#### Feature Development & Management
 - `/plan-product`, `/analyze-product` - Product planning and analysis
 - `/start-brainstorming` - Interactive idea exploration before formal documentation
 - `/transfer-and-create-spec`, `/transfer-and-create-bug`, `/transfer-and-plan-product` - Convert brainstorming sessions to formal specs/bugs/product plans

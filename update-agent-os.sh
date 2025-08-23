@@ -172,6 +172,9 @@ instruction_files=(
     "execute-tasks.md"
     "plan-product.md"
     "plan-b2b-application.md"
+    "init-base-setup.md"
+    "validate-base-setup.md"
+    "extend-setup.md"
 )
 
 for file in "${instruction_files[@]}"; do
@@ -212,6 +215,9 @@ if [[ -d "$BASE_PATH/.claude/commands" || -f "$BASE_PATH/CLAUDE.md" || "$FORCE_U
         "execute-tasks.md"
         "plan-product.md"
         "plan-b2b-application.md"
+        "init-base-setup.md"
+        "validate-base-setup.md"
+        "extend-setup.md"
     )
     
     for file in "${command_files[@]}"; do
@@ -238,6 +244,9 @@ if [[ -d "$BASE_PATH/commands" ]]; then
         "execute-tasks.md"
         "plan-product.md"
         "plan-b2b-application.md"
+        "init-base-setup.md"
+        "validate-base-setup.md"
+        "extend-setup.md"
     )
     
     for file in "${command_files[@]}"; do
