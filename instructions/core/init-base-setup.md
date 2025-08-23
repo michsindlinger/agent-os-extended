@@ -33,11 +33,17 @@ Installs the specified template:
 4. **Status Classification**: Categorize templates by readiness level
 
 ### Template Installation Process
-1. **Validation**: Verify template exists and current directory is suitable
-2. **Backup Check**: Ensure no existing project files will be overwritten
-3. **Installation**: Execute template's `install.sh` script
-4. **Configuration**: Set up environment files and dependencies
-5. **Verification**: Run AI validation to confirm successful setup
+1. **Pre-Installation Validation**: Verify template exists and current directory is suitable
+2. **Directory Analysis**: Check for empty directory vs. existing files conflict resolution
+3. **Template Installation**: Execute template's `install.sh` script
+4. **Post-Installation Fixes**: Apply automatic fixes for common issues:
+   - Fix Tailwind config: `darkMode: ["class"]` → `darkMode: "class"`
+   - Clean unused imports (Users, Globe, etc.) to prevent build errors
+   - Replace `any` types with proper TypeScript types
+   - Remove unused variables (like `err` in catch blocks)
+5. **Environment Configuration**: Create `.env.local` with functional placeholder URLs
+6. **Code Quality**: Run automatic lint fix and build validation
+7. **Final Verification**: Ensure successful build before completion
 
 ### Error Handling
 - **Template Not Found**: Display available templates with suggestions
@@ -91,22 +97,55 @@ Usage: /init-base-setup [template-name]
 🚀 Installing template: nextjs-shadcn-tailwind-supabase
 
 ✅ Repository cloned successfully
+✅ Template files installed
 ✅ Dependencies installed
-✅ Environment configured
-✅ Database schema applied
-🔍 Running AI validation...
+🔧 Applying post-installation fixes...
+  ├── Fixed Tailwind config (darkMode: "class")
+  ├── Cleaned unused imports (Users, Globe)
+  ├── Improved TypeScript types
+  └── Removed unused variables
+✅ Environment configured with functional placeholders
+✅ Lint fixes applied
+✅ Build validation successful
+🔍 Running comprehensive AI validation...
 
 ✅ Base setup completed successfully!
 
 Next steps:
-- Review .env.local configuration
+- Configure your actual Supabase URLs in .env.local
 - Run: npm run dev
 - Visit: http://localhost:3000
+
+Build Status: ✅ All checks passed
 ```
 
 ## Success Criteria
 - Template discovery works without manual maintenance
-- Installation process is reliable and user-friendly
-- AI validation catches common setup issues
+- Installation process guarantees a working build on completion
+- All common setup issues are automatically fixed during installation
+- Environment files contain functional placeholder URLs
+- Code quality issues (unused imports, any types) are resolved automatically
 - Integration with existing Agent OS workflow is seamless
 - Error messages are helpful and actionable
+
+## Common Issues & Auto-Fixes
+
+### Tailwind Configuration
+**Problem**: `darkMode: ["class"]` causes TypeScript compatibility issues
+**Fix**: Automatically convert to `darkMode: "class"`
+
+### TypeScript Issues
+**Problem**: Unused imports (Users, Globe) cause build failures with strict settings
+**Fix**: Automatically remove unused imports during post-installation
+
+### Build Errors
+**Problem**: `any` types not allowed in strict TypeScript mode
+**Fix**: Replace with proper type definitions
+
+### Environment Setup
+**Problem**: Placeholder Supabase URLs cause static generation failures
+**Fix**: Use functional development URLs that don't break builds
+
+### Code Quality
+**Problem**: Unused variables (like `err`) cause linting failures
+**Fix**: Automatic lint fix with proper variable handling

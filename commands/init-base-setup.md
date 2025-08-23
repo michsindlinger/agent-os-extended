@@ -20,10 +20,16 @@ Initialize your project with pre-configured base setups from the agent-os-extend
 - Provides usage recommendations and requirements
 
 **With template name:**
-- Validates template availability
+- Validates template availability and directory compatibility
 - Installs the complete base setup
-- Configures environment and dependencies
-- Runs AI-powered validation to ensure proper setup
+- **Automatically fixes common issues**:
+  - Tailwind config: `darkMode: ["class"]` → `darkMode: "class"`
+  - Removes unused imports (Users, Globe, etc.)
+  - Replaces `any` types with proper TypeScript definitions
+  - Cleans up unused variables
+- Configures environment with functional placeholder URLs
+- Runs lint fixes and build validation
+- Guarantees a working build on completion
 
 ## Available Templates
 
