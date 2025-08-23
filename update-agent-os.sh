@@ -280,6 +280,85 @@ if [[ -d "$BASE_PATH/.cursor" || "$FORCE_UPDATE" == true ]]; then
     done
 fi
 
+# Check for Gemini CLI installation (.gemini/tools/)
+if [[ -d "$BASE_PATH/.gemini/tools" || -f "$BASE_PATH/GEMINI.md" || "$FORCE_UPDATE" == true ]]; then
+    echo "🎯 Updating Gemini CLI tools..."
+    
+    mkdir -p "$BASE_PATH/.gemini/tools"
+    mkdir -p "$BASE_PATH/.gemini/workflows"
+    
+    # Function to create/update Gemini tool file
+    update_gemini_tool() {
+        local source_url=$1
+        local tool_name=$2
+        local target_file="$BASE_PATH/.gemini/tools/${tool_name}.md"
+        local temp_file=$(mktemp)
+        local source_temp=$(mktemp)
+        
+        # Download source content
+        curl -sSL "$source_url" -o "$source_temp"
+        
+        # Create tool file with header
+        echo "# $tool_name Tool" > "$temp_file"
+        echo "" >> "$temp_file"
+        echo "This tool provides Agent OS Extended functionality for $tool_name." >> "$temp_file"
+        echo "" >> "$temp_file"
+        echo "## Instructions" >> "$temp_file"
+        echo "" >> "$temp_file"
+        cat "$source_temp" >> "$temp_file"
+        
+        # Update using standard update logic
+        if [[ -f "$target_file" ]]; then
+            if [[ "$FORCE_UPDATE" == true ]]; then
+                backup_file "$target_file"
+                echo "  Force updating Gemini tool: $tool_name..."
+                mv "$temp_file" "$target_file"
+            else
+                if ! cmp -s "$target_file" "$temp_file"; then
+                    backup_file "$target_file"
+                    echo "  Updating Gemini tool: $tool_name..."
+                    mv "$temp_file" "$target_file"
+                else
+                    echo "  Gemini tool $tool_name is up to date"
+                    rm "$temp_file"
+                fi
+            fi
+        else
+            echo "  Adding new Gemini tool: $tool_name..."
+            mv "$temp_file" "$target_file"
+        fi
+        
+        rm -f "$source_temp"
+    }
+    
+    # Update all Gemini tools
+    gemini_tools=(
+        "analyze-product"
+        "analyze-b2b-application"
+        "start-brainstorming"
+        "transfer-and-create-spec"
+        "transfer-and-create-bug"
+        "transfer-and-plan-product"
+        "create-spec"
+        "create-bug"
+        "execute-bug"
+        "update-feature"
+        "document-feature"
+        "retroactive-doc"
+        "update-changelog"
+        "execute-tasks"
+        "plan-product"
+        "plan-b2b-application"
+        "init-base-setup"
+        "validate-base-setup"
+        "extend-setup"
+    )
+    
+    for tool in "${gemini_tools[@]}"; do
+        update_gemini_tool "$REPO_URL/commands/${tool}.md" "$tool"
+    done
+fi
+
 # Update standards
 echo ""
 echo "📚 Updating standards..."
@@ -317,6 +396,55 @@ else
     echo "  📝 Please customize CLAUDE.md with your project-specific information"
 fi
 
+# Handle GEMINI.md context file update
+if [[ -d "$BASE_PATH/.gemini" || -f "$BASE_PATH/GEMINI.md" ]]; then
+    echo ""
+    echo "📋 Checking GEMINI.md context file..."
+    
+    if [[ -f "$BASE_PATH/GEMINI.md" ]]; then
+        echo "  GEMINI.md already exists - context file is project-specific"
+        echo "  💡 Refer to setup-gemini.sh for latest template if needed"
+    else
+        echo "  Creating GEMINI.md context file..."
+        cat > "$BASE_PATH/GEMINI.md" << 'EOF'
+# Agent OS Extended - Gemini CLI Context
+
+This project uses Agent OS Extended for structured AI development workflows.
+
+## Available Tools
+
+Use the tools in `.gemini/tools/` to execute Agent OS Extended workflows:
+
+- **Product Planning**: analyze-product, plan-product, plan-b2b-application
+- **Feature Development**: create-spec, update-feature, document-feature
+- **Bug Management**: create-bug, execute-bug
+- **Brainstorming**: start-brainstorming, transfer-and-*
+- **Project Setup**: init-base-setup, validate-base-setup, extend-setup
+- **Documentation**: retroactive-doc, update-changelog
+- **Task Execution**: execute-tasks
+
+## Project Standards
+
+Refer to `.agent-os/standards/` for:
+- Tech stack preferences
+- Code style guidelines
+- Best practices philosophy
+
+## Instructions
+
+Detailed workflow instructions are available in `.agent-os/instructions/core/`
+
+## Usage
+
+To use these tools with Gemini CLI, reference them in your conversations:
+- "Use the create-spec tool to create a feature specification"
+- "Follow the standards in .agent-os/standards/ for this implementation"
+
+EOF
+        echo "  📝 Please customize GEMINI.md with your project-specific information"
+    fi
+fi
+
 # Clean up old backup files (keep only last 5)
 if [[ "$BACKUP_EXISTING" == true && -d "$AGENT_OS_PATH/backups" ]]; then
     echo ""
@@ -335,6 +463,19 @@ echo "  • .agent-os/standards/    - Development standards"
 echo "  • .agent-os/specs/        - Feature specifications"
 echo "  • .agent-os/docs/         - Feature documentation"
 echo "  • .agent-os/bugs/         - Bug tracking and resolution"
+
+if [[ -d "$BASE_PATH/.claude" ]]; then
+    echo "  • .claude/commands/       - Claude Code commands"
+fi
+
+if [[ -d "$BASE_PATH/.cursor" ]]; then
+    echo "  • .cursor/rules/          - Cursor AI rules"
+fi
+
+if [[ -d "$BASE_PATH/.gemini" ]]; then
+    echo "  • .gemini/tools/          - Gemini CLI tools"
+    echo "  • .gemini/workflows/      - Gemini CLI workflows"
+fi
 echo ""
 if [[ "$BACKUP_EXISTING" == true ]]; then
     echo "💾 Backups stored in: $BACKUP_DIR"

@@ -29,6 +29,11 @@ curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/mai
 curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/setup-cursor.sh | bash
 ```
 
+#### Gemini CLI
+```bash
+curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/setup-gemini.sh | bash
+```
+
 ## Updates
 
 ### Main Update Script
@@ -114,13 +119,21 @@ your-project/
 │       ├── git-workflow.md
 │       ├── file-creator.md
 │       └── date-checker.md
-└── .cursor/rules/ (Cursor)
-    ├── plan-product.mdc
-    ├── plan-b2b-application.mdc
-    ├── create-spec.mdc
-    ├── execute-tasks.mdc
-    ├── analyze-product.mdc
-    └── analyze-b2b-application.mdc
+├── .cursor/rules/ (Cursor)
+│   ├── plan-product.mdc
+│   ├── plan-b2b-application.mdc
+│   ├── create-spec.mdc
+│   ├── execute-tasks.mdc
+│   ├── analyze-product.mdc
+│   └── analyze-b2b-application.mdc
+├── .gemini/ (Gemini CLI)
+│   ├── tools/
+│   │   ├── analyze-product.md
+│   │   ├── create-spec.md
+│   │   ├── execute-tasks.md
+│   │   └── ... (all Agent OS tools)
+│   └── workflows/
+└── GEMINI.md (Gemini CLI context)
 ```
 
 ## Usage
@@ -145,6 +158,12 @@ Use commands like:
 
 ### With Cursor
 Use commands like `@plan-product`, `@create-spec`, `@execute-tasks`, `@analyze-product`, `@plan-b2b-application`, and `@analyze-b2b-application`.
+
+### With Gemini CLI
+Reference tools in conversations:
+- "Use the create-spec tool to create a feature specification"
+- "Follow the analyze-product tool to analyze requirements"
+- "Execute the init-base-setup tool to initialize the project"
 
 ## Feature Management System
 
