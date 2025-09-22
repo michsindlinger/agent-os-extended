@@ -2,7 +2,7 @@
 description: Daily Plan Creation Rules for Agent OS
 globs:
 alwaysApply: false
-version: 1.0
+version: 1.1
 encoding: UTF-8
 ---
 
@@ -10,7 +10,7 @@ encoding: UTF-8
 
 ## Overview
 
-Create a structured daily work plan with features, bugs, and tasks for systematic execution and tracking.
+Create a structured daily work plan with features, bugs, and tasks for systematic execution and tracking. Includes interactive plan review before file creation.
 
 <process_flow>
 
@@ -87,9 +87,167 @@ Interactively gather missing information for each work item.
 
 </step>
 
-<step number="3" subagent="date-checker" name="date_determination">
+<step number="3" name="interactive_plan_review">
 
-### Step 3: Date Determination
+### Step 3: Interactive Plan Review
+
+Present implementation approach for each work item and collect feedback BEFORE creating files.
+
+<review_introduction>
+  MESSAGE: "
+  I will now present my implementation approach for each work item.
+  You can approve, adjust, or skip items before I create the documentation.
+
+  Let's review each item:
+  "
+</review_introduction>
+
+<for_each_work_item>
+  <present_plan>
+    <header>
+      ========================================
+      Work Item [X] of [TOTAL]
+      Type: [Feature/Bug/Task]
+      Name: [ITEM_NAME]
+      Priority/Severity: [LEVEL]
+      ========================================
+    </header>
+
+    <implementation_approach>
+      ## Proposed Implementation Approach:
+
+      ### Overview:
+      [2-3 sentences describing how I plan to approach this item]
+
+      ### Key Implementation Steps:
+      1. [MAJOR_STEP_1]
+         - [Brief explanation of why this step is needed]
+      2. [MAJOR_STEP_2]
+         - [Brief explanation of why this step is needed]
+      3. [MAJOR_STEP_3]
+         - [Brief explanation of why this step is needed]
+      [Additional steps as needed]
+
+      ### Technical Considerations:
+      - [TECHNICAL_ASPECT_1]: [How it will be handled]
+      - [TECHNICAL_ASPECT_2]: [How it will be handled]
+      [Additional considerations as relevant]
+
+      ### Estimated Complexity:
+      [Simple/Medium/Complex] - [1-2 sentence justification]
+
+      ### Potential Challenges:
+      - [CHALLENGE_1]: [Mitigation approach]
+      - [CHALLENGE_2]: [Mitigation approach]
+      [If no significant challenges expected, state that]
+
+      ### Success Criteria:
+      - [KEY_CRITERION_1]
+      - [KEY_CRITERION_2]
+      [Main indicators that the item is complete]
+    </implementation_approach>
+
+    <feedback_prompt>
+      ----------------------------------------
+      Please review this approach:
+
+      - Type 'ok' or 'approve' to confirm this plan
+      - Provide specific feedback to adjust the approach
+      - Type 'skip' to exclude this item from today's plan
+      - Type 'simplify' for a simpler approach
+      - Type 'expand' for more detailed planning
+
+      Your feedback:
+      ----------------------------------------
+    </feedback_prompt>
+  </present_plan>
+
+  <collect_and_process_feedback>
+    WAIT: For user response
+
+    IF response == "ok" OR response == "approve":
+      <approve_plan>
+        STORE: Plan as approved with current approach
+        ADD: To approved items list
+        MESSAGE: "✓ Plan approved for: [ITEM_NAME]"
+        PROCEED: To next item
+      </approve_plan>
+
+    ELSE IF response == "skip":
+      <skip_item>
+        EXCLUDE: Item from daily plan
+        ADD: To skipped items list
+        MESSAGE: "⊘ Skipped: [ITEM_NAME]"
+        NOTE: Reason if provided
+        PROCEED: To next item
+      </skip_item>
+
+    ELSE IF response == "simplify":
+      <simplify_approach>
+        REDUCE: Number of steps
+        FOCUS: On core requirements only
+        REMOVE: Nice-to-have features
+        PRESENT: Simplified plan
+        REPEAT: Review process
+      </simplify_approach>
+
+    ELSE IF response == "expand":
+      <expand_approach>
+        ADD: More detailed subtasks
+        INCLUDE: Edge cases and testing
+        ELABORATE: Technical implementation
+        PRESENT: Expanded plan
+        REPEAT: Review process
+      </expand_approach>
+
+    ELSE:
+      <integrate_feedback>
+        PARSE: User feedback
+        IDENTIFY: Specific changes requested
+        ADJUST: Implementation approach accordingly
+        UPDATE: Steps, considerations, or criteria
+        PRESENT: Updated plan with changes highlighted
+        MESSAGE: "I've adjusted the plan based on your feedback:"
+        SHOW: What changed
+        REPEAT: Review process until approved or skipped
+      </integrate_feedback>
+  </collect_and_process_feedback>
+
+  <store_approved_plan>
+    IF approved:
+      SAVE: Final approach with all adjustments
+      INCLUDE: User feedback integration
+      MARK: As reviewed and approved
+      PREPARE: For documentation generation
+  </store_approved_plan>
+</for_each_work_item>
+
+<review_summary>
+  <after_all_items>
+    MESSAGE: "
+    ## Plan Review Complete!
+
+    Summary:
+    - Approved items: [X] ([LIST_NAMES])
+    - Skipped items: [Y] ([LIST_NAMES])
+    - Total for today: [X] items
+
+    [IF any_items_skipped]
+    Skipped items can be reconsidered for future daily plans.
+
+    [IF all_items_approved]
+    All items have been approved with implementation approaches.
+
+    Proceeding to create documentation for approved items...
+    "
+  </after_all_items>
+</review_summary>
+
+</step>
+
+<step number="4" subagent="date-checker" name="date_determination">
+
+### Step 4: Date Determination
 
 Use the date-checker subagent to determine the current date for folder naming.
 
@@ -101,27 +259,31 @@ Use the date-checker subagent to determine the current date for folder naming.
 
 </step>
 
-<step number="4" subagent="file-creator" name="folder_structure_creation">
+<step number="5" subagent="file-creator" name="folder_structure_creation">
 
-### Step 4: Create Folder Structure
+### Step 5: Create Folder Structure
 
-Use the file-creator subagent to create the daily plan directory structure.
+Use the file-creator subagent to create the daily plan directory structure for approved items only.
 
 <directory_structure>
   <base_path>.agent-os/daily-plans/YYYY-MM-DD/</base_path>
   <naming>
-    - Use date from step 3
+    - Use date from step 4
     - Create parent directory if needed
   </naming>
+  <condition>
+    ONLY IF: At least one item was approved in step 3
+    SKIP IF: All items were skipped
+  </condition>
 </directory_structure>
 
 </step>
 
-<step number="5" subagent="file-creator" name="create_daily_summary">
+<step number="6" subagent="file-creator" name="create_daily_summary">
 
-### Step 5: Create Daily Summary
+### Step 6: Create Daily Summary
 
-Use the file-creator subagent to create the main summary file.
+Use the file-creator subagent to create the main summary file with only approved items.
 
 <file_template>
   <path>.agent-os/daily-plans/YYYY-MM-DD/daily-summary.md</path>
@@ -135,53 +297,64 @@ Use the file-creator subagent to create the main summary file.
     ## Overview
 
     Daily objectives and work items for systematic execution.
+    [INCLUDE: Brief note about user-reviewed approach]
 
     ## Work Items
 
-    ### Features (X items)
+    [ONLY INCLUDE SECTIONS WITH APPROVED ITEMS]
+
+    ### Features ([X] items)
+    [FOR EACH APPROVED FEATURE]
     1. **[FEATURE_NAME]** - [STATUS] - Priority: [HIGH/MEDIUM/LOW]
        - File: feature-[KEBAB-CASE].md
        - Description: [ONE_LINE_SUMMARY]
+       - Approach: [BRIEF_APPROVED_APPROACH]
 
-    ### Bugs (Y items)
+    ### Bugs ([Y] items)
+    [FOR EACH APPROVED BUG]
     1. **[BUG_TITLE]** - [STATUS] - Severity: [CRITICAL/HIGH/MEDIUM/LOW]
        - File: bug-[KEBAB-CASE].md
        - Description: [ONE_LINE_SUMMARY]
+       - Approach: [BRIEF_APPROVED_APPROACH]
 
-    ### Tasks (Z items)
+    ### Tasks ([Z] items)
+    [FOR EACH APPROVED TASK]
     1. **[TASK_NAME]** - [STATUS] - Priority: [HIGH/MEDIUM/LOW]
        - File: task-[KEBAB-CASE].md
        - Description: [ONE_LINE_SUMMARY]
+       - Approach: [BRIEF_APPROVED_APPROACH]
 
     ## Execution Order
 
     Recommended order based on priority and dependencies:
+    [ONLY APPROVED ITEMS]
     1. [ITEM_NAME] - [TYPE] - [REASON_FOR_ORDER]
     2. [ITEM_NAME] - [TYPE] - [REASON_FOR_ORDER]
 
     ## Progress Tracking
 
-    - [ ] Planning completed
+    - [x] Planning completed
     - [ ] Execution started
     - [ ] All items completed
     - [ ] Review conducted
     - [ ] Iterations completed
 
-    ## Notes
+    ## Planning Notes
 
-    [Any additional context or considerations]
+    [INCLUDE: Any significant feedback or adjustments from review]
+    [IF items_skipped: Note which items were skipped and why]
   </content>
 </file_template>
 
 </step>
 
-<step number="6" subagent="file-creator" name="create_individual_items">
+<step number="7" subagent="file-creator" name="create_individual_items">
 
-### Step 6: Create Individual Work Item Files
+### Step 7: Create Individual Work Item Files
 
-Use the file-creator subagent to create detailed files for each work item.
+Use the file-creator subagent to create detailed files for each APPROVED work item, incorporating the reviewed approach.
 
-<for_each_feature>
+<for_each_approved_feature>
   <file_template>
     <path>.agent-os/daily-plans/YYYY-MM-DD/feature-[KEBAB-CASE].md</path>
     <content>
@@ -197,27 +370,39 @@ Use the file-creator subagent to create detailed files for each work item.
 
       [DETAILED_FEATURE_DESCRIPTION]
 
+      ## Approved Implementation Approach
+
+      [USER_REVIEWED_AND_APPROVED_APPROACH]
+
+      ### Key Steps:
+      [APPROVED_IMPLEMENTATION_STEPS]
+
+      ### Technical Considerations:
+      [APPROVED_TECHNICAL_ASPECTS]
+
       ## Objectives
 
       [WHAT_THIS_FEATURE_SHOULD_ACHIEVE]
 
       ## Technical Requirements
 
-      - [REQUIREMENT_1]
-      - [REQUIREMENT_2]
+      - [REQUIREMENT_1_FROM_APPROVED_PLAN]
+      - [REQUIREMENT_2_FROM_APPROVED_PLAN]
 
       ## Implementation Tasks
 
+      [BASED ON APPROVED APPROACH]
       - [ ] 1. [TASK_DESCRIPTION]
         - [ ] 1.1 [SUBTASK]
         - [ ] 1.2 [SUBTASK]
       - [ ] 2. [TASK_DESCRIPTION]
         - [ ] 2.1 [SUBTASK]
-      - [ ] 2.2 [SUBTASK]
+        - [ ] 2.2 [SUBTASK]
 
       ## Acceptance Criteria
 
       Feature is complete when:
+      [FROM APPROVED SUCCESS CRITERIA]
       - [ ] [CRITERION_1]
       - [ ] [CRITERION_2]
       - [ ] All tests pass
@@ -228,6 +413,10 @@ Use the file-creator subagent to create detailed files for each work item.
 
       1. [STEP_TO_TEST]
       2. [STEP_TO_TEST]
+
+      ## Planning Review Notes
+
+      [USER_FEEDBACK_DURING_PLANNING_IF_ANY]
 
       ## Implementation Notes
 
@@ -244,9 +433,9 @@ Use the file-creator subagent to create detailed files for each work item.
       - [COMMIT_HASH] - [COMMIT_MESSAGE]
     </content>
   </file_template>
-</for_each_feature>
+</for_each_approved_feature>
 
-<for_each_bug>
+<for_each_approved_bug>
   <file_template>
     <path>.agent-os/daily-plans/YYYY-MM-DD/bug-[KEBAB-CASE].md</path>
     <content>
@@ -261,6 +450,16 @@ Use the file-creator subagent to create detailed files for each work item.
       ## Description
 
       [DETAILED_BUG_DESCRIPTION]
+
+      ## Approved Fix Approach
+
+      [USER_REVIEWED_AND_APPROVED_APPROACH]
+
+      ### Key Steps:
+      [APPROVED_FIX_STEPS]
+
+      ### Technical Considerations:
+      [APPROVED_TECHNICAL_ASPECTS]
 
       ## Environment
 
@@ -288,9 +487,10 @@ Use the file-creator subagent to create detailed files for each work item.
 
       ## Fix Tasks
 
+      [BASED ON APPROVED APPROACH]
       - [ ] 1. Reproduce the issue locally
       - [ ] 2. Identify root cause
-      - [ ] 3. [SPECIFIC_FIX_TASK]
+      - [ ] 3. [SPECIFIC_FIX_TASK_FROM_PLAN]
       - [ ] 4. Write/update tests
       - [ ] 5. Verify fix works
       - [ ] 6. Test edge cases
@@ -298,6 +498,7 @@ Use the file-creator subagent to create detailed files for each work item.
       ## Acceptance Criteria
 
       Bug is resolved when:
+      [FROM APPROVED SUCCESS CRITERIA]
       - [ ] Issue no longer reproducible
       - [ ] Root cause identified and fixed
       - [ ] Tests added to prevent regression
@@ -308,6 +509,10 @@ Use the file-creator subagent to create detailed files for each work item.
 
       1. [HOW_TO_VERIFY_FIX]
       2. [ADDITIONAL_TEST_STEP]
+
+      ## Planning Review Notes
+
+      [USER_FEEDBACK_DURING_PLANNING_IF_ANY]
 
       ## Implementation Notes
 
@@ -324,9 +529,9 @@ Use the file-creator subagent to create detailed files for each work item.
       - [COMMIT_HASH] - [COMMIT_MESSAGE]
     </content>
   </file_template>
-</for_each_bug>
+</for_each_approved_bug>
 
-<for_each_task>
+<for_each_approved_task>
   <file_template>
     <path>.agent-os/daily-plans/YYYY-MM-DD/task-[KEBAB-CASE].md</path>
     <content>
@@ -342,12 +547,23 @@ Use the file-creator subagent to create detailed files for each work item.
 
       [DETAILED_TASK_DESCRIPTION]
 
+      ## Approved Implementation Approach
+
+      [USER_REVIEWED_AND_APPROVED_APPROACH]
+
+      ### Key Steps:
+      [APPROVED_IMPLEMENTATION_STEPS]
+
+      ### Technical Considerations:
+      [APPROVED_TECHNICAL_ASPECTS]
+
       ## Objectives
 
       [WHAT_THIS_TASK_SHOULD_ACHIEVE]
 
       ## Implementation Steps
 
+      [BASED ON APPROVED APPROACH]
       - [ ] 1. [STEP_DESCRIPTION]
         - [ ] 1.1 [SUBSTEP]
         - [ ] 1.2 [SUBSTEP]
@@ -357,6 +573,7 @@ Use the file-creator subagent to create detailed files for each work item.
       ## Acceptance Criteria
 
       Task is complete when:
+      [FROM APPROVED SUCCESS CRITERIA]
       - [ ] [CRITERION_1]
       - [ ] [CRITERION_2]
       - [ ] All objectives met
@@ -370,6 +587,10 @@ Use the file-creator subagent to create detailed files for each work item.
 
       1. [HOW_TO_VERIFY]
       2. [ADDITIONAL_CHECK]
+
+      ## Planning Review Notes
+
+      [USER_FEEDBACK_DURING_PLANNING_IF_ANY]
 
       ## Implementation Notes
 
@@ -386,15 +607,15 @@ Use the file-creator subagent to create detailed files for each work item.
       - [COMMIT_HASH] - [COMMIT_MESSAGE]
     </content>
   </file_template>
-</for_each_task>
+</for_each_approved_task>
 
 </step>
 
-<step number="7" name="priority_ordering">
+<step number="8" name="priority_ordering">
 
-### Step 7: Determine Execution Order
+### Step 8: Determine Execution Order
 
-Analyze priorities and dependencies to suggest optimal execution order.
+Analyze priorities and dependencies to suggest optimal execution order for approved items.
 
 <ordering_criteria>
   <priority_levels>
@@ -410,43 +631,49 @@ Analyze priorities and dependencies to suggest optimal execution order.
     - User impact
     - Complexity (simple wins first)
     - Related items grouped
+    - User feedback from review
   </considerations>
 </ordering_criteria>
 
 <update_summary>
   ACTION: Update daily-summary.md with execution order
   INCLUDE: Reasoning for the suggested order
+  NOTE: Only includes approved items
 </update_summary>
 
 </step>
 
-<step number="8" name="user_confirmation">
+<step number="9" name="user_confirmation">
 
-### Step 8: User Confirmation
+### Step 9: Final Confirmation
 
-Present the created plan for review and confirmation.
+Present the created plan for final review.
 
 <confirmation_message>
   ## Daily Plan Created Successfully
 
   Created daily work plan for [DATE] with:
-  - [X] Features
-  - [Y] Bugs
-  - [Z] Tasks
+  - [X] Features (approved)
+  - [Y] Bugs (approved)
+  - [Z] Tasks (approved)
+  [IF any_skipped: - [N] Items skipped during review]
 
   Files created in: .agent-os/daily-plans/YYYY-MM-DD/
+
+  ### Implementation Approaches:
+  All items include your reviewed and approved implementation plans.
 
   ### Suggested Execution Order:
   1. [ITEM_1] - [REASON]
   2. [ITEM_2] - [REASON]
 
   ### Next Steps:
-  - Review the plan in daily-summary.md
-  - Make any adjustments needed
+  - Review the detailed plans in the created files
+  - Make any final adjustments if needed
   - Run `execute-daily-plan` to start working
   - Use `review-daily-work` after completion for feedback
 
-  Would you like to review the plan or start execution?
+  Ready to start execution with `execute-daily-plan`?
 </confirmation_message>
 
 </step>
@@ -473,6 +700,7 @@ Present the created plan for review and confirmation.
 
   <content_requirements>
     - Clear descriptions
+    - User-reviewed approaches
     - Measurable acceptance criteria
     - Detailed task breakdowns
     - Space for review feedback
@@ -484,7 +712,8 @@ Present the created plan for review and confirmation.
 
 <command_integration>
   <with_execute_daily_plan>
-    - Reads all work items
+    - Reads approved work items
+    - Follows reviewed approaches
     - Updates status during execution
     - Adds implementation notes
     - Records git commits
@@ -512,15 +741,25 @@ Present the created plan for review and confirmation.
     - Provide examples
     - Use sensible defaults with confirmation
   </missing_info_handling>
+
+  <no_approved_items>
+    IF all items skipped:
+      MESSAGE: "No items were approved for today's plan.
+               You can run this command again with different items."
+      EXIT: Without creating files
+  </no_approved_items>
 </validation>
 
 <final_checklist>
   <verify>
     - [ ] All work items categorized correctly
     - [ ] Required information gathered
+    - [ ] Interactive review completed for each item
+    - [ ] User feedback integrated into plans
+    - [ ] Only approved items included in files
     - [ ] Folder structure created with correct date
     - [ ] Daily summary file created
-    - [ ] Individual item files created
+    - [ ] Individual item files created with reviewed approaches
     - [ ] Execution order determined
     - [ ] User confirmation received
   </verify>
