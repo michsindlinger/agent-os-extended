@@ -175,6 +175,9 @@ instruction_files=(
     "init-base-setup.md"
     "validate-base-setup.md"
     "extend-setup.md"
+    "create-daily-plan.md"
+    "execute-daily-plan.md"
+    "review-daily-work.md"
 )
 
 for file in "${instruction_files[@]}"; do
@@ -218,6 +221,9 @@ if [[ -d "$BASE_PATH/.claude/commands" || -f "$BASE_PATH/CLAUDE.md" || "$FORCE_U
         "init-base-setup.md"
         "validate-base-setup.md"
         "extend-setup.md"
+        "create-daily-plan.md"
+        "execute-daily-plan.md"
+        "review-daily-work.md"
     )
     
     for file in "${command_files[@]}"; do
@@ -352,6 +358,9 @@ if [[ -d "$BASE_PATH/.gemini/tools" || -f "$BASE_PATH/GEMINI.md" || "$FORCE_UPDA
         "init-base-setup"
         "validate-base-setup"
         "extend-setup"
+        "create-daily-plan"
+        "execute-daily-plan"
+        "review-daily-work"
     )
     
     for tool in "${gemini_tools[@]}"; do

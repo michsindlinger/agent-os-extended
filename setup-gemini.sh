@@ -82,6 +82,9 @@ tool_files=(
     "init-base-setup"
     "validate-base-setup"
     "extend-setup"
+    "create-daily-plan"
+    "execute-daily-plan"
+    "review-daily-work"
 )
 
 for tool in "${tool_files[@]}"; do
@@ -109,6 +112,7 @@ Use the tools in `.gemini/tools/` to execute Agent OS Extended workflows:
 - **Project Setup**: init-base-setup, validate-base-setup, extend-setup
 - **Documentation**: retroactive-doc, update-changelog
 - **Task Execution**: execute-tasks
+- **Daily Work Management**: create-daily-plan, execute-daily-plan, review-daily-work
 
 ## Project Standards
 
@@ -147,6 +151,7 @@ Use the tools in `.gemini/tools/` to execute Agent OS Extended workflows:
 - **Project Setup**: init-base-setup, validate-base-setup, extend-setup
 - **Documentation**: retroactive-doc, update-changelog
 - **Task Execution**: execute-tasks
+- **Daily Work Management**: create-daily-plan, execute-daily-plan, review-daily-work
 
 ## Project Standards
 

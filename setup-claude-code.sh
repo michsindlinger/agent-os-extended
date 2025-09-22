@@ -58,6 +58,9 @@ command_files=(
     "init-base-setup.md"
     "validate-base-setup.md"
     "extend-setup.md"
+    "create-daily-plan.md"
+    "execute-daily-plan.md"
+    "review-daily-work.md"
 )
 
 for file in "${command_files[@]}"; do
@@ -100,5 +103,8 @@ echo "  /plan-b2b-application - Plan B2B enterprise application"
 echo "  /init-base-setup      - Initialize base project setup"
 echo "  /validate-base-setup  - Validate base setup configuration"
 echo "  /extend-setup         - Extend setup with additional features"
+echo "  /create-daily-plan    - Create structured daily work plan"
+echo "  /execute-daily-plan   - Execute daily tasks autonomously"
+echo "  /review-daily-work    - Review and iterate on completed work"
 echo ""
 echo "For more information, visit: https://github.com/michsindlinger/agent-os-extended"
