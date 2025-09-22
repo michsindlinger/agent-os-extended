@@ -2,7 +2,7 @@
 description: Daily Plan Creation Rules for Agent OS
 globs:
 alwaysApply: false
-version: 1.1
+version: 1.2
 encoding: UTF-8
 ---
 
@@ -10,7 +10,7 @@ encoding: UTF-8
 
 ## Overview
 
-Create a structured daily work plan with features, bugs, and tasks for systematic execution and tracking. Includes interactive plan review before file creation.
+Create or append to a structured daily work plan with features, bugs, and tasks for systematic execution and tracking. Includes interactive plan review before file creation and supports adding items to existing daily plans.
 
 <process_flow>
 
@@ -259,11 +259,75 @@ Use the date-checker subagent to determine the current date for folder naming.
 
 </step>
 
-<step number="5" subagent="file-creator" name="folder_structure_creation">
+<step number="5" name="check_existing_plan">
 
-### Step 5: Create Folder Structure
+### Step 5: Check for Existing Daily Plan
 
-Use the file-creator subagent to create the daily plan directory structure for approved items only.
+Check if a daily plan already exists for today and load existing items if present.
+
+<existing_plan_check>
+  <check_directory>
+    PATH: .agent-os/daily-plans/YYYY-MM-DD/
+    CHECK: Does directory exist?
+  </check_directory>
+
+  IF directory_exists:
+    <load_existing_items>
+      <load_summary>
+        READ: .agent-os/daily-plans/YYYY-MM-DD/daily-summary.md
+        EXTRACT: Existing work items
+        COUNT: Existing features, bugs, tasks
+      </load_summary>
+
+      <load_individual_files>
+        READ: All existing feature-*.md files
+        READ: All existing bug-*.md files
+        READ: All existing task-*.md files
+        STORE: Existing items for reference
+      </load_individual_files>
+
+      <inform_user>
+        MESSAGE: "
+        Found existing daily plan for [DATE] with:
+        - [X] existing features
+        - [Y] existing bugs
+        - [Z] existing tasks
+
+        I will add your new items to the existing plan.
+        "
+      </inform_user>
+
+      <check_duplicates>
+        FOR each new approved item:
+          CHECK: Does similar item already exist?
+          IF duplicate found:
+            ASK: "Item '[NAME]' seems similar to existing '[EXISTING]'.
+                  Add as new item anyway? (yes/skip)"
+            WAIT: For user response
+          END IF
+        END FOR
+      </check_duplicates>
+    </load_existing_items>
+
+    SET: append_mode = true
+    SET: next_item_numbers based on existing counts
+
+  ELSE:
+    <create_new_plan>
+      MESSAGE: "Creating new daily plan for [DATE]"
+      SET: append_mode = false
+      SET: next_item_numbers start at 1
+    </create_new_plan>
+  END IF
+</existing_plan_check>
+
+</step>
+
+<step number="6" subagent="file-creator" name="folder_structure_creation">
+
+### Step 6: Create or Verify Folder Structure
+
+Use the file-creator subagent to create the daily plan directory structure if it doesn't exist.
 
 <directory_structure>
   <base_path>.agent-os/daily-plans/YYYY-MM-DD/</base_path>
@@ -272,87 +336,163 @@ Use the file-creator subagent to create the daily plan directory structure for a
     - Create parent directory if needed
   </naming>
   <condition>
-    ONLY IF: At least one item was approved in step 3
-    SKIP IF: All items were skipped
+    IF append_mode == false:
+      CREATE: New directory structure
+    ELSE:
+      VERIFY: Directory exists
+      SKIP: Creation (already exists)
   </condition>
 </directory_structure>
 
 </step>
 
-<step number="6" subagent="file-creator" name="create_daily_summary">
+<step number="7" name="create_or_update_daily_summary">
 
-### Step 6: Create Daily Summary
+### Step 7: Create or Update Daily Summary
 
-Use the file-creator subagent to create the main summary file with only approved items.
+Create new or update existing summary file with approved items.
 
-<file_template>
-  <path>.agent-os/daily-plans/YYYY-MM-DD/daily-summary.md</path>
-  <content>
-    # Daily Work Plan
+<summary_handling>
+  IF append_mode == true:
+    <update_existing_summary>
+      READ: Existing daily-summary.md
+      PRESERVE:
+        - Existing work items
+        - Existing progress tracking
+        - Previous planning notes
 
-    > Date: [YYYY-MM-DD]
-    > Created: [TIMESTAMP]
-    > Status: Planning | In Progress | Review | Completed
+      <merge_items>
+        <features>
+          APPEND: New approved features to existing list
+          RENUMBER: Starting from [existing_count + 1]
+          UPDATE: Total count in section header
+        </features>
 
-    ## Overview
+        <bugs>
+          APPEND: New approved bugs to existing list
+          RENUMBER: Starting from [existing_count + 1]
+          UPDATE: Total count in section header
+        </bugs>
 
-    Daily objectives and work items for systematic execution.
-    [INCLUDE: Brief note about user-reviewed approach]
+        <tasks>
+          APPEND: New approved tasks to existing list
+          RENUMBER: Starting from [existing_count + 1]
+          UPDATE: Total count in section header
+        </tasks>
+      </merge_items>
 
-    ## Work Items
+      <update_execution_order>
+        PRESERVE: Existing execution order for old items
+        APPEND: New items to execution order
+        RECALCULATE: Priorities considering all items
+        SUGGEST: Revised order if needed
+      </update_execution_order>
 
-    [ONLY INCLUDE SECTIONS WITH APPROVED ITEMS]
+      <add_update_note>
+        ADD: Update timestamp and note about new items
+        FORMAT: "## Update - [TIMESTAMP]
+                Added [X] new items to the daily plan"
+      </add_update_note>
+    </update_existing_summary>
 
-    ### Features ([X] items)
-    [FOR EACH APPROVED FEATURE]
-    1. **[FEATURE_NAME]** - [STATUS] - Priority: [HIGH/MEDIUM/LOW]
-       - File: feature-[KEBAB-CASE].md
-       - Description: [ONE_LINE_SUMMARY]
-       - Approach: [BRIEF_APPROVED_APPROACH]
+  ELSE:
+    <create_new_summary>
+      <file_template>
+        <path>.agent-os/daily-plans/YYYY-MM-DD/daily-summary.md</path>
+        <content>
+          # Daily Work Plan
 
-    ### Bugs ([Y] items)
-    [FOR EACH APPROVED BUG]
-    1. **[BUG_TITLE]** - [STATUS] - Severity: [CRITICAL/HIGH/MEDIUM/LOW]
-       - File: bug-[KEBAB-CASE].md
-       - Description: [ONE_LINE_SUMMARY]
-       - Approach: [BRIEF_APPROVED_APPROACH]
+          > Date: [YYYY-MM-DD]
+          > Created: [TIMESTAMP]
+          > Status: Planning | In Progress | Review | Completed
 
-    ### Tasks ([Z] items)
-    [FOR EACH APPROVED TASK]
-    1. **[TASK_NAME]** - [STATUS] - Priority: [HIGH/MEDIUM/LOW]
-       - File: task-[KEBAB-CASE].md
-       - Description: [ONE_LINE_SUMMARY]
-       - Approach: [BRIEF_APPROVED_APPROACH]
+          ## Overview
 
-    ## Execution Order
+          Daily objectives and work items for systematic execution.
+          [INCLUDE: Brief note about user-reviewed approach]
 
-    Recommended order based on priority and dependencies:
-    [ONLY APPROVED ITEMS]
-    1. [ITEM_NAME] - [TYPE] - [REASON_FOR_ORDER]
-    2. [ITEM_NAME] - [TYPE] - [REASON_FOR_ORDER]
+          ## Work Items
 
-    ## Progress Tracking
+          [ONLY INCLUDE SECTIONS WITH APPROVED ITEMS]
 
-    - [x] Planning completed
-    - [ ] Execution started
-    - [ ] All items completed
-    - [ ] Review conducted
-    - [ ] Iterations completed
+          ### Features ([X] items)
+          [FOR EACH APPROVED FEATURE]
+          1. **[FEATURE_NAME]** - [STATUS] - Priority: [HIGH/MEDIUM/LOW]
+             - File: feature-[KEBAB-CASE].md
+             - Description: [ONE_LINE_SUMMARY]
+             - Approach: [BRIEF_APPROVED_APPROACH]
 
-    ## Planning Notes
+          ### Bugs ([Y] items)
+          [FOR EACH APPROVED BUG]
+          1. **[BUG_TITLE]** - [STATUS] - Severity: [CRITICAL/HIGH/MEDIUM/LOW]
+             - File: bug-[KEBAB-CASE].md
+             - Description: [ONE_LINE_SUMMARY]
+             - Approach: [BRIEF_APPROVED_APPROACH]
 
-    [INCLUDE: Any significant feedback or adjustments from review]
-    [IF items_skipped: Note which items were skipped and why]
-  </content>
-</file_template>
+          ### Tasks ([Z] items)
+          [FOR EACH APPROVED TASK]
+          1. **[TASK_NAME]** - [STATUS] - Priority: [HIGH/MEDIUM/LOW]
+             - File: task-[KEBAB-CASE].md
+             - Description: [ONE_LINE_SUMMARY]
+             - Approach: [BRIEF_APPROVED_APPROACH]
+
+          ## Execution Order
+
+          Recommended order based on priority and dependencies:
+          [ONLY APPROVED ITEMS]
+          1. [ITEM_NAME] - [TYPE] - [REASON_FOR_ORDER]
+          2. [ITEM_NAME] - [TYPE] - [REASON_FOR_ORDER]
+
+          ## Progress Tracking
+
+          - [x] Planning completed
+          - [ ] Execution started
+          - [ ] All items completed
+          - [ ] Review conducted
+          - [ ] Iterations completed
+
+          ## Planning Notes
+
+          [INCLUDE: Any significant feedback or adjustments from review]
+          [IF items_skipped: Note which items were skipped and why]
+        </content>
+      </file_template>
+    </create_new_summary>
+  END IF
+</summary_handling>
 
 </step>
 
-<step number="7" subagent="file-creator" name="create_individual_items">
+<step number="8" subagent="file-creator" name="create_individual_items">
 
-### Step 7: Create Individual Work Item Files
+### Step 8: Create Individual Work Item Files
 
-Use the file-creator subagent to create detailed files for each APPROVED work item, incorporating the reviewed approach.
+Use the file-creator subagent to create detailed files for each NEW APPROVED work item, incorporating the reviewed approach.
+
+<item_file_creation>
+  <naming_strategy>
+    IF append_mode == true:
+      <avoid_duplicates>
+        FOR each new item:
+          CHECK: Does file with same kebab-case name exist?
+          IF exists:
+            APPEND: Number suffix to filename
+            EXAMPLE: feature-dark-mode-2.md
+          ELSE:
+            USE: Standard name
+          END IF
+        END FOR
+      </avoid_duplicates>
+    ELSE:
+      USE: Standard naming without checks
+    END IF
+  </naming_strategy>
+
+  <skip_existing>
+    NOTE: Only create files for NEW approved items
+    SKIP: Any items that already existed before this session
+  </skip_existing>
+</item_file_creation>
 
 <for_each_approved_feature>
   <file_template>
@@ -611,11 +751,11 @@ Use the file-creator subagent to create detailed files for each APPROVED work it
 
 </step>
 
-<step number="8" name="priority_ordering">
+<step number="9" name="priority_ordering">
 
-### Step 8: Determine Execution Order
+### Step 9: Determine Execution Order
 
-Analyze priorities and dependencies to suggest optimal execution order for approved items.
+Analyze priorities and dependencies to suggest optimal execution order for all items (existing + new).
 
 <ordering_criteria>
   <priority_levels>
@@ -632,48 +772,98 @@ Analyze priorities and dependencies to suggest optimal execution order for appro
     - Complexity (simple wins first)
     - Related items grouped
     - User feedback from review
+    - Balance between old and new items
   </considerations>
+
+  <append_mode_handling>
+    IF append_mode == true:
+      CONSIDER: Existing items' progress status
+      PRIORITIZE: In-progress items before new items
+      SUGGEST: Integrating new items naturally into workflow
+    ELSE:
+      STANDARD: Order all items by priority
+    END IF
+  </append_mode_handling>
 </ordering_criteria>
 
 <update_summary>
   ACTION: Update daily-summary.md with execution order
   INCLUDE: Reasoning for the suggested order
-  NOTE: Only includes approved items
+  NOTE: Includes ALL approved items (existing + new)
 </update_summary>
 
 </step>
 
-<step number="9" name="user_confirmation">
+<step number="10" name="user_confirmation">
 
-### Step 9: Final Confirmation
+### Step 10: Final Confirmation
 
-Present the created plan for final review.
+Present the created or updated plan for final review.
 
 <confirmation_message>
-  ## Daily Plan Created Successfully
+  IF append_mode == true:
+    ## Daily Plan Updated Successfully
 
-  Created daily work plan for [DATE] with:
-  - [X] Features (approved)
-  - [Y] Bugs (approved)
-  - [Z] Tasks (approved)
-  [IF any_skipped: - [N] Items skipped during review]
+    Updated daily work plan for [DATE]:
 
-  Files created in: .agent-os/daily-plans/YYYY-MM-DD/
+    ### Previous Items:
+    - [X] Features (existing)
+    - [Y] Bugs (existing)
+    - [Z] Tasks (existing)
 
-  ### Implementation Approaches:
-  All items include your reviewed and approved implementation plans.
+    ### Newly Added:
+    - [A] Features (new)
+    - [B] Bugs (new)
+    - [C] Tasks (new)
+    [IF any_skipped: - [N] Items skipped during review]
 
-  ### Suggested Execution Order:
-  1. [ITEM_1] - [REASON]
-  2. [ITEM_2] - [REASON]
+    ### Total Items Now:
+    - [X+A] Features
+    - [Y+B] Bugs
+    - [Z+C] Tasks
 
-  ### Next Steps:
-  - Review the detailed plans in the created files
-  - Make any final adjustments if needed
-  - Run `execute-daily-plan` to start working
-  - Use `review-daily-work` after completion for feedback
+    Files updated/created in: .agent-os/daily-plans/YYYY-MM-DD/
 
-  Ready to start execution with `execute-daily-plan`?
+    ### Implementation Approaches:
+    All new items include your reviewed and approved implementation plans.
+
+    ### Updated Execution Order:
+    [SHOW integrated order with existing and new items]
+    1. [ITEM_1] - [STATUS] - [REASON]
+    2. [ITEM_2] - [STATUS] - [REASON]
+
+    ### Next Steps:
+    - Continue with `execute-daily-plan` to work on all items
+    - Items already in progress will be prioritized
+    - Use `review-daily-work` after completion for feedback
+
+  ELSE:
+    ## Daily Plan Created Successfully
+
+    Created daily work plan for [DATE] with:
+    - [X] Features (approved)
+    - [Y] Bugs (approved)
+    - [Z] Tasks (approved)
+    [IF any_skipped: - [N] Items skipped during review]
+
+    Files created in: .agent-os/daily-plans/YYYY-MM-DD/
+
+    ### Implementation Approaches:
+    All items include your reviewed and approved implementation plans.
+
+    ### Suggested Execution Order:
+    1. [ITEM_1] - [REASON]
+    2. [ITEM_2] - [REASON]
+
+    ### Next Steps:
+    - Review the detailed plans in the created files
+    - Make any final adjustments if needed
+    - Run `execute-daily-plan` to start working
+    - Use `review-daily-work` after completion for feedback
+
+  END IF
+
+  Ready to [continue/start] execution with `execute-daily-plan`?
 </confirmation_message>
 
 </step>
@@ -756,11 +946,14 @@ Present the created plan for final review.
     - [ ] Required information gathered
     - [ ] Interactive review completed for each item
     - [ ] User feedback integrated into plans
+    - [ ] Existing plan checked and loaded if present
+    - [ ] Duplicates identified and handled
     - [ ] Only approved items included in files
-    - [ ] Folder structure created with correct date
-    - [ ] Daily summary file created
-    - [ ] Individual item files created with reviewed approaches
-    - [ ] Execution order determined
+    - [ ] Folder structure created/verified with correct date
+    - [ ] Daily summary file created or updated
+    - [ ] Individual item files created for new items only
+    - [ ] File naming conflicts resolved
+    - [ ] Execution order determined for all items
     - [ ] User confirmation received
   </verify>
 </final_checklist>
