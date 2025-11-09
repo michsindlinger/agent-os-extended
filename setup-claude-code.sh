@@ -61,6 +61,8 @@ command_files=(
     "create-daily-plan.md"
     "execute-daily-plan.md"
     "review-daily-work.md"
+    "estimate-spec.md"
+    "validate-estimation.md"
 )
 
 for file in "${command_files[@]}"; do
@@ -75,6 +77,7 @@ download_file "$REPO_URL/agents/context-fetcher.md" ".claude/agents/context-fetc
 download_file "$REPO_URL/agents/git-workflow.md" ".claude/agents/git-workflow.md"
 download_file "$REPO_URL/agents/file-creator.md" ".claude/agents/file-creator.md"
 download_file "$REPO_URL/agents/date-checker.md" ".claude/agents/date-checker.md"
+download_file "$REPO_URL/agents/estimation-specialist.md" ".claude/agents/estimation-specialist.md"
 
 echo ""
 echo "✅ Claude Code setup complete!"
@@ -106,5 +109,7 @@ echo "  /extend-setup         - Extend setup with additional features"
 echo "  /create-daily-plan    - Create structured daily work plan"
 echo "  /execute-daily-plan   - Execute daily tasks autonomously"
 echo "  /review-daily-work    - Review and iterate on completed work"
+echo "  /estimate-spec        - Estimate effort for feature specifications"
+echo "  /validate-estimation  - Validate estimation plausibility"
 echo ""
 echo "For more information, visit: https://github.com/michsindlinger/agent-os-extended"

@@ -148,6 +148,11 @@ mkdir -p "$AGENT_OS_PATH/instructions/meta"
 mkdir -p "$AGENT_OS_PATH/specs"
 mkdir -p "$AGENT_OS_PATH/docs"
 mkdir -p "$AGENT_OS_PATH/bugs"
+mkdir -p "$AGENT_OS_PATH/estimations/active"
+mkdir -p "$AGENT_OS_PATH/estimations/completed"
+mkdir -p "$AGENT_OS_PATH/estimations/history"
+mkdir -p "$AGENT_OS_PATH/estimations/config"
+mkdir -p "$AGENT_OS_PATH/estimations/reports"
 
 # Update core instructions
 echo ""
@@ -178,6 +183,8 @@ instruction_files=(
     "create-daily-plan.md"
     "execute-daily-plan.md"
     "review-daily-work.md"
+    "estimate-spec.md"
+    "validate-estimation.md"
 )
 
 for file in "${instruction_files[@]}"; do
@@ -224,12 +231,34 @@ if [[ -d "$BASE_PATH/.claude/commands" || -f "$BASE_PATH/CLAUDE.md" || "$FORCE_U
         "create-daily-plan.md"
         "execute-daily-plan.md"
         "review-daily-work.md"
+        "estimate-spec.md"
+        "validate-estimation.md"
     )
     
     for file in "${command_files[@]}"; do
         update_file "$REPO_URL/commands/$file" \
                     "$BASE_PATH/.claude/commands/$file" \
                     "Claude Code command: $file"
+    done
+
+    # Update Claude Code agents
+    echo ""
+    echo "🤖 Updating Claude Code agents..."
+    mkdir -p "$BASE_PATH/.claude/agents"
+
+    agent_files=(
+        "test-runner.md"
+        "context-fetcher.md"
+        "git-workflow.md"
+        "file-creator.md"
+        "date-checker.md"
+        "estimation-specialist.md"
+    )
+
+    for file in "${agent_files[@]}"; do
+        update_file "$REPO_URL/agents/$file" \
+                    "$BASE_PATH/.claude/agents/$file" \
+                    "Claude Code agent: $file"
     done
 fi
 
@@ -253,6 +282,8 @@ if [[ -d "$BASE_PATH/commands" ]]; then
         "init-base-setup.md"
         "validate-base-setup.md"
         "extend-setup.md"
+        "estimate-spec.md"
+        "validate-estimation.md"
     )
     
     for file in "${command_files[@]}"; do
@@ -361,6 +392,8 @@ if [[ -d "$BASE_PATH/.gemini/tools" || -f "$BASE_PATH/GEMINI.md" || "$FORCE_UPDA
         "create-daily-plan"
         "execute-daily-plan"
         "review-daily-work"
+        "estimate-spec"
+        "validate-estimation"
     )
     
     for tool in "${gemini_tools[@]}"; do
@@ -386,6 +419,51 @@ for file in "${standard_files[@]}"; do
                 "$AGENT_OS_PATH/standards/$file" \
                 "standard: $file"
 done
+
+# Update Estimation System Config Files
+echo ""
+echo "📊 Updating Estimation System configuration..."
+
+# Create estimation config files if they don't exist
+if [[ ! -f "$AGENT_OS_PATH/estimations/config/industry-benchmarks.json" ]]; then
+    echo "  Creating industry-benchmarks.json..."
+    curl -sSL "$REPO_URL/test-project/.agent-os/estimations/config/industry-benchmarks.json" \
+         -o "$AGENT_OS_PATH/estimations/config/industry-benchmarks.json"
+else
+    echo "  industry-benchmarks.json exists - preserving project-specific benchmarks"
+    echo "  💡 Check test-project/.agent-os/estimations/config/industry-benchmarks.json for latest template"
+fi
+
+if [[ ! -f "$AGENT_OS_PATH/estimations/config/estimation-config.json" ]]; then
+    echo "  Creating estimation-config.json..."
+    curl -sSL "$REPO_URL/test-project/.agent-os/estimations/config/estimation-config.json" \
+         -o "$AGENT_OS_PATH/estimations/config/estimation-config.json"
+else
+    echo "  estimation-config.json exists - preserving team-specific configuration"
+    echo "  💡 Check test-project/.agent-os/estimations/config/estimation-config.json for latest template"
+fi
+
+if [[ ! -f "$AGENT_OS_PATH/estimations/history/index.json" ]]; then
+    echo "  Creating history/index.json..."
+    curl -sSL "$REPO_URL/test-project/.agent-os/estimations/history/index.json" \
+         -o "$AGENT_OS_PATH/estimations/history/index.json"
+fi
+
+if [[ ! -f "$AGENT_OS_PATH/estimations/README.md" ]]; then
+    echo "  Creating Estimation System README..."
+    curl -sSL "$REPO_URL/test-project/.agent-os/estimations/README.md" \
+         -o "$AGENT_OS_PATH/estimations/README.md"
+else
+    # Always update README as it's documentation, not configuration
+    update_file "$REPO_URL/test-project/.agent-os/estimations/README.md" \
+                "$AGENT_OS_PATH/estimations/README.md" \
+                "Estimation System README"
+fi
+
+# Create .gitkeep files for empty directories
+touch "$AGENT_OS_PATH/estimations/active/.gitkeep"
+touch "$AGENT_OS_PATH/estimations/completed/.gitkeep"
+touch "$AGENT_OS_PATH/estimations/reports/.gitkeep"
 
 # Handle CLAUDE.md template update
 echo ""
@@ -431,6 +509,7 @@ Use the tools in `.gemini/tools/` to execute Agent OS Extended workflows:
 - **Project Setup**: init-base-setup, validate-base-setup, extend-setup
 - **Documentation**: retroactive-doc, update-changelog
 - **Task Execution**: execute-tasks
+- **Effort Estimation**: estimate-spec, validate-estimation
 
 ## Project Standards
 
@@ -472,9 +551,16 @@ echo "  • .agent-os/standards/    - Development standards"
 echo "  • .agent-os/specs/        - Feature specifications"
 echo "  • .agent-os/docs/         - Feature documentation"
 echo "  • .agent-os/bugs/         - Bug tracking and resolution"
+echo "  • .agent-os/estimations/  - Effort estimation system"
+echo "    - active/               - Active estimations"
+echo "    - completed/            - Completed with actual data"
+echo "    - history/              - Historical database"
+echo "    - config/               - Configuration files"
+echo "    - reports/              - Accuracy reports"
 
 if [[ -d "$BASE_PATH/.claude" ]]; then
     echo "  • .claude/commands/       - Claude Code commands"
+    echo "  • .claude/agents/         - Claude Code agents"
 fi
 
 if [[ -d "$BASE_PATH/.cursor" ]]; then
