@@ -179,30 +179,52 @@ END IF
 
 ## Output Format - Three Files Required
 
+**IMPORTANT**: All estimation output files must be created in the spec's estimation subdirectory:
+`.agent-os/specs/[spec-name]/estimation/`
+
+This keeps estimation outputs together with the spec they belong to.
+
 ### 1. estimation-technical.md
+**LOCATION**: `.agent-os/specs/[spec-name]/estimation/estimation-technical.md`
+
 For development team - full technical details:
 - Complete task breakdown with story points
 - Code analysis details
 - Complexity metrics
 - All adjustment factors with calculations
+- AI productivity breakdown (if enabled)
 - Reference projects data
 
 ### 2. estimation-client.md
+**LOCATION**: `.agent-os/specs/[spec-name]/estimation/estimation-client.md`
+
 For clients/stakeholders - business-friendly:
 - Clear cost breakdown with percentages
 - "What is included" checklists
 - "Why these efforts" explanations with industry benchmarks
+- AI productivity impact explained in plain language
 - Risks in understandable language
 - Options to reduce costs
 - Transparent methodology explanations
 
 ### 3. estimation-validation.json
+**LOCATION**: `.agent-os/specs/[spec-name]/estimation/estimation-validation.json`
+
 For external AI review (ChatGPT, JetGPT, etc.):
 - Machine-readable format
 - All calculations and formulas
 - Industry benchmarks with sources
 - Mathematical validation data
 - Reference projects with similarity scores
+- AI productivity adjustments documented
+
+### 4. Tracking File (separate location)
+**LOCATION**: `.agent-os/estimations/active/[YYYY-MM-DD]-[feature-name].json`
+
+For tracking actual vs. estimated during development:
+- Links back to spec path
+- Stores ongoing actual effort data
+- Moved to `completed/` when project finishes
 
 ## Industry Benchmarks Integration
 

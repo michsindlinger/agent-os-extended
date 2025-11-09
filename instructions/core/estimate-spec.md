@@ -580,12 +580,19 @@ Use the estimation-specialist subagent to execute the chosen estimation method.
 
 Use the estimation-specialist subagent to create three estimation documents.
 
+<preparation>
+  CREATE estimation directory:
+    mkdir -p .agent-os/specs/[spec-name]/estimation/
+
+  This directory will contain all estimation outputs for this spec.
+</preparation>
+
 <output_files>
 
   <file_1>
     ### estimation-technical.md
 
-    LOCATION: .agent-os/specs/[spec-name]/estimation-technical.md
+    LOCATION: .agent-os/specs/[spec-name]/estimation/estimation-technical.md
 
     CONTENT STRUCTURE:
     ```markdown
@@ -650,7 +657,7 @@ Use the estimation-specialist subagent to create three estimation documents.
   <file_2>
     ### estimation-client.md
 
-    LOCATION: .agent-os/specs/[spec-name]/estimation-client.md
+    LOCATION: .agent-os/specs/[spec-name]/estimation/estimation-client.md
 
     CONTENT STRUCTURE (Business-Friendly):
     ```markdown
@@ -750,7 +757,7 @@ Use the estimation-specialist subagent to create three estimation documents.
   <file_3>
     ### estimation-validation.json
 
-    LOCATION: .agent-os/specs/[spec-name]/estimation-validation.json
+    LOCATION: .agent-os/specs/[spec-name]/estimation/estimation-validation.json
 
     CONTENT STRUCTURE (Machine-Readable):
     ```json
@@ -816,7 +823,7 @@ Use the estimation-specialist subagent to create three estimation documents.
   2. **estimation-client.md** - Business-friendly version for clients
   3. **estimation-validation.json** - Machine-readable for external review
 
-  All files saved in: .agent-os/specs/[spec-name]/"
+  All files saved in: .agent-os/specs/[spec-name]/estimation/"
 </confirmation>
 
 </step>
