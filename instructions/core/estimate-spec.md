@@ -207,9 +207,9 @@ Use the estimation-specialist subagent to select the optimal estimation method b
     REASON: "Strong historical data available"
 
   ELSE IF team_velocity_history >= 3 sprints:
-    PRIMARY_METHOD: "Planning Poker"
+    PRIMARY_METHOD: "Planning Poker (Multi-Perspective Analysis)"
     CONFIDENCE: "Medium-High"
-    REASON: "Team velocity is established"
+    REASON: "Team velocity is established. Story points based on multi-perspective complexity analysis (Backend, Frontend, Testing, Integration). Code analysis provides implicit references."
 
   ELSE IF spec is complex (>20 tasks):
     PRIMARY_METHOD: "Wideband Delphi"
@@ -253,37 +253,107 @@ Use the estimation-specialist subagent to execute the chosen estimation method.
 <method_execution>
 
   <planning_poker>
-    ### Planning Poker Execution
+    ### Planning Poker Execution (Multi-Perspective Analysis)
+
+    **Note**: This method works WITHOUT existing reference stories by using:
+    - Multi-perspective complexity analysis (simulates team voting)
+    - Absolute Fibonacci scale mapping (based on time/complexity)
+    - Code analysis as implicit references (similar features in codebase)
 
     FOR each task in tasks.md:
 
-      ANALYZE from multiple perspectives:
-      - Backend complexity (API, database, logic)
-      - Frontend complexity (UI, state, interactions)
-      - Testing effort (unit, integration, e2e)
-      - Integration complexity (APIs, services, external)
+      **Step 1: Multi-Perspective Complexity Analysis**
 
-      MAP to Fibonacci scale:
-      - 1: Trivial (< 2 hours)
-      - 2: Simple (2-4 hours)
-      - 3: Straightforward (4-8 hours)
-      - 5: Moderate (1-2 days)
-      - 8: Complex (2-4 days)
-      - 13: Very complex (1 week)
-      - 20: Highly complex (2 weeks)
-      - 40: Epic (1 month)
+      ANALYZE from different developer perspectives:
+      - Backend complexity (API, database, logic) → Score 1-10
+      - Frontend complexity (UI, state, interactions) → Score 1-10
+      - Testing effort (unit, integration, e2e) → Score 1-10
+      - Integration complexity (APIs, services, external) → Score 1-10
 
-      CALCULATE consensus (median of perspectives)
+      **Step 2: Map to Fibonacci Scale (Absolute Mapping)**
 
-      APPLY codebase adjustments:
+      For EACH perspective, convert complexity score to Fibonacci:
+      - 1: Trivial (< 2 hours) - Complexity 1-2
+      - 2: Simple (2-4 hours) - Complexity 2-3
+      - 3: Straightforward (4-8 hours) - Complexity 3-4
+      - 5: Moderate (1-2 days) - Complexity 4-6
+      - 8: Complex (2-4 days) - Complexity 6-8
+      - 13: Very complex (1 week) - Complexity 8-10
+      - 20: Highly complex (2 weeks) - Complexity >10
+      - 40: Epic (1 month) - Multiple high-complexity aspects
+
+      **Step 3: Calculate Consensus**
+
+      CALCULATE median of all perspective estimates
+      This simulates team consensus in Planning Poker
+
+      **Step 4: Apply Code Analysis Adjustments**
+
+      IF similar code exists in codebase:
+        COMPARE new task with similar features:
+        - Similar complexity but less code needed? → Reduce points
+        - More complex than existing? → Increase points
+
+      APPLY adjustments:
       - Reusability bonus: -[%] from code analysis
       - Technical debt penalty: +[%] from code analysis
       - Complexity adjustment: ±[%] based on similar features
+
+    **Step 5: Apply AI Productivity Adjustments**
+
+    LOAD: .agent-os/estimations/config/estimation-config.json
+
+    IF ai_productivity_factors.enabled == true:
+
+      FOR each task:
+
+        IDENTIFY task type:
+        - Is it boilerplate/CRUD? → Use crud_operations multiplier (0.40 = 60% faster)
+        - Is it testing? → Use testing_generation multiplier (0.35 = 65% faster)
+        - Is it complex logic? → Use complex_algorithms multiplier (0.75 = 25% faster)
+        - Is it UI work? → Use ui_components multiplier (0.45 = 55% faster)
+        - Is it debugging? → Use debugging multiplier (0.65 = 35% faster)
+        - Is it documentation? → Use documentation multiplier (0.30 = 70% faster)
+
+        APPLY AI productivity multiplier:
+        adjusted_points = original_points × multiplier
+
+        DOCUMENT adjustment:
+        "Task '[name]' adjusted for AI-assisted development:
+        - Original: [X] points (traditional estimate)
+        - AI Multiplier: [Y] ([Z]% faster with Claude Code/Cursor)
+        - Adjusted: [result] points"
+
+      CALCULATE total AI speedup:
+        average_multiplier = mean(all task multipliers)
+        overall_speedup = (1 - average_multiplier) × 100
+
+      INFORM user:
+      "⚡ AI Productivity Applied:
+      - Tools: Claude Code, Cursor, GitHub Copilot
+      - Average speedup: [X]% faster than traditional development
+      - Most impact: [task type with lowest multiplier]
+      - Research basis: GitHub Copilot Study (2023), McKinsey (2024)"
+
+    ELSE:
+      SKIP AI adjustments
+      USE traditional estimates
+      WARN: "Estimates based on traditional development (no AI tools)"
+
+    **Step 6: Aggregate to Project Estimate**
 
     AGGREGATE:
       Total Story Points = Σ(task points)
       Estimated Sprints = Total Points / Team Velocity
       Estimated Weeks = Sprints × Sprint Length
+
+    **Communication to User:**
+
+    "Planning Poker (Multi-Perspective Analysis) used:
+    - Each task analyzed from 4 perspectives (Backend, Frontend, Testing, Integration)
+    - Fibonacci points assigned based on absolute complexity scale
+    - Code analysis provides implicit references where similar features exist
+    - No explicit reference stories needed for first estimation"
 
   </planning_poker>
 
@@ -430,12 +500,19 @@ Use the estimation-specialist subagent to create three estimation documents.
     - Complexity Comparison: [vs average]
 
     ## Adjustment Factors
-    - Base Estimate: [weeks]
+    - Base Estimate (Traditional): [weeks]
     - Reusability Bonus: -[%] = -[weeks]
     - Technical Debt Penalty: +[%] = +[weeks]
     - Complexity Adjustment: ±[%] = ±[weeks]
+    - **AI Productivity Adjustment: -[%] = -[weeks]**
+      - Tools: Claude Code, Cursor, GitHub Copilot
+      - Boilerplate/CRUD: 60% faster (0.40 multiplier)
+      - Testing: 65% faster (0.35 multiplier)
+      - UI Components: 55% faster (0.45 multiplier)
+      - Complex Logic: 25% faster (0.75 multiplier)
+      - Average Speedup: [X]% across all tasks
     - Net Adjustment: [weeks]
-    - Final Estimate: [weeks]
+    - **Final Estimate (AI-Adjusted)**: [weeks]
 
     ## Assumptions
     [Numbered list with: Assumption | Validation | Risk if False | Mitigation]
@@ -502,11 +579,49 @@ Use the estimation-specialist subagent to create three estimation documents.
     - Realistisch ([%]): [weeks]
     - Pessimistisch ([%]): [weeks]
 
+    ## ⚡ AI-Assisted Development Berücksichtigt
+
+    Diese Schätzung berücksichtigt moderne AI-Tools:
+
+    **Verwendete AI-Tools**: Claude Code, Cursor, GitHub Copilot
+
+    **Produktivitäts-Steigerungen eingerechnet**:
+    - ✅ Boilerplate & CRUD: **60% schneller** (z.B. Datenbank-Models, API-Endpoints)
+    - ✅ Testing: **65% schneller** (AI generiert Unit Tests automatisch)
+    - ✅ UI-Komponenten: **55% schneller** (Forms, Buttons, Layouts)
+    - ✅ Refactoring: **50% schneller** (AI unterstützt bei Code-Umstrukturierung)
+    - ✅ Documentation: **70% schneller** (AI schreibt Docs automatisch)
+    - ⚠️ Komplexe Algorithmen: **25% schneller** (AI hilft, aber menschliche Expertise nötig)
+
+    **Durchschnittliche Beschleunigung**: [X]% über alle Tasks
+
+    **Warum nicht noch schneller?**
+    - Review & Quality Control: AI-generierter Code muss geprüft werden
+    - Komplexe Geschäftslogik: Benötigt menschliches Verständnis
+    - Integration Testing: Kann nicht vollständig automatisiert werden
+    - Client-spezifische Anforderungen: Müssen individuell umgesetzt werden
+
+    **Vergleich Traditional vs. AI-Assisted**:
+    | Phase | Traditional | Mit AI-Tools | Speedup |
+    |-------|------------|--------------|---------|
+    | Backend CRUD | [X] Wochen | [Y] Wochen | [Z]% |
+    | Testing | [X] Wochen | [Y] Wochen | [Z]% |
+    | UI Development | [X] Wochen | [Y] Wochen | [Z]% |
+
+    **Wissenschaftliche Basis**:
+    - GitHub Copilot Study (2023): 55% durchschnittliche Beschleunigung
+    - McKinsey Report (2024): 35-50% Produktivitätsgewinn mit Generative AI
+    - Unsere eigene Erfahrung: [X]% average speedup (basierend auf historischen Daten)
+
+    **Sie können AI deaktivieren**:
+    Wenn Sie traditionelle Schätzungen bevorzugen (ohne AI-Adjustment), teilen Sie uns das mit.
+
     ## 💡 Kosten sparen (optionale Reduktionen)
     [List of optional reductions with trade-offs]
 
     ## ✅ Validierung & Transparenz
     [Explain how estimate can be verified]
+    [Note: Includes both traditional benchmarks AND AI-adjusted estimates]
 
     ## 📞 Nächste Schritte
     [Clear action items]

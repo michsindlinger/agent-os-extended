@@ -121,6 +121,33 @@ Apply these adjustments to base estimates:
 - High coupling: +20% testing effort
 - Low coupling: -10% risk buffer
 
+**AI Productivity Adjustments (2024+)**:
+
+CRITICAL: Load from estimation-config.json to check if enabled.
+
+IF ai_productivity_factors.enabled == true:
+
+  Apply task-specific productivity multipliers:
+  - Boilerplate/CRUD: 0.40 (60% faster)
+  - Testing generation: 0.35 (65% faster)
+  - UI components: 0.45 (55% faster)
+  - Documentation: 0.30 (70% faster)
+  - Debugging: 0.65 (35% faster)
+  - Refactoring: 0.50 (50% faster)
+  - Learning curve: 0.50 (50% faster with AI assistance)
+  - Complex algorithms: 0.75 (25% faster, still needs human expertise)
+
+  IMPORTANT:
+  - These adjustments reflect real-world productivity with Claude Code, Cursor, GitHub Copilot
+  - Based on GitHub Copilot Study (2023): 55% avg speedup
+  - Based on McKinsey Report (2024): 35-50% productivity gains
+  - Always document both traditional AND AI-adjusted estimates
+  - Explain speedup limitations (code review, complex logic, integration testing)
+
+ELSE:
+  Use traditional estimates without AI adjustments
+  Warn user that estimates don't account for AI tools
+
 ## Estimation Method Selection Logic
 
 Choose method based on context:
@@ -131,7 +158,9 @@ IF historical_database has >= 10 similar projects THEN
     FALLBACK: Planning Poker
 
 ELSE IF team has velocity_history (3+ sprints) THEN
-    PRIMARY: Planning Poker
+    PRIMARY: Planning Poker (Multi-Perspective Analysis)
+    NOTE: Works WITHOUT existing reference stories
+    METHOD: Multi-perspective complexity analysis + absolute Fibonacci mapping
     FALLBACK: Wideband Delphi
 
 ELSE IF feature is large/complex THEN
