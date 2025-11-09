@@ -299,46 +299,165 @@ Use the estimation-specialist subagent to execute the chosen estimation method.
       - Technical debt penalty: +[%] from code analysis
       - Complexity adjustment: ±[%] based on similar features
 
-    **Step 5: Apply AI Productivity Adjustments**
+    **Step 5: Apply AI Productivity Adjustments (Multi-Tier)**
 
     LOAD: .agent-os/estimations/config/estimation-config.json
 
     IF ai_productivity_factors.enabled == true:
 
+      **Step 5.1: Determine AI Mode**
+
+      LOAD current mode from config:
+        mode = ai_productivity_factors.mode  // "autonomous_agent", "ai_assistant", or "code_completion"
+
+      GET multipliers for current mode:
+        multipliers = ai_productivity_factors.available_modes[mode].multipliers
+        non_acceleratable = ai_productivity_factors.available_modes[mode].non_acceleratable (if exists)
+
+      **Step 5.2: Classify Each Task**
+
       FOR each task:
 
-        IDENTIFY task type:
-        - Is it boilerplate/CRUD? → Use crud_operations multiplier (0.40 = 60% faster)
-        - Is it testing? → Use testing_generation multiplier (0.35 = 65% faster)
-        - Is it complex logic? → Use complex_algorithms multiplier (0.75 = 25% faster)
-        - Is it UI work? → Use ui_components multiplier (0.45 = 55% faster)
-        - Is it debugging? → Use debugging multiplier (0.65 = 35% faster)
-        - Is it documentation? → Use documentation multiplier (0.30 = 70% faster)
+        **Analyze task description** for keywords:
 
-        APPLY AI productivity multiplier:
+        CHECK task_classification_keywords:
+        - IF contains "manual_testing" keywords → task_category = "manual_testing"
+        - IF contains "device_testing" keywords → task_category = "device_testing"
+        - IF contains "code_only" keywords → task_category = "code_only"
+        - IF contains "requires_human_judgment" keywords → task_category = "human_judgment"
+
+        **Map to multiplier type**:
+
+        IDENTIFY specific task type from task_type_mapping:
+        - "Hive Model" → database_models
+        - "Repository" → crud_operations
+        - "Bottom Sheet" → ui_components
+        - "BLoC Logic" → state_management
+        - "QA Testing" → manual_testing
+        - "Device Testing" → device_testing
+        - etc.
+
+        **Get appropriate multiplier**:
+
+        IF task_type IN non_acceleratable:
+          multiplier = non_acceleratable[task_type]
+          reason = "Cannot be significantly accelerated by AI"
+        ELSE:
+          multiplier = multipliers[task_type]
+          reason = "AI can automate this task"
+
+        **Calculate adjusted effort**:
+
         adjusted_points = original_points × multiplier
+        time_saved = original_points - adjusted_points
+        speedup_percentage = (1 - multiplier) × 100
 
-        DOCUMENT adjustment:
-        "Task '[name]' adjusted for AI-assisted development:
-        - Original: [X] points (traditional estimate)
-        - AI Multiplier: [Y] ([Z]% faster with Claude Code/Cursor)
-        - Adjusted: [result] points"
+        **Document adjustment**:
 
-      CALCULATE total AI speedup:
-        average_multiplier = mean(all task multipliers)
-        overall_speedup = (1 - average_multiplier) × 100
+        IF multiplier < 0.20:  // >80% speedup
+          impact = "🚀 MASSIVE AI IMPACT"
+        ELSE IF multiplier < 0.50:  // 50-80% speedup
+          impact = "⚡ HIGH AI IMPACT"
+        ELSE IF multiplier < 0.80:  // 20-50% speedup
+          impact = "✓ MODERATE AI IMPACT"
+        ELSE:  // <20% speedup
+          impact = "⚠️ MINIMAL AI IMPACT - Manual work required"
 
-      INFORM user:
+        CREATE task analysis:
+        ```
+        Task: [name]
+        Type: [task_type]
+        Category: [task_category]
+
+        Traditional Estimate: [X] points / [hours]
+        AI Mode: [mode_name] (e.g., "Autonomous Agent - Claude Code")
+        Multiplier: [Y] ([speedup%] faster)
+        AI-Adjusted Estimate: [Z] points / [hours]
+        Time Saved: [hours] hours
+
+        [impact emoji] [reason]
+
+        Why this speedup:
+        - [Specific explanation based on task type]
+        ```
+
+      **Step 5.3: Calculate Total Impact**
+
+      CATEGORIZE all tasks:
+        massive_impact_tasks = tasks where multiplier < 0.20
+        high_impact_tasks = tasks where multiplier < 0.50
+        moderate_impact_tasks = tasks where multiplier < 0.80
+        minimal_impact_tasks = tasks where multiplier >= 0.80
+
+      CALCULATE totals:
+        total_traditional_hours = Σ(original_points)
+        total_ai_adjusted_hours = Σ(adjusted_points)
+        total_time_saved = total_traditional_hours - total_ai_adjusted_hours
+        overall_speedup = (total_time_saved / total_traditional_hours) × 100
+        average_multiplier = total_ai_adjusted_hours / total_traditional_hours
+
+      **Step 5.4: Generate Breakdown**
+
+      CREATE impact breakdown:
+      ```
+      ⚡ AI PRODUCTIVITY ANALYSIS
+
+      Mode: [Autonomous Agent / AI Assistant / Code Completion]
+      Tools: [Claude Code, Cursor Agent / ChatGPT / GitHub Copilot]
+
+      IMPACT BREAKDOWN:
+      🚀 Massive Impact (>80% speedup): [count] tasks, [X] hours saved
+         Examples: [list top 3]
+
+      ⚡ High Impact (50-80% speedup): [count] tasks, [X] hours saved
+         Examples: [list top 3]
+
+      ✓ Moderate Impact (20-50% speedup): [count] tasks, [X] hours saved
+
+      ⚠️ Minimal/No Impact (<20% speedup): [count] tasks
+         Reason: Manual testing, device testing, human judgment required
+         Examples: [list all]
+
+      TOTALS:
+      - Traditional Estimate: [X] hours ([weeks])
+      - AI-Adjusted Estimate: [Y] hours ([weeks])
+      - Time Saved: [Z] hours ([speedup]%)
+      - Effort Reduction: [weeks saved]
+
+      BOTTLENECKS (Cannot be accelerated):
+      [List all minimal-impact tasks with explanations]
+      ```
+
+      **Step 5.5: Inform User**
+
+      PRESENT analysis:
       "⚡ AI Productivity Applied:
-      - Tools: Claude Code, Cursor, GitHub Copilot
-      - Average speedup: [X]% faster than traditional development
-      - Most impact: [task type with lowest multiplier]
-      - Research basis: GitHub Copilot Study (2023), McKinsey (2024)"
+
+      Mode: [mode_name]
+      - [mode_description]
+
+      Overall Impact: [speedup]% faster ([weeks saved] weeks saved)
+
+      Where AI helps most:
+      1. [Task category 1]: [X]% faster
+      2. [Task category 2]: [Y]% faster
+      3. [Task category 3]: [Z]% faster
+
+      Where AI cannot help:
+      - [Task category]: [reason]
+      - [Task category]: [reason]
+
+      💡 Recommendation:
+      [If massive_impact_tasks > 50% of total]
+        'This project is highly suited for autonomous AI coding!'
+      [If minimal_impact_tasks > 40% of total]
+        'Significant portion requires manual work - estimates are conservative'
+      "
 
     ELSE:
       SKIP AI adjustments
       USE traditional estimates
-      WARN: "Estimates based on traditional development (no AI tools)"
+      WARN: "⚠️ AI productivity disabled - using traditional estimates"
 
     **Step 6: Aggregate to Project Estimate**
 
