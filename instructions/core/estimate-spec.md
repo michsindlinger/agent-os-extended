@@ -253,16 +253,19 @@ Use the estimation-specialist subagent to execute the chosen estimation method.
 <method_execution>
 
   <planning_poker>
-    ### Planning Poker Execution (Multi-Perspective Analysis)
+    ### Planning Poker Execution (Multi-Perspective Analysis with AI-Acceleration)
 
-    **Note**: This method works WITHOUT existing reference stories by using:
+    **Modern Approach**: Estimate in **hours** (not story points) with AI-acceleration factors
+
+    **Note**: This method:
+    - Estimates in hours (human baseline first, then AI-adjusted)
     - Multi-perspective complexity analysis (simulates team voting)
-    - Absolute Fibonacci scale mapping (based on time/complexity)
+    - Applies AI-acceleration factor based on task category
     - Code analysis as implicit references (similar features in codebase)
 
     FOR each task in tasks.md:
 
-      **Step 1: Multi-Perspective Complexity Analysis**
+      **Step 1: Multi-Perspective Complexity Analysis (Human Baseline)**
 
       ANALYZE from different developer perspectives:
       - Backend complexity (API, database, logic) → Score 1-10
@@ -270,209 +273,122 @@ Use the estimation-specialist subagent to execute the chosen estimation method.
       - Testing effort (unit, integration, e2e) → Score 1-10
       - Integration complexity (APIs, services, external) → Score 1-10
 
-      **Step 2: Map to Fibonacci Scale (Absolute Mapping)**
+      **Step 2: Convert to Hours (Human Developer Baseline)**
 
-      For EACH perspective, convert complexity score to Fibonacci:
-      - 1: Trivial (< 2 hours) - Complexity 1-2
-      - 2: Simple (2-4 hours) - Complexity 2-3
-      - 3: Straightforward (4-8 hours) - Complexity 3-4
-      - 5: Moderate (1-2 days) - Complexity 4-6
-      - 8: Complex (2-4 days) - Complexity 6-8
-      - 13: Very complex (1 week) - Complexity 8-10
-      - 20: Highly complex (2 weeks) - Complexity >10
-      - 40: Epic (1 month) - Multiple high-complexity aspects
-
-      **Step 3: Calculate Consensus**
+      For EACH perspective, convert complexity score to estimated hours:
+      - 1-2: Trivial (1-2 hours)
+      - 3-4: Simple (2-4 hours)
+      - 4-5: Straightforward (4-8 hours)
+      - 6-7: Moderate (8-16 hours = 1-2 days)
+      - 7-8: Complex (16-32 hours = 2-4 days)
+      - 9-10: Very complex (32-80 hours = 1-2 weeks)
 
       CALCULATE median of all perspective estimates
-      This simulates team consensus in Planning Poker
+      This is the **human baseline estimate** (as if human developer without AI)
 
-      **Step 4: Apply Code Analysis Adjustments**
+      **Step 3: Apply Code Analysis Adjustments**
 
       IF similar code exists in codebase:
         COMPARE new task with similar features:
-        - Similar complexity but less code needed? → Reduce points
-        - More complex than existing? → Increase points
+        - Similar complexity but less code needed? → Reduce 20-40%
+        - More complex than existing? → Increase 20-30%
 
-      APPLY adjustments:
+      APPLY adjustments to human baseline:
       - Reusability bonus: -[%] from code analysis
       - Technical debt penalty: +[%] from code analysis
       - Complexity adjustment: ±[%] based on similar features
 
-    **Step 5: Apply AI Productivity Adjustments (Multi-Tier)**
+      Result: **Adjusted Human Baseline Hours**
 
-    LOAD: .agent-os/estimations/config/estimation-config.json
+      **Step 4: Categorize for AI-Acceleration**
 
-    IF ai_productivity_factors.enabled == true:
+      LOAD: .agent-os/estimations/config/estimation-config.json → ai_acceleration_factors
 
-      **Step 5.1: Determine AI Mode**
+      ANALYZE task description and classify:
 
-      LOAD current mode from config:
-        mode = ai_productivity_factors.mode  // "autonomous_agent", "ai_assistant", or "code_completion"
+      HIGH AI-ACCELERATION (Factor 0.20 = 80% reduction):
+        - Boilerplate code, CRUD, API endpoints, DB migrations
+        - Configuration files, documentation, test writing
+        - Standard refactoring, type definitions, utilities
+        → AI agent can do this 5x faster
 
-      GET multipliers for current mode:
-        multipliers = ai_productivity_factors.available_modes[mode].multipliers
-        non_acceleratable = ai_productivity_factors.available_modes[mode].non_acceleratable (if exists)
+      MEDIUM AI-ACCELERATION (Factor 0.40 = 60% reduction):
+        - Business logic, algorithms, state management
+        - Complex form validation, API integration
+        - Standard bug fixes, performance optimization
+        → AI agent can do this 2.5x faster
 
-      **Step 5.2: Classify Each Task**
+      LOW AI-ACCELERATION (Factor 0.70 = 30% reduction):
+        - New technology exploration, architecture decisions
+        - Complex bug investigation, poor API docs
+        - Performance profiling, security analysis
+        → AI agent can do this 1.4x faster
+
+      NO AI-ACCELERATION (Factor 1.00 = no reduction):
+        - Manual QA, user testing, design decisions
+        - Business clarification, stakeholder meetings
+        - User research, final code review
+        - Production decisions, waiting for third-parties
+        → AI agent cannot accelerate these
+
+      **Step 5: Calculate AI-Adjusted Estimate**
 
       FOR each task:
+        human_baseline_hours = [from Step 3]
+        ai_category = [from Step 4]
+        ai_factor = config.ai_acceleration_factors[ai_category].factor
 
-        **Analyze task description** for keywords:
+        ai_adjusted_hours = human_baseline_hours × ai_factor
 
-        CHECK task_classification_keywords:
-        - IF contains "manual_testing" keywords → task_category = "manual_testing"
-        - IF contains "device_testing" keywords → task_category = "device_testing"
-        - IF contains "code_only" keywords → task_category = "code_only"
-        - IF contains "requires_human_judgment" keywords → task_category = "human_judgment"
-
-        **Map to multiplier type**:
-
-        IDENTIFY specific task type from task_type_mapping:
-        - "Hive Model" → database_models
-        - "Repository" → crud_operations
-        - "Bottom Sheet" → ui_components
-        - "BLoC Logic" → state_management
-        - "QA Testing" → manual_testing
-        - "Device Testing" → device_testing
-        - etc.
-
-        **Get appropriate multiplier**:
-
-        IF task_type IN non_acceleratable:
-          multiplier = non_acceleratable[task_type]
-          reason = "Cannot be significantly accelerated by AI"
-        ELSE:
-          multiplier = multipliers[task_type]
-          reason = "AI can automate this task"
-
-        **Calculate adjusted effort**:
-
-        adjusted_points = original_points × multiplier
-        time_saved = original_points - adjusted_points
-        speedup_percentage = (1 - multiplier) × 100
-
-        **Document adjustment**:
-
-        IF multiplier < 0.20:  // >80% speedup
-          impact = "🚀 MASSIVE AI IMPACT"
-        ELSE IF multiplier < 0.50:  // 50-80% speedup
-          impact = "⚡ HIGH AI IMPACT"
-        ELSE IF multiplier < 0.80:  // 20-50% speedup
-          impact = "✓ MODERATE AI IMPACT"
-        ELSE:  // <20% speedup
-          impact = "⚠️ MINIMAL AI IMPACT - Manual work required"
-
-        CREATE task analysis:
-        ```
-        Task: [name]
-        Type: [task_type]
-        Category: [task_category]
-
-        Traditional Estimate: [X] points / [hours]
-        AI Mode: [mode_name] (e.g., "Autonomous Agent - Claude Code")
-        Multiplier: [Y] ([speedup%] faster)
-        AI-Adjusted Estimate: [Z] points / [hours]
-        Time Saved: [hours] hours
-
-        [impact emoji] [reason]
-
-        Why this speedup:
-        - [Specific explanation based on task type]
-        ```
-
-      **Step 5.3: Calculate Total Impact**
-
-      CATEGORIZE all tasks:
-        massive_impact_tasks = tasks where multiplier < 0.20
-        high_impact_tasks = tasks where multiplier < 0.50
-        moderate_impact_tasks = tasks where multiplier < 0.80
-        minimal_impact_tasks = tasks where multiplier >= 0.80
-
-      CALCULATE totals:
-        total_traditional_hours = Σ(original_points)
-        total_ai_adjusted_hours = Σ(adjusted_points)
-        total_time_saved = total_traditional_hours - total_ai_adjusted_hours
-        overall_speedup = (total_time_saved / total_traditional_hours) × 100
-        average_multiplier = total_ai_adjusted_hours / total_traditional_hours
-
-      **Step 5.4: Generate Breakdown**
-
-      CREATE impact breakdown:
-      ```
-      ⚡ AI PRODUCTIVITY ANALYSIS
-
-      Mode: [Autonomous Agent / AI Assistant / Code Completion]
-      Tools: [Claude Code, Cursor Agent / ChatGPT / GitHub Copilot]
-
-      IMPACT BREAKDOWN:
-      🚀 Massive Impact (>80% speedup): [count] tasks, [X] hours saved
-         Examples: [list top 3]
-
-      ⚡ High Impact (50-80% speedup): [count] tasks, [X] hours saved
-         Examples: [list top 3]
-
-      ✓ Moderate Impact (20-50% speedup): [count] tasks, [X] hours saved
-
-      ⚠️ Minimal/No Impact (<20% speedup): [count] tasks
-         Reason: Manual testing, device testing, human judgment required
-         Examples: [list all]
-
-      TOTALS:
-      - Traditional Estimate: [X] hours ([weeks])
-      - AI-Adjusted Estimate: [Y] hours ([weeks])
-      - Time Saved: [Z] hours ([speedup]%)
-      - Effort Reduction: [weeks saved]
-
-      BOTTLENECKS (Cannot be accelerated):
-      [List all minimal-impact tasks with explanations]
-      ```
-
-      **Step 5.5: Inform User**
-
-      PRESENT analysis:
-      "⚡ AI Productivity Applied:
-
-      Mode: [mode_name]
-      - [mode_description]
-
-      Overall Impact: [speedup]% faster ([weeks saved] weeks saved)
-
-      Where AI helps most:
-      1. [Task category 1]: [X]% faster
-      2. [Task category 2]: [Y]% faster
-      3. [Task category 3]: [Z]% faster
-
-      Where AI cannot help:
-      - [Task category]: [reason]
-      - [Task category]: [reason]
-
-      💡 Recommendation:
-      [If massive_impact_tasks > 50% of total]
-        'This project is highly suited for autonomous AI coding!'
-      [If minimal_impact_tasks > 40% of total]
-        'Significant portion requires manual work - estimates are conservative'
-      "
-
-    ELSE:
-      SKIP AI adjustments
-      USE traditional estimates
-      WARN: "⚠️ AI productivity disabled - using traditional estimates"
+      DOCUMENT both estimates:
+        - Human Baseline: [hours] (traditional estimate)
+        - AI-Adjusted: [hours] (realistic with AI agent tools)
+        - Reduction: [%] ([hours] saved)
+        - Category: [high/medium/low/no AI-acceleration]
 
     **Step 6: Aggregate to Project Estimate**
 
     AGGREGATE:
-      Total Story Points = Σ(task points)
-      Estimated Sprints = Total Points / Team Velocity
-      Estimated Weeks = Sprints × Sprint Length
+      Total Human Baseline Hours = Σ(task human_baseline_hours)
+      Total AI-Adjusted Hours = Σ(task ai_adjusted_hours)
+      Total Hours Saved = Total Human Baseline - Total AI-Adjusted
+      Reduction Percentage = (Hours Saved / Human Baseline) × 100%
+
+    CONVERT to weeks:
+      Estimated Weeks (Human) = Total Human Hours / (40 hours/week)
+      Estimated Weeks (AI-Adjusted) = Total AI-Adjusted Hours / (40 hours/week)
+
+    **Step 7: Provide Breakdown**
+
+    SHOW distribution by AI category:
+      - High AI-Acceleration: [X] hours baseline → [Y] hours AI-adjusted
+      - Medium AI-Acceleration: [X] hours baseline → [Y] hours AI-adjusted
+      - Low AI-Acceleration: [X] hours baseline → [Y] hours AI-adjusted
+      - No AI-Acceleration: [X] hours (unchanged)
 
     **Communication to User:**
 
-    "Planning Poker (Multi-Perspective Analysis) used:
-    - Each task analyzed from 4 perspectives (Backend, Frontend, Testing, Integration)
-    - Fibonacci points assigned based on absolute complexity scale
-    - Code analysis provides implicit references where similar features exist
-    - No explicit reference stories needed for first estimation"
+    "Planning Poker (Multi-Perspective Analysis with AI-Acceleration) used:
+
+    **Human Baseline Estimate**: [X] hours ([Y] weeks)
+    - Traditional estimate as if human developer without AI tools
+
+    **AI-Adjusted Estimate**: [A] hours ([B] weeks)
+    - Realistic estimate with AI agent tools (Claude Code, Cursor, etc.)
+    - **Time Saved**: [C] hours ([D]% reduction)
+
+    **Breakdown by AI-Acceleration Category**:
+    - High AI-Acceleration ([N] tasks): [X]h → [Y]h (80% reduction)
+    - Medium AI-Acceleration ([N] tasks): [X]h → [Y]h (60% reduction)
+    - Low AI-Acceleration ([N] tasks): [X]h → [Y]h (30% reduction)
+    - No AI-Acceleration ([N] tasks): [X]h (no reduction - human required)
+
+    **Methodology**:
+    1. Each task analyzed from 4 perspectives (Backend, Frontend, Testing, Integration)
+    2. Estimated in hours (human baseline)
+    3. Code analysis provides adjustments where similar features exist
+    4. AI-acceleration factor applied based on task category
+    5. No explicit reference stories needed for first estimation"
 
   </planning_poker>
 
@@ -580,19 +496,12 @@ Use the estimation-specialist subagent to execute the chosen estimation method.
 
 Use the estimation-specialist subagent to create three estimation documents.
 
-<preparation>
-  CREATE estimation directory:
-    mkdir -p .agent-os/specs/[spec-name]/estimation/
-
-  This directory will contain all estimation outputs for this spec.
-</preparation>
-
 <output_files>
 
   <file_1>
     ### estimation-technical.md
 
-    LOCATION: .agent-os/specs/[spec-name]/estimation/estimation-technical.md
+    LOCATION: .agent-os/specs/[spec-name]/estimation-technical.md
 
     CONTENT STRUCTURE:
     ```markdown
@@ -626,19 +535,12 @@ Use the estimation-specialist subagent to create three estimation documents.
     - Complexity Comparison: [vs average]
 
     ## Adjustment Factors
-    - Base Estimate (Traditional): [weeks]
+    - Base Estimate: [weeks]
     - Reusability Bonus: -[%] = -[weeks]
     - Technical Debt Penalty: +[%] = +[weeks]
     - Complexity Adjustment: ±[%] = ±[weeks]
-    - **AI Productivity Adjustment: -[%] = -[weeks]**
-      - Tools: Claude Code, Cursor, GitHub Copilot
-      - Boilerplate/CRUD: 60% faster (0.40 multiplier)
-      - Testing: 65% faster (0.35 multiplier)
-      - UI Components: 55% faster (0.45 multiplier)
-      - Complex Logic: 25% faster (0.75 multiplier)
-      - Average Speedup: [X]% across all tasks
     - Net Adjustment: [weeks]
-    - **Final Estimate (AI-Adjusted)**: [weeks]
+    - Final Estimate: [weeks]
 
     ## Assumptions
     [Numbered list with: Assumption | Validation | Risk if False | Mitigation]
@@ -657,107 +559,255 @@ Use the estimation-specialist subagent to create three estimation documents.
   <file_2>
     ### estimation-client.md
 
-    LOCATION: .agent-os/specs/[spec-name]/estimation/estimation-client.md
+    LOCATION: .agent-os/specs/[spec-name]/estimation-client.md
 
-    CONTENT STRUCTURE (Business-Friendly):
+    IMPORTANT:
+    - ALWAYS write in GERMAN language
+    - Use NON-TECHNICAL language that business stakeholders understand
+    - Explain AI-acceleration in simple terms
+    - Focus on business value, not technical details
+
+    CONTENT STRUCTURE (Kundenfreundlich - Komplett auf Deutsch):
     ```markdown
     ---
-    project: [Feature Name]
-    date: [YYYY-MM-DD]
-    status: Proposal
+    project: [Feature Name auf Deutsch]
+    date: [DD.MM.YYYY]
+    status: Angebot
     ---
 
-    # Aufwandsschätzung: [Feature Name]
+    # Aufwandsschätzung: [Feature Name auf Deutsch]
 
     ## 📋 Zusammenfassung
-    **Geschätzter Gesamtaufwand**: [min]-[max] Wochen
-    **Empfohlene Planung**: [realistic] Wochen
-    **Preis-Range**: €[min] - €[max] (bei €[rate]/Woche)
-    **Konfidenz**: [%] Wahrscheinlichkeit
+
+    **Geschätzter Zeitaufwand**: [min]-[max] Wochen
+    **Unsere Empfehlung**: [realistic] Wochen
+    **Voraussichtliche Kosten**: €[min] - €[max]
+    **Wahrscheinlichkeit**: Zu [%] erreichen wir diesen Zeitrahmen
+
+    ### 🤖 Moderne Entwicklung mit KI-Unterstützung
+
+    **Traditionelle Entwicklung**: [human_baseline] Wochen ([X] Stunden)
+    → So lange würde es dauern, wenn wir komplett manuell programmieren
+
+    **Mit KI-Assistenten**: [ai_adjusted] Wochen ([Y] Stunden)
+    → So lange dauert es tatsächlich mit modernen KI-Werkzeugen
+
+    **Zeitersparnis für Sie**: [saved] Wochen = [X]% schneller
+    **Kostenersparnis**: ca. €[amount] weniger
+
+    ### Warum die Zeitersparnis?
+
+    Wir setzen moderne KI-Assistenten ein (wie Claude Code, Cursor), die uns bei vielen Aufgaben unterstützen:
+
+    ✅ **Schneller** ([N] Aufgaben): [X]% Zeitersparnis
+    → Beispiele: Standardfunktionen, Datenbankanbindungen, Formulare
+    → Hier kann die KI uns sehr gut helfen - bis zu 5x schneller
+
+    ✅ **Normal** ([N] Aufgaben): [Y]% Zeitersparnis
+    → Beispiele: Geschäftslogik, komplexe Berechnungen, Schnittstellen
+    → Hier unterstützt die KI, aber wir müssen mehr selbst denken
+
+    ⚠️ **Langsamer** ([N] Aufgaben): [Z]% Zeitersparnis
+    → Beispiele: Neue Technologien erforschen, komplizierte Fehler finden
+    → Hier kann die KI nur begrenzt helfen
+
+    ⏸️ **Keine Beschleunigung** ([N] Aufgaben): 0% Zeitersparnis
+    → Beispiele: Qualitätsprüfung, Design-Entscheidungen, Abstimmungen
+    → Hier braucht es menschliches Urteilsvermögen
+
+    **Wichtig**: Die KI beschleunigt die Programmierung, aber Qualität, Sicherheit und menschliche Prüfung bleiben unverändert wichtig!
+
+    ---
 
     ## 💰 Aufwandsverteilung
-    [Table: Phase | Beschreibung | Wochen | Kosten | Anteil]
 
-    ## 🎯 Was ist enthalten?
-    ### ✅ Im Scope
-    [Clear bullet points of deliverables]
+    | Phase | Was wird gemacht | Dauer | Kosten | Anteil |
+    |-------|------------------|-------|--------|--------|
+    | [Phase 1] | [Laien-verständliche Beschreibung] | [X] Wochen | €[Y] | [Z]% |
+    | [Phase 2] | [Laien-verständliche Beschreibung] | [X] Wochen | €[Y] | [Z]% |
+    | [Phase 3] | [Laien-verständliche Beschreibung] | [X] Wochen | €[Y] | [Z]% |
+    | **Gesamt** | | **[Total] Wochen** | **€[Total]** | 100% |
 
-    ### ❌ Nicht im Scope
-    [What's excluded - optional features]
+    ---
 
-    ## 📊 Warum diese Aufwände?
-    [For each major phase:
-      - What wird gemacht
-      - Warum [X] Wochen
-      - Industry Benchmark validation
-      - Code reuse explanation
-    ]
+    ## 🎯 Was bekommen Sie?
 
-    ## 📈 Risiken & Unsicherheiten
-    [List: Risk | Probability | Impact | Mitigation]
+    ### ✅ Das ist enthalten
 
-    ## 🎯 Wie sicher ist diese Schätzung?
-    ### Schätzungs-Methodik
-    [Explain methods used in plain language]
+    [Auflistung in einfacher Sprache, keine Technik-Begriffe]
+    - ✅ [Feature 1] - Was Nutzer damit machen können
+    - ✅ [Feature 2] - Welchen Nutzen es bringt
+    - ✅ [Feature 3] - Wie es funktioniert (einfach erklärt)
 
-    ### Konfidenz-Level
-    - Optimistisch ([%]): [weeks]
-    - Realistisch ([%]): [weeks]
-    - Pessimistisch ([%]): [weeks]
+    ### ❌ Das ist NICHT enthalten
 
-    ## ⚡ AI-Assisted Development Berücksichtigt
+    [Optional - was ausdrücklich nicht gemacht wird]
+    - ❌ [Optional Feature 1] - Könnte später ergänzt werden
+    - ❌ [Optional Feature 2] - Würde zusätzlich [X] Wochen dauern
 
-    Diese Schätzung berücksichtigt moderne AI-Tools:
+    ---
 
-    **Verwendete AI-Tools**: Claude Code, Cursor, GitHub Copilot
+    ## 📊 Warum dauert es so lange?
 
-    **Produktivitäts-Steigerungen eingerechnet**:
-    - ✅ Boilerplate & CRUD: **60% schneller** (z.B. Datenbank-Models, API-Endpoints)
-    - ✅ Testing: **65% schneller** (AI generiert Unit Tests automatisch)
-    - ✅ UI-Komponenten: **55% schneller** (Forms, Buttons, Layouts)
-    - ✅ Refactoring: **50% schneller** (AI unterstützt bei Code-Umstrukturierung)
-    - ✅ Documentation: **70% schneller** (AI schreibt Docs automatisch)
-    - ⚠️ Komplexe Algorithmen: **25% schneller** (AI hilft, aber menschliche Expertise nötig)
+    Für jede Phase erklären in einfacher Sprache:
 
-    **Durchschnittliche Beschleunigung**: [X]% über alle Tasks
+    ### Phase 1: [Name der Phase] ([X] Wochen)
 
-    **Warum nicht noch schneller?**
-    - Review & Quality Control: AI-generierter Code muss geprüft werden
-    - Komplexe Geschäftslogik: Benötigt menschliches Verständnis
-    - Integration Testing: Kann nicht vollständig automatisiert werden
-    - Client-spezifische Anforderungen: Müssen individuell umgesetzt werden
+    **Was wird gemacht:**
+    [In 2-3 Sätzen erklären, was passiert - ohne Fachbegriffe]
 
-    **Vergleich Traditional vs. AI-Assisted**:
-    | Phase | Traditional | Mit AI-Tools | Speedup |
-    |-------|------------|--------------|---------|
-    | Backend CRUD | [X] Wochen | [Y] Wochen | [Z]% |
-    | Testing | [X] Wochen | [Y] Wochen | [Z]% |
-    | UI Development | [X] Wochen | [Y] Wochen | [Z]% |
+    **Warum [X] Wochen:**
+    - [Grund 1 in einfacher Sprache]
+    - [Grund 2 in einfacher Sprache]
+    - [Grund 3 in einfacher Sprache]
 
-    **Wissenschaftliche Basis**:
-    - GitHub Copilot Study (2023): 55% durchschnittliche Beschleunigung
-    - McKinsey Report (2024): 35-50% Produktivitätsgewinn mit Generative AI
-    - Unsere eigene Erfahrung: [X]% average speedup (basierend auf historischen Daten)
+    **Vergleich mit ähnlichen Projekten:**
+    Andere vergleichbare Features haben typischerweise [Y]-[Z] Wochen gedauert.
+    Unsere Schätzung liegt [innerhalb/unterhalb/oberhalb], weil [einfache Begründung].
 
-    **Sie können AI deaktivieren**:
-    Wenn Sie traditionelle Schätzungen bevorzugen (ohne AI-Adjustment), teilen Sie uns das mit.
+    **Was wir bereits haben:**
+    ✅ [Vorhandene Funktionen die wiederverwendet werden können]
+    → Das spart uns ca. [X] Wochen Zeit
 
-    ## 💡 Kosten sparen (optionale Reduktionen)
-    [List of optional reductions with trade-offs]
+    [Wiederholen für jede Phase]
 
-    ## ✅ Validierung & Transparenz
-    [Explain how estimate can be verified]
-    [Note: Includes both traditional benchmarks AND AI-adjusted estimates]
+    ---
+
+    ## 📈 Mögliche Risiken
+
+    Wir möchten transparent sein - folgende Dinge könnten den Zeitplan beeinflussen:
+
+    ### Risiko 1: [Verständlicher Name]
+    **Wahrscheinlichkeit**: [Niedrig/Mittel/Hoch]
+    **Mögliche Verzögerung**: +[X] Wochen
+    **Was wir dagegen tun**: [Einfache Erklärung der Gegenmaßnahme]
+
+    ### Risiko 2: [Verständlicher Name]
+    **Wahrscheinlichkeit**: [Niedrig/Mittel/Hoch]
+    **Mögliche Verzögerung**: +[X] Wochen
+    **Was wir dagegen tun**: [Einfache Erklärung der Gegenmaßnahme]
+
+    **Unser Sicherheitspuffer**: Wir haben bereits [X] Wochen Extra-Zeit für unvorhergesehene Probleme eingeplant.
+
+    ---
+
+    ## 🎯 Wie verlässlich ist diese Schätzung?
+
+    ### Unsere Methode
+
+    Wir schätzen nicht "aus dem Bauch heraus", sondern nutzen:
+
+    1. **Erfahrungswerte**: Wir haben [N] ähnliche Projekte gemacht
+    2. **Detaillierte Aufgabenliste**: Jede Aufgabe ist einzeln geschätzt
+    3. **KI-Beschleunigung**: Realistische Einschätzung, wie viel KI helfen kann
+    4. **Branchen-Standards**: Vergleich mit üblichen Entwicklungszeiten
+
+    ### Drei Szenarien
+
+    **Im besten Fall** ([P10]%): [X] Wochen
+    → Wenn alles perfekt läuft und keine Probleme auftreten
+
+    **Realistisch** ([P50]%): [Y] Wochen
+    → Das erwarten wir bei normaler Entwicklung
+
+    **Im schlechtesten Fall** ([P90]%): [Z] Wochen
+    → Wenn mehrere Probleme auftreten
+
+    **Unsere Empfehlung**: Planen Sie mit [realistic] Wochen
+
+    ### Wie genau sind unsere Schätzungen normalerweise?
+
+    [Wenn historische Daten vorhanden:]
+    Bei ähnlichen Projekten lagen wir durchschnittlich [±X]% richtig.
+    Das bedeutet: Unsere Schätzungen sind sehr/ziemlich/relativ zuverlässig.
+
+    ---
+
+    ## 💡 Möglichkeiten zum Kosten sparen
+
+    Falls Ihr Budget knapper ist, können wir folgendes reduzieren:
+
+    ### Option 1: [Vereinfachung A]
+    **Einsparung**: [X] Wochen = €[Y]
+    **Was sich ändert**: [Einfache Erklärung]
+    **Unsere Empfehlung**: ✅ Akzeptabel / ⚠️ Nicht ideal / ❌ Nicht empfohlen
+    **Warum**: [Einfache Begründung]
+
+    ### Option 2: [Vereinfachung B]
+    **Einsparung**: [X] Wochen = €[Y]
+    **Was sich ändert**: [Einfache Erklärung]
+    **Unsere Empfehlung**: ✅ Akzeptabel / ⚠️ Nicht ideal / ❌ Nicht empfohlen
+    **Warum**: [Einfache Begründung]
+
+    **Maximale mögliche Einsparung**: [X] Wochen (€[Y])
+
+    ---
+
+    ## ✅ Transparenz & Nachprüfbarkeit
+
+    Diese Schätzung können Sie von anderen Experten überprüfen lassen:
+
+    - 📄 **Detaillierte technische Dokumentation** liegt vor
+    - 🔍 **Alle Annahmen sind dokumentiert** und können hinterfragt werden
+    - 📊 **Vergleich mit Branchen-Standards** wurde durchgeführt
+    - ✅ **Externe Validierung möglich** - andere KI-Systeme können die Schätzung prüfen
+
+    Bei Fragen zur Methodik oder einzelnen Aufwänden sprechen Sie uns gerne an!
+
+    ---
 
     ## 📞 Nächste Schritte
-    [Clear action items]
+
+    1. **Schätzung prüfen**: Haben Sie Fragen zu den Aufwänden?
+    2. **Umfang festlegen**: Was ist Must-Have, was Nice-to-Have?
+    3. **Budget freigeben**: Passt die Kostenspanne in Ihr Budget?
+    4. **Start vereinbaren**: Nach Ihrer Freigabe können wir sofort beginnen
+
+    **Gültigkeit dieses Angebots**: [Datum]
+
+    **Ihre Ansprechperson**: [Name]
+    **Kontakt**: [Email/Telefon]
+
+    ---
+
+    *Erstellt am [DD.MM.YYYY] mit moderner KI-gestützter Aufwandsschätzung*
     ```
+
+    WICHTIGE HINWEISE FÜR DIE ERSTELLUNG:
+
+    1. **Sprache**:
+       - 100% Deutsch
+       - Keine englischen Fachbegriffe (außer allgemein bekannte wie "Email")
+       - Kurze, klare Sätze
+       - Aktive statt passive Formulierungen
+
+    2. **Technische Begriffe vermeiden/ersetzen**:
+       - NICHT: "API", "Backend", "Frontend", "CRUD", "OAuth"
+       - STATTDESSEN: "Schnittstelle", "Server-Logik", "Benutzer-Oberfläche", "Daten verwalten", "Login-System"
+       - Wenn Fachbegriff nötig: In Klammern erklären
+
+    3. **AI-Acceleration erklären**:
+       - NICHT: "AI factor 0.20" oder "High AI-acceleration"
+       - STATTDESSEN: "KI-Assistenten helfen uns, diese Aufgaben 5x schneller zu erledigen"
+       - Konkrete Beispiele geben, was KI kann und was nicht
+
+    4. **Zahlen verständlich machen**:
+       - Immer beide Werte zeigen: Traditionell vs. Mit KI
+       - Zeitersparnis in Wochen UND Prozent UND Kosten
+       - Klarmachen, dass Qualität nicht leidet
+
+    5. **Business-Fokus**:
+       - Was bekommt der Kunde?
+       - Welchen Nutzen hat es?
+       - Warum kostet es das?
+       - Was sind Alternativen?
+
   </file_2>
 
   <file_3>
     ### estimation-validation.json
 
-    LOCATION: .agent-os/specs/[spec-name]/estimation/estimation-validation.json
+    LOCATION: .agent-os/specs/[spec-name]/estimation-validation.json
 
     CONTENT STRUCTURE (Machine-Readable):
     ```json
@@ -823,7 +873,7 @@ Use the estimation-specialist subagent to create three estimation documents.
   2. **estimation-client.md** - Business-friendly version for clients
   3. **estimation-validation.json** - Machine-readable for external review
 
-  All files saved in: .agent-os/specs/[spec-name]/estimation/"
+  All files saved in: .agent-os/specs/[spec-name]/"
 </confirmation>
 
 </step>

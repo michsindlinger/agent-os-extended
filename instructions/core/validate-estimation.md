@@ -22,27 +22,20 @@ Identify and load the estimation to validate.
 
 <spec_selection>
   IF user specifies spec name:
-    LOAD from .agent-os/specs/[spec-name]/estimation/
+    LOAD from .agent-os/specs/[spec-name]/
   ELSE:
-    LIST available estimations (search for specs with estimation/ directory)
+    LIST available estimations
     ASK user to select
 </spec_selection>
 
 <file_loading>
-  LOCATION: .agent-os/specs/[spec-name]/estimation/
-
   REQUIRED FILES:
   - estimation-technical.md
   - estimation-client.md
   - estimation-validation.json
 
-  CHECK:
-    READ .agent-os/specs/[spec-name]/estimation/estimation-technical.md
-    READ .agent-os/specs/[spec-name]/estimation/estimation-client.md
-    READ .agent-os/specs/[spec-name]/estimation/estimation-validation.json
-
   IF any missing:
-    ERROR: "Incomplete estimation - missing files in estimation/ directory"
+    ERROR: "Incomplete estimation - missing files"
     LIST: Which files are present
     EXIT
 </file_loading>
@@ -522,7 +515,7 @@ Compile all validation results into a comprehensive report.
 
 <create_report>
 
-  FILE: .agent-os/specs/[spec-name]/estimation/estimation-validation-report.md
+  FILE: .agent-os/specs/[spec-name]/estimation-validation-report.md
 
   STRUCTURE:
 
@@ -645,7 +638,7 @@ Compile all validation results into a comprehensive report.
   **Recommendation**: [overall recommendation]
 
   Full report saved to:
-  .agent-os/specs/[spec-name]/estimation/estimation-validation-report.md"
+  .agent-os/specs/[spec-name]/estimation-validation-report.md"
 
 </present_to_user>
 
