@@ -87,22 +87,48 @@ download_file "$REPO_URL/standards/code-style/html-style.md" ".agent-os/standard
 # Download instruction files
 echo ""
 echo "Setting up instructions..."
+
+# Analysis & Planning
 download_file "$REPO_URL/instructions/core/analyze-product.md" ".agent-os/instructions/core/analyze-product.md" "instructions"
 download_file "$REPO_URL/instructions/core/analyze-b2b-application.md" ".agent-os/instructions/core/analyze-b2b-application.md" "instructions"
+download_file "$REPO_URL/instructions/core/plan-product.md" ".agent-os/instructions/core/plan-product.md" "instructions"
+download_file "$REPO_URL/instructions/core/plan-b2b-application.md" ".agent-os/instructions/core/plan-b2b-application.md" "instructions"
+download_file "$REPO_URL/instructions/core/plan-gift-book.md" ".agent-os/instructions/core/plan-gift-book.md" "instructions"
+
+# Brainstorming & Transfer
 download_file "$REPO_URL/instructions/core/start-brainstorming.md" ".agent-os/instructions/core/start-brainstorming.md" "instructions"
 download_file "$REPO_URL/instructions/core/transfer-and-create-spec.md" ".agent-os/instructions/core/transfer-and-create-spec.md" "instructions"
 download_file "$REPO_URL/instructions/core/transfer-and-create-bug.md" ".agent-os/instructions/core/transfer-and-create-bug.md" "instructions"
+download_file "$REPO_URL/instructions/core/transfer-and-plan-product.md" ".agent-os/instructions/core/transfer-and-plan-product.md" "instructions"
+
+# Spec & Feature Development
 download_file "$REPO_URL/instructions/core/create-spec.md" ".agent-os/instructions/core/create-spec.md" "instructions"
-download_file "$REPO_URL/instructions/core/create-bug.md" ".agent-os/instructions/core/create-bug.md" "instructions"
-download_file "$REPO_URL/instructions/core/execute-bug.md" ".agent-os/instructions/core/execute-bug.md" "instructions"
 download_file "$REPO_URL/instructions/core/update-feature.md" ".agent-os/instructions/core/update-feature.md" "instructions"
 download_file "$REPO_URL/instructions/core/document-feature.md" ".agent-os/instructions/core/document-feature.md" "instructions"
 download_file "$REPO_URL/instructions/core/retroactive-doc.md" ".agent-os/instructions/core/retroactive-doc.md" "instructions"
 download_file "$REPO_URL/instructions/core/update-changelog.md" ".agent-os/instructions/core/update-changelog.md" "instructions"
+
+# Bug Management
+download_file "$REPO_URL/instructions/core/create-bug.md" ".agent-os/instructions/core/create-bug.md" "instructions"
+download_file "$REPO_URL/instructions/core/execute-bug.md" ".agent-os/instructions/core/execute-bug.md" "instructions"
+
+# Task Execution
 download_file "$REPO_URL/instructions/core/execute-task.md" ".agent-os/instructions/core/execute-task.md" "instructions"
 download_file "$REPO_URL/instructions/core/execute-tasks.md" ".agent-os/instructions/core/execute-tasks.md" "instructions"
-download_file "$REPO_URL/instructions/core/plan-product.md" ".agent-os/instructions/core/plan-product.md" "instructions"
-download_file "$REPO_URL/instructions/core/plan-b2b-application.md" ".agent-os/instructions/core/plan-b2b-application.md" "instructions"
+
+# Daily Planning
+download_file "$REPO_URL/instructions/core/create-daily-plan.md" ".agent-os/instructions/core/create-daily-plan.md" "instructions"
+download_file "$REPO_URL/instructions/core/execute-daily-plan.md" ".agent-os/instructions/core/execute-daily-plan.md" "instructions"
+download_file "$REPO_URL/instructions/core/review-daily-work.md" ".agent-os/instructions/core/review-daily-work.md" "instructions"
+
+# Estimation
+download_file "$REPO_URL/instructions/core/estimate-spec.md" ".agent-os/instructions/core/estimate-spec.md" "instructions"
+download_file "$REPO_URL/instructions/core/validate-estimation.md" ".agent-os/instructions/core/validate-estimation.md" "instructions"
+
+# Base Setup
+download_file "$REPO_URL/instructions/core/init-base-setup.md" ".agent-os/instructions/core/init-base-setup.md" "instructions"
+download_file "$REPO_URL/instructions/core/validate-base-setup.md" ".agent-os/instructions/core/validate-base-setup.md" "instructions"
+download_file "$REPO_URL/instructions/core/extend-setup.md" ".agent-os/instructions/core/extend-setup.md" "instructions"
 
 # Download meta instruction files
 download_file "$REPO_URL/instructions/meta/pre-flight.md" ".agent-os/instructions/meta/pre-flight.md" "instructions"
