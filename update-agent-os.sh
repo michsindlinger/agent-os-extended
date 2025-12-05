@@ -177,6 +177,7 @@ instruction_files=(
     "execute-tasks.md"
     "plan-product.md"
     "plan-b2b-application.md"
+    "plan-gift-book.md"
     "init-base-setup.md"
     "validate-base-setup.md"
     "extend-setup.md"
@@ -225,6 +226,7 @@ if [[ -d "$BASE_PATH/.claude/commands" || -f "$BASE_PATH/CLAUDE.md" || "$FORCE_U
         "execute-tasks.md"
         "plan-product.md"
         "plan-b2b-application.md"
+        "plan-gift-book.md"
         "init-base-setup.md"
         "validate-base-setup.md"
         "extend-setup.md"
@@ -265,10 +267,14 @@ fi
 # Check for legacy commands/ directory (for backward compatibility)
 if [[ -d "$BASE_PATH/commands" ]]; then
     echo "🎯 Updating legacy commands..."
-    
+
     command_files=(
         "analyze-product.md"
         "analyze-b2b-application.md"
+        "start-brainstorming.md"
+        "transfer-and-create-spec.md"
+        "transfer-and-create-bug.md"
+        "transfer-and-plan-product.md"
         "create-spec.md"
         "create-bug.md"
         "execute-bug.md"
@@ -279,9 +285,13 @@ if [[ -d "$BASE_PATH/commands" ]]; then
         "execute-tasks.md"
         "plan-product.md"
         "plan-b2b-application.md"
+        "plan-gift-book.md"
         "init-base-setup.md"
         "validate-base-setup.md"
         "extend-setup.md"
+        "create-daily-plan.md"
+        "execute-daily-plan.md"
+        "review-daily-work.md"
         "estimate-spec.md"
         "validate-estimation.md"
     )
@@ -386,6 +396,7 @@ if [[ -d "$BASE_PATH/.gemini/tools" || -f "$BASE_PATH/GEMINI.md" || "$FORCE_UPDA
         "execute-tasks"
         "plan-product"
         "plan-b2b-application"
+        "plan-gift-book"
         "init-base-setup"
         "validate-base-setup"
         "extend-setup"
