@@ -79,12 +79,15 @@ tool_files=(
     "execute-tasks"
     "plan-product"
     "plan-b2b-application"
+    "plan-gift-book"
     "init-base-setup"
     "validate-base-setup"
     "extend-setup"
     "create-daily-plan"
     "execute-daily-plan"
     "review-daily-work"
+    "estimate-spec"
+    "validate-estimation"
 )
 
 for tool in "${tool_files[@]}"; do
@@ -105,7 +108,7 @@ This project uses Agent OS Extended for structured AI development workflows.
 
 Use the tools in `.gemini/tools/` to execute Agent OS Extended workflows:
 
-- **Product Planning**: analyze-product, plan-product, plan-b2b-application
+- **Product Planning**: analyze-product, plan-product, plan-b2b-application, plan-gift-book
 - **Feature Development**: create-spec, update-feature, document-feature
 - **Bug Management**: create-bug, execute-bug
 - **Brainstorming**: start-brainstorming, transfer-and-*
@@ -113,6 +116,7 @@ Use the tools in `.gemini/tools/` to execute Agent OS Extended workflows:
 - **Documentation**: retroactive-doc, update-changelog
 - **Task Execution**: execute-tasks
 - **Daily Work Management**: create-daily-plan, execute-daily-plan, review-daily-work
+- **Estimation**: estimate-spec, validate-estimation
 
 ## Project Standards
 
@@ -144,7 +148,7 @@ This project uses Agent OS Extended for structured AI development workflows.
 
 Use the tools in `.gemini/tools/` to execute Agent OS Extended workflows:
 
-- **Product Planning**: analyze-product, plan-product, plan-b2b-application
+- **Product Planning**: analyze-product, plan-product, plan-b2b-application, plan-gift-book
 - **Feature Development**: create-spec, update-feature, document-feature
 - **Bug Management**: create-bug, execute-bug
 - **Brainstorming**: start-brainstorming, transfer-and-*
@@ -152,6 +156,7 @@ Use the tools in `.gemini/tools/` to execute Agent OS Extended workflows:
 - **Documentation**: retroactive-doc, update-changelog
 - **Task Execution**: execute-tasks
 - **Daily Work Management**: create-daily-plan, execute-daily-plan, review-daily-work
+- **Estimation**: estimate-spec, validate-estimation
 
 ## Project Standards
 
@@ -199,9 +204,12 @@ echo "  update-changelog      - Update project changelog"
 echo "  execute-tasks         - Execute development tasks"
 echo "  plan-product          - Plan your product roadmap"
 echo "  plan-b2b-application  - Plan B2B enterprise application"
+echo "  plan-gift-book        - Plan gift books for Amazon KDP"
 echo "  init-base-setup       - Initialize base project setup"
 echo "  validate-base-setup   - Validate base setup configuration"
 echo "  extend-setup          - Extend setup with additional features"
+echo "  estimate-spec         - Estimate effort for feature specifications"
+echo "  validate-estimation   - Validate estimation plausibility"
 echo ""
 echo "Usage with Gemini CLI:"
 echo "  'Use the create-spec tool to create a feature specification'"
