@@ -125,6 +125,10 @@ download_file "$REPO_URL/instructions/core/review-daily-work.md" ".agent-os/inst
 download_file "$REPO_URL/instructions/core/estimate-spec.md" ".agent-os/instructions/core/estimate-spec.md" "instructions"
 download_file "$REPO_URL/instructions/core/validate-estimation.md" ".agent-os/instructions/core/validate-estimation.md" "instructions"
 
+# Instagram Marketing
+download_file "$REPO_URL/instructions/core/create-instagram-account.md" ".agent-os/instructions/core/create-instagram-account.md" "instructions"
+download_file "$REPO_URL/instructions/core/create-content-plan.md" ".agent-os/instructions/core/create-content-plan.md" "instructions"
+
 # Base Setup
 download_file "$REPO_URL/instructions/core/init-base-setup.md" ".agent-os/instructions/core/init-base-setup.md" "instructions"
 download_file "$REPO_URL/instructions/core/validate-base-setup.md" ".agent-os/instructions/core/validate-base-setup.md" "instructions"

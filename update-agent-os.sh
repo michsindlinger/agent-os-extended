@@ -186,6 +186,8 @@ instruction_files=(
     "review-daily-work.md"
     "estimate-spec.md"
     "validate-estimation.md"
+    "create-instagram-account.md"
+    "create-content-plan.md"
 )
 
 for file in "${instruction_files[@]}"; do
@@ -235,8 +237,10 @@ if [[ -d "$BASE_PATH/.claude/commands" || -f "$BASE_PATH/CLAUDE.md" || "$FORCE_U
         "review-daily-work.md"
         "estimate-spec.md"
         "validate-estimation.md"
+        "create-instagram-account.md"
+        "create-content-plan.md"
     )
-    
+
     for file in "${command_files[@]}"; do
         update_file "$REPO_URL/commands/$file" \
                     "$BASE_PATH/.claude/commands/$file" \
@@ -294,8 +298,10 @@ if [[ -d "$BASE_PATH/commands" ]]; then
         "review-daily-work.md"
         "estimate-spec.md"
         "validate-estimation.md"
+        "create-instagram-account.md"
+        "create-content-plan.md"
     )
-    
+
     for file in "${command_files[@]}"; do
         update_file "$REPO_URL/commands/$file" \
                     "$BASE_PATH/commands/$file" \
@@ -405,8 +411,10 @@ if [[ -d "$BASE_PATH/.gemini/tools" || -f "$BASE_PATH/GEMINI.md" || "$FORCE_UPDA
         "review-daily-work"
         "estimate-spec"
         "validate-estimation"
+        "create-instagram-account"
+        "create-content-plan"
     )
-    
+
     for tool in "${gemini_tools[@]}"; do
         update_gemini_tool "$REPO_URL/commands/${tool}.md" "$tool"
     done

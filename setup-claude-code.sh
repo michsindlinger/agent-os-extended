@@ -64,6 +64,8 @@ command_files=(
     "review-daily-work.md"
     "estimate-spec.md"
     "validate-estimation.md"
+    "create-instagram-account.md"
+    "create-content-plan.md"
 )
 
 for file in "${command_files[@]}"; do
@@ -113,5 +115,7 @@ echo "  /execute-daily-plan   - Execute daily tasks autonomously"
 echo "  /review-daily-work    - Review and iterate on completed work"
 echo "  /estimate-spec        - Estimate effort for feature specifications"
 echo "  /validate-estimation  - Validate estimation plausibility"
+echo "  /create-instagram-account - Create Instagram marketing strategy"
+echo "  /create-content-plan  - Create 7-day Instagram content plan"
 echo ""
 echo "For more information, visit: https://github.com/michsindlinger/agent-os-extended"

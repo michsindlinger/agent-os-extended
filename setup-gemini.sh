@@ -88,6 +88,8 @@ tool_files=(
     "review-daily-work"
     "estimate-spec"
     "validate-estimation"
+    "create-instagram-account"
+    "create-content-plan"
 )
 
 for tool in "${tool_files[@]}"; do
@@ -117,6 +119,7 @@ Use the tools in `.gemini/tools/` to execute Agent OS Extended workflows:
 - **Task Execution**: execute-tasks
 - **Daily Work Management**: create-daily-plan, execute-daily-plan, review-daily-work
 - **Estimation**: estimate-spec, validate-estimation
+- **Instagram Marketing**: create-instagram-account, create-content-plan
 
 ## Project Standards
 
@@ -157,6 +160,7 @@ Use the tools in `.gemini/tools/` to execute Agent OS Extended workflows:
 - **Task Execution**: execute-tasks
 - **Daily Work Management**: create-daily-plan, execute-daily-plan, review-daily-work
 - **Estimation**: estimate-spec, validate-estimation
+- **Instagram Marketing**: create-instagram-account, create-content-plan
 
 ## Project Standards
 
@@ -210,8 +214,10 @@ echo "  validate-base-setup   - Validate base setup configuration"
 echo "  extend-setup          - Extend setup with additional features"
 echo "  estimate-spec         - Estimate effort for feature specifications"
 echo "  validate-estimation   - Validate estimation plausibility"
+echo "  create-instagram-account - Create Instagram marketing strategy"
+echo "  create-content-plan   - Create 7-day Instagram content plan"
 echo ""
-echo "Usage with Gemini CLI:"
+echo "Usage with Gemini CLI:
 echo "  'Use the create-spec tool to create a feature specification'"
 echo "  'Follow the standards in .agent-os/standards/ for this code'"
 echo ""
