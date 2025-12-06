@@ -66,6 +66,7 @@ tool_files=(
     "analyze-product"
     "analyze-b2b-application"
     "start-brainstorming"
+    "brainstorm-upselling-ideas"
     "transfer-and-create-spec"
     "transfer-and-create-bug"
     "transfer-and-plan-product"
@@ -113,7 +114,7 @@ Use the tools in `.gemini/tools/` to execute Agent OS Extended workflows:
 - **Product Planning**: analyze-product, plan-product, plan-b2b-application, plan-gift-book
 - **Feature Development**: create-spec, update-feature, document-feature
 - **Bug Management**: create-bug, execute-bug
-- **Brainstorming**: start-brainstorming, transfer-and-*
+- **Brainstorming**: start-brainstorming, brainstorm-upselling-ideas, transfer-and-*
 - **Project Setup**: init-base-setup, validate-base-setup, extend-setup
 - **Documentation**: retroactive-doc, update-changelog
 - **Task Execution**: execute-tasks
@@ -154,7 +155,7 @@ Use the tools in `.gemini/tools/` to execute Agent OS Extended workflows:
 - **Product Planning**: analyze-product, plan-product, plan-b2b-application, plan-gift-book
 - **Feature Development**: create-spec, update-feature, document-feature
 - **Bug Management**: create-bug, execute-bug
-- **Brainstorming**: start-brainstorming, transfer-and-*
+- **Brainstorming**: start-brainstorming, brainstorm-upselling-ideas, transfer-and-*
 - **Project Setup**: init-base-setup, validate-base-setup, extend-setup
 - **Documentation**: retroactive-doc, update-changelog
 - **Task Execution**: execute-tasks

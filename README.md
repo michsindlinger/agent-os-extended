@@ -149,6 +149,7 @@ Use commands like:
 #### Feature Development & Management
 - `/plan-product`, `/analyze-product` - Product planning and analysis
 - `/start-brainstorming` - Interactive idea exploration before formal documentation
+- `/brainstorm-upselling-ideas` - Generate strategic upselling and cross-selling opportunities
 - `/transfer-and-create-spec`, `/transfer-and-create-bug`, `/transfer-and-plan-product` - Convert brainstorming sessions to formal specs/bugs/product plans
 - `/create-spec`, `/update-feature`, `/document-feature`, `/retroactive-doc` - Feature lifecycle management
 - `/create-bug`, `/execute-bug` - Bug management and resolution
@@ -205,11 +206,13 @@ Agent OS Extended includes a comprehensive Feature Lifecycle Management System:
 5. **Brainstorming & Ideation**
    ```
    /start-brainstorming
+   /brainstorm-upselling-ideas
    /transfer-and-create-spec
    /transfer-and-create-bug
    /transfer-and-plan-product
    ```
    - Interactive brainstorming sessions for exploring ideas before formal documentation
+   - Generate upselling opportunities based on project analysis
    - Automatic gap detection when transferring to specs/bugs/product plans
    - Intelligent questionnaire to fill missing information
    - Preserves brainstorming context and decisions
