@@ -1,0 +1,1 @@
+../../agent-os/skills/react/typescript-react-patterns.md

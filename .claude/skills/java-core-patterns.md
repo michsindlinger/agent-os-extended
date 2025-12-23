@@ -1,0 +1,1 @@
+../../agent-os/skills/java/java-core-patterns.md

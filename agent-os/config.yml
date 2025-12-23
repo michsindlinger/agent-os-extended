@@ -52,6 +52,6 @@ project:
 # Feature flags for Phase II features
 features:
   profile_system: true
-  skills_system: false  # Will be enabled when skills are created
-  enhanced_research: false  # Will be enabled in Phase II
-  verification_system: false  # Will be enabled in Phase II
+  skills_system: true  # Enabled: Skills created and symlinked
+  enhanced_research: false  # Will be enabled in Task 9
+  verification_system: false  # Will be enabled in Task 10

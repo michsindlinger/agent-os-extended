@@ -1,0 +1,1 @@
+../../agent-os/skills/java/jpa-best-practices.md

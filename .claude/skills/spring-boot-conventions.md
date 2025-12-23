@@ -1,0 +1,1 @@
+../../agent-os/skills/java/spring-boot-conventions.md

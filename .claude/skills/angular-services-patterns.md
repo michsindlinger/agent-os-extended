@@ -1,0 +1,1 @@
+../../agent-os/skills/angular/angular-services-patterns.md

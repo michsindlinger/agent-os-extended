@@ -1,0 +1,1 @@
+../../agent-os/skills/react/react-component-patterns.md
