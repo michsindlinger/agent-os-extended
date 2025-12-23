@@ -53,5 +53,5 @@ project:
 features:
   profile_system: true
   skills_system: true  # Enabled: Skills created and symlinked
-  enhanced_research: false  # Will be enabled in Task 9
+  enhanced_research: true  # Enabled: Research workflows and templates created
   verification_system: false  # Will be enabled in Task 10
