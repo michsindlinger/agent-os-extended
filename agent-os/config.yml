@@ -1,0 +1,57 @@
+# Agent OS Extended - Project Configuration
+# Version 2.0.0
+
+# Active profile for this project
+# Options: base, java-spring-boot, react-frontend, angular-frontend
+# You can also create custom profiles in agent-os/profiles/
+active_profile: base
+
+# Profile settings
+profiles:
+  # Enable profile inheritance
+  inheritance: true
+
+  # Automatically load skills defined in active profile
+  auto_load_skills: true
+
+# Skills configuration
+skills:
+  # Enable Claude Code Skills integration
+  enabled: true
+
+  # Path to skills directory
+  path: agent-os/skills
+
+  # Symlink skills to .claude/skills for Claude Code
+  symlink_to_claude: true
+
+# Standards injection
+standards:
+  # Inject standards based on task context
+  context_aware: true
+
+  # Inject standards based on file type
+  file_type_aware: true
+
+# Verification settings
+verification:
+  # Enable automatic verification checkpoints
+  enabled: false  # Will be enabled in Phase II implementation
+
+  # Verification types
+  spec_verification: false
+  implementation_verification: false
+  visual_verification: false
+
+# Project metadata
+project:
+  name: "Agent OS Extended"
+  version: "2.0.0"
+  description: "Enhanced Agent OS with v2.0 features and enterprise extensions"
+
+# Feature flags for Phase II features
+features:
+  profile_system: true
+  skills_system: false  # Will be enabled when skills are created
+  enhanced_research: false  # Will be enabled in Phase II
+  verification_system: false  # Will be enabled in Phase II
