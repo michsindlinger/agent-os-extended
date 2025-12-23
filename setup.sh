@@ -137,6 +137,79 @@ download_file "$REPO_URL/workflows/core/extend-setup.md" "agent-os/workflows/cor
 # Download meta workflow files
 download_file "$REPO_URL/workflows/meta/pre-flight.md" "agent-os/workflows/meta/pre-flight.md" "workflows"
 
+# Download research workflows (Phase II)
+echo ""
+echo "Setting up research workflows..."
+mkdir -p agent-os/workflows/research
+mkdir -p agent-os/templates/research
+download_file "$REPO_URL/workflows/research/analyze-codebase-patterns.md" "agent-os/workflows/research/analyze-codebase-patterns.md" "workflows"
+download_file "$REPO_URL/workflows/research/visual-assets.md" "agent-os/workflows/research/visual-assets.md" "workflows"
+download_file "$REPO_URL/workflows/research/README.md" "agent-os/workflows/research/README.md" "workflows"
+download_file "$REPO_URL/templates/research/research-questions.md" "agent-os/templates/research/research-questions.md" "workflows"
+download_file "$REPO_URL/templates/research/research-notes.md" "agent-os/templates/research/research-notes.md" "workflows"
+
+# Download verification workflows (Phase II)
+echo ""
+echo "Setting up verification workflows..."
+mkdir -p agent-os/workflows/verification
+mkdir -p agent-os/templates/verification
+download_file "$REPO_URL/workflows/verification/verify-spec.md" "agent-os/workflows/verification/verify-spec.md" "workflows"
+download_file "$REPO_URL/workflows/verification/verify-implementation.md" "agent-os/workflows/verification/verify-implementation.md" "workflows"
+download_file "$REPO_URL/workflows/verification/verify-visual.md" "agent-os/workflows/verification/verify-visual.md" "workflows"
+download_file "$REPO_URL/workflows/verification/README.md" "agent-os/workflows/verification/README.md" "workflows"
+download_file "$REPO_URL/templates/verification/spec-verification-report.md" "agent-os/templates/verification/spec-verification-report.md" "workflows"
+download_file "$REPO_URL/templates/verification/implementation-verification-report.md" "agent-os/templates/verification/implementation-verification-report.md" "workflows"
+download_file "$REPO_URL/templates/verification/visual-verification-report.md" "agent-os/templates/verification/visual-verification-report.md" "workflows"
+
+# Download enhanced create-spec workflow (Phase II)
+download_file "$REPO_URL/workflows/core/create-spec-v2.md" "agent-os/workflows/core/create-spec-v2.md" "workflows"
+
+# Download profiles (Phase II)
+echo ""
+echo "Setting up profiles..."
+mkdir -p agent-os/profiles
+download_file "$REPO_URL/profiles/base.md" "agent-os/profiles/base.md" "profiles"
+download_file "$REPO_URL/profiles/java-spring-boot.md" "agent-os/profiles/java-spring-boot.md" "profiles"
+download_file "$REPO_URL/profiles/react-frontend.md" "agent-os/profiles/react-frontend.md" "profiles"
+download_file "$REPO_URL/profiles/angular-frontend.md" "agent-os/profiles/angular-frontend.md" "profiles"
+download_file "$REPO_URL/profiles/README.md" "agent-os/profiles/README.md" "profiles"
+
+# Download skills (Phase II)
+echo ""
+echo "Setting up skills..."
+mkdir -p agent-os/skills/{base,java,react,angular}
+
+# Base skills
+download_file "$REPO_URL/skills/base/security-best-practices.md" "agent-os/skills/base/security-best-practices.md" "skills"
+download_file "$REPO_URL/skills/base/git-workflow-patterns.md" "agent-os/skills/base/git-workflow-patterns.md" "skills"
+
+# Java skills
+download_file "$REPO_URL/skills/java/java-core-patterns.md" "agent-os/skills/java/java-core-patterns.md" "skills"
+download_file "$REPO_URL/skills/java/spring-boot-conventions.md" "agent-os/skills/java/spring-boot-conventions.md" "skills"
+download_file "$REPO_URL/skills/java/jpa-best-practices.md" "agent-os/skills/java/jpa-best-practices.md" "skills"
+
+# React skills
+download_file "$REPO_URL/skills/react/react-component-patterns.md" "agent-os/skills/react/react-component-patterns.md" "skills"
+download_file "$REPO_URL/skills/react/react-hooks-best-practices.md" "agent-os/skills/react/react-hooks-best-practices.md" "skills"
+download_file "$REPO_URL/skills/react/typescript-react-patterns.md" "agent-os/skills/react/typescript-react-patterns.md" "skills"
+
+# Angular skills
+download_file "$REPO_URL/skills/angular/angular-component-patterns.md" "agent-os/skills/angular/angular-component-patterns.md" "skills"
+download_file "$REPO_URL/skills/angular/angular-services-patterns.md" "agent-os/skills/angular/angular-services-patterns.md" "skills"
+download_file "$REPO_URL/skills/angular/rxjs-best-practices.md" "agent-os/skills/angular/rxjs-best-practices.md" "skills"
+
+download_file "$REPO_URL/skills/README.md" "agent-os/skills/README.md" "skills"
+
+# Create config.yml if it doesn't exist
+echo ""
+echo "Setting up configuration..."
+if [[ ! -f "agent-os/config.yml" ]]; then
+    download_file "$REPO_URL/config.yml" "agent-os/config.yml" "config"
+    echo "📝 Review agent-os/config.yml to set your active profile"
+else
+    echo "Skipping agent-os/config.yml (already exists)"
+fi
+
 # Handle CLAUDE.md - copy template if not exists, suggest merge if exists
 echo ""
 echo "Setting up CLAUDE.md..."
@@ -151,16 +224,25 @@ else
 fi
 
 echo ""
-echo "✅ Agent OS Extended setup complete!"
+echo "✅ Agent OS Extended v2.0 setup complete!"
 echo ""
 echo "Project structure created:"
-echo "  agent-os/standards/  - Coding standards and best practices"
-echo "  agent-os/workflows/  - Core workflow instructions"
+echo "  agent-os/standards/      - Coding standards and best practices"
+echo "  agent-os/workflows/      - Core workflow instructions"
+echo "  agent-os/profiles/       - Tech-stack profiles (Phase II)"
+echo "  agent-os/skills/         - Claude Code Skills (Phase II)"
+echo "  agent-os/config.yml      - Configuration file"
+echo ""
+echo "Phase II Features Installed:"
+echo "  ✓ Profile System (Java, React, Angular)"
+echo "  ✓ Skills System (12 contextual skills)"
+echo "  ✓ Enhanced Research (codebase analysis, Q&A, visuals)"
+echo "  ✓ Verification System (spec, implementation, visual)"
 echo ""
 echo "Next steps:"
 echo "1. Customize CLAUDE.md with your project-specific information"
-echo "2. Customize agent-os/standards/ files for your project"
-echo "3. Configure your AI coding assistant to use these files"
-echo "4. Start using structured AI development workflows"
+echo "2. Set your profile in agent-os/config.yml (active_profile: ...)"
+echo "3. Run tool-specific setup (e.g., setup-claude-code.sh for Claude Code)"
+echo "4. Start using v2.0 workflows with enhanced features"
 echo ""
 echo "For more information, visit: https://github.com/michsindlinger/agent-os-extended"

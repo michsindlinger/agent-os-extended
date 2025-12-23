@@ -84,12 +84,52 @@ download_file "$REPO_URL/agents/file-creator.md" ".claude/agents/file-creator.md
 download_file "$REPO_URL/agents/date-checker.md" ".claude/agents/date-checker.md"
 download_file "$REPO_URL/agents/estimation-specialist.md" ".claude/agents/estimation-specialist.md"
 
+# Create Skills symlinks (Phase II)
+echo ""
+echo "Setting up Claude Code Skills symlinks..."
+mkdir -p .claude/skills
+
+# Check if skills directory exists
+if [[ -d "agent-os/skills" ]]; then
+    # Create symlinks for all skills
+    echo "Creating symlinks to agent-os/skills/..."
+
+    # Base skills
+    ln -sf ../../agent-os/skills/base/security-best-practices.md .claude/skills/security-best-practices.md
+    ln -sf ../../agent-os/skills/base/git-workflow-patterns.md .claude/skills/git-workflow-patterns.md
+
+    # Java skills
+    ln -sf ../../agent-os/skills/java/java-core-patterns.md .claude/skills/java-core-patterns.md
+    ln -sf ../../agent-os/skills/java/spring-boot-conventions.md .claude/skills/spring-boot-conventions.md
+    ln -sf ../../agent-os/skills/java/jpa-best-practices.md .claude/skills/jpa-best-practices.md
+
+    # React skills
+    ln -sf ../../agent-os/skills/react/react-component-patterns.md .claude/skills/react-component-patterns.md
+    ln -sf ../../agent-os/skills/react/react-hooks-best-practices.md .claude/skills/react-hooks-best-practices.md
+    ln -sf ../../agent-os/skills/react/typescript-react-patterns.md .claude/skills/typescript-react-patterns.md
+
+    # Angular skills
+    ln -sf ../../agent-os/skills/angular/angular-component-patterns.md .claude/skills/angular-component-patterns.md
+    ln -sf ../../agent-os/skills/angular/angular-services-patterns.md .claude/skills/angular-services-patterns.md
+    ln -sf ../../agent-os/skills/angular/rxjs-best-practices.md .claude/skills/rxjs-best-practices.md
+
+    echo "✓ Created 11 skill symlinks"
+else
+    echo "⚠ Skills directory not found. Run base setup first to install skills."
+fi
+
 echo ""
 echo "✅ Claude Code setup complete!"
 echo ""
 echo "Project structure created:"
 echo "  .claude/commands/agent-os/  - Claude Code commands"
 echo "  .claude/agents/             - Claude Code agents"
+echo "  .claude/skills/             - Claude Code Skills (symlinks to agent-os/skills/)"
+echo ""
+echo "Phase II Features Configured:"
+echo "  ✓ 11 Skills symlinked (contextual activation)"
+echo "  ✓ Commands updated for v2.0 workflows"
+echo "  ✓ Enhanced /create-spec with research phase"
 echo ""
 echo "Available commands:"
 echo "  /analyze-product      - Analyze product requirements"

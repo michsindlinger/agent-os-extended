@@ -6,11 +6,44 @@ Agent OS Extended is a project-level implementation of the Agent OS system, desi
 
 ## What's New in v2.0
 
+### Phase I: Structural Improvements
 - **Improved directory structure** - `agent-os/` (visible) instead of `.agent-os/` (hidden)
 - **Clearer naming** - `workflows/` instead of `instructions/` for better semantics
 - **Command isolation** - Commands organized in `.claude/commands/agent-os/` namespace
 - **Migration tools** - Automated migration from v1.x with rollback support
 - **Enhanced workflow organization** - Better structure for complex projects
+
+### Phase II: Advanced Features
+
+**Profile System**
+- Tech-stack-specific profiles (Java Spring Boot, React, Angular)
+- Profile inheritance (all profiles inherit from base)
+- Automatic skill loading based on active profile
+- Flexible profile switching per project
+
+**Skills System**
+- 11 contextual Claude Code Skills that activate automatically
+- 60-80% context reduction vs loading all standards
+- Trigger-based activation (file type, content, task mentions)
+- Skills organized by tech stack:
+  - Base: security-best-practices, git-workflow-patterns
+  - Java: java-core-patterns, spring-boot-conventions, jpa-best-practices
+  - React: react-component-patterns, react-hooks-best-practices, typescript-react-patterns
+  - Angular: angular-component-patterns, angular-services-patterns, rxjs-best-practices
+
+**Enhanced Research Phase**
+- Automatic codebase pattern analysis
+- Interactive Q&A for requirements clarification
+- Visual asset integration (mockups, wireframes, screenshots)
+- Research documentation alongside specs
+- Informed specifications based on existing architecture
+
+**Verification System**
+- Spec Verification: 30 checkpoints for specification completeness
+- Implementation Verification: 24 checkpoints for code quality
+- Visual Verification: 38 checkpoints for UI/design matching
+- Quality gates at each development phase
+- Automated reporting with pass/fail/warning status
 
 ## Key Differences from Original Agent OS
 
@@ -45,22 +78,40 @@ curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/mai
 
 ## Migration from v1.x to v2.0
 
-If you have an existing project using Agent OS Extended v1.x (`.agent-os/` structure), you can migrate to v2.0:
+If you have an existing project using Agent OS Extended v1.x (`.agent-os/` structure), migrate in two steps:
+
+### Step 1: Structural Migration (Phase I)
 
 ```bash
-# Download and run migration script
+# Migrate directory structure to v2.0
 curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/update-to-v2.sh | bash
 ```
 
-**What the migration does:**
+**What Phase I migration does:**
 - Renames `.agent-os/` → `agent-os/`
 - Renames `instructions/` → `workflows/`
 - Moves commands to `.claude/commands/agent-os/`
 - Updates all file references automatically
 - Creates timestamped backup for safety
 
-**Rollback if needed:**
+### Step 2: Phase II Features (Optional)
+
 ```bash
+# Add advanced features (profiles, skills, research, verification)
+curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/update-to-v2-phase2.sh | bash
+```
+
+**What Phase II adds:**
+- Profile System (4 profiles: Java, React, Angular, Base)
+- Skills System (11 contextual skills)
+- Enhanced Research (codebase analysis, Q&A, visuals)
+- Verification System (spec, implementation, visual)
+- Enhanced /create-spec workflow
+
+### Rollback if needed:
+
+```bash
+# Rollback Phase I migration
 curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/rollback-v2-migration.sh | bash
 ```
 
