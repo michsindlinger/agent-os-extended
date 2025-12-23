@@ -1,14 +1,23 @@
-# Agent OS Extended
+# Agent OS Extended v2.0
 
 > **Note**: This repository is based on the original [Agent OS](https://github.com/buildermethods/agent-os) by Builder Methods. This extended version includes enhancements specifically designed for enterprise project development.
 
 Agent OS Extended is a project-level implementation of the Agent OS system, designed to improve AI coding workflows through structured context and guidance. Unlike the original global installation, this version installs configuration files directly within each project.
 
+## What's New in v2.0
+
+- **Improved directory structure** - `agent-os/` (visible) instead of `.agent-os/` (hidden)
+- **Clearer naming** - `workflows/` instead of `instructions/` for better semantics
+- **Command isolation** - Commands organized in `.claude/commands/agent-os/` namespace
+- **Migration tools** - Automated migration from v1.x with rollback support
+- **Enhanced workflow organization** - Better structure for complex projects
+
 ## Key Differences from Original Agent OS
 
-- **Project-level installation** instead of global `~/.agent-os/` installation
+- **Project-level installation** instead of global `~/agent-os/` installation
 - **Enterprise-focused enhancements** for complex project development
 - **Project-specific customization** allowing different standards per project
+- **v2.0 structure alignment** with visible directories and clearer naming
 
 ## Quick Start
 
@@ -34,6 +43,27 @@ curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/mai
 curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/setup-gemini.sh | bash
 ```
 
+## Migration from v1.x to v2.0
+
+If you have an existing project using Agent OS Extended v1.x (`.agent-os/` structure), you can migrate to v2.0:
+
+```bash
+# Download and run migration script
+curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/update-to-v2.sh | bash
+```
+
+**What the migration does:**
+- Renames `.agent-os/` → `agent-os/`
+- Renames `instructions/` → `workflows/`
+- Moves commands to `.claude/commands/agent-os/`
+- Updates all file references automatically
+- Creates timestamped backup for safety
+
+**Rollback if needed:**
+```bash
+curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/rollback-v2-migration.sh | bash
+```
+
 ## Updates
 
 ### Main Update Script
@@ -41,7 +71,7 @@ Update your Agent OS Extended installation (recommended):
 ```bash
 curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/update-agent-os.sh | bash
 ```
-*Includes: instructions, commands, standards, and automatic tool detection*
+*Includes: workflows, commands, standards, and automatic tool detection*
 
 ### Selective Updates
 For specific component updates only:
@@ -50,22 +80,23 @@ For specific component updates only:
 # Standards only
 curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/update-standards.sh | bash
 
-# Instructions only  
-curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/update-instructions.sh | bash
+# Workflows only
+curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/update-workflows.sh | bash
 ```
 
-## Project Structure
+## Project Structure (v2.0)
 
 After installation, your project will contain:
 
 ```
 your-project/
 ├── CLAUDE.md (Claude Code configuration)
-├── .agent-os/
-│   ├── specs/ (Feature specifications - timestamped)
-│   ├── docs/ (User documentation - hierarchical)
-│   ├── bugs/ (Bug tracking and resolution)
-│   ├── standards/
+├── agent-os/                                    # ← Visible directory (v2.0)
+│   ├── specs/                                   # Feature specifications
+│   │   └── YYYY-MM-DD-feature-name/            # Timestamped specs
+│   ├── docs/                                    # User documentation
+│   ├── bugs/                                    # Bug tracking
+│   ├── standards/                               # Coding standards
 │   │   ├── tech-stack.md
 │   │   ├── code-style.md
 │   │   ├── best-practices.md
@@ -73,68 +104,56 @@ your-project/
 │   │       ├── javascript-style.md
 │   │       ├── css-style.md
 │   │       └── html-style.md
-│   │   instructions/
-│   │   ├── core/
-│   │   │   ├── analyze-product.md
-│   │   │   ├── analyze-b2b-application.md
-│   │   │   ├── create-spec.md
-│   │   │   ├── create-bug.md
-│   │   │   ├── execute-bug.md
-│   │   │   ├── update-feature.md
-│   │   │   ├── document-feature.md
-│   │   │   ├── retroactive-doc.md
-│   │   │   ├── update-changelog.md
-│   │   │   ├── execute-task.md
-│   │   │   ├── execute-tasks.md
-│   │   │   ├── plan-product.md
-│   │   │   ├── plan-b2b-application.md
-│   │   │   ├── init-base-setup.md
-│   │   │   ├── validate-base-setup.md
-│   │   │   └── extend-setup.md
-│   │   └── meta/
-│   │       └── pre-flight.md
-│   ├── commands/ (Claude Code)
-│   │   ├── plan-product.md
-│   │   ├── plan-b2b-application.md
-│   │   ├── start-brainstorming.md
-│   │   ├── transfer-and-create-spec.md
-│   │   ├── transfer-and-create-bug.md
-│   │   ├── transfer-and-plan-product.md
-│   │   ├── create-spec.md
-│   │   ├── create-bug.md
-│   │   ├── execute-bug.md
-│   │   ├── update-feature.md
-│   │   ├── document-feature.md
-│   │   ├── retroactive-doc.md
-│   │   ├── update-changelog.md
-│   │   ├── execute-tasks.md
-│   │   ├── analyze-product.md
-│   │   ├── analyze-b2b-application.md
-│   │   ├── init-base-setup.md
-│   │   ├── validate-base-setup.md
-│   │   └── extend-setup.md
-│   └── agents/ (Claude Code)
+│   └── workflows/                               # ← Renamed from instructions/
+│       ├── core/                                # Core workflows
+│       │   ├── analyze-product.md
+│       │   ├── analyze-b2b-application.md
+│       │   ├── create-spec.md
+│       │   ├── create-bug.md
+│       │   ├── execute-bug.md
+│       │   ├── update-feature.md
+│       │   ├── document-feature.md
+│       │   ├── retroactive-doc.md
+│       │   ├── update-changelog.md
+│       │   ├── execute-task.md
+│       │   ├── execute-tasks.md
+│       │   ├── plan-product.md
+│       │   ├── plan-b2b-application.md
+│       │   ├── init-base-setup.md
+│       │   ├── validate-base-setup.md
+│       │   └── extend-setup.md
+│       └── meta/
+│           └── pre-flight.md
+├── .claude/                                     # Claude Code specific
+│   ├── commands/
+│   │   └── agent-os/                           # ← Isolated namespace (v2.0)
+│   │       ├── plan-product.md
+│   │       ├── plan-b2b-application.md
+│   │       ├── start-brainstorming.md
+│   │       ├── transfer-and-create-spec.md
+│   │       ├── create-spec.md
+│   │       ├── execute-tasks.md
+│   │       └── ... (all commands)
+│   └── agents/
 │       ├── test-runner.md
 │       ├── context-fetcher.md
 │       ├── git-workflow.md
 │       ├── file-creator.md
 │       └── date-checker.md
-├── .cursor/rules/ (Cursor)
+├── .cursor/rules/                               # Cursor specific
 │   ├── plan-product.mdc
-│   ├── plan-b2b-application.mdc
 │   ├── create-spec.mdc
-│   ├── execute-tasks.mdc
-│   ├── analyze-product.mdc
-│   └── analyze-b2b-application.mdc
-├── .gemini/ (Gemini CLI)
+│   └── execute-tasks.mdc
+├── .gemini/                                     # Gemini CLI specific
 │   ├── tools/
-│   │   ├── analyze-product.md
-│   │   ├── create-spec.md
-│   │   ├── execute-tasks.md
-│   │   └── ... (all Agent OS tools)
 │   └── workflows/
 └── GEMINI.md (Gemini CLI context)
 ```
+
+**Key Changes in v2.0:**
+- `agent-os/` is visible (no dot prefix) for better discoverability
+- `workflows/` replaces `instructions/` for clearer semantics
+- Commands organized in `.claude/commands/agent-os/` namespace
 
 ## Usage
 
@@ -176,8 +195,8 @@ Agent OS Extended includes a comprehensive Feature Lifecycle Management System:
    ```
    /create-spec → Development → /document-feature
    ```
-   - Creates timestamped spec in `.agent-os/specs/YYYY-MM-DD-feature-name/`
-   - Generates user documentation in `.agent-os/docs/Feature-Name/`
+   - Creates timestamped spec in `agent-os/specs/YYYY-MM-DD-feature-name/`
+   - Generates user documentation in `agent-os/docs/Feature-Name/`
 
 2. **Feature Updates**
    ```
@@ -228,10 +247,10 @@ Agent OS Extended includes a comprehensive Feature Lifecycle Management System:
 
 ### 📁 Directory Structure
 
-- **`.agent-os/specs/`** - Development-oriented specifications (timestamped, includes change history)
-- **`.agent-os/docs/`** - User-oriented documentation (hierarchical, feature-focused)
-- **`.agent-os/bugs/`** - Bug tracking with investigation, reproduction, and resolution documentation
-- **`.agent-os/brainstorming/`** - Brainstorming sessions for feature and bug ideation
+- **`agent-os/specs/`** - Development-oriented specifications (timestamped, includes change history)
+- **`agent-os/docs/`** - User-oriented documentation (hierarchical, feature-focused)
+- **`agent-os/bugs/`** - Bug tracking with investigation, reproduction, and resolution documentation
+- **`agent-os/brainstorming/`** - Brainstorming sessions for feature and bug ideation
 
 ## Customization
 

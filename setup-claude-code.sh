@@ -12,7 +12,7 @@ echo "Installing Claude Code configuration in current project..."
 echo ""
 
 # Check if base Agent OS is installed in project
-if [[ ! -d ".agent-os/standards" ]] || [[ ! -d ".agent-os/instructions" ]]; then
+if [[ ! -d "agent-os/standards" ]] || [[ ! -d "agent-os/workflows" ]]; then
     echo "❌ Error: Agent OS base installation not found in current project."
     echo ""
     echo "Please run the base setup first:"
@@ -23,7 +23,7 @@ fi
 
 # Create Claude Code specific directories
 echo "Creating Claude Code directories..."
-mkdir -p .claude/commands
+mkdir -p .claude/commands/agent-os
 mkdir -p .claude/agents
 
 # Function to download file
@@ -67,10 +67,11 @@ command_files=(
     "validate-estimation.md"
     "create-instagram-account.md"
     "create-content-plan.md"
+    "develop-positioning.md"
 )
 
 for file in "${command_files[@]}"; do
-    download_file "$REPO_URL/commands/$file" ".claude/commands/$file"
+    download_file "$REPO_URL/commands/$file" ".claude/commands/agent-os/$file"
 done
 
 # Download agent files
@@ -87,8 +88,8 @@ echo ""
 echo "✅ Claude Code setup complete!"
 echo ""
 echo "Project structure created:"
-echo "  .claude/commands/     - Claude Code commands"
-echo "  .claude/agents/       - Claude Code agents"
+echo "  .claude/commands/agent-os/  - Claude Code commands"
+echo "  .claude/agents/             - Claude Code agents"
 echo ""
 echo "Available commands:"
 echo "  /analyze-product      - Analyze product requirements"
@@ -119,5 +120,6 @@ echo "  /estimate-spec        - Estimate effort for feature specifications"
 echo "  /validate-estimation  - Validate estimation plausibility"
 echo "  /create-instagram-account - Create Instagram marketing strategy"
 echo "  /create-content-plan  - Create 7-day Instagram content plan"
+echo "  /develop-positioning  - Develop positioning strategy from project specs"
 echo ""
 echo "For more information, visit: https://github.com/michsindlinger/agent-os-extended"

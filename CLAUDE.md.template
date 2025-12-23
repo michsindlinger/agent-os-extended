@@ -9,22 +9,22 @@ Essential guidance for Claude Code development in the [PROJECT_NAME] repository.
 ## Agent OS References
 
 ### Product Information
-- **Mission & Features**: @agent-os/product/mission.md
-- **Technical Architecture**: @agent-os/product/tech-stack.md  
-- **Development Roadmap**: @agent-os/product/roadmap.md
-- **Architectural Decisions**: @agent-os/product/decisions.md
+- **Mission & Features**: @.agent-os/product/mission.md
+- **Technical Architecture**: @.agent-os/product/tech-stack.md  
+- **Development Roadmap**: @.agent-os/product/roadmap.md
+- **Architectural Decisions**: @.agent-os/product/decisions.md
 
 ### Development Standards
-- **Tech Stack Defaults**: @agent-os/standards/tech-stack.md
-- **Code Style Preferences**: @agent-os/standards/code-style.md
-- **Best Practices Philosophy**: @agent-os/standards/best-practices.md
+- **Tech Stack Defaults**: @.agent-os/standards/tech-stack.md
+- **Code Style Preferences**: @.agent-os/standards/code-style.md
+- **Best Practices Philosophy**: @.agent-os/standards/best-practices.md
 
 ### Agent OS Commands
-- **Plan Features**: @agent-os/workflows/create-spec.md
-- **Update Features**: @agent-os/workflows/update-feature.md
-- **Document Features**: @agent-os/workflows/document-feature.md
-- **Retroactive Documentation**: @agent-os/workflows/retroactive-doc.md
-- **Execute Tasks**: @agent-os/workflows/execute-tasks.md
+- **Plan Features**: @.agent-os/instructions/create-spec.md
+- **Update Features**: @.agent-os/instructions/update-feature.md
+- **Document Features**: @.agent-os/instructions/document-feature.md
+- **Retroactive Documentation**: @.agent-os/instructions/retroactive-doc.md
+- **Execute Tasks**: @.agent-os/instructions/execute-tasks.md
 
 
 ## Critical Rules
