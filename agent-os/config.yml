@@ -36,12 +36,12 @@ standards:
 # Verification settings
 verification:
   # Enable automatic verification checkpoints
-  enabled: false  # Will be enabled in Phase II implementation
+  enabled: true  # Enabled: Verification workflows created
 
   # Verification types
-  spec_verification: false
-  implementation_verification: false
-  visual_verification: false
+  spec_verification: true       # Verify spec completeness
+  implementation_verification: true  # Verify code quality
+  visual_verification: true     # Verify UI matches designs (requires mockups)
 
 # Project metadata
 project:
@@ -54,4 +54,4 @@ features:
   profile_system: true
   skills_system: true  # Enabled: Skills created and symlinked
   enhanced_research: true  # Enabled: Research workflows and templates created
-  verification_system: false  # Will be enabled in Task 10
+  verification_system: true  # Enabled: All verification workflows implemented
