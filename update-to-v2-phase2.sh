@@ -49,11 +49,11 @@ download_file() {
 # Phase II: Profiles
 print_step "Installing Profiles"
 mkdir -p agent-os/profiles
-download_file "$REPO_URL/profiles/base.md" "agent-os/profiles/base.md"
-download_file "$REPO_URL/profiles/java-spring-boot.md" "agent-os/profiles/java-spring-boot.md"
-download_file "$REPO_URL/profiles/react-frontend.md" "agent-os/profiles/react-frontend.md"
-download_file "$REPO_URL/profiles/angular-frontend.md" "agent-os/profiles/angular-frontend.md"
-download_file "$REPO_URL/profiles/README.md" "agent-os/profiles/README.md"
+download_file "$REPO_URL/agent-os/profiles/base.md" "agent-os/profiles/base.md"
+download_file "$REPO_URL/agent-os/profiles/java-spring-boot.md" "agent-os/profiles/java-spring-boot.md"
+download_file "$REPO_URL/agent-os/profiles/react-frontend.md" "agent-os/profiles/react-frontend.md"
+download_file "$REPO_URL/agent-os/profiles/angular-frontend.md" "agent-os/profiles/angular-frontend.md"
+download_file "$REPO_URL/agent-os/profiles/README.md" "agent-os/profiles/README.md"
 print_success "Installed 4 profiles"
 
 # Phase II: Skills
@@ -61,60 +61,60 @@ print_step "Installing Skills"
 mkdir -p agent-os/skills/{base,java,react,angular}
 
 # Base skills
-download_file "$REPO_URL/skills/base/security-best-practices.md" "agent-os/skills/base/security-best-practices.md"
-download_file "$REPO_URL/skills/base/git-workflow-patterns.md" "agent-os/skills/base/git-workflow-patterns.md"
+download_file "$REPO_URL/agent-os/skills/base/security-best-practices.md" "agent-os/skills/base/security-best-practices.md"
+download_file "$REPO_URL/agent-os/skills/base/git-workflow-patterns.md" "agent-os/skills/base/git-workflow-patterns.md"
 
 # Java skills
-download_file "$REPO_URL/skills/java/java-core-patterns.md" "agent-os/skills/java/java-core-patterns.md"
-download_file "$REPO_URL/skills/java/spring-boot-conventions.md" "agent-os/skills/java/spring-boot-conventions.md"
-download_file "$REPO_URL/skills/java/jpa-best-practices.md" "agent-os/skills/java/jpa-best-practices.md"
+download_file "$REPO_URL/agent-os/skills/java/java-core-patterns.md" "agent-os/skills/java/java-core-patterns.md"
+download_file "$REPO_URL/agent-os/skills/java/spring-boot-conventions.md" "agent-os/skills/java/spring-boot-conventions.md"
+download_file "$REPO_URL/agent-os/skills/java/jpa-best-practices.md" "agent-os/skills/java/jpa-best-practices.md"
 
 # React skills
-download_file "$REPO_URL/skills/react/react-component-patterns.md" "agent-os/skills/react/react-component-patterns.md"
-download_file "$REPO_URL/skills/react/react-hooks-best-practices.md" "agent-os/skills/react/react-hooks-best-practices.md"
-download_file "$REPO_URL/skills/react/typescript-react-patterns.md" "agent-os/skills/react/typescript-react-patterns.md"
+download_file "$REPO_URL/agent-os/skills/react/react-component-patterns.md" "agent-os/skills/react/react-component-patterns.md"
+download_file "$REPO_URL/agent-os/skills/react/react-hooks-best-practices.md" "agent-os/skills/react/react-hooks-best-practices.md"
+download_file "$REPO_URL/agent-os/skills/react/typescript-react-patterns.md" "agent-os/skills/react/typescript-react-patterns.md"
 
 # Angular skills
-download_file "$REPO_URL/skills/angular/angular-component-patterns.md" "agent-os/skills/angular/angular-component-patterns.md"
-download_file "$REPO_URL/skills/angular/angular-services-patterns.md" "agent-os/skills/angular/angular-services-patterns.md"
-download_file "$REPO_URL/skills/angular/rxjs-best-practices.md" "agent-os/skills/angular/rxjs-best-practices.md"
+download_file "$REPO_URL/agent-os/skills/angular/angular-component-patterns.md" "agent-os/skills/angular/angular-component-patterns.md"
+download_file "$REPO_URL/agent-os/skills/angular/angular-services-patterns.md" "agent-os/skills/angular/angular-services-patterns.md"
+download_file "$REPO_URL/agent-os/skills/angular/rxjs-best-practices.md" "agent-os/skills/angular/rxjs-best-practices.md"
 
-download_file "$REPO_URL/skills/README.md" "agent-os/skills/README.md"
+download_file "$REPO_URL/agent-os/skills/README.md" "agent-os/skills/README.md"
 print_success "Installed 11 skills"
 
 # Phase II: Research Workflows
 print_step "Installing Research Workflows"
 mkdir -p agent-os/workflows/research
 mkdir -p agent-os/templates/research
-download_file "$REPO_URL/workflows/research/analyze-codebase-patterns.md" "agent-os/workflows/research/analyze-codebase-patterns.md"
-download_file "$REPO_URL/workflows/research/visual-assets.md" "agent-os/workflows/research/visual-assets.md"
-download_file "$REPO_URL/workflows/research/README.md" "agent-os/workflows/research/README.md"
-download_file "$REPO_URL/templates/research/research-questions.md" "agent-os/templates/research/research-questions.md"
-download_file "$REPO_URL/templates/research/research-notes.md" "agent-os/templates/research/research-notes.md"
+download_file "$REPO_URL/agent-os/workflows/research/analyze-codebase-patterns.md" "agent-os/workflows/research/analyze-codebase-patterns.md"
+download_file "$REPO_URL/agent-os/workflows/research/visual-assets.md" "agent-os/workflows/research/visual-assets.md"
+download_file "$REPO_URL/agent-os/workflows/research/README.md" "agent-os/workflows/research/README.md"
+download_file "$REPO_URL/agent-os/templates/research/research-questions.md" "agent-os/templates/research/research-questions.md"
+download_file "$REPO_URL/agent-os/templates/research/research-notes.md" "agent-os/templates/research/research-notes.md"
 print_success "Installed research workflows"
 
 # Phase II: Verification Workflows
 print_step "Installing Verification Workflows"
 mkdir -p agent-os/workflows/verification
 mkdir -p agent-os/templates/verification
-download_file "$REPO_URL/workflows/verification/verify-spec.md" "agent-os/workflows/verification/verify-spec.md"
-download_file "$REPO_URL/workflows/verification/verify-implementation.md" "agent-os/workflows/verification/verify-implementation.md"
-download_file "$REPO_URL/workflows/verification/verify-visual.md" "agent-os/workflows/verification/verify-visual.md"
-download_file "$REPO_URL/workflows/verification/README.md" "agent-os/workflows/verification/README.md"
-download_file "$REPO_URL/templates/verification/spec-verification-report.md" "agent-os/templates/verification/spec-verification-report.md"
-download_file "$REPO_URL/templates/verification/implementation-verification-report.md" "agent-os/templates/verification/implementation-verification-report.md"
-download_file "$REPO_URL/templates/verification/visual-verification-report.md" "agent-os/templates/verification/visual-verification-report.md"
+download_file "$REPO_URL/agent-os/workflows/verification/verify-spec.md" "agent-os/workflows/verification/verify-spec.md"
+download_file "$REPO_URL/agent-os/workflows/verification/verify-implementation.md" "agent-os/workflows/verification/verify-implementation.md"
+download_file "$REPO_URL/agent-os/workflows/verification/verify-visual.md" "agent-os/workflows/verification/verify-visual.md"
+download_file "$REPO_URL/agent-os/workflows/verification/README.md" "agent-os/workflows/verification/README.md"
+download_file "$REPO_URL/agent-os/templates/verification/spec-verification-report.md" "agent-os/templates/verification/spec-verification-report.md"
+download_file "$REPO_URL/agent-os/templates/verification/implementation-verification-report.md" "agent-os/templates/verification/implementation-verification-report.md"
+download_file "$REPO_URL/agent-os/templates/verification/visual-verification-report.md" "agent-os/templates/verification/visual-verification-report.md"
 print_success "Installed verification workflows"
 
 # Phase II: Enhanced create-spec
 print_step "Installing Enhanced Workflows"
-download_file "$REPO_URL/workflows/core/create-spec-v2.md" "agent-os/workflows/core/create-spec-v2.md"
+download_file "$REPO_URL/agent-os/workflows/core/create-spec-v2.md" "agent-os/workflows/core/create-spec-v2.md"
 print_success "Installed create-spec v2.0"
 
 # Create/Update config.yml
 print_step "Configuring Phase II Features"
 if [[ ! -f "agent-os/config.yml" ]]; then
-    download_file "$REPO_URL/config.yml" "agent-os/config.yml"
+    download_file "$REPO_URL/agent-os/config.yml" "agent-os/config.yml"
     print_success "Created agent-os/config.yml"
 else
     echo "⚠ agent-os/config.yml already exists - not overwriting"
@@ -128,7 +128,7 @@ fi
 # Update .claude/commands/agent-os/create-spec.md if exists
 if [[ -f ".claude/commands/agent-os/create-spec.md" ]]; then
     print_step "Updating /create-spec command to v2.0"
-    download_file "$REPO_URL/commands/create-spec.md" ".claude/commands/agent-os/create-spec.md"
+    download_file "$REPO_URL/.claude/commands/agent-os/create-spec.md" ".claude/commands/agent-os/create-spec.md"
     print_success "Updated create-spec command"
 fi
 

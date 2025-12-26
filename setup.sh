@@ -75,104 +75,107 @@ download_file() {
 # Download standards files
 echo ""
 echo "Setting up standards..."
-download_file "$REPO_URL/standards/tech-stack.md" "agent-os/standards/tech-stack.md" "standards"
-download_file "$REPO_URL/standards/code-style.md" "agent-os/standards/code-style.md" "standards"
-download_file "$REPO_URL/standards/best-practices.md" "agent-os/standards/best-practices.md" "standards"
+download_file "$REPO_URL/agent-os/standards/tech-stack.md" "agent-os/standards/tech-stack.md" "standards"
+download_file "$REPO_URL/agent-os/standards/code-style.md" "agent-os/standards/code-style.md" "standards"
+download_file "$REPO_URL/agent-os/standards/best-practices.md" "agent-os/standards/best-practices.md" "standards"
 
 # Download code style files
-download_file "$REPO_URL/standards/code-style/javascript-style.md" "agent-os/standards/code-style/javascript-style.md" "standards"
-download_file "$REPO_URL/standards/code-style/css-style.md" "agent-os/standards/code-style/css-style.md" "standards"
-download_file "$REPO_URL/standards/code-style/html-style.md" "agent-os/standards/code-style/html-style.md" "standards"
+download_file "$REPO_URL/agent-os/standards/code-style/javascript-style.md" "agent-os/standards/code-style/javascript-style.md" "standards"
+download_file "$REPO_URL/agent-os/standards/code-style/css-style.md" "agent-os/standards/code-style/css-style.md" "standards"
+download_file "$REPO_URL/agent-os/standards/code-style/html-style.md" "agent-os/standards/code-style/html-style.md" "standards"
 
 # Download workflow files (renamed from instructions)
 echo ""
 echo "Setting up workflows..."
 
 # Analysis & Planning
-download_file "$REPO_URL/workflows/core/analyze-product.md" "agent-os/workflows/core/analyze-product.md" "workflows"
-download_file "$REPO_URL/workflows/core/analyze-b2b-application.md" "agent-os/workflows/core/analyze-b2b-application.md" "workflows"
-download_file "$REPO_URL/workflows/core/plan-product.md" "agent-os/workflows/core/plan-product.md" "workflows"
-download_file "$REPO_URL/workflows/core/plan-b2b-application.md" "agent-os/workflows/core/plan-b2b-application.md" "workflows"
-download_file "$REPO_URL/workflows/core/plan-gift-book.md" "agent-os/workflows/core/plan-gift-book.md" "workflows"
+download_file "$REPO_URL/agent-os/workflows/core/analyze-product.md" "agent-os/workflows/core/analyze-product.md" "workflows"
+download_file "$REPO_URL/agent-os/workflows/core/analyze-b2b-application.md" "agent-os/workflows/core/analyze-b2b-application.md" "workflows"
+download_file "$REPO_URL/agent-os/workflows/core/plan-product.md" "agent-os/workflows/core/plan-product.md" "workflows"
+download_file "$REPO_URL/agent-os/workflows/core/plan-b2b-application.md" "agent-os/workflows/core/plan-b2b-application.md" "workflows"
+download_file "$REPO_URL/agent-os/workflows/core/plan-gift-book.md" "agent-os/workflows/core/plan-gift-book.md" "workflows"
 
 # Brainstorming & Transfer
-download_file "$REPO_URL/workflows/core/start-brainstorming.md" "agent-os/workflows/core/start-brainstorming.md" "workflows"
-download_file "$REPO_URL/workflows/core/transfer-and-create-spec.md" "agent-os/workflows/core/transfer-and-create-spec.md" "workflows"
-download_file "$REPO_URL/workflows/core/transfer-and-create-bug.md" "agent-os/workflows/core/transfer-and-create-bug.md" "workflows"
-download_file "$REPO_URL/workflows/core/transfer-and-plan-product.md" "agent-os/workflows/core/transfer-and-plan-product.md" "workflows"
+download_file "$REPO_URL/agent-os/workflows/core/start-brainstorming.md" "agent-os/workflows/core/start-brainstorming.md" "workflows"
+download_file "$REPO_URL/agent-os/workflows/core/transfer-and-create-spec.md" "agent-os/workflows/core/transfer-and-create-spec.md" "workflows"
+download_file "$REPO_URL/agent-os/workflows/core/transfer-and-create-bug.md" "agent-os/workflows/core/transfer-and-create-bug.md" "workflows"
+download_file "$REPO_URL/agent-os/workflows/core/transfer-and-plan-product.md" "agent-os/workflows/core/transfer-and-plan-product.md" "workflows"
 
 # Spec & Feature Development
-download_file "$REPO_URL/workflows/core/create-spec.md" "agent-os/workflows/core/create-spec.md" "workflows"
-download_file "$REPO_URL/workflows/core/update-feature.md" "agent-os/workflows/core/update-feature.md" "workflows"
-download_file "$REPO_URL/workflows/core/document-feature.md" "agent-os/workflows/core/document-feature.md" "workflows"
-download_file "$REPO_URL/workflows/core/retroactive-doc.md" "agent-os/workflows/core/retroactive-doc.md" "workflows"
-download_file "$REPO_URL/workflows/core/update-changelog.md" "agent-os/workflows/core/update-changelog.md" "workflows"
+download_file "$REPO_URL/agent-os/workflows/core/create-spec.md" "agent-os/workflows/core/create-spec.md" "workflows"
+download_file "$REPO_URL/agent-os/workflows/core/update-feature.md" "agent-os/workflows/core/update-feature.md" "workflows"
+download_file "$REPO_URL/agent-os/workflows/core/document-feature.md" "agent-os/workflows/core/document-feature.md" "workflows"
+download_file "$REPO_URL/agent-os/workflows/core/retroactive-doc.md" "agent-os/workflows/core/retroactive-doc.md" "workflows"
+download_file "$REPO_URL/agent-os/workflows/core/update-changelog.md" "agent-os/workflows/core/update-changelog.md" "workflows"
 
 # Bug Management
-download_file "$REPO_URL/workflows/core/create-bug.md" "agent-os/workflows/core/create-bug.md" "workflows"
-download_file "$REPO_URL/workflows/core/execute-bug.md" "agent-os/workflows/core/execute-bug.md" "workflows"
+download_file "$REPO_URL/agent-os/workflows/core/create-bug.md" "agent-os/workflows/core/create-bug.md" "workflows"
+download_file "$REPO_URL/agent-os/workflows/core/execute-bug.md" "agent-os/workflows/core/execute-bug.md" "workflows"
 
 # Task Execution
-download_file "$REPO_URL/workflows/core/execute-task.md" "agent-os/workflows/core/execute-task.md" "workflows"
-download_file "$REPO_URL/workflows/core/execute-tasks.md" "agent-os/workflows/core/execute-tasks.md" "workflows"
+download_file "$REPO_URL/agent-os/workflows/core/execute-task.md" "agent-os/workflows/core/execute-task.md" "workflows"
+download_file "$REPO_URL/agent-os/workflows/core/execute-tasks.md" "agent-os/workflows/core/execute-tasks.md" "workflows"
 
 # Daily Planning
-download_file "$REPO_URL/workflows/core/create-daily-plan.md" "agent-os/workflows/core/create-daily-plan.md" "workflows"
-download_file "$REPO_URL/workflows/core/execute-daily-plan.md" "agent-os/workflows/core/execute-daily-plan.md" "workflows"
-download_file "$REPO_URL/workflows/core/review-daily-work.md" "agent-os/workflows/core/review-daily-work.md" "workflows"
+download_file "$REPO_URL/agent-os/workflows/core/create-daily-plan.md" "agent-os/workflows/core/create-daily-plan.md" "workflows"
+download_file "$REPO_URL/agent-os/workflows/core/execute-daily-plan.md" "agent-os/workflows/core/execute-daily-plan.md" "workflows"
+download_file "$REPO_URL/agent-os/workflows/core/review-daily-work.md" "agent-os/workflows/core/review-daily-work.md" "workflows"
 
 # Estimation
-download_file "$REPO_URL/workflows/core/estimate-spec.md" "agent-os/workflows/core/estimate-spec.md" "workflows"
-download_file "$REPO_URL/workflows/core/validate-estimation.md" "agent-os/workflows/core/validate-estimation.md" "workflows"
+download_file "$REPO_URL/agent-os/workflows/core/estimate-spec.md" "agent-os/workflows/core/estimate-spec.md" "workflows"
+download_file "$REPO_URL/agent-os/workflows/core/validate-estimation.md" "agent-os/workflows/core/validate-estimation.md" "workflows"
 
 # Instagram Marketing
-download_file "$REPO_URL/workflows/core/create-instagram-account.md" "agent-os/workflows/core/create-instagram-account.md" "workflows"
-download_file "$REPO_URL/workflows/core/create-content-plan.md" "agent-os/workflows/core/create-content-plan.md" "workflows"
+download_file "$REPO_URL/agent-os/workflows/core/create-instagram-account.md" "agent-os/workflows/core/create-instagram-account.md" "workflows"
+download_file "$REPO_URL/agent-os/workflows/core/create-content-plan.md" "agent-os/workflows/core/create-content-plan.md" "workflows"
 
 # Base Setup
-download_file "$REPO_URL/workflows/core/init-base-setup.md" "agent-os/workflows/core/init-base-setup.md" "workflows"
-download_file "$REPO_URL/workflows/core/validate-base-setup.md" "agent-os/workflows/core/validate-base-setup.md" "workflows"
-download_file "$REPO_URL/workflows/core/extend-setup.md" "agent-os/workflows/core/extend-setup.md" "workflows"
+download_file "$REPO_URL/agent-os/workflows/core/init-base-setup.md" "agent-os/workflows/core/init-base-setup.md" "workflows"
+download_file "$REPO_URL/agent-os/workflows/core/validate-base-setup.md" "agent-os/workflows/core/validate-base-setup.md" "workflows"
+download_file "$REPO_URL/agent-os/workflows/core/extend-setup.md" "agent-os/workflows/core/extend-setup.md" "workflows"
+
+# Marketing
+download_file "$REPO_URL/agent-os/workflows/develop-positioning.md" "agent-os/workflows/develop-positioning.md" "workflows"
 
 # Download meta workflow files
-download_file "$REPO_URL/workflows/meta/pre-flight.md" "agent-os/workflows/meta/pre-flight.md" "workflows"
+download_file "$REPO_URL/agent-os/workflows/meta/pre-flight.md" "agent-os/workflows/meta/pre-flight.md" "workflows"
 
 # Download research workflows (Phase II)
 echo ""
 echo "Setting up research workflows..."
 mkdir -p agent-os/workflows/research
 mkdir -p agent-os/templates/research
-download_file "$REPO_URL/workflows/research/analyze-codebase-patterns.md" "agent-os/workflows/research/analyze-codebase-patterns.md" "workflows"
-download_file "$REPO_URL/workflows/research/visual-assets.md" "agent-os/workflows/research/visual-assets.md" "workflows"
-download_file "$REPO_URL/workflows/research/README.md" "agent-os/workflows/research/README.md" "workflows"
-download_file "$REPO_URL/templates/research/research-questions.md" "agent-os/templates/research/research-questions.md" "workflows"
-download_file "$REPO_URL/templates/research/research-notes.md" "agent-os/templates/research/research-notes.md" "workflows"
+download_file "$REPO_URL/agent-os/workflows/research/analyze-codebase-patterns.md" "agent-os/workflows/research/analyze-codebase-patterns.md" "workflows"
+download_file "$REPO_URL/agent-os/workflows/research/visual-assets.md" "agent-os/workflows/research/visual-assets.md" "workflows"
+download_file "$REPO_URL/agent-os/workflows/research/README.md" "agent-os/workflows/research/README.md" "workflows"
+download_file "$REPO_URL/agent-os/templates/research/research-questions.md" "agent-os/templates/research/research-questions.md" "workflows"
+download_file "$REPO_URL/agent-os/templates/research/research-notes.md" "agent-os/templates/research/research-notes.md" "workflows"
 
 # Download verification workflows (Phase II)
 echo ""
 echo "Setting up verification workflows..."
 mkdir -p agent-os/workflows/verification
 mkdir -p agent-os/templates/verification
-download_file "$REPO_URL/workflows/verification/verify-spec.md" "agent-os/workflows/verification/verify-spec.md" "workflows"
-download_file "$REPO_URL/workflows/verification/verify-implementation.md" "agent-os/workflows/verification/verify-implementation.md" "workflows"
-download_file "$REPO_URL/workflows/verification/verify-visual.md" "agent-os/workflows/verification/verify-visual.md" "workflows"
-download_file "$REPO_URL/workflows/verification/README.md" "agent-os/workflows/verification/README.md" "workflows"
-download_file "$REPO_URL/templates/verification/spec-verification-report.md" "agent-os/templates/verification/spec-verification-report.md" "workflows"
-download_file "$REPO_URL/templates/verification/implementation-verification-report.md" "agent-os/templates/verification/implementation-verification-report.md" "workflows"
-download_file "$REPO_URL/templates/verification/visual-verification-report.md" "agent-os/templates/verification/visual-verification-report.md" "workflows"
+download_file "$REPO_URL/agent-os/workflows/verification/verify-spec.md" "agent-os/workflows/verification/verify-spec.md" "workflows"
+download_file "$REPO_URL/agent-os/workflows/verification/verify-implementation.md" "agent-os/workflows/verification/verify-implementation.md" "workflows"
+download_file "$REPO_URL/agent-os/workflows/verification/verify-visual.md" "agent-os/workflows/verification/verify-visual.md" "workflows"
+download_file "$REPO_URL/agent-os/workflows/verification/README.md" "agent-os/workflows/verification/README.md" "workflows"
+download_file "$REPO_URL/agent-os/templates/verification/spec-verification-report.md" "agent-os/templates/verification/spec-verification-report.md" "workflows"
+download_file "$REPO_URL/agent-os/templates/verification/implementation-verification-report.md" "agent-os/templates/verification/implementation-verification-report.md" "workflows"
+download_file "$REPO_URL/agent-os/templates/verification/visual-verification-report.md" "agent-os/templates/verification/visual-verification-report.md" "workflows"
 
 # Download enhanced create-spec workflow (Phase II)
-download_file "$REPO_URL/workflows/core/create-spec-v2.md" "agent-os/workflows/core/create-spec-v2.md" "workflows"
+download_file "$REPO_URL/agent-os/workflows/core/create-spec-v2.md" "agent-os/workflows/core/create-spec-v2.md" "workflows"
 
 # Download profiles (Phase II)
 echo ""
 echo "Setting up profiles..."
 mkdir -p agent-os/profiles
-download_file "$REPO_URL/profiles/base.md" "agent-os/profiles/base.md" "profiles"
-download_file "$REPO_URL/profiles/java-spring-boot.md" "agent-os/profiles/java-spring-boot.md" "profiles"
-download_file "$REPO_URL/profiles/react-frontend.md" "agent-os/profiles/react-frontend.md" "profiles"
-download_file "$REPO_URL/profiles/angular-frontend.md" "agent-os/profiles/angular-frontend.md" "profiles"
-download_file "$REPO_URL/profiles/README.md" "agent-os/profiles/README.md" "profiles"
+download_file "$REPO_URL/agent-os/profiles/base.md" "agent-os/profiles/base.md" "profiles"
+download_file "$REPO_URL/agent-os/profiles/java-spring-boot.md" "agent-os/profiles/java-spring-boot.md" "profiles"
+download_file "$REPO_URL/agent-os/profiles/react-frontend.md" "agent-os/profiles/react-frontend.md" "profiles"
+download_file "$REPO_URL/agent-os/profiles/angular-frontend.md" "agent-os/profiles/angular-frontend.md" "profiles"
+download_file "$REPO_URL/agent-os/profiles/README.md" "agent-os/profiles/README.md" "profiles"
 
 # Download skills (Phase II)
 echo ""
@@ -180,31 +183,31 @@ echo "Setting up skills..."
 mkdir -p agent-os/skills/{base,java,react,angular}
 
 # Base skills
-download_file "$REPO_URL/skills/base/security-best-practices.md" "agent-os/skills/base/security-best-practices.md" "skills"
-download_file "$REPO_URL/skills/base/git-workflow-patterns.md" "agent-os/skills/base/git-workflow-patterns.md" "skills"
+download_file "$REPO_URL/agent-os/skills/base/security-best-practices.md" "agent-os/skills/base/security-best-practices.md" "skills"
+download_file "$REPO_URL/agent-os/skills/base/git-workflow-patterns.md" "agent-os/skills/base/git-workflow-patterns.md" "skills"
 
 # Java skills
-download_file "$REPO_URL/skills/java/java-core-patterns.md" "agent-os/skills/java/java-core-patterns.md" "skills"
-download_file "$REPO_URL/skills/java/spring-boot-conventions.md" "agent-os/skills/java/spring-boot-conventions.md" "skills"
-download_file "$REPO_URL/skills/java/jpa-best-practices.md" "agent-os/skills/java/jpa-best-practices.md" "skills"
+download_file "$REPO_URL/agent-os/skills/java/java-core-patterns.md" "agent-os/skills/java/java-core-patterns.md" "skills"
+download_file "$REPO_URL/agent-os/skills/java/spring-boot-conventions.md" "agent-os/skills/java/spring-boot-conventions.md" "skills"
+download_file "$REPO_URL/agent-os/skills/java/jpa-best-practices.md" "agent-os/skills/java/jpa-best-practices.md" "skills"
 
 # React skills
-download_file "$REPO_URL/skills/react/react-component-patterns.md" "agent-os/skills/react/react-component-patterns.md" "skills"
-download_file "$REPO_URL/skills/react/react-hooks-best-practices.md" "agent-os/skills/react/react-hooks-best-practices.md" "skills"
-download_file "$REPO_URL/skills/react/typescript-react-patterns.md" "agent-os/skills/react/typescript-react-patterns.md" "skills"
+download_file "$REPO_URL/agent-os/skills/react/react-component-patterns.md" "agent-os/skills/react/react-component-patterns.md" "skills"
+download_file "$REPO_URL/agent-os/skills/react/react-hooks-best-practices.md" "agent-os/skills/react/react-hooks-best-practices.md" "skills"
+download_file "$REPO_URL/agent-os/skills/react/typescript-react-patterns.md" "agent-os/skills/react/typescript-react-patterns.md" "skills"
 
 # Angular skills
-download_file "$REPO_URL/skills/angular/angular-component-patterns.md" "agent-os/skills/angular/angular-component-patterns.md" "skills"
-download_file "$REPO_URL/skills/angular/angular-services-patterns.md" "agent-os/skills/angular/angular-services-patterns.md" "skills"
-download_file "$REPO_URL/skills/angular/rxjs-best-practices.md" "agent-os/skills/angular/rxjs-best-practices.md" "skills"
+download_file "$REPO_URL/agent-os/skills/angular/angular-component-patterns.md" "agent-os/skills/angular/angular-component-patterns.md" "skills"
+download_file "$REPO_URL/agent-os/skills/angular/angular-services-patterns.md" "agent-os/skills/angular/angular-services-patterns.md" "skills"
+download_file "$REPO_URL/agent-os/skills/angular/rxjs-best-practices.md" "agent-os/skills/angular/rxjs-best-practices.md" "skills"
 
-download_file "$REPO_URL/skills/README.md" "agent-os/skills/README.md" "skills"
+download_file "$REPO_URL/agent-os/skills/README.md" "agent-os/skills/README.md" "skills"
 
 # Create config.yml if it doesn't exist
 echo ""
 echo "Setting up configuration..."
 if [[ ! -f "agent-os/config.yml" ]]; then
-    download_file "$REPO_URL/config.yml" "agent-os/config.yml" "config"
+    download_file "$REPO_URL/agent-os/config.yml" "agent-os/config.yml" "config"
     echo "📝 Review agent-os/config.yml to set your active profile"
 else
     echo "Skipping agent-os/config.yml (already exists)"

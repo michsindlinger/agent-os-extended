@@ -71,18 +71,18 @@ command_files=(
 )
 
 for file in "${command_files[@]}"; do
-    download_file "$REPO_URL/commands/$file" ".claude/commands/agent-os/$file"
+    download_file "$REPO_URL/.claude/commands/agent-os/$file" ".claude/commands/agent-os/$file"
 done
 
 # Download agent files
 echo ""
 echo "Setting up agents..."
-download_file "$REPO_URL/agents/test-runner.md" ".claude/agents/test-runner.md"
-download_file "$REPO_URL/agents/context-fetcher.md" ".claude/agents/context-fetcher.md"
-download_file "$REPO_URL/agents/git-workflow.md" ".claude/agents/git-workflow.md"
-download_file "$REPO_URL/agents/file-creator.md" ".claude/agents/file-creator.md"
-download_file "$REPO_URL/agents/date-checker.md" ".claude/agents/date-checker.md"
-download_file "$REPO_URL/agents/estimation-specialist.md" ".claude/agents/estimation-specialist.md"
+download_file "$REPO_URL/.claude/agents/test-runner.md" ".claude/agents/test-runner.md"
+download_file "$REPO_URL/.claude/agents/context-fetcher.md" ".claude/agents/context-fetcher.md"
+download_file "$REPO_URL/.claude/agents/git-workflow.md" ".claude/agents/git-workflow.md"
+download_file "$REPO_URL/.claude/agents/file-creator.md" ".claude/agents/file-creator.md"
+download_file "$REPO_URL/.claude/agents/date-checker.md" ".claude/agents/date-checker.md"
+download_file "$REPO_URL/.claude/agents/estimation-specialist.md" ".claude/agents/estimation-specialist.md"
 
 # Create Skills symlinks (Phase II)
 echo ""
