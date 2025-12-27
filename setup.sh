@@ -203,6 +203,40 @@ download_file "$REPO_URL/agent-os/skills/angular/rxjs-best-practices.md" "agent-
 
 download_file "$REPO_URL/agent-os/skills/README.md" "agent-os/skills/README.md" "skills"
 
+# Download market validation skills (Phase A)
+echo ""
+echo "Downloading market validation skills (Phase A)..."
+mkdir -p agent-os/skills/product
+mkdir -p agent-os/skills/business
+mkdir -p agent-os/skills/marketing
+
+download_file "$REPO_URL/agent-os/skills/product/product-strategy-patterns.md" "agent-os/skills/product/product-strategy-patterns.md" "skills"
+download_file "$REPO_URL/agent-os/skills/business/market-research-best-practices.md" "agent-os/skills/business/market-research-best-practices.md" "skills"
+download_file "$REPO_URL/agent-os/skills/business/business-analysis-methods.md" "agent-os/skills/business/business-analysis-methods.md" "skills"
+download_file "$REPO_URL/agent-os/skills/business/validation-strategies.md" "agent-os/skills/business/validation-strategies.md" "skills"
+download_file "$REPO_URL/agent-os/skills/marketing/content-writing-best-practices.md" "agent-os/skills/marketing/content-writing-best-practices.md" "skills"
+download_file "$REPO_URL/agent-os/skills/marketing/seo-optimization-patterns.md" "agent-os/skills/marketing/seo-optimization-patterns.md" "skills"
+
+# Download market validation templates (Phase A)
+echo ""
+echo "Downloading market validation templates..."
+mkdir -p agent-os/templates/market-validation
+
+download_file "$REPO_URL/agent-os/templates/market-validation/product-brief.md" "agent-os/templates/market-validation/product-brief.md" "templates"
+download_file "$REPO_URL/agent-os/templates/market-validation/competitor-analysis.md" "agent-os/templates/market-validation/competitor-analysis.md" "templates"
+download_file "$REPO_URL/agent-os/templates/market-validation/market-positioning.md" "agent-os/templates/market-validation/market-positioning.md" "templates"
+download_file "$REPO_URL/agent-os/templates/market-validation/validation-plan.md" "agent-os/templates/market-validation/validation-plan.md" "templates"
+download_file "$REPO_URL/agent-os/templates/market-validation/ad-campaigns.md" "agent-os/templates/market-validation/ad-campaigns.md" "templates"
+download_file "$REPO_URL/agent-os/templates/market-validation/analytics-setup.md" "agent-os/templates/market-validation/analytics-setup.md" "templates"
+download_file "$REPO_URL/agent-os/templates/market-validation/validation-results.md" "agent-os/templates/market-validation/validation-results.md" "templates"
+
+# Download market validation workflow (Phase A)
+echo ""
+echo "Downloading market validation workflow..."
+mkdir -p agent-os/workflows/validation
+
+download_file "$REPO_URL/agent-os/workflows/validation/validate-market.md" "agent-os/workflows/validation/validate-market.md" "workflows"
+
 # Create config.yml if it doesn't exist
 echo ""
 echo "Setting up configuration..."
@@ -241,6 +275,7 @@ echo "  ✓ Profile System (Java, React, Angular)"
 echo "  ✓ Skills System (12 contextual skills)"
 echo "  ✓ Enhanced Research (codebase analysis, Q&A, visuals)"
 echo "  ✓ Verification System (spec, implementation, visual)"
+echo "  ✓ Market Validation (Phase A: 6 skills, 7 templates, 1 workflow)"
 echo ""
 echo "Next steps:"
 echo "1. Customize CLAUDE.md with your project-specific information"

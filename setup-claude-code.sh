@@ -68,6 +68,7 @@ command_files=(
     "create-instagram-account.md"
     "create-content-plan.md"
     "develop-positioning.md"
+    "validate-market.md"
 )
 
 for file in "${command_files[@]}"; do
@@ -83,6 +84,17 @@ download_file "$REPO_URL/.claude/agents/git-workflow.md" ".claude/agents/git-wor
 download_file "$REPO_URL/.claude/agents/file-creator.md" ".claude/agents/file-creator.md"
 download_file "$REPO_URL/.claude/agents/date-checker.md" ".claude/agents/date-checker.md"
 download_file "$REPO_URL/.claude/agents/estimation-specialist.md" ".claude/agents/estimation-specialist.md"
+
+# Download market validation specialist agents (Phase A)
+echo ""
+echo "Downloading market validation specialists..."
+download_file "$REPO_URL/.claude/agents/product-strategist.md" ".claude/agents/product-strategist.md"
+download_file "$REPO_URL/.claude/agents/market-researcher.md" ".claude/agents/market-researcher.md"
+download_file "$REPO_URL/.claude/agents/content-creator.md" ".claude/agents/content-creator.md"
+download_file "$REPO_URL/.claude/agents/seo-specialist.md" ".claude/agents/seo-specialist.md"
+download_file "$REPO_URL/.claude/agents/web-developer.md" ".claude/agents/web-developer.md"
+download_file "$REPO_URL/.claude/agents/validation-specialist.md" ".claude/agents/validation-specialist.md"
+download_file "$REPO_URL/.claude/agents/business-analyst.md" ".claude/agents/business-analyst.md"
 
 # Create Skills symlinks (Phase II)
 echo ""
@@ -113,7 +125,15 @@ if [[ -d "agent-os/skills" ]]; then
     ln -sf ../../agent-os/skills/angular/angular-services-patterns.md .claude/skills/angular-services-patterns.md
     ln -sf ../../agent-os/skills/angular/rxjs-best-practices.md .claude/skills/rxjs-best-practices.md
 
-    echo "✓ Created 11 skill symlinks"
+    # Market validation skills (Phase A)
+    ln -sf ../../agent-os/skills/product/product-strategy-patterns.md .claude/skills/product-strategy-patterns.md
+    ln -sf ../../agent-os/skills/business/market-research-best-practices.md .claude/skills/market-research-best-practices.md
+    ln -sf ../../agent-os/skills/business/business-analysis-methods.md .claude/skills/business-analysis-methods.md
+    ln -sf ../../agent-os/skills/business/validation-strategies.md .claude/skills/validation-strategies.md
+    ln -sf ../../agent-os/skills/marketing/content-writing-best-practices.md .claude/skills/content-writing-best-practices.md
+    ln -sf ../../agent-os/skills/marketing/seo-optimization-patterns.md .claude/skills/seo-optimization-patterns.md
+
+    echo "✓ Created 17 skill symlinks (11 base + 6 market validation)"
 else
     echo "⚠ Skills directory not found. Run base setup first to install skills."
 fi
@@ -127,9 +147,10 @@ echo "  .claude/agents/             - Claude Code agents"
 echo "  .claude/skills/             - Claude Code Skills (symlinks to agent-os/skills/)"
 echo ""
 echo "Phase II Features Configured:"
-echo "  ✓ 11 Skills symlinked (contextual activation)"
+echo "  ✓ 17 Skills symlinked (11 base + 6 market validation)"
 echo "  ✓ Commands updated for v2.0 workflows"
 echo "  ✓ Enhanced /create-spec with research phase"
+echo "  ✓ Market Validation (Phase A: /validate-market command)"
 echo ""
 echo "Available commands:"
 echo "  /analyze-product      - Analyze product requirements"
@@ -161,5 +182,6 @@ echo "  /validate-estimation  - Validate estimation plausibility"
 echo "  /create-instagram-account - Create Instagram marketing strategy"
 echo "  /create-content-plan  - Create 7-day Instagram content plan"
 echo "  /develop-positioning  - Develop positioning strategy from project specs"
+echo "  /validate-market      - Market validation with landing page and ad campaigns (Phase A)"
 echo ""
 echo "For more information, visit: https://github.com/michsindlinger/agent-os-extended"
