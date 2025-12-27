@@ -2,3 +2,4 @@
 test-project
 .mcp.json
 .agent-os.backup-*
+.claude/plans/
