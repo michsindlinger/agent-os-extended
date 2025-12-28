@@ -124,17 +124,89 @@ Use the git-workflow subagent to manage git branches to ensure proper isolation 
 
 ### Step 5: Task Execution Loop
 
-Execute all assigned parent tasks and their subtasks using @~/.agent-os/workflows/core/execute-task.md instructions, continuing until all tasks are complete.
+Execute all assigned parent tasks and their subtasks using smart task routing to appropriate specialists when team system is enabled, or direct execution otherwise.
+
+<team_system_check>
+  CHECK: config.yml for team_system.enabled setting
+  IF team_system.enabled = true:
+    USE: Smart task routing with specialist delegation
+  ELSE:
+    USE: Direct execution (backward compatible behavior)
+</team_system_check>
 
 <execution_flow>
   LOAD @~/.agent-os/workflows/core/execute-task.md ONCE
 
   FOR each parent_task assigned in Step 1:
-    EXECUTE instructions from execute-task.md with:
-      - parent_task_number
-      - all associated subtasks
-    WAIT for task completion
-    UPDATE tasks.md status
+
+    <!-- NEW: Task Type Detection -->
+    <task_analysis>
+      ANALYZE: Task description and file paths (if specified)
+      DETECT: Task type based on keywords
+      ROUTE: To appropriate specialist if team_system enabled
+    </task_analysis>
+
+    <task_type_detection>
+      KEYWORDS_BACKEND: [api, endpoint, controller, service, repository, rest, graphql, database, backend, server]
+      KEYWORDS_FRONTEND: [component, page, view, ui, frontend, react, angular, state, redux, interface]
+      KEYWORDS_QA: [test, spec, coverage, e2e, integration, unit, playwright, cypress, jest, junit, testing]
+      KEYWORDS_DEVOPS: [deploy, ci, cd, docker, pipeline, github actions, kubernetes, aws, deployment, infrastructure]
+
+      MATCH: Task description against keyword lists (case-insensitive)
+      PRIORITY: If multiple matches, use first match (backend > frontend > qa > devops)
+      UNKNOWN: If no keywords match, route to direct execution
+    </task_type_detection>
+
+    <specialist_routing>
+      IF task_type = backend:
+        SPECIALIST: backend-dev
+      ELSE IF task_type = frontend:
+        SPECIALIST: frontend-dev
+      ELSE IF task_type = qa:
+        SPECIALIST: qa-specialist
+      ELSE IF task_type = devops:
+        SPECIALIST: devops-specialist
+      ELSE:
+        SPECIALIST: null (direct execution)
+    </specialist_routing>
+
+    <!-- NEW: Conditional Delegation -->
+    <conditional_execution>
+      IF team_system.enabled AND specialist != null:
+        <!-- Team System Path -->
+        <team_delegation>
+          ACTION: Use Task tool to delegate to specialist subagent
+          SUBAGENT: [specialist name]
+          PROMPT: "Execute task: [task description]
+
+                   Context:
+                   - Spec: [spec folder path]
+                   - Task number: [task number]
+                   - Subtasks: [list of subtasks]
+
+                   Follow your specialist guidelines and:
+                   1. Implement complete solution
+                   2. Generate all necessary files
+                   3. Run tests and ensure >80% coverage
+                   4. Create handoff documentation
+                   5. Use appropriate skills and templates"
+
+          WAIT: For specialist completion
+          RECEIVE: Specialist output and handoff
+          UPDATE: tasks.md with completion status
+          RECORD: Team handoff in team-handoffs.md (if exists)
+        </team_delegation>
+      ELSE:
+        <!-- Direct Execution Path (Backward Compatible) -->
+        <direct_execution>
+          EXECUTE: Instructions from execute-task.md with:
+            - parent_task_number
+            - all associated subtasks
+          WAIT: For task completion
+          UPDATE: tasks.md status
+        </direct_execution>
+      </conditional_execution>
+
   END FOR
 </execution_flow>
 
@@ -159,9 +231,26 @@ Execute all assigned parent tasks and their subtasks using @~/.agent-os/workflow
       CONTINUE with next task
 </task_status_check>
 
+<backward_compatibility>
+  <default_behavior>
+    IF team_system NOT configured in config.yml:
+      DEFAULT: team_system.enabled = false
+      BEHAVIOR: Direct execution (current workflow)
+  </default_behavior>
+
+  <mixed_mode>
+    IF team_system.enabled = true BUT task type unknown:
+      FALLBACK: Direct execution for that specific task
+      LOG: "Task did not match specialist keywords, executing directly"
+  </mixed_mode>
+</backward_compatibility>
+
 <instructions>
   ACTION: Load execute-task.md instructions once at start
-  REUSE: Same instructions for each parent task iteration
+  CHECK: team_system configuration
+  ANALYZE: Each task for specialist routing
+  DELEGATE: To specialist if team_system enabled and type detected
+  FALLBACK: Direct execution if team_system disabled or unknown type
   LOOP: Through all assigned parent tasks
   UPDATE: Task status after each completion
   VERIFY: All tasks complete before proceeding
