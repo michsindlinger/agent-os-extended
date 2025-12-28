@@ -290,23 +290,78 @@ Delegate to seo-specialist agent to optimize copy for search engines.
 
 </step>
 
-<step number="9" subagent="web-developer" name="landing_page_generation">
+<step number="9" name="design_template_selection">
 
-### Step 9: Landing Page Generation
+### Step 9: Design Template Selection (User Input)
 
-Delegate to web-developer agent to create production-ready HTML/CSS/JS landing page.
+Ask user if they want to provide a design reference for the landing page.
+
+**Prompt User**:
+```
+Would you like to provide a design reference for your landing page?
+
+This helps create a landing page that matches your preferred style.
+
+Options:
+1. Provide URL of a website you like (I'll analyze colors, fonts, layout)
+2. Provide screenshot/mockup (I'll extract design system)
+3. Use default clean minimal design (professional, conversion-optimized)
+```
+
+<conditional_logic>
+  IF user provides URL:
+    - Use WebFetch to analyze the URL
+    - Extract: Color scheme, font families, layout style, spacing, button styles
+    - Store design specs for web-developer
+    - PROCEED to step 10
+
+  ELIF user provides screenshot/image path:
+    - Read the image file
+    - Analyze: Colors, typography, layout patterns, visual hierarchy
+    - Store design specs for web-developer
+    - PROCEED to step 10
+
+  ELSE (user chooses default):
+    - Use default design system:
+      - Colors: Primary #4a9eff (blue), Accent #ff6b35 (orange)
+      - Fonts: System fonts (fast loading)
+      - Layout: Clean minimal, conversion-optimized
+      - Style: Professional yet approachable
+    - PROCEED to step 10
+</conditional_logic>
+
+**Design Specs to Extract** (if URL or screenshot provided):
+- **Primary Color**: Main brand color (for buttons, accents)
+- **Secondary Color**: Supporting color
+- **Background**: Background color or gradient
+- **Font Family**: Heading and body fonts (or system font alternatives)
+- **Button Style**: Rounded corners? Flat? Shadow? Size?
+- **Spacing**: Generous white space or compact?
+- **Overall Vibe**: Minimal, playful, professional, bold, elegant?
+
+**Store**: Design specifications for web-developer integration
+
+</step>
+
+<step number="10" subagent="web-developer" name="landing_page_generation">
+
+### Step 10: Landing Page Generation
+
+Delegate to web-developer agent to create production-ready HTML/CSS/JS landing page with design template integration.
 
 **Process**:
 1. web-developer receives copy from content-creator
 2. web-developer receives SEO specs from seo-specialist
-3. web-developer generates HTML5 structure with semantic tags
-4. web-developer integrates all copy (headline, features, social proof, FAQ, CTA)
-5. web-developer implements all SEO meta tags
-6. web-developer creates responsive CSS (mobile-first, Flexbox/Grid)
-7. web-developer implements JavaScript (form validation, analytics tracking placeholders)
-8. web-developer optimizes performance (<3 sec load, <30KB total)
-9. web-developer creates self-contained index.html (inline CSS/JS, no external dependencies)
-10. web-developer provides deployment instructions (Netlify, Vercel, GitHub Pages)
+3. web-developer receives design specs from step 9 (user-provided or default)
+4. web-developer applies design system (colors, fonts, button styles from design specs)
+5. web-developer generates HTML5 structure with semantic tags
+6. web-developer integrates all copy (headline, features, social proof, FAQ, CTA)
+7. web-developer implements all SEO meta tags
+8. web-developer creates responsive CSS (mobile-first, Flexbox/Grid)
+9. web-developer implements JavaScript (form validation, analytics tracking placeholders)
+10. web-developer optimizes performance (<3 sec load, <30KB total)
+11. web-developer creates self-contained index.html (inline CSS/JS, no external dependencies)
+12. web-developer saves to landing-page/index.html
 
 **Output**: `@agent-os/market-validation/YYYY-MM-DD-product-name/landing-page/index.html`
 
@@ -319,40 +374,173 @@ Delegate to web-developer agent to create production-ready HTML/CSS/JS landing p
   - ✅ Be self-contained (single index.html file)
   - ✅ Have working form (validation, submission handler)
   - ✅ Include all SEO meta tags
-  - ✅ Include deployment instructions
+  - ✅ Design specs applied correctly (if provided)
 
   IF fails quality check:
     RETURN to web-developer for fixes
   ELSE:
-    PROCEED to step 10
+    PROCEED to step 10.5 (visual validation)
 </quality_check>
 
-**Testing**:
+</step>
+
+<step number="10.5" name="visual_validation">
+
+### Step 10.5: Visual Validation (Chrome DevTools MCP)
+
+Use Chrome DevTools MCP to validate landing page visually before proceeding.
+
+**Purpose**: Catch visual issues like broken videos, missing images, layout problems BEFORE user deploys.
+
+**Process**:
+
+<conditional_logic>
+  IF Chrome DevTools MCP available:
+    1. Use MCP to render landing page in headless Chrome
+    2. Take screenshot (desktop view)
+    3. Take screenshot (mobile view)
+    4. Check for console errors
+    5. Verify all elements render correctly:
+       - Headlines visible and styled?
+       - Buttons visible and clickable?
+       - Form elements present?
+       - No broken images/videos?
+       - Layout not broken?
+    6. If issues found:
+       - Document specific problems
+       - RETURN to web-developer with issues
+       - web-developer fixes
+       - RETRY visual validation
+    7. If all good:
+       - PROCEED to step 11
+
+  ELSE (Chrome DevTools MCP not available):
+    WARN user: "Visual validation skipped (Chrome DevTools MCP not available)"
+    INFORM user: "Please test landing page manually after deployment"
+    PROCEED to step 11
+</conditional_logic>
+
+**Common Issues to Catch**:
+- Embedded YouTube videos not loading (remove or replace with image)
+- External images with broken links (use emoji icons instead)
+- CSS not applied (inline CSS missing)
+- JavaScript errors (form handler broken)
+- Mobile layout broken (elements overlapping)
+- Colors not from design template (if provided)
+
+**If Issues Found** (example):
 ```
-Before proceeding:
-- Verify HTML is valid (use built-in browser validation)
-- Check file size (<30KB)
-- Verify form has submit handler
-- Ensure responsive meta tag present
+Visual Validation FAILED:
+❌ YouTube iframe not loading (external dependency)
+❌ Hero image 404 (broken link)
+⚠️ Button color doesn't match design template (#ff6b35 expected, #ff0000 used)
+
+Returning to web-developer with fixes:
+- Remove YouTube embed, use static image or text description
+- Replace hero image with emoji or remove
+- Correct button color to match design template
 ```
 
 </step>
 
-<step number="10" subagent="validation-specialist" name="campaign_coordination">
+<step number="11" name="budget_and_timeline_questions">
 
-### Step 10: Validation Campaign Coordination
+### Step 11: Budget and Timeline Selection (User Input)
+
+Ask user for validation budget and timeline before creating campaign plans.
+
+**Prompt User with AskUserQuestion**:
+
+```typescript
+AskUserQuestion({
+  questions: [
+    {
+      question: "What is your total budget for this validation campaign?",
+      header: "Ad Budget",
+      multiSelect: false,
+      options: [
+        {
+          label: "€300 (Starter)",
+          description: "Good for niche products with low expected CPA. May not reach full statistical significance."
+        },
+        {
+          label: "€500 (Recommended)",
+          description: "Sweet spot for most products. Adequate for 1,000+ visitors and 50+ conversions at 5% rate."
+        },
+        {
+          label: "€1,000 (Confident)",
+          description: "For competitive markets. Robust data with 2,000+ visitors and 100+ conversions."
+        },
+        {
+          label: "€2,000 (Aggressive)",
+          description: "Maximum confidence. 3,000-4,000 visitors. Use for high-stakes validation."
+        }
+      ]
+    },
+    {
+      question: "How long do you want to run the validation campaign?",
+      header: "Timeline",
+      multiSelect: false,
+      options: [
+        {
+          label: "2 weeks (Fast)",
+          description: "Fastest feedback. Risk: May not reach significance or capture weekly variance. Minimum recommended."
+        },
+        {
+          label: "3 weeks (Balanced)",
+          description: "Good balance of speed and data quality. Likely reaches 1,000+ visitors."
+        },
+        {
+          label: "4 weeks (Recommended)",
+          description: "Robust data with weekly variance captured. Best for most validations."
+        },
+        {
+          label: "6 weeks (Extended)",
+          description: "Maximum confidence with 2,000+ visitors. Use for competitive markets or when certainty is critical."
+        }
+      ]
+    }
+  ]
+})
+```
+
+**Store User Choices**:
+- Budget: €[SELECTED_AMOUNT]
+- Timeline: [SELECTED_WEEKS] weeks
+
+**Calculate Daily Budget**:
+```
+Daily Budget = Total Budget ÷ (Weeks × 7 days)
+
+Example:
+€500 ÷ (4 weeks × 7 days) = €500 ÷ 28 = €17.86/day
+```
+
+**PROCEED to step 12** with budget and timeline for validation-specialist
+
+</step>
+
+<step number="12" subagent="validation-specialist" name="campaign_coordination">
+
+### Step 12: Validation Campaign Coordination
 
 Delegate to validation-specialist agent to create complete validation campaign package.
 
 **Process**:
 1. validation-specialist receives all previous outputs (product-brief, competitor-analysis, positioning, landing-page)
-2. validation-specialist determines budget (ask user if not specified, recommend €500-1,000)
-3. validation-specialist applies validation-plan.md template:
-   - Timeline: 4 weeks default (adjustable)
-   - Budget allocation: 60% Google, 30% Facebook, 10% reserve
+2. validation-specialist receives budget and timeline from step 11 (user-provided)
+3. validation-specialist calculates budget allocation from user's total budget:
+   - Google Ads: 60% of total
+   - Meta Ads: 30% of total
+   - Reserve: 10% of total
+   - Daily budgets: Total ÷ (Weeks × 7)
+4. validation-specialist applies validation-plan.md template:
+   - Timeline: [USER_SELECTED_WEEKS] weeks (from step 11)
+   - Budget: €[USER_SELECTED_BUDGET] (from step 11)
+   - Budget breakdown: Calculated allocations
    - Success criteria: GO/MAYBE/NO-GO thresholds
    - Risk mitigation strategies
-4. validation-specialist applies ad-campaigns.md template:
+5. validation-specialist applies ad-campaigns.md template:
    - Integrates all ad copy from content-creator
    - Adds campaign structure (budgets, targeting, keywords)
    - Provides step-by-step setup instructions for Google Ads
@@ -391,9 +579,9 @@ Delegate to validation-specialist agent to create complete validation campaign p
 
 </step>
 
-<step number="11" name="user_execution_phase">
+<step number="13" name="user_execution_phase">
 
-### Step 11: User Deployment & Campaign Execution
+### Step 13: User Deployment & Campaign Execution
 
 Inform user of validation campaign execution process.
 
@@ -490,9 +678,9 @@ When campaign complete (2-4 weeks later), user says:
 
 </step>
 
-<step number="12" name="collect_validation_metrics">
+<step number="14" name="collect_validation_metrics">
 
-### Step 12: Collect Validation Metrics
+### Step 14: Collect Validation Metrics
 
 Request validation metrics from user.
 
@@ -546,9 +734,9 @@ Feedback: "30 email responses, mostly positive"
 
 </step>
 
-<step number="13" subagent="business-analyst" name="results_analysis">
+<step number="15" subagent="business-analyst" name="results_analysis">
 
-### Step 13: Validation Results Analysis & GO/NO-GO Decision
+### Step 15: Validation Results Analysis & GO/NO-GO Decision
 
 Delegate to business-analyst agent to analyze metrics and make data-driven recommendation.
 
@@ -628,9 +816,9 @@ Saved: €50,000 + 6 months (avoided building unwanted product)
 
 </step>
 
-<step number="14" name="integration_with_planning">
+<step number="16" name="integration_with_planning">
 
-### Step 14: Integration with Product Planning
+### Step 16: Integration with Product Planning
 
 Provide guidance for next steps based on decision.
 
@@ -777,9 +965,9 @@ Provide guidance for next steps based on decision.
 
 </step>
 
-<step number="15" subagent="git-workflow" name="version_control">
+<step number="17" subagent="git-workflow" name="version_control">
 
-### Step 15: Version Control (Optional)
+### Step 17: Version Control (Optional)
 
 Optionally commit validation artifacts to version control.
 
@@ -812,9 +1000,9 @@ This preserves your research and allows tracking validation history.
 
 </step>
 
-<step number="16" name="workflow_completion">
+<step number="18" name="workflow_completion">
 
-### Step 16: Workflow Completion Summary
+### Step 18: Workflow Completion Summary
 
 Provide final summary of validation workflow.
 

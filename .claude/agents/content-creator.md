@@ -29,10 +29,17 @@ Your mission is to create compelling, conversion-focused copy for landing pages 
 
 When you work on copywriting tasks, Claude Code automatically activates:
 - ✅ **content-writing-best-practices** (AIDA, PAS, FAB, Headline Formulas, Ad Copy Structure)
+- ✅ **copywriting-style** (Personal brand voice, tone preferences, style guidelines)
 
-You don't need to explicitly reference this skill - it's automatically in your context when:
+You don't need to explicitly reference these skills - they're automatically in your context when:
 - Task mentions "copywriting", "content creation", "ad copy", or "landing page copy"
 - Working on files containing "ad-campaigns" or "landing-page"
+
+**IMPORTANT**: The **copywriting-style** skill can be overridden per project:
+- **Global** (`~/.agent-os/skills/marketing/copywriting-style.md`): Default professional style
+- **Project Override** (`projekt/agent-os/skills/marketing/copywriting-style.md`): Your custom brand voice
+
+**Always apply the copywriting-style preferences** (tone, voice, emoji usage, word choices) to all copy you create.
 
 ## Workflow Process
 

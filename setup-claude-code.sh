@@ -132,8 +132,9 @@ if [[ -d "agent-os/skills" ]]; then
     ln -sf ../../agent-os/skills/business/validation-strategies.md .claude/skills/validation-strategies.md
     ln -sf ../../agent-os/skills/marketing/content-writing-best-practices.md .claude/skills/content-writing-best-practices.md
     ln -sf ../../agent-os/skills/marketing/seo-optimization-patterns.md .claude/skills/seo-optimization-patterns.md
+    ln -sf ../../agent-os/skills/marketing/copywriting-style.md .claude/skills/copywriting-style.md
 
-    echo "✓ Created 17 skill symlinks (11 base + 6 market validation)"
+    echo "✓ Created 18 skill symlinks (11 base + 7 market validation)"
 else
     echo "⚠ Skills directory not found. Run base setup first to install skills."
 fi

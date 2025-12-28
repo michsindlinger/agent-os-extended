@@ -75,6 +75,9 @@ download_file "$REPO_URL/agent-os/skills/marketing/content-writing-best-practice
 download_file "$REPO_URL/agent-os/skills/marketing/seo-optimization-patterns.md" \
   ~/.agent-os/skills/marketing/seo-optimization-patterns.md "skill"
 
+download_file "$REPO_URL/agent-os/skills/marketing/copywriting-style.md" \
+  ~/.agent-os/skills/marketing/copywriting-style.md "skill"
+
 # Download Templates (7 new)
 echo ""
 echo "Downloading market validation templates..."
@@ -168,7 +171,10 @@ if [[ -d ~/.agent-os/skills ]]; then
     ln -sf ~/.agent-os/skills/marketing/seo-optimization-patterns.md \
       ~/.claude/skills/seo-optimization-patterns.md
 
-    echo "✓ Created 6 skill symlinks in ~/.claude/skills/"
+    ln -sf ~/.agent-os/skills/marketing/copywriting-style.md \
+      ~/.claude/skills/copywriting-style.md
+
+    echo "✓ Created 7 skill symlinks in ~/.claude/skills/"
 else
     echo "⚠ Skills directory not found (expected at ~/.agent-os/skills/)"
 fi

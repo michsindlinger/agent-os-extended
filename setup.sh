@@ -216,6 +216,7 @@ download_file "$REPO_URL/agent-os/skills/business/business-analysis-methods.md" 
 download_file "$REPO_URL/agent-os/skills/business/validation-strategies.md" "agent-os/skills/business/validation-strategies.md" "skills"
 download_file "$REPO_URL/agent-os/skills/marketing/content-writing-best-practices.md" "agent-os/skills/marketing/content-writing-best-practices.md" "skills"
 download_file "$REPO_URL/agent-os/skills/marketing/seo-optimization-patterns.md" "agent-os/skills/marketing/seo-optimization-patterns.md" "skills"
+download_file "$REPO_URL/agent-os/skills/marketing/copywriting-style.md" "agent-os/skills/marketing/copywriting-style.md" "skills"
 
 # Download market validation templates (Phase A)
 echo ""
