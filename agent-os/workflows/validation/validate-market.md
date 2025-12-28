@@ -290,11 +290,11 @@ Delegate to seo-specialist agent to optimize copy for search engines.
 
 </step>
 
-<step number="9" name="design_template_selection">
+<step number="9" name="design_system_extraction">
 
-### Step 9: Design Template Selection (User Input)
+### Step 9: Design System Extraction (User Input)
 
-Ask user if they want to provide a design reference for the landing page.
+Ask user if they want to provide a design reference for the landing page, then use design-system-extractor skill to create project-specific frontend-design skill.
 
 **Prompt User**:
 ```
@@ -310,36 +310,118 @@ Options:
 
 <conditional_logic>
   IF user provides URL:
-    - Use WebFetch to analyze the URL
-    - Extract: Color scheme, font families, layout style, spacing, button styles
-    - Store design specs for web-developer
-    - PROCEED to step 10
+    <url_analysis>
+      ACTION: Load design-system-extractor skill
+      CONTEXT: Design-system-extractor skill provides framework for extraction
+
+      STEP 1: Analyze URL with WebFetch
+        TOOL: WebFetch
+        URL: [USER_PROVIDED_URL]
+        PROMPT: Use design-system-extractor skill Step 1 Option A prompt template
+        EXTRACT:
+          - Color palette (primary, secondary, accent, backgrounds, text colors)
+          - Typography (font families, sizes, weights, line heights)
+          - Spacing system (base unit, section padding, container widths)
+          - Component styles (buttons, cards, inputs, border radius)
+          - Visual effects (shadows, gradients, animations)
+          - Layout patterns (grid, breakpoints, section layouts)
+
+      STEP 2: Load official frontend-design skill template
+        SOURCE: https://raw.githubusercontent.com/anthropics/claude-code/main/plugins/frontend-design/skills/frontend-design/SKILL.md
+        ACTION: Fetch template content
+
+      STEP 3: Generate project-specific frontend-design skill
+        ACTION: Follow design-system-extractor skill Step 3
+        MERGE: Official skill framework + Extracted UI tokens
+        STRUCTURE:
+          - Keep original frontmatter (name: frontend-design, description, globs)
+          - ADD: "Project Design System" section with extracted tokens
+          - KEEP: All original principles (Typography, Color, Motion, Spatial, Visual)
+          - KEEP: All original guardrails
+          - UPDATE: Examples to use extracted tokens
+
+      STEP 4: Save project-specific skill
+        LOCATION: .claude/skills/frontend-design.md
+        FORMAT: Complete SKILL.md with frontmatter
+
+      PROCEED: To step 10
+    </url_analysis>
 
   ELIF user provides screenshot/image path:
-    - Read the image file
-    - Analyze: Colors, typography, layout patterns, visual hierarchy
-    - Store design specs for web-developer
-    - PROCEED to step 10
+    <screenshot_analysis>
+      ACTION: Load design-system-extractor skill
+      CONTEXT: Design-system-extractor skill provides framework for extraction
+
+      STEP 1: Analyze screenshot
+        TOOL: Read (image file)
+        FILE: [USER_PROVIDED_IMAGE_PATH]
+
+        THEN: Use Task tool with general-purpose subagent
+        PROMPT: Use design-system-extractor skill Step 1 Option B prompt template
+        ATTACH: Reference images to subagent
+        EXTRACT:
+          - Color palette (identify hex codes from image)
+          - Typography (font style, sizes, weights)
+          - Spacing and layout (measure consistent gaps)
+          - Component design (buttons, cards, forms)
+          - Visual effects (shadows, gradients, border radius)
+          - Overall aesthetic (minimal, bold, playful, etc.)
+        SAVE: design-system-extracted.md
+
+      STEP 2: Load official frontend-design skill template
+        SOURCE: https://raw.githubusercontent.com/anthropics/claude-code/main/plugins/frontend-design/skills/frontend-design/SKILL.md
+        ACTION: Fetch template content
+
+      STEP 3: Generate project-specific frontend-design skill
+        ACTION: Follow design-system-extractor skill Step 3
+        MERGE: Official skill framework + Extracted UI tokens from design-system-extracted.md
+        STRUCTURE: Same as URL analysis
+
+      STEP 4: Save project-specific skill
+        LOCATION: .claude/skills/frontend-design.md
+
+      PROCEED: To step 10
+    </screenshot_analysis>
 
   ELSE (user chooses default):
-    - Use default design system:
-      - Colors: Primary #4a9eff (blue), Accent #ff6b35 (orange)
-      - Fonts: System fonts (fast loading)
-      - Layout: Clean minimal, conversion-optimized
-      - Style: Professional yet approachable
-    - PROCEED to step 10
+    <default_design>
+      STEP 1: Use default design tokens
+        TOKENS:
+          - Colors: Primary #4a9eff, Accent #ff6b35, Background #ffffff
+          - Fonts: System fonts (system-ui, -apple-system, sans-serif)
+          - Spacing: Base unit 8px
+          - Border radius: 8px
+          - Layout: Clean minimal, conversion-optimized
+
+      STEP 2: Load official frontend-design skill template
+        SOURCE: https://raw.githubusercontent.com/anthropics/claude-code/main/plugins/frontend-design/skills/frontend-design/SKILL.md
+
+      STEP 3: Generate project-specific frontend-design skill
+        MERGE: Official skill + Default tokens
+        NOTE: Default tokens are minimal (let official skill principles guide)
+
+      STEP 4: Save project-specific skill
+        LOCATION: .claude/skills/frontend-design.md
+
+      PROCEED: To step 10
+    </default_design>
 </conditional_logic>
 
-**Design Specs to Extract** (if URL or screenshot provided):
-- **Primary Color**: Main brand color (for buttons, accents)
-- **Secondary Color**: Supporting color
-- **Background**: Background color or gradient
-- **Font Family**: Heading and body fonts (or system font alternatives)
-- **Button Style**: Rounded corners? Flat? Shadow? Size?
-- **Spacing**: Generous white space or compact?
-- **Overall Vibe**: Minimal, playful, professional, bold, elegant?
+<output_verification>
+  VERIFY: .claude/skills/frontend-design.md created
+  CONTENT: Must include:
+    - Frontmatter with name: frontend-design
+    - Project Design System section with extracted tokens
+    - All original frontend-design skill principles
+    - All original guardrails
 
-**Store**: Design specifications for web-developer integration
+  IF missing or incomplete:
+    RETRY: Generation with more explicit instructions
+</output_verification>
+
+**Generated Skill Location**: `.claude/skills/frontend-design.md`
+
+**This skill will be used by**: web-developer agent in Step 10
 
 </step>
 

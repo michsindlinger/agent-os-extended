@@ -46,6 +46,7 @@ Agent OS Extended is a project-level implementation of the Agent OS system, desi
 - Automated reporting with pass/fail/warning status
 
 **Market Validation System (Phase A) 🆕**
+
 - Validate product-market fit BEFORE expensive development
 - 7 specialist agents (product-strategist, market-researcher, content-creator, seo-specialist, web-developer, validation-specialist, business-analyst)
 - Product idea sharpening through interactive Q&A
@@ -58,6 +59,7 @@ Agent OS Extended is a project-level implementation of the Agent OS system, desi
 - Complete validation in 2-4 weeks for €100-€2,000
 
 **Team Development System (Phase B) 🆕**
+
 - Smart task routing with specialist agents for coordinated feature development
 - 4 development specialists (backend-dev, frontend-dev, qa-specialist, devops-specialist)
 - 1 utility agent (mock-generator) for API mock generation
@@ -81,6 +83,7 @@ Agent OS Extended is a project-level implementation of the Agent OS system, desi
 ## Quick Start
 
 ### Base Installation
+
 ```bash
 curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/setup.sh | bash
 ```
@@ -88,16 +91,19 @@ curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/mai
 ### Tool-Specific Setup
 
 #### Claude Code
+
 ```bash
 curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/setup-claude-code.sh | bash
 ```
 
 #### Cursor
+
 ```bash
 curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/setup-cursor.sh | bash
 ```
 
 #### Gemini CLI
+
 ```bash
 curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/setup-gemini.sh | bash
 ```
@@ -113,12 +119,12 @@ If you have an existing project using Agent OS Extended v1.x (`.agent-os/` struc
 curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/update-to-v2.sh | bash
 ```
 
-**What Phase I migration does:**
-- Renames `.agent-os/` → `agent-os/`
-- Renames `instructions/` → `workflows/`
-- Moves commands to `.claude/commands/agent-os/`
-- Updates all file references automatically
-- Creates timestamped backup for safety
+**What Phase I migration does:**  
+- Renames `.agent-os/` → `agent-os/`  
+- Renames `instructions/` → `workflows/`  
+- Moves commands to `.claude/commands/agent-os/`  
+- Updates all file references automatically  
+- Creates timestamped backup for safety  
 
 ### Step 2: Phase II Features (Optional)
 
@@ -127,12 +133,12 @@ curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/mai
 curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/update-to-v2-phase2.sh | bash
 ```
 
-**What Phase II adds:**
-- Profile System (4 profiles: Java, React, Angular, Base)
-- Skills System (11 contextual skills)
-- Enhanced Research (codebase analysis, Q&A, visuals)
-- Verification System (spec, implementation, visual)
-- Enhanced /create-spec workflow
+**What Phase II adds:**  
+- Profile System (4 profiles: Java, React, Angular, Base)  
+- Skills System (11 contextual skills)  
+- Enhanced Research (codebase analysis, Q&A, visuals)  
+- Verification System (spec, implementation, visual)  
+- Enhanced /create-spec workflow  
 
 ### Rollback if needed:
 
@@ -145,6 +151,7 @@ curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/mai
 
 ### Main Update Script
 Update your Agent OS Extended installation (recommended):
+
 ```bash
 curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/update-agent-os.sh | bash
 ```
@@ -431,6 +438,7 @@ System uses: ~/.claude/agents/market-researcher.md (global)
 ```
 
 **Project Override** (when customization needed):
+
 ```bash
 # Copy global agent to project
 cp ~/.claude/agents/market-researcher.md .claude/agents/
@@ -447,6 +455,7 @@ System uses: ~/.claude/agents/market-researcher.md (global default)
 ```
 
 **Lookup Order** (configured in `agent-os/config.yml`):
+
 ```yaml
 market_validation:
   lookup_order:
@@ -694,6 +703,7 @@ User runs: /validate-market
 - No strong reason (global version works fine)
 
 **Configuration Hierarchy**:
+
 ```yaml
 # Global defaults: ~/.agent-os/config.yml (if exists)
 market_validation:
