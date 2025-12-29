@@ -83,7 +83,7 @@ export function AgentsList({ agents, onEdit, onOverride, onRevert, searchTerm }:
                 </div>
               </td>
               <td className="px-6 py-4">
-                {agent.tools && agent.tools.length > 0 && (
+                {agent.tools && Array.isArray(agent.tools) && agent.tools.length > 0 && (
                   <div className="text-xs text-gray-600 dark:text-gray-400 font-mono">
                     {agent.tools.slice(0, 3).join(', ')}
                     {agent.tools.length > 3 && ` +${agent.tools.length - 3}`}

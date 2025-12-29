@@ -64,7 +64,7 @@ export default function Layout({ children }: LayoutProps) {
             <div className="mt-4 px-4 py-2 text-xs text-gray-500 dark:text-gray-400">
               <div className="font-semibold mb-1">Locations:</div>
               <div className="truncate" title={paths.globalAgentOS}>
-                Global: {paths.globalAgentOS.replace(process.env.HOME || '', '~')}
+                Global: .../{paths.globalAgentOS.split('/').slice(-2).join('/')}
               </div>
               {paths.projectAgentOS && (
                 <div className="truncate mt-1" title={paths.projectAgentOS}>
