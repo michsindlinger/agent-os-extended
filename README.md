@@ -108,6 +108,42 @@ curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/mai
 curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/setup-gemini.sh | bash
 ```
 
+#### Agent OS Manager (Desktop GUI)
+
+**Option 1: From Source** (requires Node.js 22+):
+```bash
+# Clone repository if not already done
+git clone https://github.com/michsindlinger/agent-os-extended.git
+cd agent-os-extended
+
+# Run setup script
+bash setup-agent-os-manager.sh
+```
+
+**Option 2: Download Binary** (Coming Soon):
+```bash
+# Download from GitHub Releases
+# https://github.com/michsindlinger/agent-os-extended/releases
+# Install DMG (macOS), EXE (Windows), or AppImage (Linux)
+```
+
+**What It Does**:
+- Builds and installs Agent OS Manager desktop app
+- Visual management for skills, agents, templates, config
+- Monaco Editor for component editing
+- Global vs project override visualization
+- Dark/Light mode support
+
+**After Installation**:
+```bash
+# Launch app (macOS)
+open "/Applications/Agent OS Manager.app"
+
+# Or from project directory
+cd your-project
+open "/Applications/Agent OS Manager.app"
+```
+
 ## Migration from v1.x to v2.0
 
 If you have an existing project using Agent OS Extended v1.x (`.agent-os/` structure), migrate in two steps:
@@ -1586,6 +1622,153 @@ netlify deploy --dir=agent-os/market-validation/2025-12-29-invoice-automation/la
 | **Cost** | €100-€2,000 validation | €50,000-€200,000 development |
 
 **Key Insight**: web-developer validates IDEAS cheaply. frontend-dev builds PRODUCTS after validation.
+
+---
+
+## Agent OS Manager (Desktop GUI)
+
+**Visual management application for Agent OS Extended components.**
+
+### Overview
+
+Agent OS Manager is a desktop application (Electron) that provides a visual interface for managing all Agent OS components:
+- Skills, Agents, Templates, Configuration
+- Global vs Project override visualization
+- Monaco Editor integration for editing
+- One-click override creation
+- Dark/Light mode support
+
+### Installation
+
+**From Source** (requires Node.js 22+):
+```bash
+# Clone repository
+git clone https://github.com/michsindlinger/agent-os-extended.git
+cd agent-os-extended
+
+# Install and build
+bash setup-agent-os-manager.sh
+```
+
+**From Binary** (recommended when available):
+- Download DMG/EXE/AppImage from GitHub Releases
+- Install and launch
+- No development dependencies needed
+
+### Features
+
+**Dashboard**:
+- Component counts (Skills, Agents, Templates)
+- Global vs Project breakdown (✅ vs 🔶)
+- Global and project location display
+- Quick overview statistics
+
+**Skills Manager**:
+- List all skills (global + project merged)
+- Search and filter by name/description
+- Edit with Monaco Editor (Markdown + YAML frontmatter)
+- Override global → project (one-click copy)
+- Revert project → global (with confirmation)
+- Frontmatter validation before save
+
+**Agents Manager**:
+- List all specialist agents
+- Color dot indicators (from agent.color frontmatter)
+- Tools display (first 3 tools shown)
+- Edit, override, revert functionality
+- Agent-specific frontmatter validation
+
+**Templates Manager**:
+- Hierarchical tree view (System > Category > Template)
+- Expand/collapse folders
+- Template counts per folder
+- Edit templates with Monaco Editor
+- Source indicators per template
+
+**Config Editor**:
+- **Visual Form Mode**: Toggles, dropdowns, number inputs for all settings
+- **Raw YAML Mode**: Monaco Editor with YAML syntax highlighting
+- Mode toggle (Form ↔ YAML)
+- Auto-sync between modes
+- Real-time validation
+- Unsaved changes warning
+
+### Usage
+
+**Launch Application**:
+```bash
+# macOS
+open "/Applications/Agent OS Manager.app"
+
+# Or from project directory to see project components
+cd your-project
+open "/Applications/Agent OS Manager.app"
+```
+
+**Visual Workflow**:
+1. Open Agent OS Manager
+2. Dashboard shows component overview
+3. Click "Skills" → See all skills with ✅/🔶 badges
+4. Click "Edit" on a skill → Monaco Editor opens
+5. Modify content, click "Save"
+6. Or click "Override" → Copies global to project, opens editor
+7. Same workflow for Agents, Templates
+8. Config: Toggle Team System settings visually
+
+### Tech Stack
+
+- **Desktop**: Electron 39.2.7
+- **Frontend**: React 19 + TypeScript 5.9
+- **Styling**: TailwindCSS 4.0
+- **Editor**: Monaco Editor 4.7.0 (VS Code's editor)
+- **Icons**: Lucide React
+- **Parsing**: gray-matter (frontmatter), js-yaml (config)
+- **Build**: Vite 7.3 + electron-builder
+- **Testing**: Jest (15 unit tests)
+
+### When to Use
+
+**Ideal For**:
+- ✅ Visual overview of all Agent OS components
+- ✅ Easy editing without command line
+- ✅ Understanding global vs project overrides
+- ✅ Team onboarding (visual demonstration)
+- ✅ Quick config adjustments
+- ✅ Learning Agent OS structure
+
+**Not Needed For**:
+- ❌ Command-line-only workflows (use text editor)
+- ❌ Automated CI/CD (use config files directly)
+- ❌ Simple one-off edits (faster with vim/code)
+
+### Screenshots
+
+See `agent-os-manager/README.md` for detailed screenshots and usage guide.
+
+### Development
+
+```bash
+cd agent-os-manager
+
+# Install dependencies
+npm install
+
+# Run in development
+npm run dev
+
+# Run tests
+npm test
+
+# Build for production
+npm run build
+
+# Package for platform
+npm run package:mac    # macOS DMG
+npm run package:win    # Windows EXE
+npm run package:linux  # Linux AppImage
+```
+
+**Learn More**: See `agent-os-manager/README.md` and `agent-os-manager/INSTALLATION.md`
 
 ---
 
