@@ -132,35 +132,35 @@ echo ""
 echo "Downloading team development specialist agents..."
 
 download_file "$REPO_URL/.claude/agents/backend-dev.md" \
-  .claude/agents/backend-dev.md "agent"
+  ~/.claude/agents/backend-dev.md "agent"
 
 download_file "$REPO_URL/.claude/agents/frontend-dev.md" \
-  .claude/agents/frontend-dev.md "agent"
+  ~/.claude/agents/frontend-dev.md "agent"
 
 download_file "$REPO_URL/.claude/agents/qa-specialist.md" \
-  .claude/agents/qa-specialist.md "agent"
+  ~/.claude/agents/qa-specialist.md "agent"
 
 download_file "$REPO_URL/.claude/agents/devops-specialist.md" \
-  .claude/agents/devops-specialist.md "agent"
+  ~/.claude/agents/devops-specialist.md "agent"
 
 download_file "$REPO_URL/.claude/agents/mock-generator.md" \
-  .claude/agents/mock-generator.md "agent"
+  ~/.claude/agents/mock-generator.md "agent"
 
-# Create Skills symlinks in .claude/skills/
+# Create Skills symlinks in ~/.claude/skills/
 echo ""
-echo "Creating skill symlinks in .claude/skills/..."
+echo "Creating skill symlinks in ~/.claude/skills/..."
 
 if [[ -d "$AGENT_OS_DIR/skills" ]]; then
-    mkdir -p .claude/skills
+    mkdir -p ~/.claude/skills
 
     # Team development skills
     ln -sf "$AGENT_OS_DIR/skills/base/testing-best-practices.md" \
-      .claude/skills/testing-best-practices.md
+      ~/.claude/skills/testing-best-practices.md
 
     ln -sf "$AGENT_OS_DIR/skills/base/devops-patterns.md" \
-      .claude/skills/devops-patterns.md
+      ~/.claude/skills/devops-patterns.md
 
-    echo "✓ Created 2 skill symlinks in .claude/skills/"
+    echo "✓ Created 2 skill symlinks in ~/.claude/skills/"
 else
     echo "⚠ Skills directory not found (expected at $AGENT_OS_DIR/skills/)"
 fi
@@ -174,8 +174,8 @@ echo "  $AGENT_OS_DIR/templates/team-development/backend/   - 4 backend template
 echo "  $AGENT_OS_DIR/templates/team-development/frontend/  - 4 frontend templates"
 echo "  $AGENT_OS_DIR/templates/team-development/qa/        - 2 QA templates"
 echo "  $AGENT_OS_DIR/templates/team-development/devops/    - 2 DevOps templates"
-echo "  .claude/agents/                      - 5 specialist agents"
-echo "  .claude/skills/                      - 2 skill symlinks"
+echo "  ~/.claude/agents/                    - 5 specialist agents"
+echo "  ~/.claude/skills/                    - 2 skill symlinks"
 echo ""
 echo "Specialist Agents:"
 echo "  backend-dev       - Java Spring Boot / Node.js backend specialist"
