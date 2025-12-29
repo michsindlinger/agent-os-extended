@@ -559,7 +559,11 @@ market_validation:
 2. **market-researcher** - Competitive intelligence using Perplexity MCP + WebSearch
 3. **content-creator** - Compelling copywriting for landing pages and ad campaigns
 4. **seo-specialist** - SEO optimization for search visibility and organic traffic
-5. **web-developer** - Production-ready HTML/CSS/JS landing page generation
+5. **web-developer** - **Marketing landing page creation** (vanilla HTML/CSS/JS, self-contained, <30KB)
+   - **Purpose**: Quick validation landing pages BEFORE building the product
+   - **Tech**: No frameworks, single index.html file, inline CSS/JS
+   - **Deploy**: Static hosting (Netlify, Vercel, GitHub Pages)
+   - **Note**: For production applications after GO decision, use frontend-dev from Team System
 6. **validation-specialist** - Ad campaign and analytics coordination
 7. **business-analyst** - Metrics analysis and data-driven GO/NO-GO decisions
 
@@ -866,13 +870,16 @@ deploy, ci, cd, docker, pipeline, github actions, kubernetes, aws, deployment, i
    - API mock generation for frontend independence
    - Handoff documentation
 
-2. **frontend-dev** - Frontend development specialist
-   - React 18+ (primary) or Angular 17+ with TypeScript
+2. **frontend-dev** - **Production application frontend development** (React/Angular)
+   - **Purpose**: Build production-ready web applications AFTER GO decision
+   - **Tech**: React 18+ or Angular 17+ with TypeScript, npm packages, build tools
+   - **Output**: Component architecture, routing, state management, comprehensive tests
    - Complete component implementation with hooks/services
    - API integration using backend-provided mocks
    - Form validation matching backend rules
    - Component tests with React Testing Library (>80% coverage)
    - E2E test scenario documentation
+   - **Note**: For pre-validation marketing landing pages, use web-developer from Market Validation
 
 3. **qa-specialist** - Testing specialist with auto-fix
    - Testing pyramid: Unit → Integration → E2E
@@ -1328,6 +1335,119 @@ team_system:
 - Templates ensure consistency
 
 **Learn More**: See `agent-os/workflows/team/README.md` for complete guide, examples, and troubleshooting.
+
+---
+
+## Complete Product Development Workflow
+
+**Combine Market Validation (Phase A) and Team Development (Phase B) for end-to-end product creation:**
+
+### Phase A: Market Validation (Weeks 1-4)
+
+**Goal**: Validate product-market fit BEFORE expensive development
+
+```bash
+# 1. Validate market demand
+/validate-market "AI-powered invoice automation for SMBs"
+
+# Agents work:
+# → product-strategist: Sharpens idea through Q&A
+# → market-researcher: Analyzes 5-10 competitors
+# → content-creator: Writes compelling copy
+# → seo-specialist: Optimizes for search
+# → web-developer: Creates HTML/CSS/JS landing page (vanilla, <30KB)
+# → validation-specialist: Plans ad campaigns
+# → business-analyst: Defines success criteria
+
+# 2. Deploy landing page (2 minutes)
+netlify deploy --dir=agent-os/market-validation/2025-12-29-invoice-automation/landing-page
+
+# 3. Run ad campaigns (2-4 weeks)
+# → Execute Google Ads + Meta Ads campaigns
+# → Collect data: visitors, conversions, CPA
+
+# 4. Analyze results
+/analyze-validation-results
+# → business-analyst: GO/MAYBE/NO-GO decision
+
+# Result: GO decision (5% conversion, €8 CPA, 100K TAM)
+```
+
+**Deliverables**:
+- ✅ Validated product-market fit
+- ✅ Marketing landing page (HTML/CSS/JS)
+- ✅ 500-2,000 validated email addresses
+- ✅ Clear demand signal
+- ✅ Investment: €500-€2,000
+
+---
+
+### Phase B: Product Development (Months 1-6)
+
+**Goal**: Build production application with validated demand
+
+```bash
+# 1. Plan product based on validation
+/plan-product
+# Validation results automatically loaded
+# Creates technical spec and tasks
+
+# 2. Execute development with team specialists
+/execute-tasks
+
+# Agents work (smart routing):
+# Task: "Create user authentication API"
+# → backend-dev: Spring Boot REST API, JPA, tests (React/Angular app)
+
+# Task: "Create invoice dashboard UI"
+# → frontend-dev: React/Angular components, routing, state, tests
+
+# Task: "Add comprehensive testing"
+# → qa-specialist: Unit, integration, E2E tests (auto-fix failures)
+
+# Task: "Setup CI/CD pipeline"
+# → devops-specialist: GitHub Actions, Docker, deployment automation
+
+# 3. Deploy to production
+# → CI/CD pipeline deploys automatically
+# → Staging → Production with approval
+
+# Result: Production application deployed
+```
+
+**Deliverables**:
+- ✅ Full-stack web application
+- ✅ Backend API (Spring Boot/Node.js)
+- ✅ Frontend SPA (React/Angular)
+- ✅ Comprehensive test suite (>80% coverage)
+- ✅ CI/CD pipeline
+- ✅ Production deployment
+
+---
+
+### Agent Comparison
+
+| Aspect | web-developer (Phase A) | frontend-dev (Phase B) |
+|--------|------------------------|------------------------|
+| **Purpose** | Marketing validation | Production application |
+| **Technology** | Vanilla HTML/CSS/JS | React/Angular + TypeScript |
+| **Complexity** | Single page | Multi-component app |
+| **File Count** | 1 file (index.html) | 20-50+ files |
+| **Dependencies** | None (self-contained) | npm packages, build tools |
+| **Testing** | None | >80% coverage required |
+| **Backend** | No integration | Full API integration |
+| **State** | Simple JS variables | Context/Redux/NgRx |
+| **Routing** | None | React Router/Angular Router |
+| **Build** | None (deploy as-is) | Vite/Webpack build |
+| **Size** | <30KB total | 500KB-2MB bundle |
+| **Load Time** | <3 seconds | <5 seconds |
+| **Use Case** | Ad campaigns, email collection | Full product features |
+| **Timeline** | 1 day | Weeks to months |
+| **Cost** | €100-€2,000 validation | €50,000-€200,000 development |
+
+**Key Insight**: web-developer validates IDEAS cheaply. frontend-dev builds PRODUCTS after validation.
+
+---
 
 ## Original Agent OS
 
