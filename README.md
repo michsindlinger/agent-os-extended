@@ -1338,6 +1338,146 @@ team_system:
 
 ---
 
+## Design System Extraction
+
+**Maintain design consistency across frontend work with `/extract-design` command.**
+
+### Purpose
+
+Extract UI design tokens from existing websites or screenshots to generate a project-specific `frontend-design.md` skill that frontend specialists use automatically.
+
+**Use Cases**:
+- ✅ Extract design from your existing application (maintain consistency)
+- ✅ Extract design from competitor websites (inspiration)
+- ✅ Document design patterns from mockups/screenshots
+- ✅ Prepare design tokens before frontend development
+
+### Usage
+
+**From URL**:
+```bash
+/extract-design https://your-app.com
+```
+
+**From Screenshots**:
+```bash
+/extract-design screenshots/dashboard.png screenshots/form.png
+```
+
+**Interactive Mode**:
+```bash
+/extract-design
+# Prompts for URL or screenshot paths
+```
+
+### What It Does
+
+1. **Analyzes Reference**:
+   - **URL**: WebFetch analyzes website structure and styles
+   - **Screenshots**: general-purpose agent analyzes images visually
+
+2. **Extracts UI Tokens**:
+   - Colors (primary, secondary, accent, backgrounds, text) with hex codes
+   - Typography (font families, sizes, weights, line heights)
+   - Spacing (base unit, section padding, grid gaps)
+   - Components (button, card, input styles with exact values)
+   - Visual effects (shadows, gradients, border radius, animations)
+   - Layout patterns (grid, breakpoints, container widths)
+
+3. **Fetches Official Template**:
+   - Downloads official Claude `frontend-design` skill from GitHub
+   - Contains: Design thinking, aesthetic direction, implementation principles, guardrails
+
+4. **Merges Tokens + Framework**:
+   - Combines extracted tokens with official frontend-design principles
+   - Adds "Project Design System" section with your specific values
+   - Keeps all original guidance and best practices
+
+5. **Saves Project-Specific Skill**:
+   - Location: `.claude/skills/frontend-design.md`
+   - Auto-loaded by: `web-developer`, `frontend-dev` agents
+   - Used for: All frontend work in this project
+
+### Generated Skill Example
+
+```markdown
+---
+name: frontend-design
+description: Your Project design system with extracted UI tokens
+globs: ["**/*.{html,css,tsx,jsx,vue,svelte}"]
+---
+
+## Project Design System (Extracted from Reference)
+
+Source: https://your-app.com
+Extracted: 2025-12-29
+
+### Color Palette
+```css
+--color-primary: #1a73e8;        /* Main brand - CTAs, links */
+--color-secondary: #34a853;      /* Success states */
+--color-accent: #ea4335;         /* Highlights, errors */
+/* ... */
+```
+
+### Typography System
+```css
+--font-heading: "Roboto", sans-serif;
+--font-body: "Open Sans", sans-serif;
+/* ... */
+```
+
+[... All original frontend-design framework sections ...]
+```
+
+### Integration with Workflows
+
+**Market Validation** (`/validate-market`):
+- Step 9 internally uses same extraction process
+- Generates `.claude/skills/frontend-design.md`
+- web-developer uses it for landing page styling
+
+**Team Development** (`/execute-tasks`):
+- Run `/extract-design` before frontend tasks (one-time setup)
+- frontend-dev auto-loads `.claude/skills/frontend-design.md`
+- All generated components match your design
+
+### Real-World Scenario
+
+**Existing project with established design**:
+
+```bash
+# 1. Extract design from your app
+/extract-design https://your-app.com
+
+# Result: .claude/skills/frontend-design.md created
+# Contains: Your colors (#1a73e8), fonts (Roboto), spacing (8px)
+
+# 2. Add new features
+# tasks.md:
+# 1. Create invoice dashboard component
+# 2. Create payment form component
+
+/execute-tasks
+
+# → frontend-dev loads .claude/skills/frontend-design.md
+# → Generates InvoiceDashboard.tsx with YOUR #1a73e8 color
+# → Generates PaymentForm.tsx with YOUR Roboto font
+# → New components look identical to existing app!
+
+# 3. Future features automatically consistent
+# All frontend tasks use same design system
+# No manual "use our blue color" instructions needed
+```
+
+**Benefits**:
+- ✅ One-time setup, permanent consistency
+- ✅ No manual design token communication needed
+- ✅ New developers onboard faster (design system documented)
+- ✅ Design updates propagate (re-run `/extract-design`)
+
+---
+
 ## Complete Product Development Workflow
 
 **Combine Market Validation (Phase A) and Team Development (Phase B) for end-to-end product creation:**
