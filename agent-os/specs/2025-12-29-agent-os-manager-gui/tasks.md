@@ -3,7 +3,8 @@
 These are the tasks to be completed for the spec detailed in @agent-os/specs/2025-12-29-agent-os-manager-gui/spec.md
 
 > Created: 2025-12-29
-> Status: Ready for Implementation
+> Status: ✅ MVP Complete (Phases 1-10)
+> Implementation Branch: agent-os-manager-gui
 
 ## Tasks
 
