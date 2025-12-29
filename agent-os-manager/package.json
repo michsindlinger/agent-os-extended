@@ -2,7 +2,7 @@
   "name": "agent-os-manager",
   "version": "1.0.0",
   "description": "Desktop GUI for managing Agent OS Extended components",
-  "main": "dist/main/index.js",
+  "main": "out/main/index.js",
   "author": "Agent OS Extended",
   "license": "MIT",
   "private": true,
