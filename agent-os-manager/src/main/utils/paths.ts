@@ -124,13 +124,16 @@ export function getProjectClaudePath(projectRoot?: string): string | null {
 export function getAllPaths(): PathInfo {
   const projectRoot = findProjectRoot()
 
-  return {
+  const result = {
     globalAgentOS: getGlobalAgentOSPath(),
     projectAgentOS: getProjectAgentOSPath(),
     globalClaude: getGlobalClaudePath(),
     projectClaude: getProjectClaudePath(),
     projectRoot
   }
+
+  console.log('[paths] getAllPaths result:', result)
+  return result
 }
 
 /**

@@ -24,9 +24,13 @@ export async function listAgents(): Promise<Agent[]> {
   const paths = getAllPaths()
   const agentsMap = new Map<string, Agent>()
 
+  console.log('[agents.service] Paths:', paths)
+
   // Get global agents
   const globalPattern = join(paths.globalClaude, 'agents', '*.md')
+  console.log('[agents.service] Global pattern:', globalPattern)
   const globalFiles = await glob(globalPattern)
+  console.log('[agents.service] Global files found:', globalFiles.length, globalFiles.slice(0, 5))
 
   for (const filePath of globalFiles) {
     try {
@@ -53,7 +57,9 @@ export async function listAgents(): Promise<Agent[]> {
   // Get project agents (override global)
   if (paths.projectClaude) {
     const projectPattern = join(paths.projectClaude, 'agents', '*.md')
+    console.log('[agents.service] Project pattern:', projectPattern)
     const projectFiles = await glob(projectPattern)
+    console.log('[agents.service] Project files found:', projectFiles.length, projectFiles.slice(0, 5))
 
     for (const filePath of projectFiles) {
       try {
@@ -81,7 +87,10 @@ export async function listAgents(): Promise<Agent[]> {
     }
   }
 
-  return Array.from(agentsMap.values()).sort((a, b) => a.name.localeCompare(b.name))
+  const result = Array.from(agentsMap.values()).sort((a, b) => a.name.localeCompare(b.name))
+  console.log('[agents.service] Total agents after merge:', result.length)
+  console.log('[agents.service] Agent names:', result.map(a => a.name).join(', '))
+  return result
 }
 
 /**
