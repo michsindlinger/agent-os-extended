@@ -1,11 +1,11 @@
-import { app, BrowserWindow, ipcMain } from 'electron'
+import { app, BrowserWindow, ipcMain, dialog } from 'electron'
 import path from 'path'
 import yaml from 'js-yaml'
 import * as skillsService from './services/skills.service'
 import * as agentsService from './services/agents.service'
 import * as templatesService from './services/templates.service'
 import * as configService from './services/config.service'
-import { getAllPaths } from './utils/paths'
+import { getAllPaths, setCustomProjectPath } from './utils/paths'
 
 let mainWindow: BrowserWindow | null = null
 
@@ -245,4 +245,35 @@ ipcMain.handle('system:getPaths', async () => {
 ipcMain.handle('system:refresh', async () => {
   // Refresh handled by re-calling list methods
   return true
+})
+
+// Dialog IPC handlers
+ipcMain.handle('dialog:selectFolder', async () => {
+  try {
+    const result = await dialog.showOpenDialog(mainWindow!, {
+      properties: ['openDirectory'],
+      title: 'Select Project Directory',
+      message: 'Choose a directory containing agent-os/ or .agent-os/',
+      buttonLabel: 'Select Project'
+    })
+
+    if (result.canceled || result.filePaths.length === 0) {
+      return null
+    }
+
+    return result.filePaths[0]
+  } catch (error) {
+    console.error('Error selecting folder:', error)
+    throw error
+  }
+})
+
+ipcMain.handle('system:setProjectPath', async (_, projectPath: string | null) => {
+  try {
+    setCustomProjectPath(projectPath)
+    return getAllPaths()
+  } catch (error) {
+    console.error('Error setting project path:', error)
+    throw error
+  }
 })

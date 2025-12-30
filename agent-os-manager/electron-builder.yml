@@ -15,18 +15,11 @@ mac:
   target:
     - target: dmg
       arch:
-        - universal
-        - arm64
         - x64
   category: public.app-category.developer-tools
-  icon: build/icon.icns
-  entitlements: build/entitlements.mac.plist
-  entitlementsInherit: build/entitlements.mac.plist
-  hardenedRuntime: true
-  gatekeeperAssess: false
+  identity: null
 dmg:
   artifactName: ${productName}-${version}-${arch}.${ext}
-  sign: false
 win:
   target:
     - target: nsis
@@ -42,9 +35,9 @@ nsis:
   deleteAppDataOnUninstall: false
 linux:
   target:
-    - AppImage
+    - target: AppImage
+      arch:
+        - x64
   icon: build/icon.png
   category: Development
-  artifactName: ${productName}-${version}-${arch}.${ext}
-AppImage:
   artifactName: ${productName}-${version}-${arch}.${ext}

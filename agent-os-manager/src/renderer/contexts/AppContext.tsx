@@ -5,6 +5,7 @@ interface PathInfo {
   projectAgentOS: string | null
   globalClaude: string
   projectClaude: string | null
+  projectRoot: string | null
 }
 
 interface AppContextType {
@@ -12,6 +13,8 @@ interface AppContextType {
   toggleTheme: () => void
   paths: PathInfo | null
   refreshPaths: () => Promise<void>
+  selectProject: () => Promise<void>
+  clearProject: () => Promise<void>
   loading: boolean
 }
 
@@ -62,6 +65,29 @@ export function AppProvider({ children }: { children: ReactNode }) {
     await loadPaths()
   }
 
+  const selectProject = async () => {
+    try {
+      const selectedPath = await window.electronAPI.dialog.selectFolder()
+
+      if (selectedPath) {
+        // Set project path in backend
+        const updatedPaths = await window.electronAPI.system.setProjectPath(selectedPath)
+        setPaths(updatedPaths)
+      }
+    } catch (error) {
+      console.error('Error selecting project:', error)
+    }
+  }
+
+  const clearProject = async () => {
+    try {
+      const updatedPaths = await window.electronAPI.system.setProjectPath(null)
+      setPaths(updatedPaths)
+    } catch (error) {
+      console.error('Error clearing project:', error)
+    }
+  }
+
   return (
     <AppContext.Provider
       value={{
@@ -69,6 +95,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         toggleTheme,
         paths,
         refreshPaths,
+        selectProject,
+        clearProject,
         loading
       }}
     >

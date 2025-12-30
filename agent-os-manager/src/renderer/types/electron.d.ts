@@ -34,6 +34,11 @@ export interface ElectronAPI {
   system: {
     getPaths: () => Promise<any>
     refresh: () => Promise<void>
+    setProjectPath: (path: string | null) => Promise<any>
+  }
+
+  dialog: {
+    selectFolder: () => Promise<string | null>
   }
 }
 

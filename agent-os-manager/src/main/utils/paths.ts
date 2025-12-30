@@ -8,6 +8,18 @@ export interface PathInfo {
   projectAgentOS: string | null
   globalClaude: string
   projectClaude: string | null
+  projectRoot: string | null
+}
+
+// Store custom project path
+let customProjectPath: string | null = null
+
+export function setCustomProjectPath(path: string | null): void {
+  customProjectPath = path
+}
+
+export function getCustomProjectPath(): string | null {
+  return customProjectPath
 }
 
 /**
@@ -40,10 +52,19 @@ export function getGlobalClaudePath(): string {
 
 /**
  * Find project root by looking for agent-os/ or .agent-os/ directory
- * Searches up from current directory
+ * Searches up from current directory or uses custom project path if set
  */
-export function findProjectRoot(startPath: string = process.cwd()): string | null {
-  let currentPath = startPath
+export function findProjectRoot(startPath?: string): string | null {
+  // Use custom project path if set
+  if (customProjectPath) {
+    // Verify it has agent-os/ or .agent-os/
+    if (existsSync(join(customProjectPath, 'agent-os')) || existsSync(join(customProjectPath, '.agent-os'))) {
+      return customProjectPath
+    }
+  }
+
+  // Fall back to searching from startPath or cwd
+  let currentPath = startPath || process.cwd()
 
   // Search up to root
   while (currentPath !== dirname(currentPath)) {
@@ -95,11 +116,14 @@ export function getProjectClaudePath(projectRoot?: string): string | null {
  * Get all paths (global + project)
  */
 export function getAllPaths(): PathInfo {
+  const projectRoot = findProjectRoot()
+
   return {
     globalAgentOS: getGlobalAgentOSPath(),
     projectAgentOS: getProjectAgentOSPath(),
     globalClaude: getGlobalClaudePath(),
-    projectClaude: getProjectClaudePath()
+    projectClaude: getProjectClaudePath(),
+    projectRoot
   }
 }
 

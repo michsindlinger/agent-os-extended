@@ -43,6 +43,12 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // System API (to be implemented)
   system: {
     getPaths: () => ipcRenderer.invoke('system:getPaths'),
-    refresh: () => ipcRenderer.invoke('system:refresh')
+    refresh: () => ipcRenderer.invoke('system:refresh'),
+    setProjectPath: (path: string | null) => ipcRenderer.invoke('system:setProjectPath', path)
+  },
+
+  // Dialog API
+  dialog: {
+    selectFolder: () => ipcRenderer.invoke('dialog:selectFolder')
   }
 })

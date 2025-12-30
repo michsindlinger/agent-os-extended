@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { Card } from '../components/common/Card'
+import { Button } from '../components/common/Button'
 import { useApp } from '../contexts/AppContext'
+import { FolderOpen, X } from 'lucide-react'
 
 export default function Dashboard() {
-  const { paths } = useApp()
+  const { paths, selectProject, clearProject } = useApp()
   const [stats, setStats] = useState({
     skills: { total: 0, global: 0, project: 0 },
     agents: { total: 0, global: 0, project: 0 },
@@ -39,6 +41,18 @@ export default function Dashboard() {
     } catch (error) {
       console.error('Error loading stats:', error)
     }
+  }
+
+  const handleSelectProject = async () => {
+    await selectProject()
+    // Reload stats after project selection
+    await loadStats()
+  }
+
+  const handleClearProject = async () => {
+    await clearProject()
+    // Reload stats after clearing project
+    await loadStats()
   }
 
   return (
@@ -100,16 +114,32 @@ export default function Dashboard() {
                 {paths.globalAgentOS}
               </div>
             </div>
+
             {paths.projectAgentOS ? (
               <div>
-                <div className="font-medium text-gray-700 dark:text-gray-300 mb-1">Project Location</div>
+                <div className="font-medium text-gray-700 dark:text-gray-300 mb-1 flex items-center justify-between">
+                  <span>Project Location</span>
+                  <Button variant="ghost" size="sm" onClick={handleClearProject}>
+                    <X size={14} className="mr-1" />
+                    Clear
+                  </Button>
+                </div>
                 <div className="font-mono text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-900 px-3 py-2 rounded">
-                  {paths.projectAgentOS}
+                  {paths.projectRoot}
+                </div>
+                <div className="font-mono text-xs text-gray-500 dark:text-gray-500 mt-1">
+                  agent-os: {paths.projectAgentOS}
                 </div>
               </div>
             ) : (
-              <div className="text-gray-500 dark:text-gray-400 italic">
-                No project detected. Open a project directory to enable project-specific overrides.
+              <div>
+                <div className="text-gray-500 dark:text-gray-400 italic mb-3">
+                  No project detected. Open a project directory to enable project-specific overrides.
+                </div>
+                <Button variant="primary" size="md" onClick={handleSelectProject}>
+                  <FolderOpen size={16} className="mr-2" />
+                  Open Project...
+                </Button>
               </div>
             )}
           </div>
