@@ -13,9 +13,11 @@ export interface PathInfo {
 
 // Store custom project path
 let customProjectPath: string | null = null
+let useCustomPathOnly = false // Flag to disable auto-detection
 
 export function setCustomProjectPath(path: string | null): void {
   customProjectPath = path
+  useCustomPathOnly = true // User explicitly selected (or cleared) project
 }
 
 export function getCustomProjectPath(): string | null {
@@ -55,15 +57,19 @@ export function getGlobalClaudePath(): string {
  * Searches up from current directory or uses custom project path if set
  */
 export function findProjectRoot(startPath?: string): string | null {
-  // Use custom project path if set
-  if (customProjectPath) {
-    // Verify it has agent-os/ or .agent-os/
-    if (existsSync(join(customProjectPath, 'agent-os')) || existsSync(join(customProjectPath, '.agent-os'))) {
-      return customProjectPath
+  // If user explicitly set/cleared project path, use only that
+  if (useCustomPathOnly) {
+    if (customProjectPath) {
+      // Verify it has agent-os/ or .agent-os/
+      if (existsSync(join(customProjectPath, 'agent-os')) || existsSync(join(customProjectPath, '.agent-os'))) {
+        return customProjectPath
+      }
     }
+    // User cleared project → return null (don't auto-detect)
+    return null
   }
 
-  // Fall back to searching from startPath or cwd
+  // Auto-detection mode (initial state, no user selection yet)
   let currentPath = startPath || process.cwd()
 
   // Search up to root

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Card } from '../components/common/Card'
 import { Button } from '../components/common/Button'
+import { SystemsStatus } from '../components/common/SystemsStatus'
 import { useApp } from '../contexts/AppContext'
 import { FolderOpen, X } from 'lucide-react'
 
@@ -11,6 +12,9 @@ export default function Dashboard() {
     agents: { total: 0, global: 0, project: 0 },
     templates: { total: 0, global: 0, project: 0 }
   })
+  const [skillsList, setSkillsList] = useState<any[]>([])
+  const [agentsList, setAgentsList] = useState<any[]>([])
+  const [templatesList, setTemplatesList] = useState<any[]>([])
 
   useEffect(() => {
     loadStats()
@@ -22,16 +26,19 @@ export default function Dashboard() {
       const skills = await window.electronAPI.skills.list()
       const skillsGlobal = skills.filter((s) => s.source === 'global').length
       const skillsProject = skills.filter((s) => s.source === 'project').length
+      setSkillsList(skills)
 
       // Load agents
       const agents = await window.electronAPI.agents.list()
       const agentsGlobal = agents.filter((a) => a.source === 'global').length
       const agentsProject = agents.filter((a) => a.source === 'project').length
+      setAgentsList(agents)
 
       // Load templates
       const templates = await window.electronAPI.templates.list()
       const templatesGlobal = templates.filter((t) => t.source === 'global').length
       const templatesProject = templates.filter((t) => t.source === 'project').length
+      setTemplatesList(templates)
 
       setStats({
         skills: { total: skills.length, global: skillsGlobal, project: skillsProject },
@@ -61,6 +68,11 @@ export default function Dashboard() {
       <p className="text-gray-600 dark:text-gray-400 mb-8">
         Overview of Agent OS Extended components
       </p>
+
+      {/* Systems Status */}
+      <div className="mb-8">
+        <SystemsStatus skills={skillsList} agents={agentsList} templates={templatesList} />
+      </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-3 gap-6 mb-8">
