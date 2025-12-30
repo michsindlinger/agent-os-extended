@@ -82,7 +82,7 @@ export function AgentEditor({ agent, onSave, onClose }: AgentEditorProps) {
         <div className="px-6 py-2 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-4 text-xs text-gray-600 dark:text-gray-400">
             <div className="font-mono">{agent.path}</div>
-            {agent.tools && agent.tools.length > 0 && (
+            {agent.tools && Array.isArray(agent.tools) && agent.tools.length > 0 && (
               <div className="flex items-center gap-1">
                 <span className="font-semibold">Tools:</span>
                 <span>{agent.tools.join(', ')}</span>

@@ -37,11 +37,14 @@ export async function listAgents(): Promise<Agent[]> {
       const content = await readFile(filePath, 'utf-8')
       const { frontmatter } = parseFrontmatter(content)
 
-      console.log('[agents.service] Parsed global agent:', filePath, 'name:', frontmatter.name)
+      // Use frontmatter.name or fallback to filename
+      const agentName = frontmatter.name || filePath.split('/').pop()?.replace('.md', '') || ''
 
-      if (frontmatter.name) {
-        agentsMap.set(frontmatter.name, {
-          name: frontmatter.name,
+      console.log('[agents.service] Parsed global agent:', filePath, 'frontmatter.name:', frontmatter.name, 'using name:', agentName)
+
+      if (agentName) {
+        agentsMap.set(agentName, {
+          name: agentName,
           description: frontmatter.description || '',
           tools: frontmatter.tools,
           color: frontmatter.color,
@@ -50,9 +53,9 @@ export async function listAgents(): Promise<Agent[]> {
           path: filePath,
           content
         })
-        console.log('[agents.service] Added global agent to map:', frontmatter.name)
+        console.log('[agents.service] Added global agent to map:', agentName)
       } else {
-        console.warn('[agents.service] Skipping agent without name:', filePath)
+        console.warn('[agents.service] Skipping agent - could not determine name:', filePath)
       }
     } catch (error) {
       console.error(`[agents.service] Error reading agent: ${filePath}`, error)
@@ -71,13 +74,16 @@ export async function listAgents(): Promise<Agent[]> {
         const content = await readFile(filePath, 'utf-8')
         const { frontmatter } = parseFrontmatter(content)
 
-        console.log('[agents.service] Parsed project agent:', filePath, 'name:', frontmatter.name)
+        // Use frontmatter.name or fallback to filename
+        const agentName = frontmatter.name || filePath.split('/').pop()?.replace('.md', '') || ''
 
-        if (frontmatter.name) {
-          const globalAgent = agentsMap.get(frontmatter.name)
+        console.log('[agents.service] Parsed project agent:', filePath, 'frontmatter.name:', frontmatter.name, 'using name:', agentName)
 
-          agentsMap.set(frontmatter.name, {
-            name: frontmatter.name,
+        if (agentName) {
+          const globalAgent = agentsMap.get(agentName)
+
+          agentsMap.set(agentName, {
+            name: agentName,
             description: frontmatter.description || '',
             tools: frontmatter.tools,
             color: frontmatter.color,
@@ -87,9 +93,9 @@ export async function listAgents(): Promise<Agent[]> {
             globalPath: globalAgent?.path,
             content
           })
-          console.log('[agents.service] Added/overrode agent in map:', frontmatter.name, 'source: project')
+          console.log('[agents.service] Added/overrode agent in map:', agentName, 'source: project')
         } else {
-          console.warn('[agents.service] Skipping project agent without name:', filePath)
+          console.warn('[agents.service] Skipping project agent - could not determine name:', filePath)
         }
       } catch (error) {
         console.error(`[agents.service] Error reading project agent: ${filePath}`, error)
