@@ -25,7 +25,7 @@ export async function listAgents(): Promise<Agent[]> {
   const agentsMap = new Map<string, Agent>()
 
   // Get global agents
-  const globalPattern = join(paths.globalClaude, 'agents/**/*.md')
+  const globalPattern = join(paths.globalClaude, 'agents', '*.md')
   const globalFiles = await glob(globalPattern)
 
   for (const filePath of globalFiles) {
@@ -52,7 +52,7 @@ export async function listAgents(): Promise<Agent[]> {
 
   // Get project agents (override global)
   if (paths.projectClaude) {
-    const projectPattern = join(paths.projectClaude, 'agents/**/*.md')
+    const projectPattern = join(paths.projectClaude, 'agents', '*.md')
     const projectFiles = await glob(projectPattern)
 
     for (const filePath of projectFiles) {
