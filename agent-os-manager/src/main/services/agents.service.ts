@@ -37,6 +37,8 @@ export async function listAgents(): Promise<Agent[]> {
       const content = await readFile(filePath, 'utf-8')
       const { frontmatter } = parseFrontmatter(content)
 
+      console.log('[agents.service] Parsed global agent:', filePath, 'name:', frontmatter.name)
+
       if (frontmatter.name) {
         agentsMap.set(frontmatter.name, {
           name: frontmatter.name,
@@ -48,9 +50,12 @@ export async function listAgents(): Promise<Agent[]> {
           path: filePath,
           content
         })
+        console.log('[agents.service] Added global agent to map:', frontmatter.name)
+      } else {
+        console.warn('[agents.service] Skipping agent without name:', filePath)
       }
     } catch (error) {
-      console.error(`Error reading agent: ${filePath}`, error)
+      console.error(`[agents.service] Error reading agent: ${filePath}`, error)
     }
   }
 
@@ -66,6 +71,8 @@ export async function listAgents(): Promise<Agent[]> {
         const content = await readFile(filePath, 'utf-8')
         const { frontmatter } = parseFrontmatter(content)
 
+        console.log('[agents.service] Parsed project agent:', filePath, 'name:', frontmatter.name)
+
         if (frontmatter.name) {
           const globalAgent = agentsMap.get(frontmatter.name)
 
@@ -80,9 +87,12 @@ export async function listAgents(): Promise<Agent[]> {
             globalPath: globalAgent?.path,
             content
           })
+          console.log('[agents.service] Added/overrode agent in map:', frontmatter.name, 'source: project')
+        } else {
+          console.warn('[agents.service] Skipping project agent without name:', filePath)
         }
       } catch (error) {
-        console.error(`Error reading project agent: ${filePath}`, error)
+        console.error(`[agents.service] Error reading project agent: ${filePath}`, error)
       }
     }
   }
