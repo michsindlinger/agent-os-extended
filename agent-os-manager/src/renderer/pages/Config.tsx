@@ -108,14 +108,93 @@ export default function Config() {
   }
 
   if (error && !config) {
+    const isConfigNotFound = error.includes('No config.yml')
+
+    const handleCreateConfig = async () => {
+      // Create default config
+      const defaultConfig = {
+        active_profile: 'base',
+        profiles: {
+          inheritance: true,
+          auto_load_skills: true
+        },
+        skills: {
+          enabled: true,
+          path: 'agent-os/skills',
+          symlink_to_claude: true
+        },
+        team_system: {
+          enabled: true,
+          lookup_order: ['project', 'global'],
+          coordination_mode: 'sequential',
+          task_routing: {
+            enabled: true,
+            auto_delegate: true
+          },
+          specialists: {
+            backend_dev: {
+              enabled: true,
+              default_stack: 'java_spring_boot',
+              code_generation: 'full'
+            },
+            frontend_dev: {
+              enabled: true,
+              default_framework: 'react',
+              code_generation: 'full'
+            },
+            qa_specialist: {
+              enabled: true,
+              test_types: ['unit', 'integration', 'e2e'],
+              coverage_target: 80,
+              auto_fix_attempts: 3
+            },
+            devops_specialist: {
+              enabled: true,
+              ci_platform: 'github_actions',
+              containerization: 'docker'
+            }
+          },
+          quality_gates: {
+            unit_tests_required: true,
+            integration_tests_required: true,
+            coverage_minimum: 80,
+            build_success_required: true
+          }
+        }
+      }
+
+      try {
+        const yamlContent = yaml.dump(defaultConfig, { indent: 2, lineWidth: -1 })
+        await window.electronAPI.config.write(yamlContent)
+        await loadConfig()
+        setError(null)
+      } catch (err) {
+        setError((err as Error).message)
+      }
+    }
+
     return (
       <div className="flex items-center justify-center h-full">
-        <div className="text-center">
+        <div className="text-center max-w-md">
           <AlertCircle size={48} className="mx-auto mb-4 text-red-500" />
-          <div className="text-red-600 dark:text-red-400">{error}</div>
-          <Button className="mt-4" onClick={loadConfig}>
-            Retry
-          </Button>
+          <div className="text-red-600 dark:text-red-400 mb-2">{error}</div>
+          {isConfigNotFound && (
+            <div className="text-gray-600 dark:text-gray-400 text-sm mb-6">
+              This project doesn't have an agent-os/config.yml file yet.
+              <br />
+              Create a default configuration to get started.
+            </div>
+          )}
+          <div className="flex gap-2 justify-center">
+            {isConfigNotFound && (
+              <Button variant="primary" onClick={handleCreateConfig}>
+                Create Config
+              </Button>
+            )}
+            <Button variant="secondary" onClick={loadConfig}>
+              Retry
+            </Button>
+          </div>
         </div>
       </div>
     )
