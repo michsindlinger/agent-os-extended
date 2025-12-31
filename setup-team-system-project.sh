@@ -23,27 +23,17 @@ echo "  .claude/skills/                       (project skills will be created he
 echo "  Updates agent-os/config.yml           (enables team system)"
 echo ""
 
-# Detect global installation location
-GLOBAL_AGENT_OS=""
-if [[ -d "$HOME/.agent-os" ]]; then
-    GLOBAL_AGENT_OS="$HOME/.agent-os"
-elif [[ -f "agent-os/config.yml" ]] && [[ -d "agent-os/skills" ]]; then
-    # Running from agent-os-extended repo itself
-    GLOBAL_AGENT_OS="$(pwd)/agent-os"
-elif [[ -d "$HOME/Entwicklung/agent-os-extended/agent-os" ]] && [[ -d "$HOME/Entwicklung/agent-os-extended/agent-os/templates/team-development" ]]; then
-    # Check for agent-os-extended repo in typical location
-    GLOBAL_AGENT_OS="$HOME/Entwicklung/agent-os-extended/agent-os"
-fi
+# Global installation is always at HOME/.agent-os
+GLOBAL_AGENT_OS="$HOME/.agent-os"
 
 # Check if global installation exists
-if [[ -z "$GLOBAL_AGENT_OS" ]] || [[ ! -d "$GLOBAL_AGENT_OS/templates/team-development" ]]; then
-    echo "❌ Error: Global Team Development System not found"
+if [[ ! -d "$GLOBAL_AGENT_OS/templates/team-development" ]]; then
+    echo "❌ Error: Global Team Development System not found at $GLOBAL_AGENT_OS"
     echo ""
     echo "Please run global installation first:"
     echo "  curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/setup-team-system-global.sh | bash"
     echo ""
-    echo "Or if running from agent-os-extended repo:"
-    echo "  bash setup-team-system-global.sh"
+    echo "This will install to: $HOME/.agent-os"
     echo ""
     exit 1
 fi

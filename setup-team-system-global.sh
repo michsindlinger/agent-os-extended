@@ -42,18 +42,14 @@ download_file() {
     echo "✓ Downloaded $category: $(basename $dest)"
 }
 
-# Detect global agent-os location
-if [[ -d "$HOME/.agent-os" ]]; then
-    AGENT_OS_DIR="$HOME/.agent-os"
-elif [[ -d "agent-os" ]]; then
-    AGENT_OS_DIR="$(pwd)/agent-os"
-else
-    # Default to current directory's agent-os
-    AGENT_OS_DIR="$(pwd)/agent-os"
-fi
+# Global installation always goes to HOME directory
+AGENT_OS_DIR="$HOME/.agent-os"
 
 echo "Installing to: $AGENT_OS_DIR"
 echo ""
+
+# Create directory if it doesn't exist
+mkdir -p "$AGENT_OS_DIR"
 
 # Create global directory structure
 echo "Creating global directory structure..."
