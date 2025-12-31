@@ -30,6 +30,9 @@ if [[ -d "$HOME/.agent-os" ]]; then
 elif [[ -f "agent-os/config.yml" ]] && [[ -d "agent-os/skills" ]]; then
     # Running from agent-os-extended repo itself
     GLOBAL_AGENT_OS="$(pwd)/agent-os"
+elif [[ -d "$HOME/Entwicklung/agent-os-extended/agent-os" ]] && [[ -d "$HOME/Entwicklung/agent-os-extended/agent-os/templates/team-development" ]]; then
+    # Check for agent-os-extended repo in typical location
+    GLOBAL_AGENT_OS="$HOME/Entwicklung/agent-os-extended/agent-os"
 fi
 
 # Check if global installation exists
