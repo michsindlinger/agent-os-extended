@@ -1,28 +1,27 @@
 ---
-description: Analyze Current Product & Install Agent OS
+description: Analyze existing product and install Agent OS with documentation
 globs:
 alwaysApply: false
-version: 1.0
+version: 2.0
 encoding: UTF-8
+installation: global
 ---
 
-# Analyze Current Product & Install Agent OS
+# Analyze Product Workflow
 
-## Overview
-
-Install Agent OS into an existing codebase, analyze current product state and progress.  Builds on plan-product.md
+Install Agent OS into an existing codebase by analyzing the current product state, extracting patterns, and creating comprehensive documentation.
 
 <pre_flight_check>
-  EXECUTE: @~/.agent-os/workflows/meta/pre-flight.md
+  EXECUTE: @agent-os/workflows/meta/pre-flight.md
 </pre_flight_check>
 
 <process_flow>
 
-<step number="1" name="analyze_existing_codebase">
+<step number="1" name="codebase_analysis">
 
-### Step 1: Analyze Existing Codebase
+### Step 1: Deep Codebase Analysis
 
-Perform a deep codebase analysis of the current codebase to understand current state before documentation purposes.
+Perform comprehensive analysis of the existing codebase.
 
 <analysis_areas>
   <project_structure>
@@ -31,190 +30,294 @@ Perform a deep codebase analysis of the current codebase to understand current s
     - Module structure
     - Build configuration
   </project_structure>
-  <technology_stack>
-    - Frameworks in use
-    - Dependencies (package.json, Gemfile, requirements.txt, etc.)
-    - Database systems
-    - Infrastructure configuration
-  </technology_stack>
+
+  <technology_detection>
+    - Frameworks (package.json, Gemfile, requirements.txt, pom.xml)
+    - Database systems (migrations, schema files)
+    - Frontend framework (React, Vue, Angular, etc.)
+    - Infrastructure configuration (Docker, K8s, etc.)
+  </technology_detection>
+
+  <architecture_detection>
+    - Layer separation (controllers, services, repositories)
+    - Domain structure (entities, value objects)
+    - Dependency direction (clean architecture compliance)
+    - Patterns in use (Repository, Factory, Strategy, etc.)
+  </architecture_detection>
+
   <implementation_progress>
-    - Completed features
-    - Work in progress
+    - Completed features (functional endpoints, pages)
     - Authentication/authorization state
-    - API endpoints
-    - Database schema
+    - API endpoints count
+    - Database tables/models
+    - Test coverage
   </implementation_progress>
+
   <code_patterns>
-    - Coding style in use
-    - Naming conventions
+    - Coding style (naming, formatting)
     - File organization patterns
     - Testing approach
+    - Error handling patterns
   </code_patterns>
 </analysis_areas>
 
-<instructions>
-  ACTION: Thoroughly analyze the existing codebase
-  DOCUMENT: Current technologies, features, and patterns
-  IDENTIFY: Architectural decisions already made
-  NOTE: Development progress and completed work
-</instructions>
+**Output:** Internal analysis summary for next steps
 
 </step>
 
 <step number="2" subagent="context-fetcher" name="gather_product_context">
 
-### Step 2: Gather Product Context
+### Step 2: Gather Product Context from User
 
-Use the context-fetcher subagent to supplement codebase analysis with business context and future plans.
+Supplement codebase analysis with business context.
 
-<context_questions>
-  Based on my analysis of your codebase, I can see you're building [OBSERVED_PRODUCT_TYPE].
+**Prompt User:**
+```
+Based on my analysis of your codebase, I can see you're building a [DETECTED_TYPE].
 
-  To properly set up Agent OS, I need to understand:
+Tech Stack Detected:
+- Backend: [DETECTED]
+- Frontend: [DETECTED]
+- Database: [DETECTED]
 
-  1. **Product Vision**: What problem does this solve? Who are the target users?
+To properly set up Agent OS, I need to understand:
 
-  2. **Current State**: Are there features I should know about that aren't obvious from the code?
+1. Product Vision: What problem does this solve? Who are the target users?
+2. Current State: Are there features I should know about that aren't obvious from the code?
+3. Roadmap: What features are planned next?
+4. Architecture Intent: Was a specific architecture pattern intended (Hexagonal, Clean, DDD)?
+5. Team Practices: Any coding standards or practices I should capture?
+```
 
-  3. **Roadmap**: What features are planned next? Any major refactoring planned?
-
-  4. **Decisions**: Are there important technical or product decisions I should document?
-
-  5. **Team Preferences**: Any coding standards or practices the team follows that I should capture?
-</context_questions>
-
-<instructions>
-  ACTION: Ask user for product context
-  COMBINE: Merge user input with codebase analysis
-  PREPARE: Information for plan-product.md execution
-</instructions>
+**Store:** User responses for documentation
 
 </step>
 
-<step number="3" name="execute_plan_product">
+<step number="3" subagent="product-strategist" name="generate_product_brief">
 
-### Step 3: Execute Plan-Product with Context
+### Step 3: Generate Product Brief
 
-Execute our standard flow for installing Agent OS in existing products
+Create product-brief.md from analysis and user input.
 
-<execution_parameters>
-  <main_idea>[DERIVED_FROM_ANALYSIS_AND_USER_INPUT]</main_idea>
-  <key_features>[IDENTIFIED_IMPLEMENTED_AND_PLANNED_FEATURES]</key_features>
-  <target_users>[FROM_USER_CONTEXT]</target_users>
-  <tech_stack>[DETECTED_FROM_CODEBASE]</tech_stack>
-</execution_parameters>
+**Process:**
+1. Combine codebase analysis with user context
+2. Extract features from existing code
+3. Identify target users from user input
+4. Document current state as baseline
 
-<execution_prompt>
-  @~/.agent-os/workflows/core/plan-product.md
+**Prompt User for Review:**
+```
+I've created a Product Brief based on your codebase and our discussion.
 
-  I'm installing Agent OS into an existing product. Here's what I've gathered:
+Please review: .agent-os/product/product-brief.md
 
-  **Main Idea**: [SUMMARY_FROM_ANALYSIS_AND_CONTEXT]
+Is this accurate? Any corrections needed?
+```
 
-  **Key Features**:
-  - Already Implemented: [LIST_FROM_ANALYSIS]
-  - Planned: [LIST_FROM_USER]
-
-  **Target Users**: [FROM_USER_RESPONSE]
-
-  **Tech Stack**: [DETECTED_STACK_WITH_VERSIONS]
-</execution_prompt>
-
-<instructions>
-  ACTION: Execute plan-product.md with gathered information
-  PROVIDE: All context as structured input
-  ALLOW: plan-product.md to create .agent-os/product/ structure
-</instructions>
+**Template:** `@agent-os/templates/documents/product-brief.md`
+**Output:** `.agent-os/product/product-brief.md`
 
 </step>
 
-<step number="4" name="customize_generated_files">
+<step number="4" name="generate_product_brief_lite">
 
-### Step 4: Customize Generated Documentation
+### Step 4: Generate Product Brief Lite
 
-Refine the generated documentation to ensure accuracy for the existing product by updating roadmap, tech stack, and decisions based on actual implementation.
+Create condensed version for AI context.
 
-<customization_tasks>
-  <roadmap_adjustment>
-    - Mark completed features as done
-    - Move implemented items to "Phase 0: Already Completed"
-    - Adjust future phases based on actual progress
-  </roadmap_adjustment>
-  <tech_stack_verification>
-    - Verify detected versions are correct
-    - Add any missing infrastructure details
-    - Document actual deployment setup
-  </tech_stack_verification>
-  <decisions_documentation>
-    - Add historical decisions that shaped current architecture
-    - Document why certain technologies were chosen
-    - Capture any pivots or major changes
-  </decisions_documentation>
-</customization_tasks>
-
-<roadmap_template>
-  ## Phase 0: Already Completed
-
-  The following features have been implemented:
-
-  - [x] [FEATURE_1] - [DESCRIPTION_FROM_CODE]
-  - [x] [FEATURE_2] - [DESCRIPTION_FROM_CODE]
-  - [x] [FEATURE_3] - [DESCRIPTION_FROM_CODE]
-
-  ## Phase 1: Current Development
-
-  - [ ] [IN_PROGRESS_FEATURE] - [DESCRIPTION]
-
-  [CONTINUE_WITH_STANDARD_PHASES]
-</roadmap_template>
-
+**Template:** `@agent-os/templates/documents/product-brief-lite.md`
+**Output:** `.agent-os/product/product-brief-lite.md`
 
 </step>
 
-<step number="5" name="final_verification">
+<step number="5" name="generate_tech_stack">
 
-### Step 5: Final Verification and Summary
+### Step 5: Document Tech Stack
 
-Verify installation completeness and provide clear next steps for the user to start using Agent OS with their existing codebase.
+Create tech-stack.md from detected technologies.
 
-<verification_checklist>
-  - [ ] .agent-os/product/ directory created
-  - [ ] All product documentation reflects actual codebase
-  - [ ] Roadmap shows completed and planned features accurately
-  - [ ] Tech stack matches installed dependencies
-</verification_checklist>
+**Process:**
+1. Document all detected technologies with versions
+2. Note infrastructure setup
+3. Include deployment information
+4. Add any gaps identified
 
-<summary_template>
-  ## ✅ Agent OS Successfully Installed
+**Prompt User:**
+```
+I've documented the tech stack I detected:
 
-  I've analyzed your [PRODUCT_TYPE] codebase and set up Agent OS with documentation that reflects your actual implementation.
+[SUMMARY_OF_DETECTED_STACK]
 
-  ### What I Found
+Please confirm or add any missing technologies:
+```
 
-  - **Tech Stack**: [SUMMARY_OF_DETECTED_STACK]
-  - **Completed Features**: [COUNT] features already implemented
-  - **Code Style**: [DETECTED_PATTERNS]
-  - **Current Phase**: [IDENTIFIED_DEVELOPMENT_STAGE]
+**Template:** `@agent-os/templates/documents/tech-stack.md`
+**Output:** `.agent-os/product/tech-stack.md`
 
-  ### What Was Created
+</step>
 
-  - ✓ Product documentation in `.agent-os/product/`
-  - ✓ Roadmap with completed work in Phase 0
-  - ✓ Tech stack reflecting actual dependencies
+<step number="6" name="generate_roadmap">
 
-  ### Next Steps
+### Step 6: Generate Roadmap with Phase 0
 
-  1. Review the generated documentation in `.agent-os/product/`
-  2. Make any necessary adjustments to reflect your vision
-  3. See the Agent OS README for usage instructions: https://github.com/buildermethods/agent-os
-  4. Start using Agent OS for your next feature:
-     ```
-     @~/.agent-os/workflows/core/create-spec.md
-     ```
+Create roadmap with completed features in Phase 0.
 
-  Your codebase is now Agent OS-enabled! 🚀
-</summary_template>
+**Process:**
+1. Mark all detected features as completed in Phase 0
+2. Add user-provided planned features to Phase 1+
+3. Estimate effort for planned features
 
+**Roadmap Structure:**
+```markdown
+## Phase 0: Already Completed
+
+- [x] [DETECTED_FEATURE_1]
+- [x] [DETECTED_FEATURE_2]
+- [x] [DETECTED_FEATURE_3]
+
+## Phase 1: Current Development
+
+- [ ] [USER_PLANNED_FEATURE_1]
+- [ ] [USER_PLANNED_FEATURE_2]
+```
+
+**Template:** `@agent-os/templates/documents/roadmap.md`
+**Output:** `.agent-os/product/roadmap.md`
+
+</step>
+
+<step number="7" name="architecture_analysis">
+
+### Step 7: Architecture Decision & Analysis
+
+Analyze existing architecture and document patterns.
+
+**Process:**
+1. Detect current architecture pattern from code structure
+2. Assess compliance with pattern
+3. Identify deviations or inconsistencies
+4. Recommend approach for future development
+
+**Prompt User with AskUserQuestion:**
+```
+I detected the following architecture pattern: [DETECTED_PATTERN]
+
+Compliance Assessment:
+- [ASPECT_1]: [COMPLIANT/PARTIAL/NON_COMPLIANT]
+- [ASPECT_2]: [COMPLIANT/PARTIAL/NON_COMPLIANT]
+
+Some existing code doesn't follow the pattern. Options:
+
+1. Document current state, apply pattern only to new features (Recommended for large codebases)
+2. Plan refactoring to align existing code with pattern
+3. Define new pattern and apply to new features only
+```
+
+<conditional_logic>
+  IF user chooses option 1:
+    DOCUMENT: Current state as-is
+    NOTE: "Apply pattern to new features only"
+  ELIF user chooses option 2:
+    CREATE: Refactoring tasks in roadmap
+    DOCUMENT: Target architecture
+  ELSE:
+    ASK: Which pattern to use going forward
+    DOCUMENT: New pattern for future
+</conditional_logic>
+
+**Template:** `@agent-os/templates/documents/architecture-decision.md`
+**Output:** `.agent-os/product/architecture-decision.md`
+
+</step>
+
+<step number="8" subagent="file-creator" name="boilerplate_generation">
+
+### Step 8: Generate Boilerplate for New Features
+
+Create boilerplate structure for future feature development.
+
+**Process:**
+1. Based on architecture-decision.md
+2. Match existing code patterns where compliant
+3. Provide clean structure for new features
+4. Document where each file type goes
+
+**Output:**
+- `.agent-os/product/boilerplate/` (directory structure)
+- `.agent-os/product/architecture-structure.md`
+
+**Template:** `@agent-os/templates/documents/architecture-structure.md`
+
+</step>
+
+<step number="9" name="refactoring_analysis">
+
+### Step 9: Refactoring Analysis (Optional)
+
+If user chose refactoring in Step 7, create refactoring plan.
+
+<conditional_logic>
+  IF refactoring chosen:
+    ANALYZE: Code areas needing refactoring
+    ESTIMATE: Effort for each area
+    PRIORITIZE: By impact and risk
+    ADD: Refactoring tasks to roadmap
+
+    **Prompt User:**
+    ```
+    Refactoring Recommendations:
+
+    High Priority:
+    - [AREA_1]: [REASON] - Effort: [M]
+
+    Medium Priority:
+    - [AREA_2]: [REASON] - Effort: [L]
+
+    Low Priority (Leave as-is):
+    - [AREA_3]: [REASON]
+
+    Shall I add these to the roadmap?
+    ```
+  ELSE:
+    SKIP this step
+</conditional_logic>
+
+</step>
+
+<step number="10" name="summary">
+
+### Step 10: Installation Summary
+
+Present summary of Agent OS installation.
+
+**Summary:**
+```
+Agent OS Successfully Installed!
+
+What I Found:
+- Tech Stack: [SUMMARY]
+- Completed Features: [COUNT]
+- Code Patterns: [DETECTED_PATTERNS]
+- Architecture: [DETECTED_OR_RECOMMENDED]
+
+Created Documentation:
+✅ product-brief.md - Product definition (based on analysis)
+✅ product-brief-lite.md - Condensed version
+✅ tech-stack.md - Detected technologies
+✅ roadmap.md - Phase 0 (completed) + planned features
+✅ architecture-decision.md - Patterns and decisions
+✅ architecture-structure.md - File placement guide
+✅ boilerplate/ - Structure for new features
+
+Location: .agent-os/product/
+
+Next Steps:
+1. Review generated documentation for accuracy
+2. Run /build-development-team to set up agents
+3. Start using /create-spec for new features
+
+Your codebase is now Agent OS-enabled!
+```
 
 </step>
 
@@ -227,9 +330,9 @@ Verify installation completeness and provide clear next steps for the user to st
     <condition>Cannot determine project type or structure</condition>
     <action>Ask user for clarification about project</action>
   </scenario>
-  <scenario name="conflicting_patterns">
-    <condition>Multiple coding styles detected</condition>
-    <action>Ask user which pattern to document</action>
+  <scenario name="multiple_patterns">
+    <condition>Multiple architecture patterns detected</condition>
+    <action>Ask user which pattern to document as primary</action>
   </scenario>
   <scenario name="missing_dependencies">
     <condition>Cannot determine full tech stack</condition>
@@ -237,14 +340,20 @@ Verify installation completeness and provide clear next steps for the user to st
   </scenario>
 </error_scenarios>
 
+## Output Files
+
+| File | Description | Special Notes |
+|------|-------------|---------------|
+| product-brief.md | From analysis + user input | Reflects current state |
+| product-brief-lite.md | Condensed version | |
+| tech-stack.md | Detected technologies | With versions |
+| roadmap.md | Phase 0 = completed | Based on code analysis |
+| architecture-decision.md | Detected patterns | Includes compliance assessment |
+| architecture-structure.md | File placement | May differ from existing code |
+| boilerplate/ | For new features | Clean architecture template |
+
 ## Execution Summary
 
-<final_checklist>
-  <verify>
-    - [ ] Codebase analyzed thoroughly
-    - [ ] User context gathered
-    - [ ] plan-product.md executed with proper context
-    - [ ] Documentation customized for existing product
-    - [ ] Team can adopt Agent OS workflow
-  </verify>
-</final_checklist>
+**Duration:** 20-30 minutes
+**User Interactions:** 4-5 decision points
+**Output:** 6 files + 1 directory structure

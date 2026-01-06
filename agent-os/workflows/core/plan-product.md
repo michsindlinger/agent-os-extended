@@ -1,407 +1,350 @@
 ---
-description: Product Planning Rules for Agent OS
+description: Product Planning for new projects with Agent OS
 globs:
 alwaysApply: false
 version: 4.0
 encoding: UTF-8
+installation: global
 ---
 
-# Product Planning Rules
+# Product Planning Workflow
 
-## Overview
-
-Generate product docs for new projects: mission, tech-stack, roadmap, decisions files for AI agent consumption.
+Generate comprehensive product documentation for new projects: product-brief, tech-stack, roadmap, architecture decisions, and boilerplate structure.
 
 <pre_flight_check>
-  EXECUTE: @~/.agent-os/workflows/meta/pre-flight.md
+  EXECUTE: @agent-os/workflows/meta/pre-flight.md
 </pre_flight_check>
 
 <process_flow>
 
-<step number="1" subagent="context-fetcher" name="gather_user_input">
+<step number="1" subagent="context-fetcher" name="check_existing_product_brief">
 
-### Step 1: Gather User Input
+### Step 1: Check for Existing Product Brief
 
-Use the context-fetcher subagent to collect all required inp duts from the user including main idea, key features (minimum 3), target users (minimum 1), and tech stack preferences with blocking validation before proceeding.
+Use context-fetcher to check if product-brief.md already exists (e.g., from validate-market).
+
+<conditional_logic>
+  IF .agent-os/product/product-brief.md exists:
+    LOAD: product-brief.md
+    INFORM user: "Found existing product-brief.md from validation phase. Using this as base."
+    GENERATE: product-brief-lite.md from existing
+    SKIP: Steps 2-4
+    PROCEED to step 5
+  ELSE:
+    PROCEED to step 2
+</conditional_logic>
+
+</step>
+
+<step number="2" name="product_idea_capture">
+
+### Step 2: Gather Product Information
+
+Request product information from user.
+
+**Prompt User:**
+```
+Please describe your product:
+
+1. Main idea (elevator pitch)
+2. Key features (minimum 3)
+3. Target users (who is this for?)
+4. What problem does it solve?
+```
 
 <data_sources>
   <primary>user_direct_input</primary>
   <fallback_sequence>
     1. @~/.agent-os/standards/tech-stack.md
-    2. @~/.claude/CLAUDE.md
-    3. Cursor User Rules
+    2. @CLAUDE.md
   </fallback_sequence>
 </data_sources>
 
-<error_template>
-  Please provide the following missing information:
-  1. Main idea for the product
-  2. List of key features (minimum 3)
-  3. Target users and use cases (minimum 1)
-  4. Tech stack preferences
-  5. Has the new application been initialized yet and we're inside the project folder? (yes/no)
-</error_template>
-
 </step>
 
-<step number="2" subagent="file-creator" name="create_documentation_structure">
+<step number="3" subagent="product-strategist" name="idea_sharpening">
 
-### Step 2: Create Documentation Structure
+### Step 3: Idea Sharpening (Interactive)
 
-Use the file-creator subagent to create the following file_structure with validation for write permissions and protection against overwriting existing files:
+Use product-strategist agent to refine the idea until complete.
 
-<file_structure>
-  .agent-os/
-  └── product/
-      ├── mission.md          # Product vision and purpose
-      ├── mission-lite.md     # Condensed mission for AI context
-      ├── tech-stack.md       # Technical architecture
-      ├── roadmap.md          # Development phases
-      └── decisions.md        # Decision log
-</file_structure>
+**Process:**
+1. Analyze user input for completeness
+2. Identify missing template fields
+3. Ask clarifying questions interactively:
+   - Specific target audience
+   - Measurable problem
+   - Core features (3-5)
+   - Value proposition
+   - Success metrics
+4. Generate product-brief.md when all fields complete
 
-</step>
+**Template:** `@agent-os/templates/documents/product-brief.md`
+**Output:** `.agent-os/product/product-brief.md`
 
-<step number="3" subagent="file-creator" name="create_mission_md">
+<quality_check>
+  Product brief must include:
+  - Specific target audience
+  - Measurable problem
+  - 3-5 concrete features
+  - Clear value proposition
+  - Differentiation
 
-### Step 3: Create mission.md
-
-Use the file-creator subagent to create the file: .agent-os/product/mission.md and use the following template:
-
-<file_template>
-  <header>
-    # Product Mission
-  </header>
-  <required_sections>
-    - Pitch
-    - Users
-    - The Problem
-    - Differentiators
-    - Key Features
-  </required_sections>
-</file_template>
-
-<section name="pitch">
-  <template>
-    ## Pitch
-
-    [PRODUCT_NAME] is a [PRODUCT_TYPE] that helps [TARGET_USERS] [SOLVE_PROBLEM] by providing [KEY_VALUE_PROPOSITION].
-  </template>
-  <constraints>
-    - length: 1-2 sentences
-    - style: elevator pitch
-  </constraints>
-</section>
-
-<section name="users">
-  <template>
-    ## Users
-
-    ### Primary Customers
-
-    - [CUSTOMER_SEGMENT_1]: [DESCRIPTION]
-    - [CUSTOMER_SEGMENT_2]: [DESCRIPTION]
-
-    ### User Personas
-
-    **[USER_TYPE]** ([AGE_RANGE])
-    - **Role:** [JOB_TITLE]
-    - **Context:** [BUSINESS_CONTEXT]
-    - **Pain Points:** [PAIN_POINT_1], [PAIN_POINT_2]
-    - **Goals:** [GOAL_1], [GOAL_2]
-  </template>
-  <schema>
-    - name: string
-    - age_range: "XX-XX years old"
-    - role: string
-    - context: string
-    - pain_points: array[string]
-    - goals: array[string]
-  </schema>
-</section>
-
-<section name="problem">
-  <template>
-    ## The Problem
-
-    ### [PROBLEM_TITLE]
-
-    [PROBLEM_DESCRIPTION]. [QUANTIFIABLE_IMPACT].
-
-    **Our Solution:** [SOLUTION_DESCRIPTION]
-  </template>
-  <constraints>
-    - problems: 2-4
-    - description: 1-3 sentences
-    - impact: include metrics
-    - solution: 1 sentence
-  </constraints>
-</section>
-
-<section name="differentiators">
-  <template>
-    ## Differentiators
-
-    ### [DIFFERENTIATOR_TITLE]
-
-    Unlike [COMPETITOR_OR_ALTERNATIVE], we provide [SPECIFIC_ADVANTAGE]. This results in [MEASURABLE_BENEFIT].
-  </template>
-  <constraints>
-    - count: 2-3
-    - focus: competitive advantages
-    - evidence: required
-  </constraints>
-</section>
-
-<section name="features">
-  <template>
-    ## Key Features
-
-    ### Core Features
-
-    - **[FEATURE_NAME]:** [USER_BENEFIT_DESCRIPTION]
-
-    ### Collaboration Features
-
-    - **[FEATURE_NAME]:** [USER_BENEFIT_DESCRIPTION]
-  </template>
-  <constraints>
-    - total: 8-10 features
-    - grouping: by category
-    - description: user-benefit focused
-  </constraints>
-</section>
-
-</step>
-
-<step number="4" subagent="file-creator" name="create_tech_stack_md">
-
-### Step 4: Create tech-stack.md
-
-Use the file-creator subagent to create the file: .agent-os/product/tech-stack.md and use the following template:
-
-<file_template>
-  <header>
-    # Technical Stack
-  </header>
-</file_template>
-
-<required_items>
-  - application_framework: string + version
-  - database_system: string
-  - javascript_framework: string
-  - import_strategy: ["importmaps", "node"]
-  - css_framework: string + version
-  - ui_component_library: string
-  - fonts_provider: string
-  - icon_library: string
-  - application_hosting: string
-  - database_hosting: string
-  - asset_hosting: string
-  - deployment_solution: string
-  - code_repository_url: string
-</required_items>
-
-<data_resolution>
-  IF has_context_fetcher:
-    FOR missing tech stack items:
-      USE: @agent:context-fetcher
-      REQUEST: "Find [ITEM_NAME] from tech-stack.md"
-      PROCESS: Use found defaults
+  IF incomplete:
+    CONTINUE asking questions
   ELSE:
-    PROCEED: To manual resolution below
-
-  <manual_resolution>
-    <for_each item="required_items">
-      <if_not_in>user_input</if_not_in>
-      <then_check>
-        1. @~/.agent-os/standards/tech-stack.md
-        2. @~/.claude/CLAUDE.md
-        3. Cursor User Rules
-      </then_check>
-      <else>add_to_missing_list</else>
-    </for_each>
-  </manual_resolution>
-</data_resolution>
-
-<missing_items_template>
-  Please provide the following technical stack details:
-  [NUMBERED_LIST_OF_MISSING_ITEMS]
-
-  You can respond with the technology choice or "n/a" for each item.
-</missing_items_template>
-
+    PROCEED to step 4
+</quality_check>
 
 </step>
 
-<step number="5" subagent="file-creator" name="create_mission_lite_md">
+<step number="4" name="user_review_product_brief">
 
-### Step 5: Create mission-lite.md
+### Step 4: User Review Gate - Product Brief
 
-Use the file-creator subagent to create the file: .agent-os/product/mission-lite.md for the purpose of establishing a condensed mission for efficient AI context usage.
+**PAUSE FOR USER APPROVAL**
 
-Use the following template:
+**Prompt User:**
+```
+I've created your Product Brief.
 
-<file_template>
-  <header>
-    # Product Mission (Lite)
-  </header>
-</file_template>
+Please review: .agent-os/product/product-brief.md
 
-<content_structure>
-  <elevator_pitch>
-    - source: Step 3 mission.md pitch section
-    - format: single sentence
-  </elevator_pitch>
-  <value_summary>
-    - length: 1-3 sentences
-    - includes: value proposition, target users, key differentiator
-    - excludes: secondary users, secondary differentiators
-  </value_summary>
-</content_structure>
+Options:
+1. Approve and continue
+2. Request changes
+```
 
-<content_template>
-  [ELEVATOR_PITCH_FROM_MISSION_MD]
+<conditional_logic>
+  IF user approves:
+    GENERATE: product-brief-lite.md
+    PROCEED to step 5
+  ELSE:
+    MAKE changes
+    RETURN to step 4
+</conditional_logic>
 
-  [1-3_SENTENCES_SUMMARIZING_VALUE_TARGET_USERS_AND_PRIMARY_DIFFERENTIATOR]
-</content_template>
-
-<example>
-  TaskFlow is a project management tool that helps remote teams coordinate work efficiently by providing real-time collaboration and automated workflow tracking.
-
-  TaskFlow serves distributed software teams who need seamless task coordination across time zones. Unlike traditional project management tools, TaskFlow automatically syncs with development workflows and provides intelligent task prioritization based on team capacity and dependencies.
-</example>
+**Template:** `@agent-os/templates/documents/product-brief-lite.md`
+**Output:** `.agent-os/product/product-brief-lite.md`
 
 </step>
 
-<step number="6" subagent="file-creator" name="create_roadmap_md">
+<step number="5" name="tech_stack_recommendation">
 
-### Step 6: Create roadmap.md
+### Step 5: Tech Stack Recommendation
 
-Use the file-creator subagent to create the following file: .agent-os/product/roadmap.md using the following template:
+Analyze product requirements and recommend tech stack.
 
-<file_template>
-  <header>
-    # Product Roadmap
-  </header>
-</file_template>
+**Process:**
+1. Analyze product-brief.md for technical requirements
+2. Check @~/.agent-os/standards/tech-stack.md for defaults
+3. Generate tech stack recommendation
 
-<phase_structure>
-  <phase_count>1-3</phase_count>
-  <features_per_phase>3-7</features_per_phase>
-  <phase_template>
-    ## Phase [NUMBER]: [NAME]
+**Prompt User with AskUserQuestion:**
+```
+Based on your product, I recommend this tech stack:
 
-    **Goal:** [PHASE_GOAL]
-    **Success Criteria:** [MEASURABLE_CRITERIA]
+Backend: [RECOMMENDATION]
+Frontend: [RECOMMENDATION]
+Database: [RECOMMENDATION]
+Hosting: [RECOMMENDATION]
 
-    ### Features
+Options:
+1. Accept recommendations
+2. Customize (specify changes)
+```
 
-    - [ ] [FEATURE] - [DESCRIPTION] `[EFFORT]`
+<conditional_logic>
+  IF user accepts:
+    GENERATE: tech-stack.md with recommendations
+  ELSE:
+    APPLY user customizations
+    GENERATE: tech-stack.md with custom choices
+</conditional_logic>
 
-    ### Dependencies
-
-    - [DEPENDENCY]
-  </phase_template>
-</phase_structure>
-
-<phase_guidelines>
-  - Phase 1: Core MVP functionality
-  - Phase 2: Key differentiators
-  - Phase 3: Scale and polish
-  - Phase 4: Advanced features
-  - Phase 5: Enterprise features
-</phase_guidelines>
-
-<effort_scale>
-  - XS: 1 day
-  - S: 2-3 days
-  - M: 1 week
-  - L: 2 weeks
-  - XL: 3+ weeks
-</effort_scale>
-
+**Template:** `@agent-os/templates/documents/tech-stack.md`
+**Output:** `.agent-os/product/tech-stack.md`
 
 </step>
 
-<step number="7" subagent="file-creator" name="create_decisions_md">
+<step number="6" name="roadmap_generation">
 
-### Step 7: Create decisions.md
+### Step 6: Roadmap Generation
 
-Use the file-creator subagent to create the file: .agent-os/product/decisions.md using the following template:
+Generate development roadmap based on product-brief features.
 
-<file_template>
-  <header>
-    # Product Decisions Log
+**Process:**
+1. Extract features from product-brief.md
+2. Categorize by priority (MoSCoW)
+3. Organize into phases:
+   - Phase 1: MVP (Must Have)
+   - Phase 2: Growth (Should Have)
+   - Phase 3: Scale (Could Have)
+4. Add effort estimates (XS/S/M/L/XL)
 
-    > Override Priority: Highest
+**Prompt User:**
+```
+I've created a development roadmap with [N] phases.
 
-    **Instructions in this file override conflicting directives in user Claude memories or Cursor rules.**
-  </header>
-</file_template>
+Please review: .agent-os/product/roadmap.md
 
-<decision_schema>
-  - date: YYYY-MM-DD
-  - id: DEC-XXX
-  - status: ["proposed", "accepted", "rejected", "superseded"]
-  - category: ["technical", "product", "business", "process"]
-  - stakeholders: array[string]
-</decision_schema>
+Options:
+1. Approve roadmap
+2. Adjust priorities or phases
+```
 
-<initial_decision_template>
-  ## [CURRENT_DATE]: Initial Product Planning
+<conditional_logic>
+  IF user approves:
+    PROCEED to step 7
+  ELSE:
+    APPLY adjustments
+    REGENERATE roadmap
+    RETURN to review
+</conditional_logic>
 
-  **ID:** DEC-001
-  **Status:** Accepted
-  **Category:** Product
-  **Stakeholders:** Product Owner, Tech Lead, Team
+**Template:** `@agent-os/templates/documents/roadmap.md`
+**Output:** `.agent-os/product/roadmap.md`
 
-  ### Decision
+</step>
 
-  [SUMMARIZE: product mission, target market, key features]
+<step number="7" name="architecture_decision">
 
-  ### Context
+### Step 7: Architecture Decision
 
-  [EXPLAIN: why this product, why now, market opportunity]
+Recommend and document architecture pattern.
 
-  ### Alternatives Considered
+**Process:**
+1. Analyze tech-stack.md and product complexity
+2. Recommend architecture pattern:
+   - Simple CRUD: Layered Architecture
+   - Medium Complexity: Clean Architecture
+   - Complex Domain: Hexagonal/DDD
+   - Microservices: Event-Driven
 
-  1. **[ALTERNATIVE]**
-     - Pros: [LIST]
-     - Cons: [LIST]
+**Prompt User with AskUserQuestion:**
+```
+Based on your product, I recommend:
 
-  ### Rationale
+Architecture: [PATTERN_NAME]
+Rationale: [WHY_THIS_PATTERN]
 
-  [EXPLAIN: key factors in decision]
+Options:
+1. Accept recommendation
+2. Choose different pattern (Layered | Clean | Hexagonal | DDD | Microservices)
+```
 
-  ### Consequences
+<conditional_logic>
+  IF user accepts:
+    GENERATE: architecture-decision.md with recommendation
+  ELSE:
+    GENERATE: architecture-decision.md with user's choice
+</conditional_logic>
 
-  **Positive:**
-  - [EXPECTED_BENEFITS]
+**Template:** `@agent-os/templates/documents/architecture-decision.md`
+**Output:** `.agent-os/product/architecture-decision.md`
 
-  **Negative:**
-  - [KNOWN_TRADEOFFS]
-</initial_decision_template>
+</step>
+
+<step number="8" subagent="file-creator" name="boilerplate_generation">
+
+### Step 8: Boilerplate Structure Generation
+
+Generate project folder structure based on architecture decision.
+
+**Process:**
+1. Read architecture-decision.md for chosen pattern
+2. Read tech-stack.md for technologies
+3. Create boilerplate directory structure
+4. Include demo module as example
+5. Generate architecture-structure.md documentation
+
+**Folder Structure Example (Hexagonal):**
+```
+boilerplate/
+├── backend/
+│   └── src/
+│       ├── domain/
+│       │   ├── entities/
+│       │   ├── value-objects/
+│       │   └── repositories/
+│       ├── application/
+│       │   ├── use-cases/
+│       │   └── dtos/
+│       ├── infrastructure/
+│       │   ├── persistence/
+│       │   └── external/
+│       └── presentation/
+│           └── rest/
+├── frontend/
+│   └── src/
+│       ├── components/
+│       ├── pages/
+│       ├── services/
+│       └── stores/
+└── infrastructure/
+    └── docker/
+```
+
+**Output:**
+- `.agent-os/product/boilerplate/` (directory structure)
+- `.agent-os/product/architecture-structure.md`
+
+**Template:** `@agent-os/templates/documents/architecture-structure.md`
+
+</step>
+
+<step number="9" name="summary">
+
+### Step 9: Planning Summary
+
+Present summary of all created documentation.
+
+**Summary:**
+```
+Product Planning Complete!
+
+Created Documentation:
+✅ product-brief.md - Product definition
+✅ product-brief-lite.md - Condensed version
+✅ tech-stack.md - Technology choices
+✅ roadmap.md - Development phases
+✅ architecture-decision.md - Architecture pattern
+✅ architecture-structure.md - Folder conventions
+✅ boilerplate/ - Project structure template
+
+Location: .agent-os/product/
+
+Next Steps:
+1. Review all documentation
+2. Run /build-development-team to set up agents
+3. Run /create-spec to start first feature
+4. Copy boilerplate/ to your project root
+```
 
 </step>
 
 </process_flow>
 
+## User Review Gates
+
+1. **Step 4:** Product Brief approval
+2. **Step 6:** Roadmap approval
+3. **Step 7:** Architecture decision
+
+## Output Files
+
+| File | Description | Template |
+|------|-------------|----------|
+| product-brief.md | Complete product definition | product-brief.md |
+| product-brief-lite.md | Condensed for AI context | product-brief-lite.md |
+| tech-stack.md | Technology choices | tech-stack.md |
+| roadmap.md | Development phases | roadmap.md |
+| architecture-decision.md | Architecture ADRs | architecture-decision.md |
+| architecture-structure.md | Folder conventions | architecture-structure.md |
+| boilerplate/ | Directory template | Generated |
+
 ## Execution Summary
 
-<final_checklist>
-  <verify>
-    - [ ] All 5 files created in .agent-os/product/
-    - [ ] User inputs incorporated throughout
-    - [ ] Missing tech stack items requested
-    - [ ] Initial decisions documented
-  </verify>
-</final_checklist>
-
-<execution_order>
-  1. Gather and validate all inputs
-  2. Create directory structure
-  3. Generate each file sequentially
-  4. Request any missing information
-  5. Validate complete documentation set
-</execution_order>
+**Duration:** 15-25 minutes
+**User Interactions:** 3-4 decision points
+**Output:** 6 files + 1 directory structure

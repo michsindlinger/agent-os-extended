@@ -87,6 +87,41 @@ These templates provide a **technology-agnostic structure** for customizing Team
 
 ---
 
+### 5. architecture-agent-template.md
+
+**For**: Software architecture specialists
+
+**Customize**:
+- Architecture pattern (Hexagonal, Clean, DDD, Layered)
+- Folder structure and layer organization
+- Dependency rules and import validation
+- API design standards
+- Data modeling conventions
+- Security architecture requirements
+- ADR (Architecture Decision Record) format
+
+**Use When**: Project needs architectural guidance and pattern enforcement
+
+---
+
+### 6. po-agent-template.md
+
+**For**: Product owner specialists
+
+**Customize**:
+- Product vision and context
+- Prioritization framework (RICE, MoSCoW, Weighted)
+- User story format and standards
+- Definition of Ready/Done
+- Sprint ceremonies and cadence
+- Metrics and KPIs
+- Release management process
+- Stakeholder communication
+
+**Use When**: Project needs product management and requirements engineering
+
+---
+
 ## How to Use
 
 ### Step 1: Override Global Agent
