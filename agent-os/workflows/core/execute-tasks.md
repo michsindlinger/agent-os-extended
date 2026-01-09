@@ -18,43 +18,207 @@ Initiate execution of one or more tasks for a given spec.
 
 <process_flow>
 
-<step number="1" name="task_assignment">
+<step number="1" subagent="file-creator" name="kanban_board_management">
 
-### Step 1: Task Assignment
+### Step 1: Kanban Board Management
 
-Identify which tasks to execute from the spec (using spec_srd_reference file path and optional specific_tasks array), defaulting to the next uncompleted parent task if not specified.
+Use the file-creator subagent to create or load the kanban board for state persistence and resume capability.
 
-<task_selection>
-  <explicit>user specifies exact task(s)</explicit>
-  <implicit>find next uncompleted task in tasks.md</implicit>
-</task_selection>
+<board_check>
+  CHECK: Does kanban-board.md exist in spec folder?
+  PATH: .agent-os/specs/[SPEC_FOLDER]/kanban-board.md
+</board_check>
+
+<decision_tree>
+  IF kanban-board.md EXISTS:
+    <!-- Resume Mode -->
+    <resume_mode>
+      ACTION: Load existing kanban-board.md
+      ANALYZE: Current board state
+      CHECK: Stories in "In Progress" column
+
+      IF stories_in_progress > 0:
+        ASK user: "Found {count} stories in progress. Would you like to:
+                   1. Resume from where we left off
+                   2. Reset and start fresh
+                   3. Skip these and continue with next stories"
+
+        IF user_choice = resume:
+          LOAD: In Progress stories
+          CONTINUE: With those stories
+        ELSE IF user_choice = reset:
+          MOVE: In Progress stories back to Backlog
+          UPDATE: kanban-board.md
+          CONTINUE: With fresh start
+        ELSE IF user_choice = skip:
+          MARK: In Progress stories as "Paused"
+          CONTINUE: With next Backlog stories
+      ELSE:
+        STATE: "Resuming execution from saved state"
+        CONTINUE: With next Backlog story
+    </resume_mode>
+  ELSE:
+    <!-- First Run Mode -->
+    <first_run_mode>
+      ACTION: Use file-creator subagent to create kanban-board.md
+      SOURCE: Parse user-stories.md
+      INITIALIZE: All stories in Backlog column
+      CREATE: Board structure with sections:
+        - Board Status (metrics)
+        - Backlog
+        - In Progress
+        - In Review
+        - Testing
+        - Done
+        - Progress Metrics
+        - Dependencies Graph
+        - Change Log
+      TIMESTAMP: Board creation time
+    </first_run_mode>
+</decision_tree>
+
+<kanban_structure>
+  <header>
+    # Kanban Board - [Spec Name]
+
+    > Spec: @.agent-os/specs/[SPEC_FOLDER]/
+    > Created: [TIMESTAMP]
+    > Last Updated: [TIMESTAMP]
+  </header>
+
+  <board_status>
+    ## 📊 Board Status
+
+    | Backlog | In Progress | In Review | Testing | Done |
+    |---------|-------------|-----------|---------|------|
+    | X | Y | Z | A | B |
+  </board_status>
+
+  <columns>
+    - 🔴 Backlog: Stories not yet started
+    - 🟡 In Progress: Currently being worked on
+    - 🔵 In Review: Awaiting architect review
+    - 🟣 Testing: Awaiting QA sign-off
+    - ✅ Done: Completed and verified
+  </columns>
+
+  <story_format>
+    - [ ] **Story X**: [Title]
+      - **ID**: story-x
+      - **Type**: Backend/Frontend/DevOps/Test
+      - **Assigned**: [Agent name]
+      - **Dependencies**: [Story IDs or "None"]
+      - **Estimated**: [Story Points]
+      - **Progress**: [Current status details]
+      - **DoR**: ✅/❌
+      - **DoD**: X/Y items complete
+  </story_format>
+
+  <metrics>
+    ## 📈 Progress Metrics
+    - Total Stories: X
+    - Completed: Y (Z%)
+    - In Progress: A
+    - Remaining: B
+    - Estimated Total SP: XX
+    - Completed SP: YY (ZZ%)
+  </metrics>
+
+  <change_log>
+    ## 📝 Change Log
+    | Timestamp | Event | Story | Agent | Details |
+    |-----------|-------|-------|-------|---------|
+    | [ISO 8601] | [Event Type] | story-x | [Agent] | [Details] |
+  </change_log>
+</kanban_structure>
 
 <instructions>
-  ACTION: Identify task(s) to execute
-  DEFAULT: Select next uncompleted parent task if not specified
-  CONFIRM: Task selection with user
+  ACTION: Check for existing kanban-board.md
+  IF_EXISTS: Offer resume/reset options
+  IF_NEW: Create board from user-stories.md
+  INITIALIZE: Board state tracking
+  PREPARE: For execution loop integration
 </instructions>
 
 </step>
 
-<step number="2" subagent="context-fetcher" name="context_analysis">
+<step number="2" name="story_selection">
 
-### Step 2: Context Analysis
+### Step 2: Story Selection from Kanban Board
 
-Use the context-fetcher subagent to gather minimal context for task understanding by always loading spec tasks.md, and conditionally loading @agent-os/product/mission-lite.md, spec-lite.md, and sub-specs/technical-spec.md if not already in context.
+Select the next story to execute from the Kanban Board, respecting dependencies and parallel execution capabilities.
+
+<selection_strategy>
+  <from_kanban>
+    SOURCE: kanban-board.md Backlog section
+    PRIORITY: Next story in order (unless dependencies)
+  </from_kanban>
+
+  <dependency_check>
+    FOR each story in Backlog:
+      CHECK: Dependencies field
+      IF dependencies = "None" OR all_dependencies_in_done:
+        ELIGIBLE: Story can be started
+      ELSE:
+        BLOCKED: Skip to next story
+  </dependency_check>
+
+  <parallel_execution>
+    IF multiple_stories_eligible:
+      CHECK: Story types
+      IF different_types (e.g., backend + frontend):
+        CONSIDER: Parallel execution
+        ASK user: "Stories X and Y can run in parallel. Execute both? (yes/no)"
+        IF yes:
+          SELECT: Multiple stories
+        ELSE:
+          SELECT: First eligible story
+      ELSE:
+        SELECT: First eligible story
+  </parallel_execution>
+
+  <user_override>
+    IF user_specifies_story:
+      VALIDATE: Story exists and dependencies met
+      IF valid:
+        SELECT: User-specified story
+      ELSE:
+        WARN: Dependencies not met
+        FALLBACK: Suggest next eligible story
+  </user_override>
+</selection_strategy>
+
+<instructions>
+  ACTION: Load kanban-board.md
+  ANALYZE: Backlog stories
+  CHECK: Dependencies for each story
+  SELECT: Next eligible story (or multiple if parallel)
+  CONFIRM: Selection with user
+  UPDATE: kanban-board.md → Move selected story to "In Progress"
+  LOG: Change to Change Log section
+</instructions>
+
+</step>
+
+<step number="3" subagent="context-fetcher" name="context_analysis">
+
+### Step 3: Context Analysis
+
+Use the context-fetcher subagent to gather minimal context for story understanding by loading the selected story from user-stories.md and conditionally loading @agent-os/product/mission-lite.md, spec-lite.md, and sub-specs/technical-spec.md if not already in context.
 
 <instructions>
   ACTION: Use context-fetcher subagent to:
     - REQUEST: "Get product pitch from mission-lite.md"
     - REQUEST: "Get spec summary from spec-lite.md"
     - REQUEST: "Get technical approach from technical-spec.md"
+    - REQUEST: "Get selected story details from user-stories.md"
   PROCESS: Returned information
 </instructions>
 
 
 <context_gathering>
   <essential_docs>
-    - tasks.md for task breakdown
+    - user-stories.md for selected story details
   </essential_docs>
   <conditional_docs>
     - mission-lite.md for product alignment
@@ -65,9 +229,9 @@ Use the context-fetcher subagent to gather minimal context for task understandin
 
 </step>
 
-<step number="3" name="development_server_check">
+<step number="4" name="development_server_check">
 
-### Step 3: Check for Development Server
+### Step 4: Check for Development Server
 
 Check for any running development server and ask user permission to shut it down if found to prevent port conflicts.
 
@@ -94,9 +258,9 @@ Check for any running development server and ask user permission to shut it down
 
 </step>
 
-<step number="4" subagent="git-workflow" name="git_branch_management">
+<step number="5" subagent="git-workflow" name="git_branch_management">
 
-### Step 4: Git Branch Management
+### Step 5: Git Branch Management
 
 Use the git-workflow subagent to manage git branches to ensure proper isolation by creating or switching to the appropriate branch for the spec.
 
@@ -120,148 +284,266 @@ Use the git-workflow subagent to manage git branches to ensure proper isolation 
 
 </step>
 
-<step number="5" name="task_execution_loop">
+<step number="6" name="story_execution_loop">
 
-### Step 5: Task Execution Loop
+### Step 6: Story Execution Loop with Kanban Integration
 
-Execute all assigned parent tasks and their subtasks using smart task routing to appropriate specialists when team system is enabled, or direct execution otherwise.
+Execute the selected user story using the DevTeam agents with full Kanban Board state tracking and handover document management.
 
-<team_system_check>
-  CHECK: config.yml for team_system.enabled setting
-  IF team_system.enabled = true:
-    USE: Smart task routing with specialist delegation
-  ELSE:
-    USE: Direct execution (backward compatible behavior)
-</team_system_check>
+<orchestration_skill>
+  LOAD: dev-team__skill__orchestration.md
+  PROVIDES:
+    - Smart agent assignment
+    - Dependency tracking
+    - Handover management
+    - Quality gate enforcement
+</orchestration_skill>
 
 <execution_flow>
-  LOAD @~/.agent-os/workflows/core/execute-task.md ONCE
+  FOR each selected_story from Step 2:
 
-  FOR each parent_task assigned in Step 1:
+    <!-- Phase 1: Story Preparation -->
+    <story_preparation>
+      UPDATE kanban-board.md:
+        - MOVE: Story from Backlog → "In Progress"
+        - SET: Started timestamp
+        - UPDATE: Board Status metrics
+        - ADD: Change Log entry
 
-    <!-- NEW: Task Type Detection -->
-    <task_analysis>
-      ANALYZE: Task description and file paths (if specified)
-      DETECT: Task type based on keywords
-      ROUTE: To appropriate specialist if team_system enabled
-    </task_analysis>
+      CHECK story.dependencies:
+        IF dependencies exist AND handover_required:
+          LOAD: handover-docs/[dependency-story-id]-handover.md
+          PROVIDE: Handover context to agent
+    </story_preparation>
 
-    <task_type_detection>
-      KEYWORDS_BACKEND: [api, endpoint, controller, service, repository, rest, graphql, database, backend, server]
-      KEYWORDS_FRONTEND: [component, page, view, ui, frontend, react, angular, state, redux, interface]
-      KEYWORDS_QA: [test, spec, coverage, e2e, integration, unit, playwright, cypress, jest, junit, testing]
-      KEYWORDS_DEVOPS: [deploy, ci, cd, docker, pipeline, github actions, kubernetes, aws, deployment, infrastructure]
+    <!-- Phase 2: Agent Assignment -->
+    <agent_assignment>
+      ANALYZE: Story "WER" field from user-stories.md
+      DETERMINE: Primary agent(s)
 
-      MATCH: Task description against keyword lists (case-insensitive)
-      PRIORITY: If multiple matches, use first match (backend > frontend > qa > devops)
-      UNKNOWN: If no keywords match, route to direct execution
-    </task_type_detection>
+      <agent_selection>
+        IF story.type = "Backend":
+          SELECT: dev-team__backend-developer-X
+          LOAD_SKILLS: backend skills for this story
+        ELSE IF story.type = "Frontend":
+          SELECT: dev-team__frontend-developer-X
+          LOAD_SKILLS: frontend skills for this story
+        ELSE IF story.type = "DevOps":
+          SELECT: dev-team__dev-ops-specialist
+          LOAD_SKILLS: devops skills for this story
+        ELSE IF story.type = "Test":
+          SELECT: dev-team__qa-specialist
+          LOAD_SKILLS: qa skills for this story
+        ELSE IF story.type = "Backend + Frontend":
+          SELECT: backend-dev-X AND frontend-dev-Y
+          SEQUENTIAL: Backend first, then frontend
+      </agent_selection>
 
-    <specialist_routing>
-      IF task_type = backend:
-        SPECIALIST: backend-dev
-      ELSE IF task_type = frontend:
-        SPECIALIST: frontend-dev
-      ELSE IF task_type = qa:
-        SPECIALIST: qa-specialist
-      ELSE IF task_type = devops:
-        SPECIALIST: devops-specialist
-      ELSE:
-        SPECIALIST: null (direct execution)
-    </specialist_routing>
+      UPDATE kanban-board.md:
+        - SET: Assigned agent(s)
+        - UPDATE: Story progress status
+        - ADD: Change Log entry
+    </agent_assignment>
 
-    <!-- NEW: Conditional Delegation -->
-    <conditional_execution>
-      IF team_system.enabled AND specialist != null:
-        <!-- Team System Path -->
-        <team_delegation>
-          ACTION: Use Task tool to delegate to specialist subagent
-          SUBAGENT: [specialist name]
-          PROMPT: "Execute task: [task description]
+    <!-- Phase 3: Story Execution -->
+    <story_execution>
+      DELEGATE: To selected agent(s) via Task tool
 
-                   Context:
-                   - Spec: [spec folder path]
-                   - Task number: [task number]
-                   - Subtasks: [list of subtasks]
+      <delegation_prompt>
+        "Execute User Story: [Story Title]
 
-                   Follow your specialist guidelines and:
-                   1. Implement complete solution
-                   2. Generate all necessary files
-                   3. Run tests and ensure >80% coverage
-                   4. Create handoff documentation
-                   5. Use appropriate skills and templates"
+        **Story Details:**
+        - ID: [story-id]
+        - Type: [story-type]
+        - Description: [fachliche Beschreibung from user-stories.md]
 
-          WAIT: For specialist completion
-          RECEIVE: Specialist output and handoff
-          UPDATE: tasks.md with completion status
-          RECORD: Team handoff in team-handoffs.md (if exists)
-        </team_delegation>
-      ELSE:
-        <!-- Direct Execution Path (Backward Compatible) -->
-        <direct_execution>
-          EXECUTE: Instructions from execute-task.md with:
-            - parent_task_number
-            - all associated subtasks
-          WAIT: For task completion
-          UPDATE: tasks.md status
-        </direct_execution>
-      </conditional_execution>
+        **Technical Refinement:**
+        [WAS, WIE, WO, WER sections from user-stories.md]
+
+        **DoR (Definition of Ready):**
+        [DoR checklist from user-stories.md]
+
+        **DoD (Definition of Done):**
+        [DoD checklist from user-stories.md - this is your completion criteria]
+
+        **Dependencies:**
+        [If applicable] Handover document: @.agent-os/specs/[SPEC]/handover-docs/[file]
+
+        **Instructions:**
+        1. Implement according to technical specs
+        2. Follow DoD checklist strictly
+        3. Write tests as specified
+        4. Document your work
+        5. If this story has dependent stories, create handover document
+
+        **Kanban Update:**
+        Your progress will be tracked in kanban-board.md"
+      </delegation_prompt>
+
+      MONITOR: Agent execution
+      TRACK: Progress updates
+
+      UPDATE kanban-board.md periodically:
+        - UPDATE: Progress field with agent status
+        - UPDATE: DoD completion count
+        - ADD: Change Log entries for milestones
+    </story_execution>
+
+    <!-- Phase 4: Quality Gates -->
+    <quality_gates>
+      WHEN agent_completes:
+
+        <architect_review>
+          UPDATE kanban-board.md:
+            - MOVE: Story → "In Review"
+            - ADD: Change Log entry
+
+          DELEGATE: dev-team__architect
+          PROMPT: "Review code for Story [story-id]:
+                   - Check pattern enforcement
+                   - Verify architecture compliance
+                   - Validate API design (if applicable)
+                   - Security review"
+
+          IF architect_approves:
+            CONTINUE: To QA testing
+          ELSE:
+            UPDATE kanban-board.md:
+              - MOVE: Story → "In Progress"
+              - ADD: Review feedback to Progress field
+              - ADD: Change Log entry
+            DELEGATE_BACK: To original agent with feedback
+            REPEAT: Until approved
+        </architect_review>
+
+        <qa_testing>
+          UPDATE kanban-board.md:
+            - MOVE: Story → "Testing"
+            - ADD: Change Log entry
+
+          DELEGATE: dev-team__qa-specialist
+          PROMPT: "Test Story [story-id]:
+                   - Run all tests
+                   - Verify DoD criteria
+                   - Perform acceptance testing
+                   - Report any issues"
+
+          IF qa_approves:
+            CONTINUE: To completion
+          ELSE:
+            UPDATE kanban-board.md:
+              - MOVE: Story → "In Progress"
+              - ADD: Test failures to Progress field
+              - ADD: Change Log entry
+            DELEGATE_BACK: To original agent with issues
+            REPEAT: Until tests pass
+        </qa_testing>
+    </quality_gates>
+
+    <!-- Phase 5: Story Completion -->
+    <story_completion>
+      UPDATE kanban-board.md:
+        - MOVE: Story → "Done"
+        - SET: Completed timestamp
+        - SET: DoD status to ✅
+        - UPDATE: Board Status metrics
+        - UPDATE: Progress Metrics
+        - ADD: Change Log entry
+
+      <handover_check>
+        IF story.has_dependent_stories:
+          ENSURE: Handover document exists
+          PATH: .agent-os/specs/[SPEC]/handover-docs/[story-id]-handover.md
+          CONTENT:
+            - API contracts
+            - Data structures
+            - Integration points
+            - Usage examples
+          UPDATE kanban-board.md:
+            - ADD: Handover document reference
+      </handover_check>
+
+      <dependency_update>
+        CHECK kanban-board.md:
+          FOR each story in Backlog:
+            IF story.dependencies includes completed_story_id:
+              UPDATE: Mark dependency as resolved
+              CHECK: If all dependencies now resolved
+              IF yes:
+                STATE: Story now eligible for selection
+      </dependency_update>
+    </story_completion>
+
+    <!-- Phase 6: Next Story Check -->
+    <next_story_check>
+      CHECK kanban-board.md Backlog:
+        IF backlog_empty:
+          STATE: "All stories complete!"
+          EXIT: Execution loop
+        ELSE:
+          ASK user: "Story [story-id] complete. Continue with next story? (yes/no/which)"
+          IF yes:
+            RETURN: To Step 2 (Story Selection)
+          ELSE IF which:
+            ALLOW: User to specify story
+            RETURN: To Step 2 with user selection
+          ELSE:
+            PAUSE: Execution
+            STATE: "Execution paused. Resume with /execute-tasks"
+            EXIT: Execution loop
+    </next_story_check>
 
   END FOR
 </execution_flow>
 
-<loop_logic>
-  <continue_conditions>
-    - More unfinished parent tasks exist
-    - User has not requested stop
-  </continue_conditions>
-  <exit_conditions>
-    - All assigned tasks marked complete
-    - User requests early termination
-    - Blocking issue prevents continuation
-  </exit_conditions>
-</loop_logic>
+<error_handling>
+  <blocking_issues>
+    UPDATE kanban-board.md:
+      - MOVE: Story → "Blocked" (new status)
+      - SET: Blocker details in Progress field
+      - ADD: Change Log entry
+    NOTIFY: User of blocker
+    ASK: How to proceed
+  </blocking_issues>
 
-<task_status_check>
-  AFTER each task execution:
-    CHECK tasks.md for remaining tasks
-    IF all assigned tasks complete:
-      PROCEED to next step
-    ELSE:
-      CONTINUE with next task
-</task_status_check>
+  <agent_failures>
+    LOG: Failure in Change Log
+    RETRY: Up to 2 times
+    IF still_failing:
+      ESCALATE: To user
+      OFFER: Skip story or abort
+  </agent_failures>
+</error_handling>
 
-<backward_compatibility>
-  <default_behavior>
-    IF team_system NOT configured in config.yml:
-      DEFAULT: team_system.enabled = false
-      BEHAVIOR: Direct execution (current workflow)
-  </default_behavior>
+<persistence>
+  <auto_save>
+    UPDATE: kanban-board.md after EVERY state change
+    ENSURE: Always resumable state
+  </auto_save>
 
-  <mixed_mode>
-    IF team_system.enabled = true BUT task type unknown:
-      FALLBACK: Direct execution for that specific task
-      LOG: "Task did not match specialist keywords, executing directly"
-  </mixed_mode>
-</backward_compatibility>
+  <git_commits>
+    OPTIONAL: Auto-commit kanban-board.md periodically
+    MESSAGE: "Kanban update: Story [story-id] → [new-status]"
+  </git_commits>
+</persistence>
 
 <instructions>
-  ACTION: Load execute-task.md instructions once at start
-  CHECK: team_system configuration
-  ANALYZE: Each task for specialist routing
-  DELEGATE: To specialist if team_system enabled and type detected
-  FALLBACK: Direct execution if team_system disabled or unknown type
-  LOOP: Through all assigned parent tasks
-  UPDATE: Task status after each completion
-  VERIFY: All tasks complete before proceeding
-  HANDLE: Blocking issues appropriately
+  ACTION: Load orchestration skill
+  FOR_EACH: Selected story from Step 2
+  EXECUTE: 6-phase execution flow
+  TRACK: State in kanban-board.md
+  ENFORCE: Quality gates (Architect + QA)
+  MANAGE: Dependencies and handovers
+  UPDATE: Board after every state change
+  PERSIST: Progress for resumability
+  LOOP: Until all stories complete or user pauses
 </instructions>
 
 </step>
 
-<step number="6" subagent="test-runner" name="test_suite_verification">
+<step number="7" subagent="test-runner" name="test_suite_verification">
 
-### Step 6: Run All Tests
+### Step 7: Run All Tests
 
 Use the test-runner subagent to run the entire test suite to ensure no regressions and fix any failures until all tests pass.
 
@@ -288,9 +570,9 @@ Use the test-runner subagent to run the entire test suite to ensure no regressio
 
 </step>
 
-<step number="7" subagent="git-workflow" name="git_workflow">
+<step number="8" subagent="git-workflow" name="git_workflow">
 
-### Step 7: Git Workflow
+### Step 8: Git Workflow
 
 Use the git-workflow subagent to create git commit, push to GitHub, and create pull request for the implemented features.
 
@@ -322,9 +604,9 @@ Use the git-workflow subagent to create git commit, push to GitHub, and create p
 
 </step>
 
-<step number="8" name="roadmap_progress_check">
+<step number="9" name="roadmap_progress_check">
 
-### Step 8: Roadmap Progress Check (Conditional)
+### Step 9: Roadmap Progress Check (Conditional)
 
 Check @agent-os/product/roadmap.md (if not in context) and update roadmap progress only if the executed tasks may have completed a roadmap item and the spec completes that item.
 
@@ -367,9 +649,9 @@ Check @agent-os/product/roadmap.md (if not in context) and update roadmap progre
 
 </step>
 
-<step number="9" name="completion_notification">
+<step number="10" name="completion_notification">
 
-### Step 9: Task Completion Notification
+### Step 10: Task Completion Notification
 
 Play a system sound to alert the user that tasks are complete.
 
@@ -384,17 +666,24 @@ Play a system sound to alert the user that tasks are complete.
 
 </step>
 
-<step number="10" name="completion_summary">
+<step number="11" name="completion_summary">
 
-### Step 10: Completion Summary
+### Step 11: Completion Summary
 
 Create a structured summary message with emojis showing what was done, any issues, testing instructions, and PR link.
 
 <summary_template>
   ## ✅ What's been done
 
-  1. **[FEATURE_1]** - [ONE_SENTENCE_DESCRIPTION]
-  2. **[FEATURE_2]** - [ONE_SENTENCE_DESCRIPTION]
+  1. **[STORY_1]** - [ONE_SENTENCE_DESCRIPTION]
+  2. **[STORY_2]** - [ONE_SENTENCE_DESCRIPTION]
+
+  ## 📊 Kanban Board Status
+
+  - **Completed Stories**: [X] of [TOTAL]
+  - **Progress**: [XX%]
+  - **Remaining in Backlog**: [Y]
+  - **View Board**: @.agent-os/specs/[SPEC]/kanban-board.md
 
   ## ⚠️ Issues encountered
 
@@ -410,6 +699,11 @@ Create a structured summary message with emojis showing what was done, any issue
   ## 📦 Pull Request
 
   View PR: [GITHUB_PR_URL]
+
+  ## 🔄 Resume Execution
+
+  To continue with remaining stories, run: `/execute-tasks`
+  (Will automatically resume from kanban-board.md state)
 </summary_template>
 
 <summary_sections>
@@ -455,12 +749,16 @@ Create a structured summary message with emojis showing what was done, any issue
 
 <final_checklist>
   <verify>
-    - [ ] Task implementation complete
+    - [ ] kanban-board.md created/updated
+    - [ ] Stories executed per DoD criteria
     - [ ] All tests passing
-    - [ ] tasks.md updated
+    - [ ] Architect review completed
+    - [ ] QA testing completed
+    - [ ] kanban-board.md reflects final state
+    - [ ] Handover documents created (if needed)
     - [ ] Code committed and pushed
     - [ ] Pull request created
     - [ ] Roadmap checked/updated
-    - [ ] Summary provided to user
+    - [ ] Summary with Kanban status provided
   </verify>
 </final_checklist>
