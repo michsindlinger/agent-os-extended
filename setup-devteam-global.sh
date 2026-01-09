@@ -47,7 +47,6 @@ echo ""
 
 # Create directory if it doesn't exist
 mkdir -p "$GLOBAL_STANDARDS_DIR"
-mkdir -p "$GLOBAL_STANDARDS_DIR/code-style"
 
 # Download global standards
 echo "Downloading global coding standards..."
@@ -62,19 +61,6 @@ download_file "$REPO_URL/agent-os/standards/best-practices.md" \
 download_file "$REPO_URL/agent-os/standards/tech-stack.md" \
   "$GLOBAL_STANDARDS_DIR/tech-stack.md" "global tech-stack template"
 
-# Download detailed code style files
-echo ""
-echo "Downloading detailed style guides..."
-
-download_file "$REPO_URL/agent-os/standards/code-style/javascript-style.md" \
-  "$GLOBAL_STANDARDS_DIR/code-style/javascript-style.md" "JavaScript style"
-
-download_file "$REPO_URL/agent-os/standards/code-style/css-style.md" \
-  "$GLOBAL_STANDARDS_DIR/code-style/css-style.md" "CSS style"
-
-download_file "$REPO_URL/agent-os/standards/code-style/html-style.md" \
-  "$GLOBAL_STANDARDS_DIR/code-style/html-style.md" "HTML style"
-
 echo ""
 echo "✅ Global standards installed!"
 echo ""
@@ -82,11 +68,7 @@ echo "Installed to:"
 echo "  $GLOBAL_STANDARDS_DIR/"
 echo "    ├── code-style.md           - Universal code style guidelines"
 echo "    ├── best-practices.md       - Universal development best practices"
-echo "    ├── tech-stack.md           - Tech stack template"
-echo "    └── code-style/"
-echo "        ├── javascript-style.md - JavaScript/TypeScript guidelines"
-echo "        ├── css-style.md        - CSS/TailwindCSS guidelines"
-echo "        └── html-style.md       - HTML guidelines"
+echo "    └── tech-stack.md           - Tech stack template"
 echo ""
 echo "How it works:"
 echo ""
