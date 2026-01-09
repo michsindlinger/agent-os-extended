@@ -50,22 +50,16 @@ command_files=(
     # Team setup
     "build-development-team.md"
 
-    # Spec & feature development
+    # Spec development
     "create-spec.md"
-    "update-feature.md"
-    "document-feature.md"
     "retroactive-doc.md"
 
     # Bug management
     "add-bug.md"
     "create-bug.md"
-    "execute-bug.md"
 
     # Task execution
     "execute-tasks.md"
-
-    # Changelog
-    "update-changelog.md"
 )
 
 for file in "${command_files[@]}"; do
@@ -104,7 +98,7 @@ echo ""
 echo "📁 Installed Structure:"
 echo ""
 echo "  .claude/"
-echo "    ├── commands/agent-os/   (11 core commands)"
+echo "    ├── commands/agent-os/   (8 core commands)"
 echo "    └── agents/              (6 utility agents)"
 echo ""
 echo "📋 Available Commands:"
@@ -117,20 +111,15 @@ echo "    /build-development-team   → Create DevTeam agents and skills"
 echo ""
 echo "  Feature Development:"
 echo "    /create-spec              → PO + Architect create spec with user stories"
-echo "    /update-feature           → Update existing features"
-echo "    /document-feature         → Document completed features"
-echo "    /retroactive-doc          → Document existing features"
+echo "    /retroactive-doc          → Document existing features (legacy code)"
 echo ""
 echo "  Bug Management:"
 echo "    /add-bug [spec]           → Add bug to existing spec"
 echo "    /create-bug               → Create standalone bug spec"
-echo "    /execute-bug              → Execute bug fix"
 echo ""
 echo "  Execution:"
 echo "    /execute-tasks            → Orchestrator executes user stories via DevTeam"
-echo ""
-echo "  Changelog:"
-echo "    /update-changelog         → Update project changelog"
+echo "                                 (includes bugs, docs, and changelog generation)"
 echo ""
 echo "🤖 Utility Agents Installed:"
 echo "  • context-fetcher    → Conditional file loading"

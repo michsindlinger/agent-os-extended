@@ -48,7 +48,7 @@ echo ""
 
 # Create project directories
 echo "Creating directory structure..."
-mkdir -p agent-os/standards/code-style
+mkdir -p agent-os/standards
 mkdir -p agent-os/workflows/core
 mkdir -p agent-os/workflows/meta
 mkdir -p agent-os/templates/product
@@ -84,14 +84,9 @@ download_file() {
 echo ""
 echo "═══ Installing Standards ═══"
 
-# Core standards (conditional loading enabled)
+# Core standards only (detail guides loaded on-demand from GitHub)
 download_file "$REPO_URL/agent-os/standards/code-style.md" "agent-os/standards/code-style.md" "standards"
 download_file "$REPO_URL/agent-os/standards/best-practices.md" "agent-os/standards/best-practices.md" "standards"
-
-# Detail style guides (loaded conditionally via code-style.md)
-download_file "$REPO_URL/agent-os/standards/code-style/javascript-style.md" "agent-os/standards/code-style/javascript-style.md" "standards"
-download_file "$REPO_URL/agent-os/standards/code-style/css-style.md" "agent-os/standards/code-style/css-style.md" "standards"
-download_file "$REPO_URL/agent-os/standards/code-style/html-style.md" "agent-os/standards/code-style/html-style.md" "standards"
 
 # ═══════════════════════════════════════════════════════════
 # TEMPLATES
@@ -202,23 +197,16 @@ download_file "$REPO_URL/agent-os/workflows/core/plan-product.md" "agent-os/work
 # Team setup
 download_file "$REPO_URL/agent-os/workflows/core/build-development-team.md" "agent-os/workflows/core/build-development-team.md" "workflows"
 
-# Spec & feature development
+# Spec development
 download_file "$REPO_URL/agent-os/workflows/core/create-spec.md" "agent-os/workflows/core/create-spec.md" "workflows"
-download_file "$REPO_URL/agent-os/workflows/core/update-feature.md" "agent-os/workflows/core/update-feature.md" "workflows"
-download_file "$REPO_URL/agent-os/workflows/core/document-feature.md" "agent-os/workflows/core/document-feature.md" "workflows"
 download_file "$REPO_URL/agent-os/workflows/core/retroactive-doc.md" "agent-os/workflows/core/retroactive-doc.md" "workflows"
 
 # Bug management
 download_file "$REPO_URL/agent-os/workflows/core/add-bug.md" "agent-os/workflows/core/add-bug.md" "workflows"
 download_file "$REPO_URL/agent-os/workflows/core/create-bug.md" "agent-os/workflows/core/create-bug.md" "workflows"
-download_file "$REPO_URL/agent-os/workflows/core/execute-bug.md" "agent-os/workflows/core/execute-bug.md" "workflows"
 
 # Task execution
 download_file "$REPO_URL/agent-os/workflows/core/execute-tasks.md" "agent-os/workflows/core/execute-tasks.md" "workflows"
-download_file "$REPO_URL/agent-os/workflows/core/execute-task.md" "agent-os/workflows/core/execute-task.md" "workflows"
-
-# Changelog
-download_file "$REPO_URL/agent-os/workflows/core/update-changelog.md" "agent-os/workflows/core/update-changelog.md" "workflows"
 
 # ═══════════════════════════════════════════════════════════
 # CONFIGURATION
@@ -286,8 +274,8 @@ echo ""
 echo "📁 Installed Structure:"
 echo ""
 echo "  agent-os/"
-echo "    ├── standards/              (2 core + 3 detail files)"
-echo "    ├── workflows/core/         (13 core workflows)"
+echo "    ├── standards/              (2 core files)"
+echo "    ├── workflows/core/         (6 core workflows)"
 echo "    ├── workflows/meta/         (1 meta workflow)"
 echo "    ├── templates/"
 echo "    │   ├── product/            (6 templates)"
@@ -300,10 +288,10 @@ echo ""
 echo "  CLAUDE.md                     (project instructions template)"
 echo ""
 echo "📊 Statistics:"
-echo "  • Standards: 5 files"
+echo "  • Standards: 2 files (detail guides loaded on-demand)"
 echo "  • Templates: 53 files"
-echo "  • Workflows: 14 files"
-echo "  • Total: 72 files installed"
+echo "  • Workflows: 7 files (core only)"
+echo "  • Total: 62 files + CLAUDE.md + config.yml"
 echo ""
 echo "🎯 Next Steps:"
 echo ""
