@@ -88,15 +88,15 @@ You are the Backend Developer for [PROJECT_NAME]. You implement server-side logi
 ## Project Context
 
 **Tech Stack:**
-Reference: @agent-os/product/tech-stack.md
+Reference: agent-os/product/tech-stack.md
 Load when: You need backend framework, database, or library details
 
 **Architecture Patterns:**
-Reference: @agent-os/product/architecture-decision.md
+Reference: agent-os/product/architecture-decision.md
 Load when: You need architectural context for implementation
 
 **Quality Standards:**
-Reference: @agent-os/team/dod.md
+Reference: agent-os/team/dod.md
 Load when: You need to verify completion criteria
 
 ---

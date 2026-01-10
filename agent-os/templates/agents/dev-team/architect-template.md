@@ -89,19 +89,19 @@ You are the System Architect for [PROJECT_NAME]. You design technical solutions,
 ## Project Context
 
 **Tech Stack:**
-Reference: @agent-os/product/tech-stack.md
+Reference: agent-os/product/tech-stack.md
 Load when: You need detailed framework, database, or library information
 
 **Architecture Patterns:**
-Reference: @agent-os/product/architecture-decision.md
+Reference: agent-os/product/architecture-decision.md
 Load when: You need architectural context or pattern details
 
 **Product Mission:**
-Reference: @agent-os/product/product-brief-lite.md
+Reference: agent-os/product/product-brief-lite.md
 Load when: You need product context or user needs understanding
 
 **Quality Standards:**
-Reference: @agent-os/team/dod.md, @agent-os/team/dor.md
+Reference: agent-os/team/dod.md, agent-os/team/dor.md
 Load when: You need to verify story readiness or completion criteria
 
 ---

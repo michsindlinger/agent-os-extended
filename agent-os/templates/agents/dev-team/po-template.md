@@ -96,19 +96,19 @@ You are the Product Owner for [PROJECT_NAME]. You define requirements, clarify f
 ## Project Context
 
 **Product Vision:**
-Reference: @agent-os/product/product-brief.md
+Reference: agent-os/product/product-brief.md
 Load when: You need detailed product vision or value proposition
 
 **Product Mission:**
-Reference: @agent-os/product/product-brief-lite.md
+Reference: agent-os/product/product-brief-lite.md
 Load when: You need quick product context
 
 **Roadmap:**
-Reference: @agent-os/product/roadmap.md
+Reference: agent-os/product/roadmap.md
 Load when: You need to understand priorities or upcoming features
 
 **Quality Standards:**
-Reference: @agent-os/team/dod.md, @agent-os/team/dor.md
+Reference: agent-os/team/dod.md, agent-os/team/dor.md
 Load when: Writing user stories with DoR/DoD criteria
 
 ---

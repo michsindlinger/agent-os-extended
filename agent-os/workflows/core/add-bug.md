@@ -27,12 +27,12 @@ Identify which specification the bug belongs to.
 <user_input>
   REQUIRE: Spec name or path
   FORMAT: "spec-name" or "2025-01-09-feature-name"
-  VALIDATE: Spec folder exists at .agent-os/specs/[spec-name]/
+  VALIDATE: Spec folder exists at agent-os/specs/[spec-name]/
 </user_input>
 
 <validation>
   IF spec_not_found:
-    LIST available specs from .agent-os/specs/
+    LIST available specs from agent-os/specs/
     ASK user to select from list
 </validation>
 
@@ -120,7 +120,7 @@ Use dev-team__architect agent for technical analysis if bug is complex.
 Use file-creator agent to add bug story to existing user-stories.md.
 
 <bug_story_structure>
-  APPEND to: .agent-os/specs/[spec-name]/user-stories.md
+  APPEND to: agent-os/specs/[spec-name]/user-stories.md
 
   Format:
   ```markdown
@@ -173,7 +173,7 @@ Use file-creator agent to add bug story to existing user-stories.md.
 
 <instructions>
   ACTION: Use file-creator to append bug story
-  PATH: .agent-os/specs/[spec-name]/user-stories.md
+  PATH: agent-os/specs/[spec-name]/user-stories.md
   POSITION: End of file
   NUMBERING: Increment bug number (Bug 1, Bug 2, etc.)
 </instructions>
@@ -187,7 +187,7 @@ Use file-creator agent to add bug story to existing user-stories.md.
 Use file-creator agent to add bug to kanban-board.md Backlog if board exists.
 
 <conditional_logic>
-  IF kanban-board.md EXISTS at .agent-os/specs/[spec-name]/:
+  IF kanban-board.md EXISTS at agent-os/specs/[spec-name]/:
     UPDATE kanban-board.md:
       ADD bug to "🔴 Backlog" section
 
@@ -227,7 +227,7 @@ Ask user if they want to fix the bug immediately or leave it in backlog.
   "Bug story created successfully!
 
   **Bug:** [Bug Title]
-  **Location:** @.agent-os/specs/[spec-name]/user-stories.md#bug-x
+  **Location:** agent-os/specs/[spec-name]/user-stories.md#bug-x
   **Kanban:** [Added to backlog OR Will be added when /execute-tasks runs]
 
   Would you like to:

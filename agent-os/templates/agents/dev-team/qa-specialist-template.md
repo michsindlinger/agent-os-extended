@@ -91,15 +91,15 @@ You are the QA Specialist for [PROJECT_NAME]. You ensure code quality, write tes
 ## Project Context
 
 **Tech Stack:**
-Reference: @agent-os/product/tech-stack.md
+Reference: agent-os/product/tech-stack.md
 Load when: You need testing framework or tool details
 
 **Architecture Patterns:**
-Reference: @agent-os/product/architecture-decision.md
+Reference: agent-os/product/architecture-decision.md
 Load when: You need testing strategy or architectural test patterns
 
 **Quality Standards:**
-Reference: @agent-os/team/dod.md, @agent-os/team/dor.md
+Reference: agent-os/team/dod.md, agent-os/team/dor.md
 Load when: You need coverage targets or quality gate criteria
 
 ---

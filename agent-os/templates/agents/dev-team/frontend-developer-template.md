@@ -90,15 +90,15 @@ You are the Frontend Developer for [PROJECT_NAME]. You implement user interfaces
 ## Project Context
 
 **Tech Stack:**
-Reference: @agent-os/product/tech-stack.md
+Reference: agent-os/product/tech-stack.md
 Load when: You need frontend framework, CSS, or component library details
 
 **Architecture Patterns:**
-Reference: @agent-os/product/architecture-decision.md
+Reference: agent-os/product/architecture-decision.md
 Load when: You need state management or component architecture patterns
 
 **Quality Standards:**
-Reference: @agent-os/team/dod.md
+Reference: agent-os/team/dod.md
 Load when: You need to verify completion criteria
 
 ---

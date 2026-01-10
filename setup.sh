@@ -51,11 +51,6 @@ echo "Creating directory structure..."
 mkdir -p agent-os/standards
 mkdir -p agent-os/workflows/core
 mkdir -p agent-os/workflows/meta
-mkdir -p agent-os/templates/product
-mkdir -p agent-os/templates/agents/dev-team
-mkdir -p agent-os/templates/skills/dev-team/{architect,backend,frontend,devops,qa,po,documenter}
-mkdir -p agent-os/templates/skills/orchestration
-mkdir -p agent-os/templates/docs
 
 # Function to download file if it doesn't exist or if overwrite is enabled
 download_file() {
@@ -84,102 +79,9 @@ download_file() {
 echo ""
 echo "═══ Installing Standards ═══"
 
-# Core standards only (detail guides loaded on-demand from GitHub)
+# Core standards only (global fallback available via setup-devteam-global.sh)
 download_file "$REPO_URL/agent-os/standards/code-style.md" "agent-os/standards/code-style.md" "standards"
 download_file "$REPO_URL/agent-os/standards/best-practices.md" "agent-os/standards/best-practices.md" "standards"
-
-# ═══════════════════════════════════════════════════════════
-# TEMPLATES
-# ═══════════════════════════════════════════════════════════
-
-echo ""
-echo "═══ Installing Templates (53 files) ═══"
-
-# Product templates (6)
-echo "→ Product templates..."
-download_file "$REPO_URL/agent-os/templates/product/product-brief-template.md" "agent-os/templates/product/product-brief-template.md" "templates"
-download_file "$REPO_URL/agent-os/templates/product/product-brief-lite-template.md" "agent-os/templates/product/product-brief-lite-template.md" "templates"
-download_file "$REPO_URL/agent-os/templates/product/tech-stack-template.md" "agent-os/templates/product/tech-stack-template.md" "templates"
-download_file "$REPO_URL/agent-os/templates/product/roadmap-template.md" "agent-os/templates/product/roadmap-template.md" "templates"
-download_file "$REPO_URL/agent-os/templates/product/architecture-decision-template.md" "agent-os/templates/product/architecture-decision-template.md" "templates"
-download_file "$REPO_URL/agent-os/templates/product/boilerplate-structure-template.md" "agent-os/templates/product/boilerplate-structure-template.md" "templates"
-
-# Agent templates (7)
-echo "→ Agent templates..."
-download_file "$REPO_URL/agent-os/templates/agents/dev-team/architect-template.md" "agent-os/templates/agents/dev-team/architect-template.md" "templates"
-download_file "$REPO_URL/agent-os/templates/agents/dev-team/backend-developer-template.md" "agent-os/templates/agents/dev-team/backend-developer-template.md" "templates"
-download_file "$REPO_URL/agent-os/templates/agents/dev-team/frontend-developer-template.md" "agent-os/templates/agents/dev-team/frontend-developer-template.md" "templates"
-download_file "$REPO_URL/agent-os/templates/agents/dev-team/devops-specialist-template.md" "agent-os/templates/agents/dev-team/devops-specialist-template.md" "templates"
-download_file "$REPO_URL/agent-os/templates/agents/dev-team/qa-specialist-template.md" "agent-os/templates/agents/dev-team/qa-specialist-template.md" "templates"
-download_file "$REPO_URL/agent-os/templates/agents/dev-team/po-template.md" "agent-os/templates/agents/dev-team/po-template.md" "templates"
-download_file "$REPO_URL/agent-os/templates/agents/dev-team/documenter-template.md" "agent-os/templates/agents/dev-team/documenter-template.md" "templates"
-
-# Skill templates - Architect (5)
-echo "→ Architect skill templates..."
-download_file "$REPO_URL/agent-os/templates/skills/dev-team/architect/pattern-enforcement-template.md" "agent-os/templates/skills/dev-team/architect/pattern-enforcement-template.md" "templates"
-download_file "$REPO_URL/agent-os/templates/skills/dev-team/architect/api-designing-template.md" "agent-os/templates/skills/dev-team/architect/api-designing-template.md" "templates"
-download_file "$REPO_URL/agent-os/templates/skills/dev-team/architect/security-guidance-template.md" "agent-os/templates/skills/dev-team/architect/security-guidance-template.md" "templates"
-download_file "$REPO_URL/agent-os/templates/skills/dev-team/architect/data-modeling-template.md" "agent-os/templates/skills/dev-team/architect/data-modeling-template.md" "templates"
-download_file "$REPO_URL/agent-os/templates/skills/dev-team/architect/dependency-checking-template.md" "agent-os/templates/skills/dev-team/architect/dependency-checking-template.md" "templates"
-
-# Skill templates - Backend (4)
-echo "→ Backend skill templates..."
-download_file "$REPO_URL/agent-os/templates/skills/dev-team/backend/logic-implementing-template.md" "agent-os/templates/skills/dev-team/backend/logic-implementing-template.md" "templates"
-download_file "$REPO_URL/agent-os/templates/skills/dev-team/backend/persistence-adapter-template.md" "agent-os/templates/skills/dev-team/backend/persistence-adapter-template.md" "templates"
-download_file "$REPO_URL/agent-os/templates/skills/dev-team/backend/integration-adapter-template.md" "agent-os/templates/skills/dev-team/backend/integration-adapter-template.md" "templates"
-download_file "$REPO_URL/agent-os/templates/skills/dev-team/backend/test-engineering-template.md" "agent-os/templates/skills/dev-team/backend/test-engineering-template.md" "templates"
-
-# Skill templates - Frontend (4)
-echo "→ Frontend skill templates..."
-download_file "$REPO_URL/agent-os/templates/skills/dev-team/frontend/ui-component-architecture-template.md" "agent-os/templates/skills/dev-team/frontend/ui-component-architecture-template.md" "templates"
-download_file "$REPO_URL/agent-os/templates/skills/dev-team/frontend/state-management-template.md" "agent-os/templates/skills/dev-team/frontend/state-management-template.md" "templates"
-download_file "$REPO_URL/agent-os/templates/skills/dev-team/frontend/api-bridge-building-template.md" "agent-os/templates/skills/dev-team/frontend/api-bridge-building-template.md" "templates"
-download_file "$REPO_URL/agent-os/templates/skills/dev-team/frontend/interaction-designing-template.md" "agent-os/templates/skills/dev-team/frontend/interaction-designing-template.md" "templates"
-
-# Skill templates - DevOps (4)
-echo "→ DevOps skill templates..."
-download_file "$REPO_URL/agent-os/templates/skills/dev-team/devops/pipeline-engineering-template.md" "agent-os/templates/skills/dev-team/devops/pipeline-engineering-template.md" "templates"
-download_file "$REPO_URL/agent-os/templates/skills/dev-team/devops/infrastructure-provisioning-template.md" "agent-os/templates/skills/dev-team/devops/infrastructure-provisioning-template.md" "templates"
-download_file "$REPO_URL/agent-os/templates/skills/dev-team/devops/observability-management-template.md" "agent-os/templates/skills/dev-team/devops/observability-management-template.md" "templates"
-download_file "$REPO_URL/agent-os/templates/skills/dev-team/devops/security-hardening-template.md" "agent-os/templates/skills/dev-team/devops/security-hardening-template.md" "templates"
-
-# Skill templates - QA (4)
-echo "→ QA skill templates..."
-download_file "$REPO_URL/agent-os/templates/skills/dev-team/qa/test-strategy-template.md" "agent-os/templates/skills/dev-team/qa/test-strategy-template.md" "templates"
-download_file "$REPO_URL/agent-os/templates/skills/dev-team/qa/test-automation-template.md" "agent-os/templates/skills/dev-team/qa/test-automation-template.md" "templates"
-download_file "$REPO_URL/agent-os/templates/skills/dev-team/qa/quality-metrics-template.md" "agent-os/templates/skills/dev-team/qa/quality-metrics-template.md" "templates"
-download_file "$REPO_URL/agent-os/templates/skills/dev-team/qa/regression-testing-template.md" "agent-os/templates/skills/dev-team/qa/regression-testing-template.md" "templates"
-
-# Skill templates - PO (4)
-echo "→ PO skill templates..."
-download_file "$REPO_URL/agent-os/templates/skills/dev-team/po/backlog-organization-template.md" "agent-os/templates/skills/dev-team/po/backlog-organization-template.md" "templates"
-download_file "$REPO_URL/agent-os/templates/skills/dev-team/po/requirements-engineering-template.md" "agent-os/templates/skills/dev-team/po/requirements-engineering-template.md" "templates"
-download_file "$REPO_URL/agent-os/templates/skills/dev-team/po/acceptance-testing-template.md" "agent-os/templates/skills/dev-team/po/acceptance-testing-template.md" "templates"
-download_file "$REPO_URL/agent-os/templates/skills/dev-team/po/data-analysis-template.md" "agent-os/templates/skills/dev-team/po/data-analysis-template.md" "templates"
-
-# Skill templates - Documenter (4)
-echo "→ Documenter skill templates..."
-download_file "$REPO_URL/agent-os/templates/skills/dev-team/documenter/changelog-generation-template.md" "agent-os/templates/skills/dev-team/documenter/changelog-generation-template.md" "templates"
-download_file "$REPO_URL/agent-os/templates/skills/dev-team/documenter/api-documentation-template.md" "agent-os/templates/skills/dev-team/documenter/api-documentation-template.md" "templates"
-download_file "$REPO_URL/agent-os/templates/skills/dev-team/documenter/user-guide-writing-template.md" "agent-os/templates/skills/dev-team/documenter/user-guide-writing-template.md" "templates"
-download_file "$REPO_URL/agent-os/templates/skills/dev-team/documenter/code-documentation-template.md" "agent-os/templates/skills/dev-team/documenter/code-documentation-template.md" "templates"
-
-# Skill templates - Orchestration (1)
-echo "→ Orchestration skill template..."
-download_file "$REPO_URL/agent-os/templates/skills/orchestration/orchestration-template.md" "agent-os/templates/skills/orchestration/orchestration-template.md" "templates"
-
-# Documentation templates (10)
-echo "→ Documentation templates..."
-download_file "$REPO_URL/agent-os/templates/docs/spec-template.md" "agent-os/templates/docs/spec-template.md" "templates"
-download_file "$REPO_URL/agent-os/templates/docs/spec-lite-template.md" "agent-os/templates/docs/spec-lite-template.md" "templates"
-download_file "$REPO_URL/agent-os/templates/docs/user-stories-template.md" "agent-os/templates/docs/user-stories-template.md" "templates"
-download_file "$REPO_URL/agent-os/templates/docs/cross-cutting-decisions-template.md" "agent-os/templates/docs/cross-cutting-decisions-template.md" "templates"
-download_file "$REPO_URL/agent-os/templates/docs/bug-description-template.md" "agent-os/templates/docs/bug-description-template.md" "templates"
-download_file "$REPO_URL/agent-os/templates/docs/kanban-board-template.md" "agent-os/templates/docs/kanban-board-template.md" "templates"
-download_file "$REPO_URL/agent-os/templates/docs/handover-doc-template.md" "agent-os/templates/docs/handover-doc-template.md" "templates"
-download_file "$REPO_URL/agent-os/templates/docs/changelog-entry-template.md" "agent-os/templates/docs/changelog-entry-template.md" "templates"
-download_file "$REPO_URL/agent-os/templates/docs/dod-template.md" "agent-os/templates/docs/dod-template.md" "templates"
-download_file "$REPO_URL/agent-os/templates/docs/dor-template.md" "agent-os/templates/docs/dor-template.md" "templates"
 
 # ═══════════════════════════════════════════════════════════
 # WORKFLOWS - Core DevTeam Workflows Only
@@ -277,21 +179,23 @@ echo "  agent-os/"
 echo "    ├── standards/              (2 core files)"
 echo "    ├── workflows/core/         (6 core workflows)"
 echo "    ├── workflows/meta/         (1 meta workflow)"
-echo "    ├── templates/"
-echo "    │   ├── product/            (6 templates)"
-echo "    │   ├── agents/dev-team/    (7 agent templates)"
-echo "    │   ├── skills/dev-team/    (29 skill templates)"
-echo "    │   ├── skills/orchestration/ (1 orchestration template)"
-echo "    │   └── docs/               (10 doc templates)"
 echo "    └── config.yml              (minimal configuration)"
 echo ""
 echo "  CLAUDE.md                     (project instructions template)"
 echo ""
 echo "📊 Statistics:"
-echo "  • Standards: 2 files (detail guides loaded on-demand)"
-echo "  • Templates: 53 files"
-echo "  • Workflows: 7 files (core only)"
-echo "  • Total: 62 files + CLAUDE.md + config.yml"
+echo "  • Standards: 2 files"
+echo "  • Workflows: 7 files"
+echo "  • Config: 1 file"
+echo "  • Total: 10 files + CLAUDE.md"
+echo ""
+echo "📚 Templates (53 files) installed globally:"
+echo "  Templates are loaded from ~/.agent-os/templates/"
+echo "  Run setup-devteam-global.sh if not yet installed."
+echo ""
+echo "  Hybrid lookup:"
+echo "    1. Check: agent-os/templates/ (project override)"
+echo "    2. Fallback: ~/.agent-os/templates/ (global)"
 echo ""
 echo "🎯 Next Steps:"
 echo ""
@@ -323,9 +227,13 @@ echo "📚 Documentation:"
 echo "  • Installation Guide: INSTALL.md (created after Claude Code setup)"
 echo "  • Workflow Diagram: agent-os-workflow-complete.md"
 echo ""
-echo "🆘 Troubleshooting:"
-echo "  • Missing global standards? Run:"
+echo "⚠️  Prerequisites:"
+echo ""
+echo "  Templates are loaded from ~/.agent-os/templates/"
+echo "  If not yet installed, run:"
 echo "    curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/setup-devteam-global.sh | bash"
+echo ""
+echo "  This installs 53 templates + 3 global standards to ~/.agent-os/"
 echo ""
 echo "For more info: https://github.com/michsindlinger/agent-os-extended"
 echo ""

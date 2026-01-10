@@ -29,7 +29,7 @@ Use the context-fetcher subagent to identify spec initiation method by either fi
     - "what's next?"
   </trigger_phrases>
   <actions>
-    1. CHECK @agent-os/product/roadmap.md
+    1. CHECK agent-os/product/roadmap.md
     2. FIND next uncompleted item
     3. SUGGEST item to user
     4. WAIT for approval
@@ -112,7 +112,7 @@ Use the date-checker subagent to determine the current date in YYYY-MM-DD format
 
 ### Step 5: Spec Folder Creation
 
-Use the file-creator subagent to create directory: .agent-os/specs/YYYY-MM-DD-spec-name/ using the date from step 4.
+Use the file-creator subagent to create directory: agent-os/specs/YYYY-MM-DD-spec-name/ using the date from step 4.
 
 Use kebab-case for spec name. Maximum 5 words in name.
 
@@ -138,7 +138,7 @@ Use kebab-case for spec name. Maximum 5 words in name.
 
 ### Step 6: Create spec.md
 
-Use the file-creator subagent to create the file: .agent-os/specs/YYYY-MM-DD-spec-name/spec.md using this template:
+Use the file-creator subagent to create the file: agent-os/specs/YYYY-MM-DD-spec-name/spec.md using this template:
 
 <file_template>
   <header>
@@ -231,7 +231,7 @@ Use the file-creator subagent to create the file: .agent-os/specs/YYYY-MM-DD-spe
 
 ### Step 7: Create spec-lite.md
 
-Use the file-creator subagent to create the file: .agent-os/specs/YYYY-MM-DD-spec-name/spec-lite.md for the purpose of establishing a condensed spec for efficient AI context usage.
+Use the file-creator subagent to create the file: agent-os/specs/YYYY-MM-DD-spec-name/spec-lite.md for the purpose of establishing a condensed spec for efficient AI context usage.
 
 <file_template>
   <header>
@@ -267,7 +267,7 @@ Use the file-creator subagent to create the file: sub-specs/technical-spec.md us
   <header>
     # Technical Specification
 
-    This is the technical specification for the spec detailed in @agent-os/specs/YYYY-MM-DD-spec-name/spec.md
+    This is the technical specification for the spec detailed in agent-os/specs/YYYY-MM-DD-spec-name/spec.md
   </header>
 </file_template>
 
@@ -325,7 +325,7 @@ Use the file-creator subagent to create the file: sub-specs/database-schema.md O
   <header>
     # Database Schema
 
-    This is the database schema implementation for the spec detailed in @agent-os/specs/YYYY-MM-DD-spec-name/spec.md
+    This is the database schema implementation for the spec detailed in agent-os/specs/YYYY-MM-DD-spec-name/spec.md
   </header>
 </file_template>
 
@@ -367,7 +367,7 @@ Use the file-creator subagent to create file: sub-specs/api-spec.md ONLY IF API 
   <header>
     # API Specification
 
-    This is the API specification for the spec detailed in @agent-os/specs/YYYY-MM-DD-spec-name/spec.md
+    This is the API specification for the spec detailed in agent-os/specs/YYYY-MM-DD-spec-name/spec.md
   </header>
 </file_template>
 
@@ -411,9 +411,9 @@ Request user review of spec.md and all sub-specs files, waiting for approval or 
 <review_request>
   I've created the spec documentation:
 
-  - Spec Requirements: @agent-os/specs/YYYY-MM-DD-spec-name/spec.md
-  - Spec Summary: @agent-os/specs/YYYY-MM-DD-spec-name/spec-lite.md
-  - Technical Spec: @agent-os/specs/YYYY-MM-DD-spec-name/sub-specs/technical-spec.md
+  - Spec Requirements: agent-os/specs/YYYY-MM-DD-spec-name/spec.md
+  - Spec Summary: agent-os/specs/YYYY-MM-DD-spec-name/spec-lite.md
+  - Technical Spec: agent-os/specs/YYYY-MM-DD-spec-name/sub-specs/technical-spec.md
   [LIST_OTHER_CREATED_SPECS]
 
   Please review and let me know if any changes are needed before I create the task breakdown.
@@ -486,11 +486,11 @@ Evaluate strategic impact without loading decisions.md and update it only if the
 
   <manual_reads>
     <mission_lite>
-      - IF NOT already in context: READ @agent-os/product/mission-lite.md
+      - IF NOT already in context: READ agent-os/product/mission-lite.md
       - IF already in context: SKIP reading
     </mission_lite>
     <roadmap>
-      - IF NOT already in context: READ @agent-os/product/roadmap.md
+      - IF NOT already in context: READ agent-os/product/roadmap.md
       - IF already in context: SKIP reading
     </roadmap>
     <decisions>
@@ -501,8 +501,8 @@ Evaluate strategic impact without loading decisions.md and update it only if the
 
 <decision_analysis>
   <review_against>
-    - @agent-os/product/mission-lite.md (conditional)
-    - @agent-os/product/roadmap.md (conditional)
+    - agent-os/product/mission-lite.md (conditional)
+    - agent-os/product/roadmap.md (conditional)
   </review_against>
   <criteria>
     - significantly deviates from mission in mission-lite.md
@@ -532,7 +532,7 @@ Evaluate strategic impact without loading decisions.md and update it only if the
   **ID:** DEC-[NEXT_NUMBER]
   **Status:** Accepted
   **Category:** [technical/product/business/process]
-  **Related Spec:** @agent-os/specs/YYYY-MM-DD-spec-name/
+  **Related Spec:** agent-os/specs/YYYY-MM-DD-spec-name/
 
   ### Decision
 
@@ -592,9 +592,9 @@ Evaluate readiness to begin implementation after completing all previous steps, 
 
 <standards>
   <follow>
-    - @agent-os/product/code-style.md
-    - @agent-os/product/dev-best-practices.md
-    - @agent-os/product/tech-stack.md
+    - agent-os/product/code-style.md
+    - agent-os/product/dev-best-practices.md
+    - agent-os/product/tech-stack.md
   </follow>
   <maintain>
     - Consistency with product mission

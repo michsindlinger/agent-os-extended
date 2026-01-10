@@ -26,7 +26,7 @@ Use the file-creator subagent to create or load the kanban board for state persi
 
 <board_check>
   CHECK: Does kanban-board.md exist in spec folder?
-  PATH: .agent-os/specs/[SPEC_FOLDER]/kanban-board.md
+  PATH: agent-os/specs/[SPEC_FOLDER]/kanban-board.md
 </board_check>
 
 <decision_tree>
@@ -81,7 +81,7 @@ Use the file-creator subagent to create or load the kanban board for state persi
   <header>
     # Kanban Board - [Spec Name]
 
-    > Spec: @.agent-os/specs/[SPEC_FOLDER]/
+    > Spec: agent-os/specs/[SPEC_FOLDER]/
     > Created: [TIMESTAMP]
     > Last Updated: [TIMESTAMP]
   </header>
@@ -367,7 +367,7 @@ Execute the selected user story using the DevTeam agents with full Kanban Board 
         [DoD checklist from user-stories.md - this is your completion criteria]
 
         **Dependencies:**
-        [If applicable] Handover document: @.agent-os/specs/[SPEC]/handover-docs/[file]
+        [If applicable] Handover document: agent-os/specs/[SPEC]/handover-docs/[file]
 
         **Instructions:**
         1. Implement according to technical specs
@@ -453,7 +453,7 @@ Execute the selected user story using the DevTeam agents with full Kanban Board 
       <handover_check>
         IF story.has_dependent_stories:
           ENSURE: Handover document exists
-          PATH: .agent-os/specs/[SPEC]/handover-docs/[story-id]-handover.md
+          PATH: agent-os/specs/[SPEC]/handover-docs/[story-id]-handover.md
           CONTENT:
             - API contracts
             - Data structures
@@ -623,7 +623,7 @@ Check @agent-os/product/roadmap.md (if not in context) and update roadmap progre
 
 <conditional_loading>
   IF roadmap.md NOT already in context:
-    LOAD @agent-os/product/roadmap.md
+    LOAD agent-os/product/roadmap.md
   ELSE:
     SKIP loading (use existing context)
 </conditional_loading>
@@ -683,7 +683,7 @@ Create a structured summary message with emojis showing what was done, any issue
   - **Completed Stories**: [X] of [TOTAL]
   - **Progress**: [XX%]
   - **Remaining in Backlog**: [Y]
-  - **View Board**: @.agent-os/specs/[SPEC]/kanban-board.md
+  - **View Board**: agent-os/specs/[SPEC]/kanban-board.md
 
   ## ⚠️ Issues encountered
 

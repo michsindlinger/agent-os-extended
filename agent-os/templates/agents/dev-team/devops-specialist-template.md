@@ -92,15 +92,15 @@ You are the DevOps Specialist for [PROJECT_NAME]. You manage deployment, infrast
 ## Project Context
 
 **Tech Stack:**
-Reference: @agent-os/product/tech-stack.md
+Reference: agent-os/product/tech-stack.md
 Load when: You need hosting, CI/CD, or infrastructure details
 
 **Architecture Patterns:**
-Reference: @agent-os/product/architecture-decision.md
+Reference: agent-os/product/architecture-decision.md
 Load when: You need infrastructure architecture or deployment patterns
 
 **Quality Standards:**
-Reference: @agent-os/team/dod.md
+Reference: agent-os/team/dod.md
 Load when: You need to verify completion criteria
 
 ---

@@ -23,7 +23,7 @@ This skill enables Claude Code to orchestrate the entire DevTeam workflow by man
 ### 1. Kanban Board State Management
 
 **Responsibilities:**
-- Read current state from `.agent-os/specs/[spec-name]/kanban-board.md`
+- Read current state from `agent-os/specs/[spec-name]/kanban-board.md`
 - Track story status (Ready → In Progress → Review → Done)
 - Update board state after each agent completion
 - Monitor WIP (Work in Progress) limits
@@ -144,7 +144,7 @@ FOR each story in Backlog:
 ```
 
 **Handover Location:**
-- Create in: `.agent-os/specs/[spec-name]/handover-docs/[story-id].md`
+- Create in: `agent-os/specs/[spec-name]/handover-docs/[story-id].md`
 - Reference in story assignment
 - Update with agent progress notes
 
@@ -153,7 +153,7 @@ FOR each story in Backlog:
 **Mandatory Quality Gates:**
 
 **Gate 1: Code Quality (All Stories)**
-- [ ] Code follows `.agent-os/standards/code-style.md`
+- [ ] Code follows `agent-os/standards/code-style.md`
 - [ ] Linting passes (no errors)
 - [ ] No TypeScript `any` types
 - [ ] DRY principle applied
@@ -242,15 +242,15 @@ Blockers:
 ### Base Tools (All You Need)
 
 **Read** - Load story and board state
-- `.agent-os/specs/[spec-name]/user-stories.md` - Story details, DoR/DoD, WER field, Dependencies
-- `.agent-os/specs/[spec-name]/kanban-board.md` - Current board state, story status
-- `.agent-os/specs/[spec-name]/handover-docs/*.md` - Handover documents for dependencies
-- `.agent-os/specs/[spec-name]/spec-lite.md` - Spec context (optional)
-- `.agent-os/product/product-brief-lite.md` - Product context (optional)
+- `agent-os/specs/[spec-name]/user-stories.md` - Story details, DoR/DoD, WER field, Dependencies
+- `agent-os/specs/[spec-name]/kanban-board.md` - Current board state, story status
+- `agent-os/specs/[spec-name]/handover-docs/*.md` - Handover documents for dependencies
+- `agent-os/specs/[spec-name]/spec-lite.md` - Spec context (optional)
+- `agent-os/product/product-brief-lite.md` - Product context (optional)
 
 **Write** - Update board state and create docs
-- `.agent-os/specs/[spec-name]/kanban-board.md` - Update story status, metrics, changelog
-- `.agent-os/specs/[spec-name]/handover-docs/[story-id].md` - Create handover for dependencies
+- `agent-os/specs/[spec-name]/kanban-board.md` - Update story status, metrics, changelog
+- `agent-os/specs/[spec-name]/handover-docs/[story-id].md` - Create handover for dependencies
 
 **Edit** - Update existing board content
 - kanban-board.md - Modify story status, progress notes
@@ -401,7 +401,7 @@ WHEN blocker moved to Done:
 
 Context: User needs to create new projects via API.
 
-Handover document: @.agent-os/specs/[spec-name]/handover-docs/story-123.md
+Handover document: agent-os/specs/[spec-name]/handover-docs/story-123.md
 
 Please:
 1. Read the handover document
@@ -433,12 +433,12 @@ Quality gates required: Code quality, Testing"
 
 Context: Display project information in a card layout on dashboard.
 
-Handover document: @.agent-os/specs/[spec-name]/handover-docs/story-124.md
+Handover document: agent-os/specs/[spec-name]/handover-docs/story-124.md
 
 Please:
 1. Read the handover document
 2. Create React component with TailwindCSS
-3. Follow design system in .agent-os/product/tech-stack.md
+3. Follow design system in agent-os/product/tech-stack.md
 4. Write component tests
 5. Report completion
 

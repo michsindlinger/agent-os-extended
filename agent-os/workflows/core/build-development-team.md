@@ -24,7 +24,7 @@ Set up a development team of specialized AI agents based on the project's tech s
 Load and analyze tech-stack.md to determine required agents.
 
 <conditional_logic>
-  IF .agent-os/product/tech-stack.md exists:
+  IF agent-os/product/tech-stack.md exists:
     LOAD: tech-stack.md
     ANALYZE: Technologies in use
     PROCEED to step 2
@@ -280,7 +280,7 @@ Generate Definition of Done based on tech stack and team.
 ```
 I've created a Definition of Done for your project.
 
-Please review: .agent-os/product/definition-of-done.md
+Please review: agent-os/product/definition-of-done.md
 
 Key quality gates:
 - Code compiles without errors
@@ -292,8 +292,8 @@ Key quality gates:
 Adjust any criteria?
 ```
 
-**Template:** `@agent-os/templates/documents/definition-of-done.md`
-**Output:** `.agent-os/product/definition-of-done.md`
+**Template:** `agent-os/templates/product/definition-of-done-template.md`
+**Output:** `agent-os/product/definition-of-done.md`
 
 </step>
 
@@ -314,7 +314,7 @@ Generate Definition of Ready for user stories.
 ```
 I've created a Definition of Ready for user stories.
 
-Please review: .agent-os/product/definition-of-ready.md
+Please review: agent-os/product/definition-of-ready.md
 
 Key readiness criteria:
 - User story format complete
@@ -326,8 +326,8 @@ Key readiness criteria:
 Adjust any criteria?
 ```
 
-**Template:** `@agent-os/templates/documents/definition-of-ready.md`
-**Output:** `.agent-os/product/definition-of-ready.md`
+**Template:** `agent-os/templates/product/definition-of-ready-template.md`
+**Output:** `agent-os/product/definition-of-ready.md`
 
 </step>
 
@@ -386,8 +386,8 @@ Agent Configurations: .claude/agents/
 Skills Linked: .claude/skills/
 
 Quality Standards:
-✅ Definition of Done: .agent-os/product/definition-of-done.md
-✅ Definition of Ready: .agent-os/product/definition-of-ready.md
+✅ Definition of Done: agent-os/product/definition-of-done.md
+✅ Definition of Ready: agent-os/product/definition-of-ready.md
 
 How to Use:
 1. Agents are automatically available via Task tool
@@ -429,8 +429,8 @@ This enables parallel development of different features.
 |------|----------|-------------|
 | Agent configs | `.claude/agents/` | Agent definitions |
 | Skill symlinks | `.claude/skills/` | Linked skills |
-| Definition of Done | `.agent-os/product/` | Quality standards |
-| Definition of Ready | `.agent-os/product/` | Story readiness |
+| Definition of Done | `agent-os/product/` | Quality standards |
+| Definition of Ready | `agent-os/product/` | Story readiness |
 
 ## Execution Summary
 

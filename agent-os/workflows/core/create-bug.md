@@ -43,11 +43,11 @@ Ask targeted questions to understand the bug context:
 - Have you seen similar issues before?
 
 ### 3. Bug File Creation
-Create a structured bug file in `.agent-os/bugs/YYYY-MM-DD-bug-title/` with:
+Create a structured bug file in `agent-os/bugs/YYYY-MM-DD-bug-title/` with:
 
 #### Structure:
 ```
-.agent-os/bugs/YYYY-MM-DD-bug-title/
+agent-os/bugs/YYYY-MM-DD-bug-title/
 ├── bug-report.md          # Main bug documentation
 ├── investigation/         # Investigation notes and findings
 ├── reproduction/          # Steps and test cases for reproduction

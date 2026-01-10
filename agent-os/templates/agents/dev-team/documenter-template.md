@@ -94,19 +94,19 @@ You are the Documentation Specialist for [PROJECT_NAME]. You create clear, compr
 ## Project Context
 
 **Product Context:**
-Reference: @agent-os/product/product-brief-lite.md
+Reference: agent-os/product/product-brief-lite.md
 Load when: You need product context for user-facing documentation
 
 **Tech Stack:**
-Reference: @agent-os/product/tech-stack.md
+Reference: agent-os/product/tech-stack.md
 Load when: You need to document technical setup or frameworks
 
 **API Documentation:**
-Reference: @agent-os/specs/[SPEC]/sub-specs/cross-cutting-decisions.md
+Reference: agent-os/specs/[SPEC]/sub-specs/cross-cutting-decisions.md
 Load when: Available for API documentation patterns
 
 **Documentation Standards:**
-Reference: @agent-os/standards/best-practices.md
+Reference: agent-os/standards/best-practices.md
 Load when: You need documentation style guidelines
 
 ---

@@ -24,7 +24,7 @@ Generate comprehensive product documentation for new projects: product-brief, te
 Use context-fetcher to check if product-brief.md already exists (e.g., from validate-market).
 
 <conditional_logic>
-  IF .agent-os/product/product-brief.md exists:
+  IF agent-os/product/product-brief.md exists:
     LOAD: product-brief.md
     INFORM user: "Found existing product-brief.md from validation phase. Using this as base."
     GENERATE: product-brief-lite.md from existing
@@ -79,8 +79,8 @@ Use product-strategist agent to refine the idea until complete.
    - Success metrics
 4. Generate product-brief.md when all fields complete
 
-**Template:** `@agent-os/templates/documents/product-brief.md`
-**Output:** `.agent-os/product/product-brief.md`
+**Template:** `agent-os/templates/product/product-brief-template.md`
+**Output:** `agent-os/product/product-brief.md`
 
 <quality_check>
   Product brief must include:
@@ -108,7 +108,7 @@ Use product-strategist agent to refine the idea until complete.
 ```
 I've created your Product Brief.
 
-Please review: .agent-os/product/product-brief.md
+Please review: agent-os/product/product-brief.md
 
 Options:
 1. Approve and continue
@@ -124,8 +124,8 @@ Options:
     RETURN to step 4
 </conditional_logic>
 
-**Template:** `@agent-os/templates/documents/product-brief-lite.md`
-**Output:** `.agent-os/product/product-brief-lite.md`
+**Template:** `agent-os/templates/product/product-brief-lite-template.md`
+**Output:** `agent-os/product/product-brief-lite.md`
 
 </step>
 
@@ -162,8 +162,8 @@ Options:
     GENERATE: tech-stack.md with custom choices
 </conditional_logic>
 
-**Template:** `@agent-os/templates/documents/tech-stack.md`
-**Output:** `.agent-os/product/tech-stack.md`
+**Template:** `agent-os/templates/product/tech-stack-template.md`
+**Output:** `agent-os/product/tech-stack.md`
 
 </step>
 
@@ -186,7 +186,7 @@ Generate development roadmap based on product-brief features.
 ```
 I've created a development roadmap with [N] phases.
 
-Please review: .agent-os/product/roadmap.md
+Please review: agent-os/product/roadmap.md
 
 Options:
 1. Approve roadmap
@@ -202,8 +202,8 @@ Options:
     RETURN to review
 </conditional_logic>
 
-**Template:** `@agent-os/templates/documents/roadmap.md`
-**Output:** `.agent-os/product/roadmap.md`
+**Template:** `agent-os/templates/product/roadmap-template.md`
+**Output:** `agent-os/product/roadmap.md`
 
 </step>
 
@@ -240,8 +240,8 @@ Options:
     GENERATE: architecture-decision.md with user's choice
 </conditional_logic>
 
-**Template:** `@agent-os/templates/documents/architecture-decision.md`
-**Output:** `.agent-os/product/architecture-decision.md`
+**Template:** `agent-os/templates/product/architecture-decision-template.md`
+**Output:** `agent-os/product/architecture-decision.md`
 
 </step>
 
@@ -286,10 +286,10 @@ boilerplate/
 ```
 
 **Output:**
-- `.agent-os/product/boilerplate/` (directory structure)
-- `.agent-os/product/architecture-structure.md`
+- `agent-os/product/boilerplate/` (directory structure)
+- `agent-os/product/architecture-structure.md`
 
-**Template:** `@agent-os/templates/documents/architecture-structure.md`
+**Template:** `agent-os/templates/product/boilerplate-structure-template.md`
 
 </step>
 
@@ -312,7 +312,7 @@ Created Documentation:
 ✅ architecture-structure.md - Folder conventions
 ✅ boilerplate/ - Project structure template
 
-Location: .agent-os/product/
+Location: agent-os/product/
 
 Next Steps:
 1. Review all documentation
