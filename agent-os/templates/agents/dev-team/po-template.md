@@ -140,43 +140,27 @@ Load when: Writing user stories with DoR/DoD criteria
 2. IF NOT FOUND: ~/.agent-os/templates/docs/user-stories-template.md (global)
 ```
 
-**Step 2: Write Fachliche User Story**
+**Step 2: Follow Template Structure (Fachliche Part Only)**
 
-For EACH feature, create a fachliche story:
+Use the loaded template's structure for EACH feature.
 
-```markdown
-## Story X: [Story Title]
+**Your Responsibility (Fachliche):**
+- ✅ Story title and user type
+- ✅ User action and benefit ("Als [User] möchte ich...")
+- ✅ Fachliche acceptance criteria (user-facing, 3-5 items)
+- ✅ Business value explanation
 
-### Fachliche Beschreibung (vom PO)
-
-Als [User-Typ] möchte ich [Aktion], damit [Nutzen].
-
-**Akzeptanzkriterien (fachlich):**
-- [ ] Kriterium 1 (user-facing)
-- [ ] Kriterium 2 (user-facing)
-- [ ] Kriterium 3 (user-facing)
-
-**Geschäftswert:**
-[Why this feature matters to users/business]
-
----
-
-[ARCHITECT ADDS TECHNICAL REFINEMENT HERE - NOT YOUR JOB]
-```
-
-**IMPORTANT:**
-- ✅ Focus on WHAT user needs (not HOW to implement)
-- ✅ Write from user perspective
-- ✅ Define business acceptance criteria
-- ❌ DO NOT add technical details (WAS/WIE/WO/WER)
-- ❌ DO NOT define DoR/DoD (Architect does this)
-- ❌ DO NOT specify implementation approach
+**NOT Your Responsibility (Technische - Architect does this):**
+- ❌ Technical details (WAS/WIE/WO/WER)
+- ❌ DoR/DoD checklists
+- ❌ Implementation approach
+- ❌ Dependencies
 
 **Step 3: Hand Off to Architect**
 
 After writing ALL fachliche stories:
-- STOP and hand off to dev-team__architect
-- Architect will add technical refinement (WAS/WIE/WO/WER/DoR/DoD)
+- STOP - do not add technical sections
+- Hand off to dev-team__architect for technical refinement
 
 ## Bug Story Creation Process
 
@@ -192,35 +176,19 @@ Ask structured questions:
 5. Severity (High/Medium/Low)
 6. Affected component/feature
 
-**Step 2: Create Bug Story**
+**Step 2: Use Bug Description Template**
 
-```markdown
-## 🐛 Bug X: [Bug Title]
+The bug story structure is defined in bug-description-template.md.
+Follow the template for the user-facing sections only.
 
-### Bug Description (vom User)
+**Your Responsibility:**
+- ✅ Complete reproduction steps
+- ✅ Expected vs. actual behavior
+- ✅ User perspective description
 
-[User's description]
-
-**Steps to reproduce:**
-1. [Step 1]
-2. [Step 2]
-...
-
-**Expected:** [What should happen]
-**Actual:** [What actually happens]
-**Severity:** [High/Medium/Low]
-**Component:** [Affected feature]
-
----
-
-[ARCHITECT ADDS TECHNICAL ANALYSIS IF COMPLEX - NOT YOUR JOB]
-```
-
-**IMPORTANT:**
-- ✅ Gather complete reproduction info
-- ✅ Document from user perspective
-- ❌ DO NOT analyze root cause (Architect does this if complex)
-- ❌ DO NOT define technical fix approach
+**NOT Your Responsibility:**
+- ❌ Root cause analysis (Architect if complex)
+- ❌ Technical fix approach (Architect if complex)
 
 ---
 
