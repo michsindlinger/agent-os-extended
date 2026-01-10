@@ -145,46 +145,95 @@ Options:
 
 </step>
 
-<step number="5" name="tech_stack_recommendation">
+<step number="5" subagent="tech-architect" name="tech_stack_recommendation">
 
 ### Step 5: Tech Stack Recommendation
 
-Analyze product requirements and recommend tech stack.
+Use tech-architect agent to analyze product requirements and recommend appropriate tech stack.
 
-**Process:**
-1. Analyze product-brief.md for technical requirements
-2. Check @~/.agent-os/standards/tech-stack.md for defaults
-3. Generate tech stack recommendation
+<delegation>
+  DELEGATE to tech-architect via Task tool:
 
-**Prompt User with AskUserQuestion:**
-```
-Based on your product, I recommend this tech stack:
+  PROMPT:
+  "Analyze product requirements and recommend tech stack.
 
-Backend: [RECOMMENDATION]
-Frontend: [RECOMMENDATION]
-Database: [RECOMMENDATION]
-Hosting: [RECOMMENDATION]
+  Context:
+  - Product Brief: agent-os/product/product-brief.md
+  - Product Brief Lite: agent-os/product/product-brief-lite.md
 
-Options:
-1. Accept recommendations
-2. Customize (specify changes)
-```
+  Tasks:
+  1. Load tech-stack-template.md (hybrid lookup: project → global)
+  2. Analyze product requirements (platform, scale, complexity, integrations)
+  3. Recommend tech stack (backend, frontend, database, hosting, ci/cd)
+  4. Present recommendations to user via AskUserQuestion
+  5. Fill template with user's choices
+  6. Write to agent-os/product/tech-stack.md
 
-<conditional_logic>
-  IF user accepts:
-    GENERATE: tech-stack.md with recommendations
-  ELSE:
-    APPLY user customizations
-    GENERATE: tech-stack.md with custom choices
-</conditional_logic>
+  Use hybrid template lookup:
+  - TRY: agent-os/templates/product/tech-stack-template.md
+  - FALLBACK: ~/.agent-os/templates/product/tech-stack-template.md"
+
+  WAIT for tech-architect completion
+  RECEIVE tech-stack.md output
+</delegation>
 
 **Template:** `agent-os/templates/product/tech-stack-template.md`
-
-<template_lookup>
-  LOOKUP: agent-os/templates/ (project) → ~/.agent-os/templates/ (global fallback)
-</template_lookup>
-
 **Output:** `agent-os/product/tech-stack.md`
+
+</step>
+
+<step number="5.5" subagent="tech-architect" name="generate_project_standards">
+
+### Step 5.5: Generate Project-Specific Standards (Optional)
+
+Use tech-architect agent to optionally generate tech-stack-aware coding standards for the project.
+
+<user_choice>
+  ASK user:
+  "Generate project-specific coding standards?
+
+  YES (Recommended):
+  → Standards customized for your tech stack (Rails → Ruby style, React → TS style)
+  → Saved to agent-os/standards/code-style.md and best-practices.md
+  → Overrides global ~/.agent-os/standards/
+
+  NO:
+  → Use global standards from ~/.agent-os/standards/
+  → Faster setup, consistent across all your projects
+
+  Your choice: [YES/NO]"
+</user_choice>
+
+<conditional_logic>
+  IF user_choice = YES:
+    DELEGATE to tech-architect via Task tool:
+
+    PROMPT:
+    "Generate tech-stack-aware coding standards.
+
+    Context:
+    - Tech Stack: agent-os/product/tech-stack.md
+    - Global Standards: ~/.agent-os/standards/code-style.md, best-practices.md
+
+    Tasks:
+    1. Read tech-stack.md to understand frameworks
+    2. Read global standards as base
+    3. Enhance with tech-stack-specific rules:
+       - Rails → Ruby style, RSpec conventions
+       - React → TypeScript style, component patterns
+       - Node.js → JavaScript/TS style, async patterns
+    4. Write to agent-os/standards/code-style.md
+    5. Write to agent-os/standards/best-practices.md
+
+    Generate tech-stack-aware standards that enhance global defaults."
+
+    WAIT for tech-architect completion
+    NOTE: "Project-specific standards generated"
+
+  ELSE:
+    NOTE: "Using global standards from ~/.agent-os/standards/"
+    SKIP standards generation
+</conditional_logic>
 
 </step>
 

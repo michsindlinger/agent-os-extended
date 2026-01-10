@@ -82,8 +82,9 @@ download_file "$REPO_URL/.claude/agents/test-runner.md" ".claude/agents/test-run
 
 # Product planning agents
 download_file "$REPO_URL/.claude/agents/product-strategist.md" ".claude/agents/product-strategist.md"
+download_file "$REPO_URL/.claude/agents/tech-architect.md" ".claude/agents/tech-architect.md"
 
-# Note: DevTeam agents (architect, backend-dev, frontend-dev, etc.)
+# Note: DevTeam agents (dev-team__architect, backend-dev, frontend-dev, etc.)
 # are created dynamically via /build-development-team command
 
 # ═══════════════════════════════════════════════════════════
@@ -99,7 +100,7 @@ echo "📁 Installed Structure:"
 echo ""
 echo "  .claude/"
 echo "    ├── commands/agent-os/   (8 core commands)"
-echo "    └── agents/              (6 utility agents)"
+echo "    └── agents/              (7 utility agents)"
 echo ""
 echo "📋 Available Commands:"
 echo ""
@@ -128,6 +129,7 @@ echo "  • git-workflow       → Git operations (commit, push, PR)"
 echo "  • date-checker       → Current date determination"
 echo "  • test-runner        → Test suite execution"
 echo "  • product-strategist → Product planning and strategy"
+echo "  • tech-architect     → Tech stack and architecture decisions"
 echo ""
 echo "🎯 Recommended Workflow:"
 echo ""
