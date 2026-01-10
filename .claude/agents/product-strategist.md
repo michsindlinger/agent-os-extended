@@ -29,10 +29,15 @@ You are a specialized product strategy agent for Agent OS. Your role is to help 
 
 ### Step 1: Load Product Brief Template
 
-**ACTION:**
+**ACTION - Hybrid Template Lookup:**
 ```
-READ: agent-os/templates/product/product-brief-template.md
+1. TRY: Read from project (agent-os/templates/product/product-brief-template.md)
+2. IF NOT FOUND: Read from global (~/.agent-os/templates/product/product-brief-template.md)
+3. IF STILL NOT FOUND: Error - setup-devteam-global.sh not run
 ```
+
+**NOTE:** Most projects use global templates from ~/.agent-os/templates/.
+Project override only when customizing.
 
 This template provides the standard structure with [PLACEHOLDER] markers for:
 - [PRODUCT_NAME]
@@ -66,7 +71,7 @@ Replace all [PLACEHOLDER] markers with information gathered from user:
 
 **ACTION:**
 ```
-WRITE filled template to: .agent-os/product/product-brief.md
+WRITE filled template to: agent-os/product/product-brief.md
 ```
 
 Ensure:
@@ -77,9 +82,10 @@ Ensure:
 
 ### Step 4: Generate Product Brief Lite
 
-**ACTION:**
+**ACTION - Hybrid Template Lookup:**
 ```
-READ: agent-os/templates/product/product-brief-lite-template.md
+1. TRY: agent-os/templates/product/product-brief-lite-template.md (project)
+2. IF NOT FOUND: ~/.agent-os/templates/product/product-brief-lite-template.md (global)
 ```
 
 Fill template with condensed information:
@@ -92,16 +98,17 @@ Fill template with condensed information:
 
 **ACTION:**
 ```
-WRITE to: .agent-os/product/product-brief-lite.md
+WRITE to: agent-os/product/product-brief-lite.md
 ```
 
 ## Roadmap Creation Process
 
 ### Step 1: Load Roadmap Template
 
-**ACTION:**
+**ACTION - Hybrid Template Lookup:**
 ```
-READ: agent-os/templates/product/roadmap-template.md
+1. TRY: agent-os/templates/product/roadmap-template.md (project)
+2. IF NOT FOUND: ~/.agent-os/templates/product/roadmap-template.md (global)
 ```
 
 Template provides MoSCoW structure with [PLACEHOLDER] markers.
@@ -125,7 +132,7 @@ Organize features into phases:
 
 **ACTION:**
 ```
-WRITE filled template to: .agent-os/product/roadmap.md
+WRITE filled template to: agent-os/product/roadmap.md
 ```
 
 Include:
@@ -225,9 +232,9 @@ Before completing:
 - Roadmap updates
 
 **Outputs:**
-- `.agent-os/product/product-brief.md`
-- `.agent-os/product/product-brief-lite.md`
-- `.agent-os/product/roadmap.md`
+- `agent-os/product/product-brief.md`
+- `agent-os/product/product-brief-lite.md`
+- `agent-os/product/roadmap.md`
 
 **Works with:**
 - tech-architect (receives product brief, recommends tech stack)
