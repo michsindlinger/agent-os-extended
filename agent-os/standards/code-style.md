@@ -2,14 +2,11 @@
 
 ## Context
 
-Global code style rules for Agent OS projects.
+Universal code style rules for Agent OS projects.
 
-<conditional-block context-check="general-formatting">
-IF this General Formatting section already read in current context:
-  SKIP: Re-reading this section
-  NOTE: "Using General Formatting rules already in context"
-ELSE:
-  READ: The following formatting rules
+**Framework-specific patterns** (React, Rails, Node.js, etc.) are defined in agent skills, not here.
+
+---
 
 ## General Formatting
 
@@ -35,44 +32,44 @@ ELSE:
 - Never remove existing comments unless removing the associated code
 - Update comments when modifying code to maintain accuracy
 - Keep comments concise and relevant
-</conditional-block>
 
-<conditional-block task-condition="html-css-tailwind" context-check="html-css-style">
-IF current task involves writing or updating HTML, CSS, or TailwindCSS:
-  IF html-style.md AND css-style.md already in context:
-    SKIP: Re-reading these files
-    NOTE: "Using HTML/CSS style guides already in context"
-  ELSE:
-    <context_fetcher_strategy>
-      IF current agent is Claude Code AND context-fetcher agent exists:
-        USE: @agent:context-fetcher
-        REQUEST: "Get HTML formatting rules from code-style/html-style.md"
-        REQUEST: "Get CSS and TailwindCSS rules from code-style/css-style.md"
-        PROCESS: Returned style rules
-      ELSE:
-        LOAD on-demand from GitHub:
-        - https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/agent-os/standards/code-style/html-style.md
-        - https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/agent-os/standards/code-style/css-style.md
-    </context_fetcher_strategy>
-ELSE:
-  SKIP: HTML/CSS style guides not relevant to current task
-</conditional-block>
+### File Organization
+- One class/component per file (unless tightly coupled)
+- Group related files in directories
+- Use index files for clean imports
+- Keep files focused and cohesive
 
-<conditional-block task-condition="javascript" context-check="javascript-style">
-IF current task involves writing or updating JavaScript:
-  IF javascript-style.md already in context:
-    SKIP: Re-reading this file
-    NOTE: "Using JavaScript style guide already in context"
-  ELSE:
-    <context_fetcher_strategy>
-      IF current agent is Claude Code AND context-fetcher agent exists:
-        USE: @agent:context-fetcher
-        REQUEST: "Get JavaScript style rules from code-style/javascript-style.md"
-        PROCESS: Returned style rules
-      ELSE:
-        LOAD on-demand from GitHub:
-        https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/agent-os/standards/code-style/javascript-style.md
-    </context_fetcher_strategy>
-ELSE:
-  SKIP: JavaScript style guide not relevant to current task
-</conditional-block>
+### Code Readability
+- Maximum line length: 100-120 characters
+- Blank lines between logical sections
+- Consistent spacing around operators
+- Clear variable and function names (self-documenting)
+
+---
+
+## Framework-Specific Patterns
+
+Framework-specific code patterns (React hooks, Rails controllers, etc.) are defined in **agent skills**, not in this global style guide.
+
+**Skills contain:**
+- Component architecture patterns
+- State management conventions
+- API design patterns
+- Database query patterns
+- Testing patterns
+- Framework best practices
+
+**Where to find:**
+- Frontend patterns: `frontend-dev skills` (ui-component-architecture, state-management, etc.)
+- Backend patterns: `backend-dev skills` (logic-implementing, persistence-adapter, etc.)
+- DevOps patterns: `devops skills` (pipeline-engineering, infrastructure-provisioning, etc.)
+
+---
+
+## Usage
+
+**This file provides:** Universal formatting rules applicable to ALL code.
+
+**Agent skills provide:** Framework and technology-specific patterns.
+
+**DoD enforces:** Both universal style (from this file) and skill-specific patterns.
