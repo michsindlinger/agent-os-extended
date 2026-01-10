@@ -434,9 +434,9 @@ create-spec  # Generate full specification in .agent-os/specs/
 ```
 
 ### Requirements Traceability
-- Link user stories to specs: `@.agent-os/specs/YYYY-MM-DD-feature-name/`
-- Reference product vision: `@.agent-os/product/mission.md`
-- Document decisions: `@.agent-os/product/decisions.md`
+- Link user stories to specs: `.agent-os/specs/YYYY-MM-DD-feature-name/`
+- Reference product vision: `.agent-os/product/mission.md`
+- Document decisions: `agent-os/product/architecture-decision.md`
 
 ### Iterative Refinement
 When requirements change:

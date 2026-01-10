@@ -116,9 +116,9 @@ Designs database schemas, data structures, and relationships that are normalized
 -->
 
 ### Agent OS Workflows
-- **@agent-os/workflows/create-spec.md** - Document schema changes
-- **@.agent-os/specs/[feature]/sub-specs/database-schema.md** - Schema specs
-- **@agent-os/product/decisions.md** - Data architecture decisions
+- **agent-os/workflows/create-spec.md** - Document schema changes
+- **.agent-os/specs/[feature]/sub-specs/database-schema.md** - Schema specs
+- **agent-os/product/architecture-decision.md** - Data architecture decisions
 
 ### External Tools
 - Database visualization tools (ERD diagrams)

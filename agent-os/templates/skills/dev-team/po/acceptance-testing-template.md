@@ -286,7 +286,7 @@ Scenario 5: Search performance
 # User Acceptance Test Plan: [Feature Name]
 
 > Created: [DATE]
-> Feature Spec: @.agent-os/specs/[spec-folder]/
+> Feature Spec: .agent-os/specs/[spec-folder]/
 > UAT Environment: [URL or environment name]
 > Test Period: [Start Date] to [End Date]
 
@@ -449,7 +449,7 @@ Label: `uat-[feature-name]`
 ## Related Information
 **User Story**: [Link to story]
 **Acceptance Criteria**: [Which criterion failed]
-**Spec Reference**: @.agent-os/specs/[spec-folder]/
+**Spec Reference**: .agent-os/specs/[spec-folder]/
 
 ## Resolution
 **Status**: Open | In Progress | Fixed | Won't Fix | Duplicate
@@ -490,13 +490,13 @@ Label: `uat-[feature-name]`
 ### Spec Validation
 Reference acceptance criteria in:
 ```
-@.agent-os/specs/YYYY-MM-DD-feature-name/spec.md
+.agent-os/specs/YYYY-MM-DD-feature-name/spec.md
 ```
 
 ### Test Documentation
 Create UAT plans in:
 ```
-@.agent-os/specs/YYYY-MM-DD-feature-name/sub-specs/tests.md
+.agent-os/specs/YYYY-MM-DD-feature-name/sub-specs/tests.md
 ```
 
 ### Defect Tracking
@@ -505,7 +505,7 @@ Link bugs to original requirements for traceability
 ### Sign-off Documentation
 Document acceptance in:
 ```
-@.agent-os/specs/YYYY-MM-DD-feature-name/tasks.md
+.agent-os/specs/YYYY-MM-DD-feature-name/tasks.md
 ```
 Mark tasks as complete once acceptance testing passes
 

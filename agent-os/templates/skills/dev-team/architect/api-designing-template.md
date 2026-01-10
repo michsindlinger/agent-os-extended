@@ -106,9 +106,9 @@ Designs RESTful, GraphQL, or other API architectures that are intuitive, consist
 -->
 
 ### Agent OS Workflows
-- **@agent-os/workflows/create-spec.md** - Document API specifications
-- **@agent-os/product/decisions.md** - Record API design decisions
-- **@.agent-os/specs/[feature]/sub-specs/api-spec.md** - Feature API specs
+- **agent-os/workflows/create-spec.md** - Document API specifications
+- **agent-os/product/architecture-decision.md** - Record API design decisions
+- **.agent-os/specs/[feature]/sub-specs/api-spec.md** - Feature API specs
 
 ### External Tools
 - Postman/Insomnia for API testing

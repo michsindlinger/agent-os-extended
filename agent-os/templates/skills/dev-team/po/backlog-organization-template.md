@@ -85,7 +85,7 @@ While backlog organization is largely tool-agnostic, consider:
 ### Documentation
 - Access to `.agent-os/product/roadmap.md`
 - Access to `.agent-os/specs/` for feature specifications
-- Product decisions log at `.agent-os/product/decisions.md`
+- Product decisions log at `agent-os/product/architecture-decision.md`
 
 ### Communication
 - Team collaboration platform
@@ -137,7 +137,7 @@ Every user story should be:
 **Priority**: [Must Have | Should Have | Could Have]
 **Story Points**: [Estimate]
 **Dependencies**: [List any dependent stories]
-**Spec Reference**: @.agent-os/specs/[spec-folder]/
+**Spec Reference**: .agent-os/specs/[spec-folder]/
 
 **Acceptance Criteria**:
 - [ ] [Specific testable criterion]
@@ -254,13 +254,13 @@ create-spec  # Generate detailed specification for Must Have items
 ```
 
 ### Roadmap Alignment
-Reference: `@.agent-os/product/roadmap.md`
+Reference: `.agent-os/product/roadmap.md`
 - Ensure backlog priorities align with roadmap phases
 - Update roadmap when priorities shift significantly
 
 ### Decision Documentation
 When making significant prioritization decisions:
-- Document in `@.agent-os/product/decisions.md`
+- Document in `agent-os/product/architecture-decision.md`
 - Include stakeholder input and rationale
 
 ## Success Metrics

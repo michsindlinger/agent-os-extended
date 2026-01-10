@@ -116,9 +116,9 @@ Provides security expertise and guidance across all aspects of application devel
 -->
 
 ### Agent OS Workflows
-- **@agent-os/workflows/security-review.md** - Security review process
-- **@agent-os/product/decisions.md** - Security architecture decisions
-- **@.agent-os/specs/[feature]/sub-specs/security-spec.md** - Feature security specs
+- **agent-os/workflows/execute-tasks.md** - Execute security improvements and reviews
+- **agent-os/product/architecture-decision.md** - Security architecture decisions
+- **.agent-os/specs/[feature]/sub-specs/security-spec.md** - Feature security specs
 
 ### External Tools
 - Dependency vulnerability scanners

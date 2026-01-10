@@ -462,7 +462,7 @@ WHERE visited_at >= CURRENT_DATE - INTERVAL '30 days';
 ### Metrics in Product Decisions
 Document data-driven decisions:
 ```
-@.agent-os/product/decisions.md
+agent-os/product/architecture-decision.md
 ```
 
 Include:
@@ -474,7 +474,7 @@ Include:
 ### Feature Prioritization
 Reference metrics in specs:
 ```
-@.agent-os/specs/YYYY-MM-DD-feature-name/spec.md
+.agent-os/specs/YYYY-MM-DD-feature-name/spec.md
 ```
 
 Include:
@@ -485,7 +485,7 @@ Include:
 ### Roadmap Validation
 Update roadmap based on data:
 ```
-@.agent-os/product/roadmap.md
+.agent-os/product/roadmap.md
 ```
 
 Adjust priorities when data reveals:

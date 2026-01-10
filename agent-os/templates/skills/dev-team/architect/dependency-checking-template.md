@@ -105,9 +105,9 @@ Evaluates external dependencies (libraries, frameworks, APIs, services) for secu
 -->
 
 ### Agent OS Workflows
-- **@agent-os/workflows/dependency-review.md** - Dependency review process
-- **@agent-os/product/decisions.md** - Dependency decisions log
-- **@.agent-os/specs/[feature]/sub-specs/technical-spec.md** - Tech specs
+- **agent-os/workflows/execute-tasks.md** - Execute dependency updates and reviews
+- **agent-os/product/architecture-decision.md** - Dependency decisions log
+- **.agent-os/specs/[feature]/sub-specs/technical-spec.md** - Tech specs
 
 ### External Tools
 - GitHub Dependency Graph
@@ -228,7 +228,7 @@ RATIONALE:
 - Well-maintained and stable
 - Can switch to Library A if advanced features needed
 
-DECISION RECORD: Log in @.agent-os/product/decisions.md
+DECISION RECORD: Log in agent-os/product/architecture-decision.md
 ```
 
 ### Example 2: Security Vulnerability Response
@@ -413,7 +413,7 @@ COST ANALYSIS:
 - Break-even: Service pays for itself in reduced risk
 
 DECISION: Adopt [Auth Library]
-See: @.agent-os/product/decisions.md#DEC-XXX
+See: agent-os/product/architecture-decision.md#DEC-XXX
 ```
 
 ### Example 5: License Compliance Check

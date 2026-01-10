@@ -97,9 +97,8 @@ Ensures architectural patterns, design principles, and code organization standar
 -->
 
 ### Agent OS Workflows
-- **@agent-os/workflows/code-review.md** - Structured code review process
-- **@agent-os/workflows/refactor-proposal.md** - Document refactoring plans
-- **@agent-os/product/decisions.md** - Reference architectural decisions
+- **agent-os/workflows/execute-tasks.md** - Execute refactoring and pattern improvements
+- **agent-os/product/architecture-decision.md** - Reference architectural decisions
 
 ### External Tools
 - Static analysis tools for pattern detection
@@ -272,7 +271,7 @@ REFACTORING:
 [Other patterns this works with or replaces]
 
 ## Decision Reference
-See: @.agent-os/product/decisions.md#DEC-XXX
+See: agent-os/product/architecture-decision.md#DEC-XXX
 ```
 
 ## Skill Activation Flow
