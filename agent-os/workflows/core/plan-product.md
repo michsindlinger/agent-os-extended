@@ -282,45 +282,70 @@ Options:
 
 </step>
 
-<step number="7" name="architecture_decision">
+<step number="7" subagent="tech-architect" name="architecture_decision">
 
 ### Step 7: Architecture Decision
 
-Recommend and document architecture pattern.
+Use tech-architect agent to analyze product complexity and recommend appropriate architecture pattern.
 
-**Process:**
-1. Analyze tech-stack.md and product complexity
-2. Recommend architecture pattern:
-   - Simple CRUD: Layered Architecture
-   - Medium Complexity: Clean Architecture
-   - Complex Domain: Hexagonal/DDD
-   - Microservices: Event-Driven
+<delegation>
+  DELEGATE to tech-architect via Task tool:
 
-**Prompt User with AskUserQuestion:**
-```
-Based on your product, I recommend:
+  PROMPT:
+  "Analyze product and recommend architecture pattern.
 
-Architecture: [PATTERN_NAME]
-Rationale: [WHY_THIS_PATTERN]
+  Context:
+  - Product Brief: agent-os/product/product-brief.md
+  - Tech Stack: agent-os/product/tech-stack.md
 
-Options:
-1. Accept recommendation
-2. Choose different pattern (Layered | Clean | Hexagonal | DDD | Microservices)
-```
+  Tasks:
+  1. Load architecture-decision-template.md (hybrid lookup: project → global)
+  2. Analyze product complexity:
+     - Domain complexity (simple CRUD vs rich domain)
+     - Business rules complexity
+     - External integrations count
+     - Team size
+     - Scalability requirements
+  3. Recommend architecture pattern based on analysis.
 
-<conditional_logic>
-  IF user accepts:
-    GENERATE: architecture-decision.md with recommendation
-  ELSE:
-    GENERATE: architecture-decision.md with user's choice
-</conditional_logic>
+     IMPORTANT: NOT limited to predefined patterns!
+     Analyze and recommend most appropriate pattern:
+
+     Common Patterns:
+     - Layered (3-Tier) → Simple CRUD, rapid development
+     - Clean Architecture → Medium complexity, good testability
+     - Hexagonal (Ports & Adapters) → Many integrations, domain-driven
+     - Domain-Driven Design (DDD) → Complex business domain
+     - Microservices → Independent services, team autonomy
+     - Event-Driven → Async processing, event sourcing
+     - Serverless → Variable load, cost optimization
+     - Modular Monolith → Start simple, prepare for scale
+     - JAMstack → Static sites + APIs
+     - CQRS → Command/Query separation
+     - Plugin Architecture → Extensibility focus
+     - Micro-frontends → Independent frontend modules
+     - OTHER → Analyze and recommend based on specific needs
+
+  4. Present recommendation to user with:
+     - Pattern name
+     - Rationale (why this pattern fits)
+     - Trade-offs (pros and cons)
+     - Alternatives considered
+  5. Get user approval or alternative choice
+  6. Fill template with chosen pattern and rationale
+  7. Write to agent-os/product/architecture-decision.md
+
+  Use hybrid template lookup:
+  - TRY: agent-os/templates/product/architecture-decision-template.md
+  - FALLBACK: ~/.agent-os/templates/product/architecture-decision-template.md
+
+  Recommend based on ACTUAL product needs, not preset rules."
+
+  WAIT for tech-architect completion
+  RECEIVE architecture-decision.md
+</delegation>
 
 **Template:** `agent-os/templates/product/architecture-decision-template.md`
-
-<template_lookup>
-  LOOKUP: agent-os/templates/ (project) → ~/.agent-os/templates/ (global fallback)
-</template_lookup>
-
 **Output:** `agent-os/product/architecture-decision.md`
 
 </step>
