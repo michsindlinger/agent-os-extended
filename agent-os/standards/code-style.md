@@ -50,9 +50,9 @@ IF current task involves writing or updating HTML, CSS, or TailwindCSS:
         REQUEST: "Get CSS and TailwindCSS rules from code-style/css-style.md"
         PROCESS: Returned style rules
       ELSE:
-        READ the following style guides (only if not already in context):
-        - @~/.agent-os/standards/code-style/html-style.md (if not in context)
-        - @~/.agent-os/standards/code-style/css-style.md (if not in context)
+        LOAD on-demand from GitHub:
+        - https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/agent-os/standards/code-style/html-style.md
+        - https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/agent-os/standards/code-style/css-style.md
     </context_fetcher_strategy>
 ELSE:
   SKIP: HTML/CSS style guides not relevant to current task
@@ -70,7 +70,8 @@ IF current task involves writing or updating JavaScript:
         REQUEST: "Get JavaScript style rules from code-style/javascript-style.md"
         PROCESS: Returned style rules
       ELSE:
-        READ: @~/.agent-os/standards/code-style/javascript-style.md
+        LOAD on-demand from GitHub:
+        https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/agent-os/standards/code-style/javascript-style.md
     </context_fetcher_strategy>
 ELSE:
   SKIP: JavaScript style guide not relevant to current task
