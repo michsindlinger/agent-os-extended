@@ -1,14 +1,11 @@
 # Create Spec
 
-Create a detailed spec for a new feature with technical specifications and task breakdown
+Create a detailed specification with user stories through DevTeam collaboration (PO + Architect).
 
-**Version 2.0**: Includes enhanced research phase with codebase analysis, interactive Q&A, and visual asset integration.
+Refer to the instructions located in agent-os/workflows/core/create-spec.md
 
-Refer to the instructions located in @agent-os/workflows/core/create-spec-v2.md
-
-**Features:**
-- Automatic codebase pattern analysis
-- Interactive requirements clarification
-- Visual mockup integration
-- Research documentation
-- Informed by existing architecture
+**DevTeam Workflow:**
+- dev-team__po gathers fachliche requirements from user
+- dev-team__po creates user stories (business perspective)
+- dev-team__architect adds technical refinement (WAS/WIE/WO/WER/DoR/DoD)
+- Output: user-stories.md ready for /execute-tasks
