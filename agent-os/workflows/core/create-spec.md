@@ -20,29 +20,39 @@ Create detailed feature specifications using DevTeam collaboration: PO gathers f
 
 <step number="1" name="spec_initiation">
 
-### Step 1: Spec Initiation
+### Step 1: Feature Selection from Roadmap
 
-Identify spec initiation method: either next uncompleted roadmap item or user-provided spec idea.
+ALWAYS present roadmap features as options to user, even if they provided a custom idea.
 
-<option_a_flow>
-  <trigger_phrases>
-    - "what's next?"
-    - "next feature"
-    - "continue roadmap"
-  </trigger_phrases>
-  <actions>
-    1. CHECK agent-os/product/roadmap.md
-    2. FIND next uncompleted item
-    3. SUGGEST item to user
-    4. WAIT for approval
-  </actions>
-</option_a_flow>
+<mandatory_actions>
+  1. READ agent-os/product/roadmap.md
 
-<option_b_flow>
-  <trigger>User describes specific spec idea</trigger>
-  <accept>Any format, length, or detail level</accept>
-  <proceed>To PO phase</proceed>
-</option_b_flow>
+  2. EXTRACT uncompleted features from all phases (MVP, Growth, Scale)
+
+  3. PRESENT to user via AskUserQuestion:
+     ```
+     Question: "What feature would you like to create a specification for?"
+
+     Options:
+     - [Roadmap Feature 1] - [One-line description]
+     - [Roadmap Feature 2] - [One-line description]
+     - [Roadmap Feature 3] - [One-line description]
+     - [Roadmap Feature 4] - [One-line description]
+
+     (User can also type custom feature via "Other" option)
+     ```
+
+  4. WAIT for user selection
+
+  5. STORE selected feature for Step 2
+</mandatory_actions>
+
+<instructions>
+  ACTION: Always show roadmap features first
+  FORMAT: Use AskUserQuestion tool with roadmap features as options
+  ALLOW: User can choose "Other" to enter custom feature
+  PROCEED: To Step 2 with selected feature
+</instructions>
 
 </step>
 
