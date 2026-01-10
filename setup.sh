@@ -51,6 +51,7 @@ echo "Creating directory structure..."
 mkdir -p agent-os/standards
 mkdir -p agent-os/workflows/core
 mkdir -p agent-os/workflows/meta
+mkdir -p agent-os/templates  # For optional project overrides
 
 # Function to download file if it doesn't exist or if overwrite is enabled
 download_file() {
