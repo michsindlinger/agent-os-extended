@@ -42,42 +42,39 @@ Load and analyze tech-stack.md to determine required agents.
 
 </step>
 
-<step number="2" subagent="file-creator" name="create_architecture_agent">
+<step number="2" subagent="file-creator" name="create_core_team">
 
-### Step 2: Create Architecture Agent (Always Required)
+### Step 2: Create Core Team (Always Required)
 
-Create the Architecture Agent - required for all projects.
+Create the core team agents that are required for ALL projects: Architect, PO, and Documenter.
 
-**Agent Configuration:**
-```markdown
-# Architecture Agent
+**Core Team (Automatically Created):**
 
-## Role
-Software architect responsible for design decisions, pattern enforcement, and technical quality.
+**1. dev-team__architect**
+- Load template: ~/.agent-os/templates/agents/dev-team/architect-template.md
+- Role: Software architect, design decisions, pattern enforcement
+- Skills: pattern-enforcement, api-designing, security-guidance, data-modeling, dependency-checking
+- Output: .claude/agents/dev-team/architect.md
 
-## Skills
-- architect-pattern-enforcer
-- architect-api-designer
-- architect-data-modeler
-- architect-security-guardian
-- architect-dependency-checker
+**2. dev-team__po**
+- Load template: ~/.agent-os/templates/agents/dev-team/po-template.md
+- Role: Product owner, requirements, user stories, acceptance
+- Skills: backlog-organization, requirements-engineering, acceptance-testing, data-analysis
+- Output: .claude/agents/dev-team/po.md
 
-## Responsibilities
-- Enforce architecture patterns (from architecture-decision.md)
-- Design API contracts before implementation
-- Review data models and relationships
-- Ensure security best practices
-- Check dependency directions
+**3. dev-team__documenter**
+- Load template: ~/.agent-os/templates/agents/dev-team/documenter-template.md
+- Role: Documentation specialist, changelog, API docs, user guides
+- Skills: changelog-generation, api-documentation, user-guide-writing, code-documentation
+- Output: .claude/agents/dev-team/documenter.md
 
-## When to Involve
-- New feature design
-- API endpoint design
-- Database schema changes
-- Cross-cutting concerns
-- Code reviews
-```
+**NOTE:** These 3 agents are ALWAYS created. User does not choose - they are mandatory for the DevTeam workflow.
 
-**Output:** `.claude/agents/architecture-agent.md`
+<template_lookup>
+  For all agent templates:
+  1. TRY: agent-os/templates/agents/dev-team/[agent]-template.md (project)
+  2. FALLBACK: ~/.agent-os/templates/agents/dev-team/[agent]-template.md (global)
+</template_lookup>
 
 </step>
 
@@ -89,38 +86,39 @@ Present agent options based on tech stack.
 
 **Prompt User with AskUserQuestion:**
 ```
-Based on your tech stack, I recommend these agents:
+Based on your tech stack, I recommend these development agents:
 
-Required (already added):
-✅ Architecture Agent
+Core Team (already created automatically):
+✅ dev-team__architect
+✅ dev-team__po
+✅ dev-team__documenter
 
-Recommended based on [TECH_STACK]:
-- Backend Developer Agent ([DETECTED_BACKEND_TECH])
-- Frontend Developer Agent ([DETECTED_FRONTEND_TECH])
+Additional Development Agents (select which you need):
+- Backend Developer → [DETECTED_BACKEND_TECH] detected
+- Frontend Developer → [DETECTED_FRONTEND_TECH] detected
+- DevOps Specialist → CI/CD, infrastructure, deployment
+- QA Specialist → Testing, quality gates, test automation
 
-Optional:
-- DevOps Agent (CI/CD, deployment)
-- QA Specialist Agent (testing, quality)
-- PO Agent (requirements, acceptance)
-
-Which agents would you like to add?
+Which additional agents do you want?
 (You can add multiple instances of Backend/Frontend for parallel work)
 ```
 
 **Options Structure:**
 ```typescript
 {
-  question: "Which agents do you want in your team?",
+  question: "Which development agents do you want in your team?",
+  header: "Dev Agents",
   multiSelect: true,
   options: [
-    { label: "Backend Developer", description: "API, services, data access" },
-    { label: "Frontend Developer", description: "UI components, state, interactions" },
-    { label: "DevOps Specialist", description: "CI/CD, infrastructure, deployment" },
-    { label: "QA Specialist", description: "Testing, quality gates" },
-    { label: "PO Agent", description: "Requirements, acceptance criteria" }
+    { label: "Backend Developer", description: "API, services, data access, business logic" },
+    { label: "Frontend Developer", description: "UI components, state, interactions, pages" },
+    { label: "DevOps Specialist", description: "CI/CD, infrastructure, deployment, monitoring" },
+    { label: "QA Specialist", description: "Testing strategy, test automation, quality gates" }
   ]
 }
 ```
+
+**NOTE:** PO removed from options - it's created automatically in Step 2.
 
 **Store:** Selected agents for creation
 
