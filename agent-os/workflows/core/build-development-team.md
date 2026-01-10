@@ -260,9 +260,132 @@ Product ownership and requirements management.
 
 </step>
 
-<step number="6" name="create_definition_of_done">
+<step number="6" subagent="file-creator" name="generate_skills">
 
-### Step 6: Create Definition of Done
+### Step 6: Generate Tech-Stack-Specific Skills
+
+Use file-creator agent to generate skills for each created agent from skill templates.
+
+<skill_generation_process>
+  FOR EACH created agent:
+
+    **dev-team__architect (5 skills):**
+    Load templates from ~/.agent-os/templates/skills/dev-team/architect/:
+    1. pattern-enforcement-template.md + tech-stack.md → .claude/skills/dev-team/[PROJECT]-architect-pattern-enforcement.md
+    2. api-designing-template.md + tech-stack.md → .claude/skills/dev-team/[PROJECT]-architect-api-designing.md
+    3. security-guidance-template.md + tech-stack.md → .claude/skills/dev-team/[PROJECT]-architect-security-guidance.md
+    4. data-modeling-template.md + tech-stack.md → .claude/skills/dev-team/[PROJECT]-architect-data-modeling.md
+    5. dependency-checking-template.md + tech-stack.md → .claude/skills/dev-team/[PROJECT]-architect-dependency-checking.md
+
+    **dev-team__backend-developer (4 skills):**
+    Load templates from ~/.agent-os/templates/skills/dev-team/backend/:
+    1. logic-implementing-template.md + tech-stack.md → .claude/skills/dev-team/[PROJECT]-backend-logic-implementing.md
+    2. persistence-adapter-template.md + tech-stack.md → .claude/skills/dev-team/[PROJECT]-backend-persistence-adapter.md
+    3. integration-adapter-template.md + tech-stack.md → .claude/skills/dev-team/[PROJECT]-backend-integration-adapter.md
+    4. test-engineering-template.md + tech-stack.md → .claude/skills/dev-team/[PROJECT]-backend-test-engineering.md
+
+    **dev-team__frontend-developer (4 skills):**
+    Load templates from ~/.agent-os/templates/skills/dev-team/frontend/:
+    1. ui-component-architecture-template.md + tech-stack.md → .claude/skills/dev-team/[PROJECT]-frontend-ui-component-architecture.md
+    2. state-management-template.md + tech-stack.md → .claude/skills/dev-team/[PROJECT]-frontend-state-management.md
+    3. api-bridge-building-template.md + tech-stack.md → .claude/skills/dev-team/[PROJECT]-frontend-api-bridge-building.md
+    4. interaction-designing-template.md + tech-stack.md → .claude/skills/dev-team/[PROJECT]-frontend-interaction-designing.md
+
+    **dev-team__devops-specialist (4 skills):**
+    Load templates from ~/.agent-os/templates/skills/dev-team/devops/:
+    1. infrastructure-provisioning-template.md + tech-stack.md → .claude/skills/dev-team/[PROJECT]-devops-infrastructure-provisioning.md
+    2. pipeline-engineering-template.md + tech-stack.md → .claude/skills/dev-team/[PROJECT]-devops-pipeline-engineering.md
+    3. observability-template.md + tech-stack.md → .claude/skills/dev-team/[PROJECT]-devops-observability.md
+    4. security-hardening-template.md + tech-stack.md → .claude/skills/dev-team/[PROJECT]-devops-security-hardening.md
+
+    **dev-team__qa-specialist (4 skills):**
+    Load templates from ~/.agent-os/templates/skills/dev-team/qa/:
+    1. test-strategy-template.md + tech-stack.md → .claude/skills/dev-team/[PROJECT]-qa-test-strategy.md
+    2. test-automation-template.md + tech-stack.md → .claude/skills/dev-team/[PROJECT]-qa-test-automation.md
+    3. quality-gates-template.md + tech-stack.md → .claude/skills/dev-team/[PROJECT]-qa-quality-gates.md
+    4. test-analysis-template.md + tech-stack.md → .claude/skills/dev-team/[PROJECT]-qa-test-analysis.md
+
+    **dev-team__po (4 skills):**
+    Load templates from ~/.agent-os/templates/skills/dev-team/po/:
+    1. backlog-organization-template.md + tech-stack.md → .claude/skills/dev-team/[PROJECT]-po-backlog-organization.md
+    2. requirements-engineering-template.md + tech-stack.md → .claude/skills/dev-team/[PROJECT]-po-requirements-engineering.md
+    3. acceptance-testing-template.md + tech-stack.md → .claude/skills/dev-team/[PROJECT]-po-acceptance-testing.md
+    4. data-analysis-template.md + tech-stack.md → .claude/skills/dev-team/[PROJECT]-po-data-analysis.md
+
+    **dev-team__documenter (4 skills):**
+    Load templates from ~/.agent-os/templates/skills/dev-team/documenter/:
+    1. changelog-generation-template.md + tech-stack.md → .claude/skills/dev-team/[PROJECT]-documenter-changelog-generation.md
+    2. api-documentation-template.md + tech-stack.md → .claude/skills/dev-team/[PROJECT]-documenter-api-documentation.md
+    3. user-guide-writing-template.md + tech-stack.md → .claude/skills/dev-team/[PROJECT]-documenter-user-guide-writing.md
+    4. code-documentation-template.md + tech-stack.md → .claude/skills/dev-team/[PROJECT]-documenter-code-documentation.md
+</skill_generation_process>
+
+<skill_customization>
+  FOR EACH skill template:
+    1. LOAD skill template (hybrid lookup: project → global)
+    2. READ tech-stack.md for framework information
+    3. FILL [TECH_STACK_SPECIFIC] sections with actual patterns:
+       - Rails projects → Ruby/RSpec patterns
+       - React projects → TypeScript/Jest patterns
+       - Node.js projects → JavaScript/TS patterns
+    4. FILL [MCP_TOOLS] placeholder (ask user or use recommendations)
+    5. WRITE to .claude/skills/dev-team/[PROJECT]-[agent]-[skill].md
+</skill_customization>
+
+<template_lookup>
+  For all skill templates:
+  1. TRY: agent-os/templates/skills/dev-team/[role]/[skill]-template.md
+  2. FALLBACK: ~/.agent-os/templates/skills/dev-team/[role]/[skill]-template.md
+</template_lookup>
+
+**Output:**
+- Created skills in `.claude/skills/dev-team/`
+- Each skill is tech-stack-aware
+- [PROJECT] is derived from project name or tech stack
+
+</step>
+
+<step number="7" subagent="file-creator" name="assign_skills_to_agents">
+
+### Step 7: Assign Skills to Agents
+
+Use file-creator agent to update each agent's [SKILLS_LIST] with their generated skills.
+
+<assignment_process>
+  FOR EACH created agent file in .claude/agents/dev-team/:
+
+    READ agent file
+    FIND: [SKILLS_LIST] placeholder
+
+    REPLACE with actual generated skills:
+    ```markdown
+    ## Available Skills
+
+    **Core Skills:**
+    - [PROJECT]-[agent]-[skill-1]
+    - [PROJECT]-[agent]-[skill-2]
+    - [PROJECT]-[agent]-[skill-3]
+    - [PROJECT]-[agent]-[skill-4]
+
+    **Skill Loading:**
+    Skills are loaded dynamically from .claude/skills/dev-team/ when needed.
+    ```
+
+    SAVE updated agent file
+</assignment_process>
+
+<verification>
+  After assignment:
+  - Each agent has specific skill list
+  - Skills reference actual generated files
+  - [SKILLS_LIST] placeholder is replaced
+</verification>
+
+</step>
+
+<step number="8" name="create_definition_of_done">
+
+### Step 8: Create Definition of Done
 
 Generate Definition of Done based on tech stack and team.
 
@@ -278,7 +401,7 @@ Generate Definition of Done based on tech stack and team.
 ```
 I've created a Definition of Done for your project.
 
-Please review: agent-os/product/definition-of-done.md
+Please review: agent-os/team/dod.md
 
 Key quality gates:
 - Code compiles without errors
@@ -303,13 +426,13 @@ Adjust any criteria?
   NOTE: Most projects use global templates. Project override only when customizing.
 </template_lookup>
 
-**Output:** `agent-os/product/definition-of-done.md`
+**Output:** `agent-os/team/dod.md`
 
 </step>
 
-<step number="7" name="create_definition_of_ready">
+<step number="9" name="create_definition_of_ready">
 
-### Step 7: Create Definition of Ready
+### Step 9: Create Definition of Ready
 
 Generate Definition of Ready for user stories.
 
@@ -324,7 +447,7 @@ Generate Definition of Ready for user stories.
 ```
 I've created a Definition of Ready for user stories.
 
-Please review: agent-os/product/definition-of-ready.md
+Please review: agent-os/team/dor.md
 
 Key readiness criteria:
 - User story format complete
@@ -342,13 +465,13 @@ Adjust any criteria?
   LOOKUP: agent-os/templates/ (project) → ~/.agent-os/templates/ (global fallback)
 </template_lookup>
 
-**Output:** `agent-os/product/definition-of-ready.md`
+**Output:** `agent-os/team/dor.md`
 
 </step>
 
-<step number="8" name="symlink_skills">
+<step number="10" name="symlink_skills">
 
-### Step 8: Set Up Skill Symlinks
+### Step 10: Set Up Skill Symlinks
 
 Create symlinks for relevant skills in .claude/skills/.
 
@@ -379,9 +502,9 @@ Role-Specific (based on agents):
 
 </step>
 
-<step number="9" name="summary">
+<step number="11" name="summary">
 
-### Step 9: Team Summary
+### Step 11: Team Summary
 
 Present team configuration summary.
 
@@ -401,8 +524,8 @@ Agent Configurations: .claude/agents/
 Skills Linked: .claude/skills/
 
 Quality Standards:
-✅ Definition of Done: agent-os/product/definition-of-done.md
-✅ Definition of Ready: agent-os/product/definition-of-ready.md
+✅ Definition of Done: agent-os/team/dod.md
+✅ Definition of Ready: agent-os/team/dor.md
 
 How to Use:
 1. Agents are automatically available via Task tool
