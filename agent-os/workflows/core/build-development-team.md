@@ -292,7 +292,19 @@ Key quality gates:
 Adjust any criteria?
 ```
 
-**Template:** `agent-os/templates/product/definition-of-done-template.md`
+**Template:** `agent-os/templates/docs/definition-of-done-template.md`
+
+<template_lookup>
+  PATH: agent-os/templates/docs/definition-of-done-template.md
+
+  LOOKUP STRATEGY (Hybrid):
+    1. TRY: Read from project (agent-os/templates/docs/definition-of-done-template.md)
+    2. IF NOT FOUND: Read from global (~/.agent-os/templates/docs/definition-of-done-template.md)
+    3. IF STILL NOT FOUND: Error - setup-devteam-global.sh not run
+
+  NOTE: Most projects use global templates. Project override only when customizing.
+</template_lookup>
+
 **Output:** `agent-os/product/definition-of-done.md`
 
 </step>
@@ -326,7 +338,12 @@ Key readiness criteria:
 Adjust any criteria?
 ```
 
-**Template:** `agent-os/templates/product/definition-of-ready-template.md`
+**Template:** `agent-os/templates/docs/definition-of-ready-template.md`
+
+<template_lookup>
+  LOOKUP: agent-os/templates/ (project) → ~/.agent-os/templates/ (global fallback)
+</template_lookup>
+
 **Output:** `agent-os/product/definition-of-ready.md`
 
 </step>

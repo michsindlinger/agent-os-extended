@@ -82,6 +82,17 @@ Use product-strategist agent to refine the idea until complete.
 **Template:** `agent-os/templates/product/product-brief-template.md`
 **Output:** `agent-os/product/product-brief.md`
 
+<template_lookup>
+  PATH: agent-os/templates/product/product-brief-template.md
+
+  LOOKUP STRATEGY (Hybrid):
+    1. TRY: Read from project (agent-os/templates/product/product-brief-template.md)
+    2. IF NOT FOUND: Read from global (~/.agent-os/templates/product/product-brief-template.md)
+    3. IF STILL NOT FOUND: Error - setup-devteam-global.sh not run
+
+  NOTE: Most projects use global templates. Project override only when customizing.
+</template_lookup>
+
 <quality_check>
   Product brief must include:
   - Specific target audience
@@ -125,6 +136,11 @@ Options:
 </conditional_logic>
 
 **Template:** `agent-os/templates/product/product-brief-lite-template.md`
+
+<template_lookup>
+  LOOKUP: agent-os/templates/ (project) → ~/.agent-os/templates/ (global fallback)
+</template_lookup>
+
 **Output:** `agent-os/product/product-brief-lite.md`
 
 </step>
@@ -163,6 +179,11 @@ Options:
 </conditional_logic>
 
 **Template:** `agent-os/templates/product/tech-stack-template.md`
+
+<template_lookup>
+  LOOKUP: agent-os/templates/ (project) → ~/.agent-os/templates/ (global fallback)
+</template_lookup>
+
 **Output:** `agent-os/product/tech-stack.md`
 
 </step>
@@ -203,6 +224,11 @@ Options:
 </conditional_logic>
 
 **Template:** `agent-os/templates/product/roadmap-template.md`
+
+<template_lookup>
+  LOOKUP: agent-os/templates/ (project) → ~/.agent-os/templates/ (global fallback)
+</template_lookup>
+
 **Output:** `agent-os/product/roadmap.md`
 
 </step>
@@ -241,6 +267,11 @@ Options:
 </conditional_logic>
 
 **Template:** `agent-os/templates/product/architecture-decision-template.md`
+
+<template_lookup>
+  LOOKUP: agent-os/templates/ (project) → ~/.agent-os/templates/ (global fallback)
+</template_lookup>
+
 **Output:** `agent-os/product/architecture-decision.md`
 
 </step>
@@ -290,6 +321,10 @@ boilerplate/
 - `agent-os/product/architecture-structure.md`
 
 **Template:** `agent-os/templates/product/boilerplate-structure-template.md`
+
+<template_lookup>
+  LOOKUP: agent-os/templates/ (project) → ~/.agent-os/templates/ (global fallback)
+</template_lookup>
 
 </step>
 

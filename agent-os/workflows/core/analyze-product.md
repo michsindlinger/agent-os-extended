@@ -115,6 +115,18 @@ Is this accurate? Any corrections needed?
 ```
 
 **Template:** `@agent-os/templates/documents/product-brief.md`
+
+<template_lookup>
+  PATH: agent-os/templates/documents/product-brief.md
+
+  LOOKUP STRATEGY (Hybrid):
+    1. TRY: Read from project (agent-os/templates/documents/product-brief.md)
+    2. IF NOT FOUND: Read from global (~/.agent-os/templates/documents/product-brief.md)
+    3. IF STILL NOT FOUND: Error - setup-devteam-global.sh not run
+
+  NOTE: Most projects use global templates. Project override only when customizing.
+</template_lookup>
+
 **Output:** `.agent-os/product/product-brief.md`
 
 </step>
@@ -126,6 +138,11 @@ Is this accurate? Any corrections needed?
 Create condensed version for AI context.
 
 **Template:** `@agent-os/templates/documents/product-brief-lite.md`
+
+<template_lookup>
+  LOOKUP: agent-os/templates/ (project) → ~/.agent-os/templates/ (global fallback)
+</template_lookup>
+
 **Output:** `.agent-os/product/product-brief-lite.md`
 
 </step>
@@ -152,6 +169,11 @@ Please confirm or add any missing technologies:
 ```
 
 **Template:** `@agent-os/templates/documents/tech-stack.md`
+
+<template_lookup>
+  LOOKUP: agent-os/templates/ (project) → ~/.agent-os/templates/ (global fallback)
+</template_lookup>
+
 **Output:** `.agent-os/product/tech-stack.md`
 
 </step>
@@ -182,6 +204,11 @@ Create roadmap with completed features in Phase 0.
 ```
 
 **Template:** `@agent-os/templates/documents/roadmap.md`
+
+<template_lookup>
+  LOOKUP: agent-os/templates/ (project) → ~/.agent-os/templates/ (global fallback)
+</template_lookup>
+
 **Output:** `.agent-os/product/roadmap.md`
 
 </step>
@@ -226,6 +253,11 @@ Some existing code doesn't follow the pattern. Options:
 </conditional_logic>
 
 **Template:** `@agent-os/templates/documents/architecture-decision.md`
+
+<template_lookup>
+  LOOKUP: agent-os/templates/ (project) → ~/.agent-os/templates/ (global fallback)
+</template_lookup>
+
 **Output:** `.agent-os/product/architecture-decision.md`
 
 </step>
@@ -247,6 +279,10 @@ Create boilerplate structure for future feature development.
 - `.agent-os/product/architecture-structure.md`
 
 **Template:** `@agent-os/templates/documents/architecture-structure.md`
+
+<template_lookup>
+  LOOKUP: agent-os/templates/ (project) → ~/.agent-os/templates/ (global fallback)
+</template_lookup>
 
 </step>
 
