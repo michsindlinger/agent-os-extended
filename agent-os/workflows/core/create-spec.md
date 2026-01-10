@@ -144,9 +144,10 @@ Use dev-team__architect agent to add technical refinement to fachliche user stor
   - Spec: agent-os/specs/[YYYY-MM-DD-spec-name]/spec.md
   - User Stories: agent-os/specs/[YYYY-MM-DD-spec-name]/user-stories.md
   - Tech Stack: agent-os/product/tech-stack.md
-  - Architecture: agent-os/product/architecture-decision.md
-  - DoD: agent-os/team/dod.md
-  - DoR: agent-os/team/dor.md
+  - Architecture Decision: agent-os/product/architecture-decision.md
+  - Architecture Structure: agent-os/product/architecture-structure.md (folder structure)
+  - DoD: agent-os/team/dod.md (if exists, otherwise use standard DoD)
+  - DoR: agent-os/team/dor.md (if exists, otherwise use standard DoR)
 
   Tasks:
   FOR EACH user story in user-stories.md:
