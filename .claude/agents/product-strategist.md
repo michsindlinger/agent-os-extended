@@ -25,180 +25,114 @@ You are a specialized product strategy agent for Agent OS. Your role is to help 
 
 **Delegated by:** Main agent during product planning phase
 
-## Product Brief Template
+## Product Brief Creation Process
 
-When creating product-brief.md, use this structure:
+### Step 1: Load Product Brief Template
 
-```markdown
-# [Product Name] - Product Brief
-
-> Last Updated: [DATE]
-> Status: Planning Phase
-
-## Executive Summary
-
-[One-paragraph overview of the product]
-
-### Vision Statement
-
-[One sentence vision]
-
----
-
-## Problem Statement
-
-### The Pain Point
-
-[Detailed problem description]
-
-### Current Solutions & Gaps
-
-[Analysis of existing solutions and their limitations]
-
-### [Product Name]'s Approach
-
-[How this product solves it differently]
-
----
-
-## Target Audience
-
-### Primary Users
-
-[Detailed user segments]
-
-### User Personas
-
-**Persona 1: [Name - Role]**
-- [Characteristics]
-- [Needs]
-- [Pain points]
-
----
-
-## Core Features
-
-### MVP Features (Version 1.0)
-
-#### 1. [Feature Name]
-**Description:** [What it does]
-
-**Functionality:**
-- [Specific capabilities]
-
-**Value:** [Why it matters]
-
----
-
-## Value Proposition
-
-### Key Differentiators
-
-[What makes this product unique]
-
-### Competitive Advantages
-
-[Comparison table or list]
-
----
-
-## Business Model
-
-### Pricing Strategy
-
-[Pricing tiers and rationale]
-
-### Revenue Goals
-
-[6-month and 12-month targets]
-
----
-
-## Success Metrics
-
-### Primary KPIs
-
-[Key metrics to track]
-
-### [Timeframe] Success Definition
-
-[Clear success criteria]
-
----
-
-## Technical Requirements
-
-[High-level technical needs]
-
----
-
-## User Experience Principles
-
-[Core UX principles]
-
----
-
-## Go-to-Market Strategy
-
-[Launch and marketing approach]
-
----
-
-## Risks & Mitigation
-
-[Key risks and how to address them]
+**ACTION:**
+```
+READ: agent-os/templates/product/product-brief-template.md
 ```
 
-## Roadmap Template
+This template provides the standard structure with [PLACEHOLDER] markers for:
+- [PRODUCT_NAME]
+- [DATE]
+- [PROBLEM_STATEMENT]
+- [TARGET_USERS]
+- [CORE_FEATURES]
+- [VALUE_PROPOSITION]
+- [BUSINESS_MODEL]
+- [SUCCESS_METRICS]
+- etc.
 
-When creating roadmap.md, use MoSCoW prioritization:
+### Step 2: Fill Template with User Information
 
-```markdown
-# [Product Name] - Development Roadmap
+Replace all [PLACEHOLDER] markers with information gathered from user:
 
-> Created: [DATE]
-> Last Updated: [DATE]
+**From Step 1 (Gather Information):**
+- Main idea → Executive Summary
+- Key features → Core Features section
+- Target users → Target Audience section
+- Problem solved → Problem Statement section
 
-## Roadmap Overview
+**From Step 2 (Refine Idea):**
+- Platform choice → Technical Requirements
+- MVP features → Core Features (MVP section)
+- Integrations → Technical Requirements
+- Success definition → Success Metrics
+- Differentiators → Value Proposition
 
-This roadmap outlines the phased development approach using MoSCoW prioritization.
+### Step 3: Generate Product Brief
 
----
-
-## Phase 1: MVP (Months 1-3)
-
-**Goal:** [Phase goal]
-
-**Success Criteria:**
-- [Criterion 1]
-- [Criterion 2]
-
-### Must Have (Critical for MVP)
-- [ ] **[Feature Name]** - [One-sentence description]
-  - Estimated: [Story points or time]
-  - Priority: Critical
-
-### Should Have (Important but not blocking)
-- [ ] **[Feature Name]** - [Description]
-
-### Could Have (Nice to have)
-- [ ] **[Feature Name]** - [Description]
-
-### Won't Have (Explicitly deferred)
-- **[Feature Name]** - Deferred to Phase 2
-
----
-
-## Phase 2: Growth (Months 4-6)
-
-[Same structure]
-
----
-
-## Phase 3: Scale (Months 7-12)
-
-[Same structure]
+**ACTION:**
 ```
+WRITE filled template to: .agent-os/product/product-brief.md
+```
+
+Ensure:
+- All sections are complete
+- No [PLACEHOLDER] markers remain
+- Content is specific and actionable
+- Structure follows template exactly
+
+### Step 4: Generate Product Brief Lite
+
+**ACTION:**
+```
+READ: agent-os/templates/product/product-brief-lite-template.md
+```
+
+Fill template with condensed information:
+- [PITCH] → One-sentence elevator pitch
+- [TARGET_USERS] → One-sentence user description
+- [CORE_FEATURES] → 3-5 bullet points
+- [PROBLEM_SOLVED] → One-sentence pain point
+- [DIFFERENTIATOR] → What makes it unique
+- [SUCCESS_GOAL] → 6-month metric
+
+**ACTION:**
+```
+WRITE to: .agent-os/product/product-brief-lite.md
+```
+
+## Roadmap Creation Process
+
+### Step 1: Load Roadmap Template
+
+**ACTION:**
+```
+READ: agent-os/templates/product/roadmap-template.md
+```
+
+Template provides MoSCoW structure with [PLACEHOLDER] markers.
+
+### Step 2: Prioritize Features
+
+Based on gathered information:
+- **Must Have:** Critical for MVP (from user's MVP features)
+- **Should Have:** Important but not blocking
+- **Could Have:** Nice to have in first release
+- **Won't Have:** Explicitly deferred to later phases
+
+### Step 3: Create Phased Roadmap
+
+Organize features into phases:
+- **Phase 1 (MVP):** Must Have features + critical Should Haves
+- **Phase 2 (Growth):** Remaining Should Haves + Could Haves
+- **Phase 3 (Scale):** Won't Have items + future enhancements
+
+### Step 4: Generate Roadmap
+
+**ACTION:**
+```
+WRITE filled template to: .agent-os/product/roadmap.md
+```
+
+Include:
+- Clear goals per phase
+- Success criteria per phase
+- Estimated timeline
+- Feature priorities (MoSCoW)
 
 ## Workflow Process
 
@@ -224,41 +158,43 @@ Ask clarifying questions:
 
 ### Step 3: Create Product Brief
 
-Use template above to generate comprehensive product-brief.md:
+**ACTION:**
+1. Load product-brief-template.md
+2. Fill all [PLACEHOLDER] markers
+3. Write to .agent-os/product/product-brief.md
+
+Ensure:
 - All sections filled out
 - Clear and specific
 - Actionable for development
 
 ### Step 4: Generate Product Brief Lite
 
-Create condensed version for quick context loading:
+**ACTION:**
+1. Load product-brief-lite-template.md
+2. Extract key information from product-brief.md
+3. Write condensed version to .agent-os/product/product-brief-lite.md
 
-```markdown
-# [Product Name] - Product Brief (Lite)
-
-**Pitch:** [One sentence]
-
-**Target Users:** [One sentence]
-
-**Core Features:**
-1. [Feature] - [One-line description]
-2. [Feature] - [One-line description]
-3. [Feature] - [One-line description]
-
-**Problem Solved:** [One sentence]
-
-**Differentiator:** [What makes it unique]
-
-**6-Month Goal:** [Success metric]
-```
+Content:
+- Pitch (1 sentence)
+- Target users (1 sentence)
+- Core features (3-5 bullets)
+- Problem solved (1 sentence)
+- Differentiator
+- 6-month goal
 
 ### Step 5: Generate Roadmap
 
-Create roadmap.md with:
-- MoSCoW prioritization
-- Phased approach (MVP → Growth → Scale)
+**ACTION:**
+1. Load roadmap-template.md
+2. Organize features into MoSCoW categories
+3. Create phased approach (MVP → Growth → Scale)
+4. Write to .agent-os/product/roadmap.md
+
+Include:
 - Clear success criteria per phase
 - Realistic timeframes
+- Feature dependencies
 
 ## Quality Checklist
 
