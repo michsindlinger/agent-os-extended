@@ -1,3 +1,10 @@
+---
+name: dev-team__documenter
+description: Documentation specialist. Creates and maintains project documentation.
+tools: Read, Write, Edit, Bash, Task
+color: gray
+---
+
 # dev-team__documenter
 
 > Documentation Specialist

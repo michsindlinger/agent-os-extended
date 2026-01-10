@@ -1,3 +1,10 @@
+---
+name: dev-team__qa-specialist
+description: Quality assurance and testing specialist. Ensures code quality and test coverage.
+tools: Read, Write, Edit, Bash, Task
+color: yellow
+---
+
 # dev-team__qa-specialist
 
 > Quality Assurance & Testing Specialist

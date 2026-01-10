@@ -345,6 +345,86 @@ Use file-creator agent to generate skills for each created agent from skill temp
 
 </step>
 
+<step number="6.5" subagent="tech-architect" name="detect_custom_skills">
+
+### Step 6.5: Detect and Generate Custom Skills (Optional)
+
+Use tech-architect agent to analyze tech-stack.md for specialized skills not covered by standard templates.
+
+<custom_skill_detection>
+  DELEGATE to tech-architect via Task tool:
+
+  PROMPT:
+  "Analyze tech-stack.md for specialized technologies requiring custom skills.
+
+  Context:
+  - Tech Stack: agent-os/product/tech-stack.md
+  - Standard Skills: 29 skills already generated from templates
+
+  Task:
+  1. Identify specialized technologies/libraries in tech-stack.md:
+     - Blockchain libraries (ethers.js, web3.js, @solana/web3.js)
+     - ML/AI libraries (TensorFlow, PyTorch, OpenAI)
+     - IoT protocols (MQTT, CoAP)
+     - Game engines (Unity, Unreal)
+     - Specialized APIs (Stripe, Twilio, SendGrid)
+     - Domain-specific patterns
+
+  2. For EACH specialized technology, determine if custom skill needed:
+     - Does standard template cover this? (integration-adapter might cover API)
+     - Is this complex enough for dedicated skill? (Yes if >100 LOC patterns)
+
+  3. If custom skills needed, ask user:
+     'I detected specialized technologies in your tech stack:
+     - [Technology 1]: [Purpose]
+     - [Technology 2]: [Purpose]
+
+     Create custom skills for these? (YES/NO)'
+
+  4. If YES, for each custom skill:
+     - Load generic-skill-template.md (hybrid lookup: project → global)
+     - Fill with technology-specific patterns:
+       * Research best practices online (WebSearch)
+       * Extract common patterns
+       * Create examples
+       * Define quality checklist
+     - Fill [SKILL_NAME], [TECH_STACK_SPECIFIC], [MCP_TOOLS]
+     - Write to .claude/skills/dev-team/[PROJECT]-[agent]-[custom-skill].md
+
+  5. Return list of created custom skills"
+
+  WAIT for tech-architect completion
+  RECEIVE custom skills (if any)
+  NOTE: Custom skills created for specialized technologies
+</custom_skill_detection>
+
+<template_lookup>
+  Generic skill template:
+  1. TRY: agent-os/templates/skills/generic-skill-template.md (project)
+  2. FALLBACK: ~/.agent-os/templates/skills/generic-skill-template.md (global)
+</template_lookup>
+
+**Examples of Custom Skills:**
+
+**For Crypto Trading Bot:**
+- blockchain-interaction.md (ethers.js, web3.js patterns)
+- wallet-management.md (key management, signing)
+- dex-integration.md (Uniswap, PancakeSwap)
+
+**For ML Application:**
+- model-training.md (TensorFlow/PyTorch patterns)
+- data-pipeline.md (ETL, preprocessing)
+
+**For IoT Platform:**
+- device-communication.md (MQTT, CoAP)
+- sensor-data-processing.md
+
+**Output:**
+- Custom skills in `.claude/skills/dev-team/[PROJECT]-[agent]-[custom-skill].md`
+- Added to skill list for assignment in Step 7
+
+</step>
+
 <step number="7" subagent="file-creator" name="assign_skills_to_agents">
 
 ### Step 7: Assign Skills to Agents

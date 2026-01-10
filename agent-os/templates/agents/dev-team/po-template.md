@@ -1,3 +1,10 @@
+---
+name: dev-team__po
+description: Product owner and requirements specialist. Defines requirements and validates implementations.
+tools: Read, Write, Edit, Bash, Task
+color: blue
+---
+
 # dev-team__po
 
 > Product Owner & Requirements Specialist

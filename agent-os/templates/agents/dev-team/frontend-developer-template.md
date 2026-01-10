@@ -1,3 +1,10 @@
+---
+name: dev-team__frontend-developer
+description: Frontend implementation specialist. Implements UI components, pages, and client-side logic.
+tools: Read, Write, Edit, Bash, Task
+color: cyan
+---
+
 # dev-team__frontend-developer
 
 > Frontend Implementation Specialist

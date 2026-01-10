@@ -1,3 +1,10 @@
+---
+name: dev-team__devops-specialist
+description: DevOps and infrastructure specialist. Manages CI/CD, deployment, and operations.
+tools: Read, Write, Edit, Bash, Task
+color: orange
+---
+
 # dev-team__devops-specialist
 
 > DevOps & Infrastructure Specialist
