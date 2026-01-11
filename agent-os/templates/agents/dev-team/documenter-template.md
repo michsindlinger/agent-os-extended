@@ -1,6 +1,7 @@
 ---
 name: dev-team__documenter
 description: Documentation specialist. Creates and maintains project documentation.
+skills: [SKILLS_LIST]
 tools: Read, Write, Edit, Bash, Task
 color: gray
 ---

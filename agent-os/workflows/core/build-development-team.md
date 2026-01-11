@@ -429,36 +429,63 @@ Use tech-architect agent to analyze tech-stack.md for specialized skills not cov
 
 ### Step 7: Assign Skills to Agents
 
-Use file-creator agent to update each agent's [SKILLS_LIST] with their generated skills.
+Use file-creator agent to update each agent with their generated skills in BOTH YAML frontmatter and markdown body.
 
 <assignment_process>
   FOR EACH created agent file in .claude/agents/dev-team/:
 
-    READ agent file
-    FIND: [SKILLS_LIST] placeholder
+    1. READ agent file
 
-    REPLACE with actual generated skills:
-    ```markdown
-    ## Available Skills
+    2. COLLECT generated skills for this agent from .claude/skills/dev-team/:
+       Example for backend-developer:
+       - [PROJECT]-backend-logic-implementing
+       - [PROJECT]-backend-persistence-adapter
+       - [PROJECT]-backend-integration-adapter
+       - [PROJECT]-backend-test-engineering
+       (+ any custom skills)
 
-    **Core Skills:**
-    - [PROJECT]-[agent]-[skill-1]
-    - [PROJECT]-[agent]-[skill-2]
-    - [PROJECT]-[agent]-[skill-3]
-    - [PROJECT]-[agent]-[skill-4]
+    3. UPDATE YAML frontmatter:
+       FIND: `skills: [SKILLS_LIST]`
+       REPLACE with actual skill list in YAML array format:
+       ```yaml
+       skills:
+         - [PROJECT]-backend-logic-implementing
+         - [PROJECT]-backend-persistence-adapter
+         - [PROJECT]-backend-integration-adapter
+         - [PROJECT]-backend-test-engineering
+       ```
 
-    **Skill Loading:**
-    Skills are loaded dynamically from .claude/skills/dev-team/ when needed.
-    ```
+    4. UPDATE Markdown body:
+       FIND: `[SKILLS_LIST]` placeholder in "## Available Skills" section
+       REPLACE with:
+       ```markdown
+       **Core Skills:**
+       - [PROJECT]-backend-logic-implementing
+       - [PROJECT]-backend-persistence-adapter
+       - [PROJECT]-backend-integration-adapter
+       - [PROJECT]-backend-test-engineering
 
-    SAVE updated agent file
+       **Skill Loading:**
+       Skills are loaded dynamically from .claude/skills/dev-team/ when needed.
+       ```
+
+    5. SAVE updated agent file
 </assignment_process>
 
+<critical>
+  BOTH locations must be updated:
+  1. YAML frontmatter `skills:` field (for Claude Code to load skills)
+  2. Markdown body `## Available Skills` section (for documentation)
+
+  If only markdown is updated, Claude Code won't load the skills!
+</critical>
+
 <verification>
-  After assignment:
-  - Each agent has specific skill list
-  - Skills reference actual generated files
-  - [SKILLS_LIST] placeholder is replaced
+  After assignment, each agent file should have:
+  - ✅ YAML frontmatter with skills array
+  - ✅ Markdown body with skills list
+  - ✅ All [SKILLS_LIST] placeholders replaced
+  - ✅ Skills reference actual generated files in .claude/skills/dev-team/
 </verification>
 
 </step>

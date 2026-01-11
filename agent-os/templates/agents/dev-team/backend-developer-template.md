@@ -1,6 +1,7 @@
 ---
 name: dev-team__backend-developer
 description: Backend implementation specialist. Implements server-side logic, APIs, and database operations.
+skills: [SKILLS_LIST]
 tools: Read, Write, Edit, Bash, Task
 color: green
 ---

@@ -1,6 +1,7 @@
 ---
 name: dev-team__architect
 description: System architect and technical design specialist. Makes architectural decisions and ensures system coherence.
+skills: [SKILLS_LIST]
 tools: Read, Write, Edit, Bash, Task
 color: purple
 ---

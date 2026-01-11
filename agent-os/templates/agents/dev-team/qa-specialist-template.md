@@ -1,6 +1,7 @@
 ---
 name: dev-team__qa-specialist
 description: Quality assurance and testing specialist. Ensures code quality and test coverage.
+skills: [SKILLS_LIST]
 tools: Read, Write, Edit, Bash, Task
 color: yellow
 ---

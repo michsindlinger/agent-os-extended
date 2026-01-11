@@ -1,6 +1,7 @@
 ---
 name: dev-team__po
 description: Product owner and requirements specialist. Defines requirements and validates implementations.
+skills: [SKILLS_LIST]
 tools: Read, Write, Edit, Bash, Task
 color: blue
 ---
