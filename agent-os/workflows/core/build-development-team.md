@@ -347,9 +347,9 @@ Use file-creator agent to generate skills for each created agent from skill temp
 
 <step number="6.5" subagent="tech-architect" name="detect_custom_skills">
 
-### Step 6.5: Detect and Generate Custom Skills (Optional)
+### Step 6.5: Detect and Generate Custom Skills (MANDATORY)
 
-Use tech-architect agent to analyze tech-stack.md for specialized skills not covered by standard templates.
+ALWAYS use tech-architect agent to analyze tech-stack.md for specialized technologies requiring custom skills.
 
 <custom_skill_detection>
   DELEGATE to tech-architect via Task tool:
@@ -362,36 +362,120 @@ Use tech-architect agent to analyze tech-stack.md for specialized skills not cov
   - Standard Skills: 29 skills already generated from templates
 
   Task:
-  1. Identify specialized technologies/libraries in tech-stack.md:
-     - Blockchain libraries (ethers.js, web3.js, @solana/web3.js)
-     - ML/AI libraries (TensorFlow, PyTorch, OpenAI)
-     - IoT protocols (MQTT, CoAP)
-     - Game engines (Unity, Unreal)
-     - Specialized APIs (Stripe, Twilio, SendGrid)
-     - Domain-specific patterns
+  1. READ tech-stack.md thoroughly
 
-  2. For EACH specialized technology, determine if custom skill needed:
-     - Does standard template cover this? (integration-adapter might cover API)
-     - Is this complex enough for dedicated skill? (Yes if >100 LOC patterns)
+  2. Identify specialized technologies/libraries:
 
-  3. If custom skills needed, ask user:
+     **Blockchain/Crypto:**
+     - ethers.js, web3.js, @solana/web3.js, wagmi
+     - Wallet management, key signing
+     - DEX/CEX integrations (Uniswap, CCXT)
+
+     **Desktop/Electron:**
+     - Electron framework
+     - IPC communication
+     - Native modules (node-keytar, better-sqlite3)
+     - Electron-specific testing
+
+     **ML/AI:**
+     - TensorFlow, PyTorch, OpenAI API
+     - Model training, inference
+     - Data pipelines
+
+     **IoT:**
+     - MQTT, CoAP protocols
+     - Device communication
+     - Sensor data processing
+
+     **Game Development:**
+     - Unity, Unreal Engine
+     - Game logic, physics
+
+     **Specialized APIs:**
+     - Payment (Stripe, PayPal)
+     - Communication (Twilio, SendGrid)
+     - Maps/Location (Google Maps, Mapbox)
+
+     **Real-time/WebSockets:**
+     - Socket.io, WebRTC
+     - Real-time sync patterns
+
+  3. For EACH category found, determine custom skills needed:
+
+     **Blockchain/Crypto found:**
+     - → blockchain-integration.md (ethers.js, web3.js patterns)
+     - → wallet-management.md (key storage, signing)
+     - → dex-integration.md (Uniswap, PancakeSwap)
+     - → crypto-security-testing.md (for QA)
+
+     **Electron/Desktop found:**
+     - → electron-testing.md (IPC, main/renderer, E2E with Playwright for Electron)
+     - → native-module-integration.md (keytar, sqlite, native bindings)
+
+     **ML/AI found:**
+     - → model-training.md
+     - → ml-pipeline.md
+
+  4. ALWAYS ask user (even if nothing detected):
+     'I analyzed your tech stack ([DETECTED_TECH]).
+
+     Recommended Custom Skills:
+     [IF detected, list with MCP recommendations:]
+
+     Example for Electron + Blockchain:
+     - electron-testing (QA) → MCP: playwright, electron-test-utils
+     - blockchain-integration (Backend) → MCP: none needed
+     - wallet-management (Backend) → MCP: none needed
+     - crypto-security-testing (QA) → MCP: security-scanner
+
+     MCP Servers to install for these skills:
+     - playwright (for E2E testing)
+     - electron-test-utils (for Electron testing)
+
+     Create these custom skills? (YES/NO)
+
+     If NO or no specialized tech detected:
+     Standard skills are sufficient.'
      'I detected specialized technologies in your tech stack:
      - [Technology 1]: [Purpose]
      - [Technology 2]: [Purpose]
 
      Create custom skills for these? (YES/NO)'
 
-  4. If YES, for each custom skill:
+  5. If YES, for each custom skill:
      - Load generic-skill-template.md (hybrid lookup: project → global)
-     - Fill with technology-specific patterns:
-       * Research best practices online (WebSearch)
-       * Extract common patterns
-       * Create examples
-       * Define quality checklist
-     - Fill [SKILL_NAME], [TECH_STACK_SPECIFIC], [MCP_TOOLS]
+     - Research best practices online (WebSearch for library/framework patterns)
+     - Fill [SKILL_NAME] with descriptive name
+     - Fill [TECH_STACK_SPECIFIC] with:
+       * Framework/library patterns
+       * Code examples (from docs or best practices)
+       * Testing patterns
+       * Security considerations
+       * Performance tips
+     - Fill [MCP_TOOLS] with SPECIFIC recommendations:
+       Examples:
+       * electron-testing → playwright, chrome-devtools
+       * blockchain-integration → (no MCP needed, use ethers.js directly)
+       * crypto-security-testing → security-scanner, vulnerability-db
+     - Add installation instructions for MCP tools
+     - Create quality checklist specific to technology
      - Write to .claude/skills/dev-team/[PROJECT]-[agent]-[custom-skill].md
 
-  5. Return list of created custom skills"
+  6. Present MCP Installation Guide to user:
+     'Custom skills created!
+
+     MCP Servers recommended for your custom skills:
+     - playwright (E2E testing for Electron)
+       Install: https://github.com/microsoft/playwright
+     - security-scanner (Crypto security testing)
+       Install: [URL]
+
+     Would you like installation instructions? (yes/no)'
+
+  7. Return:
+     - List of created custom skills
+     - List of recommended MCP servers with install links
+     - Brief description what each skill does"
 
   WAIT for tech-architect completion
   RECEIVE custom skills (if any)
@@ -406,10 +490,15 @@ Use tech-architect agent to analyze tech-stack.md for specialized skills not cov
 
 **Examples of Custom Skills:**
 
-**For Crypto Trading Bot:**
-- blockchain-interaction.md (ethers.js, web3.js patterns)
-- wallet-management.md (key management, signing)
-- dex-integration.md (Uniswap, PancakeSwap)
+**For Crypto Trading Bot (Electron Desktop):**
+- electron-testing.md (QA) → Electron E2E, IPC testing, native modules
+  MCP: playwright, electron-test-utils
+- blockchain-integration.md (Backend) → ethers.js, web3.js, Solana patterns
+  MCP: none needed
+- wallet-management.md (Backend) → Key storage, signing, security
+  MCP: none needed
+- crypto-security-testing.md (QA) → Encryption, keychain, vulnerability testing
+  MCP: security-scanner
 
 **For ML Application:**
 - model-training.md (TensorFlow/PyTorch patterns)
