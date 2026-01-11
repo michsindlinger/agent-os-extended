@@ -149,6 +149,12 @@ Use dev-team__architect agent to add technical refinement to fachliche user stor
   - DoD: agent-os/team/dod.md (if exists, otherwise use standard DoD)
   - DoR: agent-os/team/dor.md (if exists, otherwise use standard DoR)
 
+  Available DevTeam Agents (for WER field):
+  - List agents from .claude/agents/dev-team/
+  - Typical agents: dev-team__backend-developer, dev-team__frontend-developer,
+    dev-team__devops-specialist, dev-team__qa-specialist
+  - Use agent names as they appear in .claude/agents/dev-team/ folder
+
   Tasks:
   FOR EACH user story in user-stories.md:
 
@@ -181,7 +187,8 @@ Use dev-team__architect agent to add technical refinement to fachliche user stor
 
        **WO:** [Where - file paths and components]
 
-       **WER:** [Who - Backend Developer / Frontend Developer / DevOps / QA]
+       **WER:** [Which agent - check .claude/agents/dev-team/ for available agents]
+       Examples: dev-team__backend-developer, dev-team__frontend-developer
 
        **Abhängigkeiten:** [Story IDs this depends on, or \"None\"]
 
