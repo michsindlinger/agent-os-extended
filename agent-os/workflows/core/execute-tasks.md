@@ -38,20 +38,36 @@ Determine which specification to execute.
       ASK user to select from list
 
   ELSE (no parameter provided):
-    LIST all specs in agent-os/specs/
-    SORT by date prefix (YYYY-MM-DD) descending
+    USE Bash to list spec directories:
+      ```bash
+      ls -1 agent-os/specs/ | sort -r
+      ```
 
-    ASK user via AskUserQuestion:
-    "Which specification would you like to execute?
+    EXTRACT spec folder names (YYYY-MM-DD-feature-name format)
 
-    Options:
-    - [Most recent spec] - YYYY-MM-DD-feature-name (Recommended)
-    - [Second spec] - YYYY-MM-DD-feature-name
-    - [Third spec] - YYYY-MM-DD-feature-name
-    (Or type spec folder name)"
+    IF no specs found:
+      ERROR: "No specifications found in agent-os/specs/"
+      SUGGEST: "Run /create-spec first to create a feature specification"
+      EXIT workflow
 
-    WAIT for user selection
-    SELECTED_SPEC = user's choice
+    IF 1 spec found:
+      SELECTED_SPEC = [only spec]
+      CONFIRM with user: "Execute [spec-name]? (yes/no)"
+      IF no: EXIT
+      PROCEED to Step 1
+
+    IF multiple specs found:
+      ASK user via AskUserQuestion:
+      "Which specification would you like to execute?
+
+      Options:
+      - [Most recent spec] - YYYY-MM-DD-feature-name (Recommended)
+      - [Second spec] - YYYY-MM-DD-feature-name
+      - [Third spec] - YYYY-MM-DD-feature-name
+      (Or type spec folder name)"
+
+      WAIT for user selection
+      SELECTED_SPEC = user's choice
 </spec_identification>
 
 <instructions>
