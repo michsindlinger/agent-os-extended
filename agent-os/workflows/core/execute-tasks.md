@@ -462,12 +462,54 @@ Execute the selected user story using the DevTeam agents with full Kanban Board 
             - MOVE: Story → "In Review"
             - ADD: Change Log entry
 
-          DELEGATE: dev-team__architect
-          PROMPT: "Review code for Story [story-id]:
-                   - Check pattern enforcement
-                   - Verify architecture compliance
-                   - Validate API design (if applicable)
-                   - Security review"
+          DELEGATE: dev-team__architect via Task tool
+
+          PROMPT: "Review code for Story [story-id].
+
+          Context:
+          - Story: agent-os/specs/{SELECTED_SPEC}/user-stories.md#[story-id]
+          - Tech Stack: agent-os/product/tech-stack.md
+          - Architecture Decision: agent-os/product/architecture-decision.md
+          - Architecture Structure: agent-os/product/architecture-structure.md
+          - DoD: agent-os/team/dod.md
+          - Implementation Reports: [List of implementation report files]
+
+          Review Checklist:
+          1. Architecture Compliance:
+             - Follows architecture pattern (from architecture-decision.md)?
+             - Respects folder structure (from architecture-structure.md)?
+             - Proper layer separation (domain, application, infrastructure)?
+             - Dependencies point in correct direction?
+
+          2. Pattern Enforcement:
+             - Follows established patterns?
+             - No architectural anti-patterns?
+             - Consistent with tech stack conventions?
+
+          3. API Design (if applicable):
+             - RESTful or GraphQL best practices?
+             - Type safety (TypeScript interfaces)?
+             - Error handling consistent?
+
+          4. Security Review:
+             - No security vulnerabilities?
+             - Proper input validation?
+             - No exposed secrets or credentials?
+             - Authentication/authorization correct?
+
+          5. Code Quality:
+             - Follows code-style.md?
+             - No TypeScript 'any' types?
+             - Proper error handling?
+             - Well-documented complex logic?
+
+          Deliverable:
+          - If APPROVED: Green light to QA testing
+          - If REJECTED: Specific feedback with file locations and fixes needed
+
+          Provide detailed review with rationale."
+
+          WAIT for dev-team__architect completion
 
           IF architect_approves:
             CONTINUE: To QA testing
