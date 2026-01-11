@@ -440,6 +440,21 @@ Execute the selected user story using the DevTeam agents with full Kanban Board 
         4. Document your work
         5. If this story has dependent stories, create handover document
 
+        **CRITICAL - File Organization:**
+        ❌ DO NOT create any .md files in project root
+        ❌ DO NOT create implementation reports like [STORY-ID]-IMPLEMENTATION.md in root
+        ❌ DO NOT create testing checklists in root
+
+        ✅ IF you need to create implementation reports or documentation:
+           Create in: agent-os/specs/{SELECTED_SPEC}/implementation-reports/[story-id]-[type].md
+           Examples:
+           - agent-os/specs/{SELECTED_SPEC}/implementation-reports/[story-id]-backend.md
+           - agent-os/specs/{SELECTED_SPEC}/implementation-reports/[story-id]-frontend.md
+           - agent-os/specs/{SELECTED_SPEC}/implementation-reports/[story-id]-testing.md
+
+        ✅ For handover documents:
+           Create in: agent-os/specs/{SELECTED_SPEC}/handover-docs/[story-id]-[topic].md
+
         **Kanban Update:**
         Your progress will be tracked in kanban-board.md"
       </delegation_prompt>
@@ -462,6 +477,12 @@ Execute the selected user story using the DevTeam agents with full Kanban Board 
             - MOVE: Story → "In Review"
             - ADD: Change Log entry
 
+          BEFORE delegating to architect:
+            RUN: git status --short
+            RUN: git diff --stat
+            CAPTURE: List of modified/created files
+            CAPTURE: Lines changed per file
+
           DELEGATE: dev-team__architect via Task tool
 
           PROMPT: "Review code for Story [story-id].
@@ -474,7 +495,22 @@ Execute the selected user story using the DevTeam agents with full Kanban Board 
           - DoD: agent-os/team/dod.md
           - Implementation Reports: [List of implementation report files]
 
+          Git Changes (from this story):
+          ```
+          [Output of git status --short]
+
+          [Output of git diff --stat]
+          ```
+
+          Files Created/Modified:
+          [List extracted from git status]
+
           Review Checklist:
+          0. File Placement (CRITICAL):
+             - Are all files in correct locations per architecture-structure.md?
+             - Do file paths match WO field from story technical refinement?
+             - No files in unexpected locations?
+             - Folder structure compliance verified?
           1. Architecture Compliance:
              - Follows architecture pattern (from architecture-decision.md)?
              - Respects folder structure (from architecture-structure.md)?

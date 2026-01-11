@@ -90,6 +90,24 @@ execute-tasks            # Execute planned implementation tasks
 - **[MCP_NAME]** - [DESCRIPTION]
 - **[MCP_NAME]** - [DESCRIPTION]
 
+## File Organization Rules
+
+**CRITICAL - No Files in Project Root:**
+- ❌ NEVER create markdown reports, checklists, or documentation in project root
+- ❌ NEVER create implementation reports like `STORY-001-IMPLEMENTATION.md` in root
+- ❌ NEVER create temporary files in root
+
+**Correct Locations:**
+- ✅ Implementation reports: `agent-os/specs/[spec-name]/implementation-reports/`
+- ✅ Testing checklists: `agent-os/specs/[spec-name]/implementation-reports/`
+- ✅ Handover docs: `agent-os/specs/[spec-name]/handover-docs/`
+- ✅ Architecture docs: `agent-os/product/`
+- ✅ Team docs: `agent-os/team/`
+- ✅ Temporary files: `/tmp/` or `node_modules/.cache/`
+
+**When delegating to DevTeam agents:**
+Explicitly instruct them on correct file placement for any reports or documentation.
+
 ## Quality Requirements
 
 **Mandatory Checks:**
