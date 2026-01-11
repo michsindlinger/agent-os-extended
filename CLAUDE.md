@@ -9,22 +9,23 @@ Essential guidance for Claude Code development in the [PROJECT_NAME] repository.
 ## Agent OS References
 
 ### Product Information
-- **Mission & Features**: @agent-os/product/mission.md
-- **Technical Architecture**: @agent-os/product/tech-stack.md  
+- **Product Vision**: @agent-os/product/product-brief.md
+- **Technical Architecture**: @agent-os/product/tech-stack.md
 - **Development Roadmap**: @agent-os/product/roadmap.md
-- **Architectural Decisions**: @agent-os/product/decisions.md
+- **Architecture Decision**: @agent-os/product/architecture-decision.md
 
 ### Development Standards
 - **Tech Stack Defaults**: @agent-os/standards/tech-stack.md
 - **Code Style Preferences**: @agent-os/standards/code-style.md
 - **Best Practices Philosophy**: @agent-os/standards/best-practices.md
 
-### Agent OS Commands
-- **Plan Features**: @agent-os/workflows/create-spec.md
-- **Update Features**: @agent-os/workflows/update-feature.md
-- **Document Features**: @agent-os/workflows/document-feature.md
-- **Retroactive Documentation**: @agent-os/workflows/retroactive-doc.md
-- **Execute Tasks**: @agent-os/workflows/execute-tasks.md
+### Agent OS Workflows
+- **Plan Product**: @agent-os/workflows/core/plan-product.md
+- **Plan Platform**: @agent-os/workflows/core/plan-platform.md
+- **Build Development Team**: @agent-os/workflows/core/build-development-team.md
+- **Create Specification**: @agent-os/workflows/core/create-spec.md
+- **Execute Tasks**: @agent-os/workflows/core/execute-tasks.md
+- **Retroactive Documentation**: @agent-os/workflows/core/retroactive-doc.md
 
 
 ## Critical Rules
@@ -67,12 +68,21 @@ Essential guidance for Claude Code development in the [PROJECT_NAME] repository.
 ## Essential Commands
 
 ```bash
-# Feature Development Lifecycle
-create-spec              # Create detailed specifications for new features
-update-feature           # Update existing features with changes/enhancements  
-document-feature         # Create user-facing documentation for completed features
-retroactive-doc          # Document existing features that lack specifications
-execute-tasks            # Execute planned implementation tasks
+# Product Planning
+/plan-product            # Single-product planning (brief, tech-stack, roadmap)
+/plan-platform           # Multi-module platform planning (modules, dependencies, architecture)
+
+# Team Setup
+/build-development-team  # Create DevTeam agents and skills
+
+# Feature Development
+/create-spec             # Create detailed specifications for new features
+/execute-tasks           # Execute planned implementation tasks
+/retroactive-doc         # Document existing features without specs
+
+# Bug Management
+/create-bug              # Create bug specification
+/add-bug                 # Add bug to existing spec
 
 # CUSTOMIZE: Add your project-specific commands
 # Development
@@ -127,26 +137,35 @@ Explicitly instruct them on correct file placement for any reports or documentat
 
 ## Feature Development Workflow
 
-**Complete Feature Lifecycle Management:**
+**Complete Lifecycle Management:**
 
-1. **New Feature Development:**
-   - `create-spec` → Development → `document-feature`
-   - Creates spec in `.agent-os/specs/YYYY-MM-DD-feature-name/`
-   - Generates user docs in `.agent-os/docs/Feature-Name/`
+1. **Product/Platform Planning:**
+   - `/plan-product` → Single cohesive products
+   - `/plan-platform` → Multi-module platforms
+   - Creates: product-brief.md, tech-stack.md, roadmap.md, architecture-decision.md
 
-2. **Feature Updates:**
-   - `update-feature` → Development → `document-feature` (updates)
-   - Adds change tracking in `specs/existing-feature/changes/`
-   - Updates existing documentation structure
+2. **Team Setup:**
+   - `/build-development-team` → Creates DevTeam agents & skills
+   - Generates role-specific agents based on tech-stack
 
-3. **Retroactive Documentation:**
-   - `retroactive-doc` (for existing features without specs)
-   - Analyzes existing code to create both specs and documentation
-   - Perfect for documenting legacy features in established projects
+3. **Feature Development:**
+   - `/create-spec` → Creates detailed specification
+   - `/execute-tasks` → Executes planned tasks with DevTeam
+   - Creates spec in `agent-os/specs/YYYY-MM-DD-feature-name/`
+
+4. **Bug Management:**
+   - `/create-bug` → Creates bug specification
+   - `/add-bug` → Adds bug to existing spec
+
+5. **Retroactive Documentation:**
+   - `/retroactive-doc` → Documents existing features without specs
+   - Analyzes code to create comprehensive documentation
+   - Perfect for legacy features
 
 **Directory Structure:**
-- `.agent-os/specs/` - Development-oriented (timestamped, change history)
-- `.agent-os/docs/` - User-oriented (hierarchical, feature-focused)
+- `agent-os/product/` - Product vision, tech-stack, roadmap
+- `agent-os/specs/` - Feature specifications (development-oriented)
+- `agent-os/team/` - DevTeam agents and skills
 
 ## Development Notes
 
