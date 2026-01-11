@@ -514,6 +514,74 @@ ALWAYS use tech-architect agent to analyze tech-stack.md for specialized technol
 
 </step>
 
+<step number="6.6" subagent="file-creator" name="create_design_system_skill">
+
+### Step 6.6: Create Design System Skill for Frontend (If Applicable)
+
+If design-system.md exists, create a skill for frontend developers to use it.
+
+<conditional_logic>
+  IF agent-os/product/design-system.md EXISTS:
+
+    USE file-creator to create design-system skill:
+
+    CREATE: .claude/skills/dev-team/[PROJECT]-frontend-design-system.md
+
+    Content:
+    ```markdown
+    # Frontend Design System Skill
+
+    > Project: [PROJECT_NAME]
+    > Source: agent-os/product/design-system.md
+
+    ## Purpose
+    Ensures frontend implementation follows the project's design system.
+
+    ## When to Activate
+    - Implementing UI components
+    - Styling pages and layouts
+    - Creating new visual elements
+
+    ## Design System Reference
+
+    **ALWAYS consult:** agent-os/product/design-system.md
+
+    ## Colors
+    [Extract from design-system.md]
+
+    ## Typography
+    [Extract from design-system.md]
+
+    ## Spacing
+    [Extract from design-system.md]
+
+    ## Components
+    [Extract component catalog from design-system.md]
+
+    ## Implementation Rules
+    - Use defined color palette (no random colors)
+    - Follow typography scale (no arbitrary font sizes)
+    - Use spacing scale (no magic numbers)
+    - Reuse defined components
+    - Match component states (hover, active, disabled)
+
+    ## Quality Checklist
+    - [ ] Uses colors from design-system.md
+    - [ ] Follows typography scale
+    - [ ] Uses spacing tokens
+    - [ ] Matches component patterns
+    - [ ] Accessibility maintained (contrast ratios)
+    ```
+
+    ADD this skill to frontend-developer's skills list
+    UPDATE frontend-developer.md YAML frontmatter
+
+  ELSE:
+    NOTE: "No design-system.md found, skipping design system skill"
+</conditional_logic>
+
+</step>
+
 <step number="7" subagent="file-creator" name="assign_skills_to_agents">
 
 ### Step 7: Assign Skills to Agents

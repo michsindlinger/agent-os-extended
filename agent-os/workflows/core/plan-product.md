@@ -237,6 +237,70 @@ Use tech-architect agent to optionally generate tech-stack-aware coding standard
 
 </step>
 
+<step number="5.6" subagent="design-extractor" name="extract_design_system">
+
+### Step 5.6: Extract Design System (Optional)
+
+Use design-extractor agent to analyze existing design and create design-system.md for frontend guidance.
+
+<user_choice>
+  ASK user:
+  "Do you have existing design references (URL or screenshots)?
+
+  This will create a design system (colors, typography, spacing, components)
+  for the frontend team to follow.
+
+  Options:
+  1. YES - I have a URL (Figma, existing site, competitor)
+  2. YES - I have screenshots
+  3. SKIP - No design reference"
+
+  Your choice: [1/2/3]"
+</user_choice>
+
+<conditional_logic>
+  IF user_choice = 1 (URL) OR 2 (Screenshots):
+    DELEGATE to design-extractor via Task tool:
+
+    PROMPT:
+    "Extract design system from [URL or Screenshots].
+
+    Source:
+    [IF URL:] User will provide URL
+    [IF Screenshots:] Screenshots in agent-os/design/screenshots/
+
+    Tasks:
+    1. Load design-system-template.md (hybrid lookup: project → global)
+    2. Analyze design source:
+       - Extract color palette (primary, secondary, semantic)
+       - Identify typography (fonts, sizes, weights)
+       - Extract spacing patterns
+       - Catalog UI components
+       - Note layout patterns
+    3. Fill template with extracted values
+    4. Write to: agent-os/product/design-system.md
+    5. If screenshots: Copy to agent-os/product/design/screenshots/
+
+    Templates (hybrid lookup):
+    - TRY: agent-os/templates/product/design-system-template.md
+    - FALLBACK: ~/.agent-os/templates/product/design-system-template.md
+
+    Deliverable:
+    - Complete design-system.md with colors, typography, spacing, components"
+
+    WAIT for design-extractor completion
+    NOTE: "Design system created at agent-os/product/design-system.md"
+
+  ELSE:
+    NOTE: "Skipping design system extraction"
+    SKIP to Step 6
+</conditional_logic>
+
+**Template:** `agent-os/templates/product/design-system-template.md`
+**Output:** `agent-os/product/design-system.md` (optional)
+
+</step>
+
 <step number="6" name="roadmap_generation">
 
 ### Step 6: Roadmap Generation
