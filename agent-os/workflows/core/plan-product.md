@@ -301,6 +301,66 @@ Use design-extractor agent to analyze existing design and create design-system.m
 
 </step>
 
+<step number="5.7" subagent="ux-designer" name="define_ux_patterns">
+
+### Step 5.7: Define UX Patterns (Optional, if Frontend exists)
+
+Use ux-designer agent to define overarching UX patterns interactively.
+
+<conditional_logic>
+  CHECK tech-stack.md:
+  IF frontend_framework_exists:
+    PROCEED with UX pattern definition
+  ELSE:
+    NOTE: "No frontend detected, skipping UX patterns"
+    SKIP to Step 6
+</conditional_logic>
+
+<delegation>
+  DELEGATE to ux-designer via Task tool:
+
+  PROMPT:
+  "Analyze product and define UX patterns.
+
+  Context:
+  - Product Brief: agent-os/product/product-brief.md
+  - Tech Stack: agent-os/product/tech-stack.md (check if frontend exists)
+  - Design System: agent-os/product/design-system.md (if exists)
+
+  Tasks:
+  1. Load ux-patterns-template.md (hybrid lookup: project → global)
+  2. Analyze product type and user context
+  3. Recommend UX patterns for:
+     - Navigation (top nav, sidebar, tabs, etc.)
+     - User flows (key workflows)
+     - Interaction patterns (buttons, forms, drag-drop)
+     - Feedback patterns (loading, success, error, empty states)
+     - Mobile patterns (if applicable)
+     - Accessibility (WCAG level, keyboard nav, screen readers)
+  4. Discuss with user interactively:
+     - Present recommendations with rationale
+     - Ask about preferences and constraints
+     - Show alternatives with pros/cons
+     - Iterate until user approves
+  5. Fill template with approved patterns
+  6. Write to: agent-os/product/ux-patterns.md
+
+  Templates (hybrid lookup):
+  - TRY: agent-os/templates/product/ux-patterns-template.md
+  - FALLBACK: ~/.agent-os/templates/product/ux-patterns-template.md
+
+  Deliverable:
+  - Complete ux-patterns.md with navigation, flows, interactions, feedback, accessibility patterns"
+
+  WAIT for ux-designer completion
+  RECEIVE ux-patterns.md
+</delegation>
+
+**Template:** `agent-os/templates/product/ux-patterns-template.md`
+**Output:** `agent-os/product/ux-patterns.md` (optional, frontend only)
+
+</step>
+
 <step number="6" name="roadmap_generation">
 
 ### Step 6: Roadmap Generation

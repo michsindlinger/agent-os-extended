@@ -548,7 +548,7 @@ Execute the selected user story using the DevTeam agents with full Kanban Board 
           WAIT for dev-team__architect completion
 
           IF architect_approves:
-            CONTINUE: To QA testing
+            CONTINUE: To UX review (if frontend) or QA testing
           ELSE:
             UPDATE kanban-board.md:
               - MOVE: Story → "In Progress"
@@ -557,6 +557,84 @@ Execute the selected user story using the DevTeam agents with full Kanban Board 
             DELEGATE_BACK: To original agent with feedback
             REPEAT: Until approved
         </architect_review>
+
+        <ux_review>
+          IF story.type includes "Frontend":
+            UPDATE kanban-board.md:
+              - ADD: UX Review in progress (still "In Review")
+              - ADD: Change Log entry
+
+            DELEGATE: ux-designer via Task tool
+
+            PROMPT: "UX Review for Story [story-id].
+
+            Context:
+            - Story: agent-os/specs/{SELECTED_SPEC}/user-stories.md#[story-id]
+            - UX Patterns: agent-os/product/ux-patterns.md
+            - Design System: agent-os/product/design-system.md (if exists)
+            - Implementation files: [git status --short output]
+
+            Git Changes (from this story):
+            ```
+            [Output of git status --short for frontend files]
+            ```
+
+            Review Checklist:
+            1. UX Pattern Compliance:
+               - Follows defined navigation patterns?
+               - User flows intuitive and efficient?
+               - Interaction patterns consistent?
+               - Feedback patterns implemented (loading, success, error)?
+
+            2. User Experience:
+               - Clear call-to-action placement?
+               - Intuitive element placement?
+               - Consistent with existing UI?
+               - Empty states friendly and helpful?
+
+            3. Accessibility:
+               - Semantic HTML used?
+               - ARIA labels where needed?
+               - Keyboard navigation works?
+               - Focus indicators visible?
+               - Color contrast meets WCAG level?
+               - Screen reader compatible?
+
+            4. Mobile/Responsive (if applicable):
+               - Touch targets minimum 44x44px?
+               - Content reflows on small screens?
+               - No horizontal scrolling?
+               - Mobile patterns followed?
+
+            5. Error Handling:
+               - Error messages clear and actionable?
+               - Validation feedback inline?
+               - Error recovery possible?
+
+            Deliverable:
+            - If APPROVED: Green light to QA testing
+            - If REJECTED: Specific UX feedback with file locations and fixes needed
+
+            Provide detailed UX review with rationale."
+
+            WAIT for ux-designer completion
+
+            IF ux_designer_approves:
+              UPDATE kanban-board.md:
+                - ADD: UX Review approved
+                - ADD: Change Log entry
+              CONTINUE: To QA testing
+            ELSE:
+              UPDATE kanban-board.md:
+                - MOVE: Story → "In Progress"
+                - ADD: UX Review feedback to Progress field
+                - ADD: Change Log entry
+              DELEGATE_BACK: To frontend developer with UX feedback
+              REPEAT: Until UX approved
+          ELSE:
+            NOTE: "Non-frontend story, skipping UX review"
+            CONTINUE: To QA testing
+        </ux_review>
 
         <qa_testing>
           UPDATE kanban-board.md:

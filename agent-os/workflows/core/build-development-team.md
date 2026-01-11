@@ -582,6 +582,90 @@ If design-system.md exists, create a skill for frontend developers to use it.
 
 </step>
 
+<step number="6.7" subagent="file-creator" name="create_ux_patterns_skill">
+
+### Step 6.7: Create UX Patterns Skill for Frontend (If Applicable)
+
+If ux-patterns.md exists, create a skill for frontend developers to follow UX patterns.
+
+<conditional_logic>
+  IF agent-os/product/ux-patterns.md EXISTS:
+
+    USE file-creator to create ux-patterns skill:
+
+    CREATE: .claude/skills/dev-team/[PROJECT]-frontend-ux-patterns.md
+
+    Content:
+    ```markdown
+    # Frontend UX Patterns Skill
+
+    > Project: [PROJECT_NAME]
+    > Source: agent-os/product/ux-patterns.md
+
+    ## Purpose
+    Ensures frontend implementation follows the project's UX patterns for navigation, user flows, interactions, and accessibility.
+
+    ## When to Activate
+    - Implementing user interfaces
+    - Creating user flows and navigation
+    - Implementing forms and interactions
+    - Handling loading, success, and error states
+    - Implementing mobile/responsive layouts
+
+    ## UX Patterns Reference
+
+    **ALWAYS consult:** agent-os/product/ux-patterns.md
+
+    ## Navigation Patterns
+    [Extract navigation type and structure from ux-patterns.md]
+
+    ## User Flow Patterns
+    [Extract key user flows from ux-patterns.md]
+
+    ## Interaction Patterns
+    [Extract button, form, and interaction patterns from ux-patterns.md]
+
+    ## Feedback Patterns
+    [Extract loading, success, error, and empty state patterns from ux-patterns.md]
+
+    ## Mobile Patterns (if applicable)
+    [Extract mobile-specific patterns from ux-patterns.md]
+
+    ## Accessibility Requirements
+    [Extract accessibility patterns and WCAG level from ux-patterns.md]
+
+    ## Implementation Rules
+    - Follow defined navigation pattern consistently
+    - Implement all user flows as specified
+    - Use consistent interaction patterns (buttons, forms)
+    - Provide clear feedback for all states (loading, success, error, empty)
+    - Ensure keyboard navigation works
+    - Meet accessibility requirements (WCAG level)
+    - Implement mobile patterns if applicable
+
+    ## Quality Checklist
+    - [ ] Navigation follows defined pattern
+    - [ ] User flows intuitive and match specs
+    - [ ] Loading states implemented (no blank screens)
+    - [ ] Success feedback clear and timely
+    - [ ] Error messages helpful and actionable
+    - [ ] Empty states friendly with clear next action
+    - [ ] Keyboard navigation works
+    - [ ] Focus indicators visible
+    - [ ] Color contrast meets WCAG level
+    - [ ] Touch targets minimum 44x44px (mobile)
+    - [ ] Responsive on all screen sizes
+    ```
+
+    ADD this skill to frontend-developer's skills list
+    UPDATE frontend-developer.md YAML frontmatter
+
+  ELSE:
+    NOTE: "No ux-patterns.md found, skipping UX patterns skill"
+</conditional_logic>
+
+</step>
+
 <step number="7" subagent="file-creator" name="assign_skills_to_agents">
 
 ### Step 7: Assign Skills to Agents

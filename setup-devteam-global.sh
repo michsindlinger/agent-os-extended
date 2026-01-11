@@ -79,14 +79,14 @@ download_file "$REPO_URL/agent-os/standards/tech-stack.md" \
   "$GLOBAL_DIR/standards/tech-stack.md" "tech-stack template"
 
 # ═══════════════════════════════════════════════════════════
-# TEMPLATES (53 files)
+# TEMPLATES (54 files)
 # ═══════════════════════════════════════════════════════════
 
 echo ""
-echo "═══ Installing Templates (53 files) ═══"
+echo "═══ Installing Templates (54 files) ═══"
 
-# Product templates (7)
-echo "→ Product templates (7)..."
+# Product templates (8)
+echo "→ Product templates (8)..."
 download_file "$REPO_URL/agent-os/templates/product/product-brief-template.md" "$GLOBAL_DIR/templates/product/product-brief-template.md"
 download_file "$REPO_URL/agent-os/templates/product/product-brief-lite-template.md" "$GLOBAL_DIR/templates/product/product-brief-lite-template.md"
 download_file "$REPO_URL/agent-os/templates/product/tech-stack-template.md" "$GLOBAL_DIR/templates/product/tech-stack-template.md"
@@ -94,6 +94,7 @@ download_file "$REPO_URL/agent-os/templates/product/roadmap-template.md" "$GLOBA
 download_file "$REPO_URL/agent-os/templates/product/architecture-decision-template.md" "$GLOBAL_DIR/templates/product/architecture-decision-template.md"
 download_file "$REPO_URL/agent-os/templates/product/boilerplate-structure-template.md" "$GLOBAL_DIR/templates/product/boilerplate-structure-template.md"
 download_file "$REPO_URL/agent-os/templates/product/design-system-template.md" "$GLOBAL_DIR/templates/product/design-system-template.md"
+download_file "$REPO_URL/agent-os/templates/product/ux-patterns-template.md" "$GLOBAL_DIR/templates/product/ux-patterns-template.md"
 
 # Agent templates (7)
 echo "→ Agent templates (7)..."
@@ -186,8 +187,8 @@ echo "    ├── code-style.md"
 echo "    ├── best-practices.md"
 echo "    └── tech-stack.md"
 echo ""
-echo "  templates/ (55 files)"
-echo "    ├── product/ (7)"
+echo "  templates/ (56 files)"
+echo "    ├── product/ (8)"
 echo "    ├── agents/dev-team/ (7)"
 echo "    ├── skills/ (31 total)"
 echo "    │   ├── dev-team/ (29)"
