@@ -18,6 +18,53 @@ Initiate execution of one or more tasks for a given spec.
 
 <process_flow>
 
+<step number="0" name="identify_target_spec">
+
+### Step 0: Identify Target Spec
+
+Determine which specification to execute.
+
+<spec_identification>
+  CHECK: Did user provide spec name as parameter?
+
+  IF user provided spec name (e.g., "/execute-tasks bitget-cex-integration"):
+    VALIDATE: Spec folder exists at agent-os/specs/[spec-name]/
+    IF exists:
+      SELECTED_SPEC = [spec-name]
+      PROCEED to Step 1
+    ELSE:
+      ERROR: "Spec not found: [spec-name]"
+      LIST available specs
+      ASK user to select from list
+
+  ELSE (no parameter provided):
+    LIST all specs in agent-os/specs/
+    SORT by date prefix (YYYY-MM-DD) descending
+
+    ASK user via AskUserQuestion:
+    "Which specification would you like to execute?
+
+    Options:
+    - [Most recent spec] - YYYY-MM-DD-feature-name (Recommended)
+    - [Second spec] - YYYY-MM-DD-feature-name
+    - [Third spec] - YYYY-MM-DD-feature-name
+    (Or type spec folder name)"
+
+    WAIT for user selection
+    SELECTED_SPEC = user's choice
+</spec_identification>
+
+<instructions>
+  ACTION: Identify and validate target spec folder
+  STORE: SELECTED_SPEC variable for use in all subsequent steps
+  VALIDATE: Spec folder exists and contains user-stories.md
+  ERROR: If spec folder or user-stories.md not found
+</instructions>
+
+**Output:** SELECTED_SPEC variable containing spec folder name (e.g., "2026-01-10-bitget-cex-integration")
+
+</step>
+
 <step number="1" subagent="file-creator" name="kanban_board_management">
 
 ### Step 1: Kanban Board Management
@@ -26,7 +73,8 @@ Use the file-creator subagent to create or load the kanban board for state persi
 
 <board_check>
   CHECK: Does kanban-board.md exist in spec folder?
-  PATH: agent-os/specs/[SPEC_FOLDER]/kanban-board.md
+  PATH: agent-os/specs/{SELECTED_SPEC}/kanban-board.md
+  (SELECTED_SPEC from Step 0)
 </board_check>
 
 <decision_tree>
@@ -81,7 +129,7 @@ Use the file-creator subagent to create or load the kanban board for state persi
   <header>
     # Kanban Board - [Spec Name]
 
-    > Spec: agent-os/specs/[SPEC_FOLDER]/
+    > Spec: agent-os/specs/{SELECTED_SPEC}/
     > Created: [TIMESTAMP]
     > Last Updated: [TIMESTAMP]
   </header>
@@ -367,7 +415,7 @@ Execute the selected user story using the DevTeam agents with full Kanban Board 
         [DoD checklist from user-stories.md - this is your completion criteria]
 
         **Dependencies:**
-        [If applicable] Handover document: agent-os/specs/[SPEC]/handover-docs/[file]
+        [If applicable] Handover document: agent-os/specs/{SELECTED_SPEC}/handover-docs/[file]
 
         **Instructions:**
         1. Implement according to technical specs
@@ -453,7 +501,7 @@ Execute the selected user story using the DevTeam agents with full Kanban Board 
       <handover_check>
         IF story.has_dependent_stories:
           ENSURE: Handover document exists
-          PATH: agent-os/specs/[SPEC]/handover-docs/[story-id]-handover.md
+          PATH: agent-os/specs/{SELECTED_SPEC}/handover-docs/[story-id]-handover.md
           CONTENT:
             - API contracts
             - Data structures
@@ -683,7 +731,7 @@ Create a structured summary message with emojis showing what was done, any issue
   - **Completed Stories**: [X] of [TOTAL]
   - **Progress**: [XX%]
   - **Remaining in Backlog**: [Y]
-  - **View Board**: agent-os/specs/[SPEC]/kanban-board.md
+  - **View Board**: agent-os/specs/{SELECTED_SPEC}/kanban-board.md
 
   ## ⚠️ Issues encountered
 
