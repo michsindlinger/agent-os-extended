@@ -47,6 +47,9 @@ command_files=(
     # Product planning
     "plan-product.md"
 
+    # Platform planning
+    "plan-platform.md"
+
     # Team setup
     "build-development-team.md"
 
@@ -107,7 +110,8 @@ echo ""
 echo "📋 Available Commands:"
 echo ""
 echo "  Product Planning:"
-echo "    /plan-product             → Create product brief, tech stack, roadmap"
+echo "    /plan-product             → Single-product planning"
+echo "    /plan-platform            → Multi-module platform planning"
 echo ""
 echo "  Team Setup:"
 echo "    /build-development-team   → Create DevTeam agents and skills"
@@ -137,7 +141,7 @@ echo "  • ux-designer        → UX patterns definition and frontend review"
 echo ""
 echo "🎯 Recommended Workflow:"
 echo ""
-echo "1. /plan-product"
+echo "1. /plan-product (single product) OR /plan-platform (multi-module)"
 echo "   → Creates product-brief.md, tech-stack.md, roadmap.md"
 echo "   → Step 5.5: Choose to generate project-specific standards"
 echo ""

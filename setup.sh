@@ -97,6 +97,9 @@ download_file "$REPO_URL/agent-os/workflows/meta/pre-flight.md" "agent-os/workfl
 # Product planning
 download_file "$REPO_URL/agent-os/workflows/core/plan-product.md" "agent-os/workflows/core/plan-product.md" "workflows"
 
+# Platform planning
+download_file "$REPO_URL/agent-os/workflows/core/plan-platform.md" "agent-os/workflows/core/plan-platform.md" "workflows"
+
 # Team setup
 download_file "$REPO_URL/agent-os/workflows/core/build-development-team.md" "agent-os/workflows/core/build-development-team.md" "workflows"
 

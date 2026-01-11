@@ -2,7 +2,7 @@
 
 # Agent OS DevTeam System - Global Installation
 # Installs standards and templates to ~/.agent-os/ as fallback for all projects
-# Version: 2.1
+# Version: 2.2 - Added Platform Planning Support
 
 set -e
 
@@ -50,7 +50,9 @@ echo ""
 echo "Creating global directory structure..."
 mkdir -p "$GLOBAL_DIR/standards"
 mkdir -p "$GLOBAL_DIR/templates/product"
+mkdir -p "$GLOBAL_DIR/templates/platform"
 mkdir -p "$GLOBAL_DIR/templates/agents/dev-team"
+mkdir -p "$GLOBAL_DIR/agents"
 mkdir -p "$GLOBAL_DIR/templates/skills/dev-team/architect"
 mkdir -p "$GLOBAL_DIR/templates/skills/dev-team/backend"
 mkdir -p "$GLOBAL_DIR/templates/skills/dev-team/frontend"
@@ -59,6 +61,7 @@ mkdir -p "$GLOBAL_DIR/templates/skills/dev-team/qa"
 mkdir -p "$GLOBAL_DIR/templates/skills/dev-team/po"
 mkdir -p "$GLOBAL_DIR/templates/skills/dev-team/documenter"
 mkdir -p "$GLOBAL_DIR/templates/skills/orchestration"
+mkdir -p "$GLOBAL_DIR/templates/skills/platform"
 mkdir -p "$GLOBAL_DIR/templates/skills"
 mkdir -p "$GLOBAL_DIR/templates/docs"
 
@@ -95,6 +98,19 @@ download_file "$REPO_URL/agent-os/templates/product/architecture-decision-templa
 download_file "$REPO_URL/agent-os/templates/product/boilerplate-structure-template.md" "$GLOBAL_DIR/templates/product/boilerplate-structure-template.md"
 download_file "$REPO_URL/agent-os/templates/product/design-system-template.md" "$GLOBAL_DIR/templates/product/design-system-template.md"
 download_file "$REPO_URL/agent-os/templates/product/ux-patterns-template.md" "$GLOBAL_DIR/templates/product/ux-patterns-template.md"
+
+# Platform templates (6)
+echo "→ Platform templates (6)..."
+download_file "$REPO_URL/agent-os/templates/platform/platform-brief-template.md" "$GLOBAL_DIR/templates/platform/platform-brief-template.md"
+download_file "$REPO_URL/agent-os/templates/platform/module-brief-template.md" "$GLOBAL_DIR/templates/platform/module-brief-template.md"
+download_file "$REPO_URL/agent-os/templates/platform/module-dependencies-template.md" "$GLOBAL_DIR/templates/platform/module-dependencies-template.md"
+download_file "$REPO_URL/agent-os/templates/platform/platform-architecture-template.md" "$GLOBAL_DIR/templates/platform/platform-architecture-template.md"
+download_file "$REPO_URL/agent-os/templates/platform/platform-roadmap-template.md" "$GLOBAL_DIR/templates/platform/platform-roadmap-template.md"
+download_file "$REPO_URL/agent-os/templates/platform/module-roadmap-template.md" "$GLOBAL_DIR/templates/platform/module-roadmap-template.md"
+
+# Global agents (1)
+echo "→ Global agents (1)..."
+download_file "$REPO_URL/.agent-os/agents/platform-architect.md" "$GLOBAL_DIR/agents/platform-architect.md"
 
 # Agent templates (7)
 echo "→ Agent templates (7)..."
@@ -156,6 +172,13 @@ download_file "$REPO_URL/agent-os/templates/skills/dev-team/documenter/api-docum
 download_file "$REPO_URL/agent-os/templates/skills/dev-team/documenter/user-guide-writing-template.md" "$GLOBAL_DIR/templates/skills/dev-team/documenter/user-guide-writing-template.md"
 download_file "$REPO_URL/agent-os/templates/skills/dev-team/documenter/code-documentation-template.md" "$GLOBAL_DIR/templates/skills/dev-team/documenter/code-documentation-template.md"
 
+# Platform skills (4)
+echo "→ Platform skill templates (4)..."
+download_file "$REPO_URL/agent-os/templates/skills/platform/system-integration-patterns-template.md" "$GLOBAL_DIR/templates/skills/platform/system-integration-patterns-template.md"
+download_file "$REPO_URL/agent-os/templates/skills/platform/dependency-management-template.md" "$GLOBAL_DIR/templates/skills/platform/dependency-management-template.md"
+download_file "$REPO_URL/agent-os/templates/skills/platform/modular-architecture-template.md" "$GLOBAL_DIR/templates/skills/platform/modular-architecture-template.md"
+download_file "$REPO_URL/agent-os/templates/skills/platform/platform-scalability-template.md" "$GLOBAL_DIR/templates/skills/platform/platform-scalability-template.md"
+
 # Orchestration skill (1)
 echo "→ Orchestration skill template (1)..."
 download_file "$REPO_URL/agent-os/templates/skills/orchestration/orchestration-template.md" "$GLOBAL_DIR/templates/skills/orchestration/orchestration-template.md"
@@ -187,10 +210,14 @@ echo "    ├── code-style.md"
 echo "    ├── best-practices.md"
 echo "    └── tech-stack.md"
 echo ""
-echo "  templates/ (56 files)"
+echo "  agents/ (1 file)"
+echo "    └── platform-architect.md"
+echo ""
+echo "  templates/ (66 files)"
 echo "    ├── product/ (8)"
+echo "    ├── platform/ (6) ← NEW"
 echo "    ├── agents/dev-team/ (7)"
-echo "    ├── skills/ (31 total)"
+echo "    ├── skills/ (35 total)"
 echo "    │   ├── dev-team/ (29)"
 echo "    │   │   ├── architect/ (5)"
 echo "    │   │   ├── backend/ (4)"
@@ -199,6 +226,7 @@ echo "    │   │   ├── devops/ (4)"
 echo "    │   │   ├── qa/ (4)"
 echo "    │   │   ├── po/ (4)"
 echo "    │   │   └── documenter/ (4)"
+echo "    │   ├── platform/ (4) ← NEW"
 echo "    │   ├── orchestration/ (1)"
 echo "    │   └── generic-skill-template.md (1)"
 echo "    └── docs/ (10)"
@@ -229,8 +257,9 @@ echo "2. Install Claude Code:"
 echo "   curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/setup-claude-code.sh | bash"
 echo ""
 echo "3. Start workflow:"
-echo "   /plan-product         → Uses global templates"
-echo "   /build-development-team → Uses global templates"
+echo "   /plan-product         → Single-product projects"
+echo "   /plan-platform        → Multi-module platforms"
+echo "   /build-development-team → DevTeam setup"
 echo ""
 echo "Templates will be loaded from ~/.agent-os/templates/ automatically."
 echo "To customize templates, copy to project's agent-os/templates/ and modify."
