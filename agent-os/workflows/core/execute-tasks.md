@@ -348,6 +348,55 @@ Use the git-workflow subagent to manage git branches to ensure proper isolation 
 
 </step>
 
+<step number="5.5" name="mcp_tool_check">
+
+### Step 5.5: MCP Tool Requirements Check
+
+Check if required MCP tools are available before starting story execution.
+
+<tool_check>
+  READ: Selected story from user-stories.md
+  CHECK: "### Required MCP Tools" section exists?
+
+  IF section exists AND has tools listed:
+    FOR each required tool with Blocking=Yes:
+      RUN: Check if tool is available in MCP configuration
+
+      IF tool NOT available:
+        MARK: Story as "BLOCKED" in kanban-board.md
+        LOG: "Missing MCP tool: [tool-name]"
+        NOTIFY: User with setup instructions:
+          "Story [story-id] requires MCP tool '[tool-name]' which is not configured.
+
+           To install:
+           1. Add to .mcp.json in project root
+           2. Restart Claude Code
+           3. Run /execute-tasks again
+
+           See: agent-os/docs/mcp-setup-guide.md"
+
+        SKIP: This story, select next eligible from backlog
+        RETURN: To Step 2 (Story Selection)
+
+      ELSE:
+        LOG: "MCP tool '[tool-name]' available"
+        CONTINUE: To Step 6
+
+  ELSE (no Required MCP Tools section or empty):
+    LOG: "No MCP tools required for this story"
+    CONTINUE: To Step 6
+</tool_check>
+
+<instructions>
+  ACTION: Check for Required MCP Tools section in selected story
+  IF_FOUND: Verify each blocking tool is available
+  IF_MISSING: Mark story as BLOCKED and select next eligible
+  IF_ALL_AVAILABLE: Continue to story execution
+  REFERENCE: agent-os/docs/mcp-setup-guide.md
+</instructions>
+
+</step>
+
 <step number="6" name="story_execution_loop">
 
 ### Step 6: Story Execution Loop with Kanban Integration

@@ -107,12 +107,29 @@ Use dev-team__po agent to gather fachliche (business) requirements from user and
   - FALLBACK: ~/.agent-os/templates/docs/spec-template.md
   (Same for spec-lite-template.md, user-stories-template.md)
 
+  STORY SIZING RULES (for automated execution):
+  - Max 5 Dateien pro Story
+  - Max 400 LOC pro Story
+  - Wenn Story > 5 Dateien: MANDATORY SPLIT in Sub-Stories
+  - Komplexität max 'S' (Small, 1-3 SP)
+  - Bei 'M' oder größer: MANDATORY SPLIT
+  - Reference: agent-os/docs/story-sizing-guidelines.md
+
+  ACCEPTANCE CRITERIA FORMAT (for automated verification):
+  - Use prefix format: FILE_EXISTS:, CONTAINS:, LINT_PASS:, TEST_PASS:
+  - Each criterion must be verifiable via bash command
+  - Include exact file paths
+  - For browser tests: MCP_PLAYWRIGHT: prefix (document in Required MCP Tools section)
+  - Avoid MANUAL: criteria when possible
+  - Reference: agent-os/templates/docs/user-stories-template.md
+
   IMPORTANT:
   - Write ONLY fachliche (business) content
   - NO technical details (WAS/WIE/WO/WER)
   - NO DoR/DoD (Architect adds this)
   - NO dependencies
-  - Focus on WHAT user needs, not HOW to implement"
+  - Focus on WHAT user needs, not HOW to implement
+  - Stories must be small enough for single Claude Code session"
 
   WAIT for dev-team__po completion
   RECEIVE:
@@ -194,6 +211,18 @@ Use dev-team__architect agent to add technical refinement to fachliche user stor
 
        **Geschätzte Komplexität:** [XS/S/M/L/XL]
 
+       **Completion Check:**
+       ```bash
+       # Auto-Verify Commands - all must exit with 0
+       [VERIFY_COMMAND_1]
+       [VERIFY_COMMAND_2]
+       ```
+
+       **Story ist DONE wenn:**
+       1. Alle FILE_EXISTS/CONTAINS checks bestanden
+       2. Alle *_PASS commands exit 0
+       3. Git diff zeigt nur erwartete Änderungen
+
     3. Analyze dependencies:
        - Can stories run in parallel?
        - Must some finish before others start?
@@ -228,7 +257,10 @@ Use dev-team__architect agent to add technical refinement to fachliche user stor
   - Do NOT modify fachliche descriptions
   - Ensure DoR met for all stories
   - Define clear DoD per story
-  - Map ALL dependencies"
+  - Map ALL dependencies
+  - Add Completion Check section with bash verify commands
+  - Ensure story complexity max 'S' (split if larger)
+  - Reference: agent-os/docs/story-sizing-guidelines.md"
 
   WAIT for dev-team__architect completion
   RECEIVE:
