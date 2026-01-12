@@ -415,6 +415,6 @@ Track these metrics to evaluate test strategy effectiveness:
 
 ## Related Skills
 
-- **test-automation-template.md** - For implementing automated tests
-- **quality-metrics-template.md** - For tracking quality metrics
-- **regression-testing-template.md** - For continuous testing strategy
+- **test-automation** - For implementing automated tests
+- **quality-metrics** - For tracking quality metrics
+- **regression-testing** - For continuous testing strategy

@@ -858,6 +858,6 @@ describe('createUser', () => {
 
 ## Related Skills
 
-- **test-strategy-template.md** - For planning test coverage
-- **quality-metrics-template.md** - For tracking test metrics
-- **regression-testing-template.md** - For maintaining test suites
+- **test-strategy** - For planning test coverage
+- **quality-metrics** - For tracking test metrics
+- **regression-testing** - For maintaining test suites

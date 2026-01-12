@@ -641,6 +641,6 @@ jobs:
 
 ## Related Skills
 
-- **test-strategy-template.md** - For planning quality targets
-- **test-automation-template.md** - For implementing tests
-- **regression-testing-template.md** - For maintaining test suites
+- **test-strategy** - For planning quality targets
+- **test-automation** - For implementing tests
+- **regression-testing** - For maintaining test suites
