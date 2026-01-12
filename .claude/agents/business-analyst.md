@@ -1,4 +1,5 @@
 ---
+model: inherit
 name: business-analyst
 description: Business analysis specialist for metrics analysis and GO/NO-GO decisions
 tools: Read, Write, Bash

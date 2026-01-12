@@ -1,4 +1,5 @@
 ---
+model: inherit
 name: dev-team__devops-specialist
 description: DevOps and infrastructure specialist. Manages CI/CD, deployment, and operations.
 skills: [SKILLS_LIST]

@@ -1,4 +1,5 @@
 ---
+model: inherit
 name: marketing-system__quality-assurance
 description: Validates landing pages for responsiveness, performance, and visual quality across devices
 tools: Read, Bash

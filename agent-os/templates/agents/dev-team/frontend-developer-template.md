@@ -1,4 +1,5 @@
 ---
+model: inherit
 name: dev-team__frontend-developer
 description: Frontend implementation specialist. Implements UI components, pages, and client-side logic.
 skills: [SKILLS_LIST]

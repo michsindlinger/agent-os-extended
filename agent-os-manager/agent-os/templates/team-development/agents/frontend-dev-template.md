@@ -1,4 +1,5 @@
 ---
+model: inherit
 name: frontend-dev
 description: [PROJECT NAME] production frontend specialist
 tools: Read, Write, Edit

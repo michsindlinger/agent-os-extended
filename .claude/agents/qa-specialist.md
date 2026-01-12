@@ -1,4 +1,5 @@
 ---
+model: inherit
 name: qa-specialist
 description: Testing orchestrator with auto-fix capabilities
 tools: Read, Bash

@@ -1,4 +1,5 @@
 ---
+model: inherit
 name: mock-generator
 description: API mock generation utility
 tools: Read, Write

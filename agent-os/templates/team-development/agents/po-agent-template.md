@@ -1,4 +1,5 @@
 ---
+model: inherit
 name: po-agent
 description: [PROJECT NAME] product owner specialist
 tools: Read, Write, Edit, Glob, Grep

@@ -1,4 +1,5 @@
 ---
+model: inherit
 name: qa-specialist
 description: [PROJECT NAME] QA specialist with auto-fix capabilities
 tools: Read, Bash

@@ -1,4 +1,5 @@
 ---
+model: inherit
 name: devops-specialist
 description: CI/CD and deployment orchestrator
 tools: Read, Write, Edit, Bash

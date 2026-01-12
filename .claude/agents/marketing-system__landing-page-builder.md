@@ -1,4 +1,5 @@
 ---
+model: inherit
 name: marketing-system__landing-page-builder
 description: Marketing landing page specialist for quick validation pages (vanilla HTML/CSS/JS, no frameworks)
 tools: Read, Write, Edit

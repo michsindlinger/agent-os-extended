@@ -1,4 +1,5 @@
 ---
+model: inherit
 name: dev-team__documenter
 description: Documentation specialist. Creates and maintains project documentation.
 skills: [SKILLS_LIST]

@@ -1,4 +1,5 @@
 ---
+model: inherit
 name: dev-team__backend-developer
 description: Backend implementation specialist. Implements server-side logic, APIs, and database operations.
 skills: [SKILLS_LIST]

@@ -1,4 +1,5 @@
 ---
+model: inherit
 name: validation-specialist
 description: Validation campaign coordinator for ad campaigns and analytics setup
 tools: Read, Write

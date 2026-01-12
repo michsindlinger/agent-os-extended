@@ -1,4 +1,5 @@
 ---
+model: inherit
 name: devops-specialist
 description: [PROJECT NAME] CI/CD and deployment specialist
 tools: Read, Write, Edit, Bash

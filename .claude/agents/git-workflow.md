@@ -1,4 +1,5 @@
 ---
+model: inherit
 name: git-workflow
 description: Use proactively to handle git operations, branch management, commits, and PR creation for Agent OS workflows
 tools: Bash, Read, Grep

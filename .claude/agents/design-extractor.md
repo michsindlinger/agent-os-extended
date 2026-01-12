@@ -1,4 +1,5 @@
 ---
+model: inherit
 name: design-extractor
 description: Design system extraction specialist. Analyzes URLs and screenshots to extract design patterns, colors, typography, and components.
 tools: Read, Write, WebFetch, Bash

@@ -1,4 +1,5 @@
 ---
+model: inherit
 name: architecture-agent
 description: [PROJECT NAME] software architecture specialist
 tools: Read, Write, Edit, Glob, Grep

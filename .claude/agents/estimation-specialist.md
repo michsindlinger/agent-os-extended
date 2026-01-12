@@ -1,4 +1,5 @@
 ---
+model: inherit
 name: estimation-specialist
 description: Specialized agent for software effort estimation using context-aware methods with deep codebase analysis. Analyzes existing code patterns, complexity, reusability, and technical debt before estimating.
 tools: Read, Grep, Glob, Bash, Write, Edit
