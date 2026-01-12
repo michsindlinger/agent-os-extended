@@ -94,6 +94,7 @@ echo "═══ Installing Documentation ═══"
 
 download_file "$REPO_URL/agent-os/docs/story-sizing-guidelines.md" "agent-os/docs/story-sizing-guidelines.md" "docs"
 download_file "$REPO_URL/agent-os/docs/mcp-setup-guide.md" "agent-os/docs/mcp-setup-guide.md" "docs"
+download_file "$REPO_URL/agent-os/docs/agent-learning-guide.md" "agent-os/docs/agent-learning-guide.md" "docs"
 
 # ═══════════════════════════════════════════════════════════
 # WORKFLOWS - Core DevTeam Workflows Only
