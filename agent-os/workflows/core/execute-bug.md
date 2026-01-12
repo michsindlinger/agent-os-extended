@@ -1,211 +1,131 @@
-# Execute Bug Resolution - Core Instructions
+# Execute Bug - Shortcut Command
 
 ## Overview
-Execute systematic bug investigation and resolution process. This command guides through debugging, fixing, testing, and documenting the solution for tracked bugs.
 
-## Process Flow
+**This command is a shortcut to execute-tasks for bug specifications.**
 
-### 1. Bug Selection and Loading
-- List available bugs in `.agent-os/bugs/` directory
-- Allow user to select by bug ID or directory name
-- Load the bug-report.md file and review current status
-- Verify bug is not already resolved
+Bug specs created via `/create-bug` are stored in `agent-os/specs/` with the naming convention `YYYY-MM-DD-bugfix-[bug-name]`. This command simplifies finding and executing bug specs.
 
-### 2. Investigation Phase
+## How It Works
 
-#### Code Analysis
-- Examine the components mentioned in the bug report
-- Search for related code patterns or similar issues
-- Review recent changes that might be related
-- Analyze error messages and stack traces
+`/execute-bug` filters and lists only bug specs, then runs `/execute-tasks` on the selected spec.
 
-#### Reproduction Verification
-- Follow the reproduction steps from the bug report
-- Attempt to reproduce the issue in the development environment
-- Document any variations in the reproduction process
-- Update reproduction steps if needed
+<process_flow>
 
-#### Root Cause Analysis
-- Use systematic debugging approaches (logging, debugging tools)
-- Trace the execution flow to identify the problem
-- Document findings in `investigation/` directory
-- Create investigation notes with timestamps
+<step number="1" name="find_bug_specs">
 
-### 3. Solution Development
+### Step 1: Find Bug Specifications
 
-#### Fix Implementation
-- Develop the appropriate fix based on root cause analysis
-- Follow existing code conventions and patterns
-- Ensure the fix addresses the root cause, not just symptoms
-- Consider potential side effects and edge cases
+List only bug specifications (specs with "bugfix" in the name).
 
-#### Code Review Checklist
-- Does the fix address the root cause?
-- Are there any breaking changes?
-- Is error handling appropriate?
-- Are there any performance implications?
-- Does it follow the project's coding standards?
+<spec_discovery>
+  USE Bash to list bug specs:
+    ```bash
+    ls -1 agent-os/specs/ | grep -i "bugfix" | sort -r
+    ```
 
-### 4. Testing and Validation
+  IF user provided bug name as parameter (e.g., "/execute-bug login-error"):
+    SEARCH: For spec containing "[param]" in name
+    IF found:
+      SELECTED_SPEC = matched spec folder
+      PROCEED to Step 2
+    ELSE:
+      LIST: All available bug specs
+      ASK: User to select
 
-#### Test Creation
-- Create specific test cases for the bug scenario
-- Ensure tests cover edge cases mentioned in the bug report
-- Add regression tests to prevent future occurrences
+  ELSE (no parameter):
+    IF no bug specs found:
+      ERROR: "No bug specifications found."
+      SUGGEST: "Run /create-bug first to create a bug specification."
+      EXIT
 
-#### Verification Process
-- Run the reproduction steps to verify the fix
-- Execute relevant test suites
-- Perform manual testing if applicable
-- Test in different environments if needed
+    IF 1 bug spec found:
+      CONFIRM: "Execute bug fix for [spec-name]? (yes/no)"
+      IF yes: SELECTED_SPEC = [spec]
+      IF no: EXIT
 
-### 5. Documentation and Closure
+    IF multiple bug specs found:
+      ASK user via AskUserQuestion:
+      "Which bug would you like to fix?
 
-#### Resolution Documentation
-Create resolution documentation in `resolution/` directory:
+      Options:
+      - [Most recent bugfix spec] (Recommended)
+      - [Second bugfix spec]
+      - [Third bugfix spec]"
 
-```markdown
-# Bug Resolution - [Bug Title]
+      SELECTED_SPEC = user's choice
+</spec_discovery>
 
-**Resolved Date**: [Date]
-**Resolution Type**: Fix | Workaround | Won't Fix | Duplicate | Invalid
-**Time to Resolution**: [Time spent]
+<instructions>
+  ACTION: Find bug specs in agent-os/specs/
+  FILTER: Only specs containing "bugfix" in name
+  PRESENT: Options to user
+  SELECT: Bug spec to execute
+</instructions>
 
-## Root Cause
-[Detailed explanation of what caused the bug]
+</step>
 
-## Solution Implemented
-[Description of the fix]
+<step number="2" name="delegate_to_execute_tasks">
 
-## Files Changed
-- [List of modified files with brief description of changes]
+### Step 2: Execute via execute-tasks
 
-## Testing
-- [Test cases created/executed]
-- [Verification steps performed]
+Delegate to the execute-tasks workflow with the selected bug spec.
 
-## Prevention Measures
-[How to prevent similar issues in the future]
+<delegation>
+  EXECUTE: /execute-tasks [SELECTED_SPEC]
 
-## Knowledge Gained
-[Lessons learned from this bug investigation]
+  The execute-tasks workflow handles:
+  - Git branch creation (bugfix/[name])
+  - Kanban board management
+  - Agent assignment based on bug type
+  - Quality gates (Architect + QA)
+  - Git commits and push
+  - Completion summary
+</delegation>
+
+<branch_naming_note>
+  NOTE: execute-tasks should detect "bugfix" in spec name and:
+  - Create branch: bugfix/[bug-name] (not feature/[name])
+  - Use commit prefix: fix: (not feat:)
+</branch_naming_note>
+
+<instructions>
+  ACTION: Invoke execute-tasks with selected bug spec
+  PASS: Spec folder name as parameter
+  DELEGATE: Full execution to execute-tasks workflow
+</instructions>
+
+</step>
+
+</process_flow>
+
+## Examples
+
+```bash
+# List and select from available bug specs
+/execute-bug
+
+# Execute specific bug spec by partial name match
+/execute-bug login-error
+
+# Execute specific bug spec by full folder name
+/execute-bug 2026-01-12-bugfix-login-session-expires
 ```
 
-#### Update Bug Status
-- Update the main bug-report.md status to "Resolved"
-- Add resolution summary to the main bug file
-- Link to detailed resolution documentation
+## Integration Notes
 
-### 6. Integration and Cleanup
+**Why this shortcut exists:**
+- Convenience: Quickly filter to only bug specs
+- Clarity: User intent is clear (fixing a bug, not implementing a feature)
+- Discoverability: Users can run `/execute-bug` to see all pending bugs
 
-#### Code Integration
-- Ensure all changes are properly committed
-- Create appropriate commit messages referencing the bug ID
-- Consider creating a pull request if in team environment
+**What execute-tasks does differently for bug specs:**
+- Branch naming: `bugfix/[name]` instead of `[name]`
+- Commit prefix: `fix:` instead of `feat:`
+- Focus: Bug specs typically have 2 stories (Fix + Regression Test)
 
-#### Status Update
-- Mark bug status as "Resolved" or "Closed"
-- Add resolution date and summary
-- Update any tracking systems or issue boards
+## See Also
 
-## Interactive Workflow
-
-### Step-by-Step Execution
-1. **Load Bug**: Display bug details and current status
-2. **Investigate**: Guide through systematic investigation
-3. **Reproduce**: Verify the issue can be reproduced
-4. **Analyze**: Help identify root cause
-5. **Fix**: Implement and review the solution
-6. **Test**: Validate the fix works correctly
-7. **Document**: Create comprehensive resolution documentation
-8. **Close**: Update status and summarize outcome
-
-### User Interaction Points
-- Confirm investigation findings
-- Review proposed solutions before implementation
-- Validate test results
-- Approve final resolution documentation
-
-## Directory Structure Management
-
-### During Execution
-Create and populate:
-```
-.agent-os/bugs/YYYY-MM-DD-bug-title/
-├── bug-report.md          # Updated with resolution info
-├── investigation/
-│   ├── analysis-notes.md   # Investigation findings
-│   ├── reproduction-log.md # Reproduction attempts
-│   └── code-review.md     # Code analysis notes
-├── reproduction/
-│   ├── test-cases.md      # Test cases for reproduction
-│   └── environment.md     # Environment setup notes
-└── resolution/
-    ├── solution.md        # Detailed solution documentation
-    ├── testing.md         # Testing and validation results
-    └── prevention.md      # Future prevention measures
-```
-
-## Status Tracking
-
-### Status Transitions
-- **Open** → **In Progress** (when execution starts)
-- **In Progress** → **Resolved** (when fix is implemented and tested)
-- **Resolved** → **Closed** (when thoroughly verified and documented)
-
-### Progress Indicators
-- Investigation progress (% complete)
-- Solution implementation status
-- Testing completion status
-- Documentation completion status
-
-## Integration with Other Commands
-
-### Changelog Integration
-- Resolved bugs are included in changelog generation
-- Solution summaries are extracted for release notes
-- Time to resolution metrics are tracked
-
-### Knowledge Base
-- Resolution documentation contributes to knowledge base
-- Common patterns are identified for future prevention
-- Best practices are documented and shared
-
-## Error Handling and Edge Cases
-
-### Bug Not Found
-- List available bugs
-- Provide clear error messages
-- Suggest correct bug identifiers
-
-### Cannot Reproduce
-- Document attempts to reproduce
-- Mark as "Cannot Reproduce" with details
-- Provide guidance for gathering more information
-
-### Complex Bugs
-- Break down into smaller investigation tasks
-- Create sub-issues if needed
-- Document progress incrementally
-
-### Dependencies
-- Handle bugs that depend on external systems
-- Document external dependencies
-- Provide guidance for coordination with other teams
-
-## Quality Assurance
-
-### Before Closing Bug
-- [ ] Root cause is clearly identified and documented
-- [ ] Solution addresses the root cause
-- [ ] Fix has been thoroughly tested
-- [ ] Regression tests are in place
-- [ ] Documentation is complete and accurate
-- [ ] Prevention measures are identified
-- [ ] All files are properly organized
-
-### Success Criteria
-- Bug no longer reproduces with original steps
-- All tests pass
-- Solution is well-documented
-- Knowledge is captured for future reference
+- `/create-bug` - Create a bug specification
+- `/execute-tasks` - Execute any specification (features or bugs)
+- `/add-bug` - Add a bug to an existing feature spec

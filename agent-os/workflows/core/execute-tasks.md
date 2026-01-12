@@ -339,11 +339,32 @@ Use the git-workflow subagent to manage git branches to ensure proper isolation 
 
 <branch_naming>
   <source>spec folder name</source>
-  <format>exclude date prefix</format>
-  <example>
-    - folder: 2025-03-15-password-reset
-    - branch: password-reset
-  </example>
+  <format>exclude date prefix, detect bug specs</format>
+
+  <bug_detection>
+    CHECK: Does spec folder name contain "bugfix"?
+
+    IF spec contains "bugfix":
+      BRANCH_PREFIX = "bugfix/"
+      COMMIT_PREFIX = "fix:"
+      EXAMPLE:
+        - folder: 2026-01-12-bugfix-login-error
+        - branch: bugfix/login-error
+
+    ELSE (feature spec):
+      BRANCH_PREFIX = "" (no prefix, just name)
+      COMMIT_PREFIX = "feat:" (or appropriate type)
+      EXAMPLE:
+        - folder: 2025-03-15-password-reset
+        - branch: password-reset
+  </bug_detection>
+
+  <naming_rules>
+    1. Remove date prefix (YYYY-MM-DD-)
+    2. If "bugfix-" in name, use "bugfix/" branch prefix
+    3. Remove "bugfix-" from branch name after adding prefix
+    4. Result: bugfix/[bug-name] or [feature-name]
+  </naming_rules>
 </branch_naming>
 
 </step>
@@ -830,15 +851,31 @@ Execute the selected user story using the DevTeam agents with full Kanban Board 
       IF auto_commit_per_story = true (DEFAULT):
         USE: git-workflow subagent
 
+        DETERMINE commit prefix:
+          IF SPEC_IS_BUGFIX (from Step 5 bug_detection):
+            PREFIX = "fix:"
+          ELSE:
+            PREFIX = "feat:" (or appropriate type based on story)
+
         COMMIT:
           FILES: All changed files for this story
-          MESSAGE: "[story-id] [Story Title]
+          MESSAGE: "[PREFIX] [story-id] [Story Title]
 
                    - [Brief description of changes]
                    - DoD: All criteria met
                    - Tests: Passing
 
                    Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>"
+
+        EXAMPLE (bug fix):
+          "fix: story-1 Investigate and Fix Root Cause
+
+           - Root cause: Session token not refreshed
+           - Files changed: 3
+           - DoD: All criteria met
+           - Tests: Passing
+
+           Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>"
 
         PUSH: To spec branch (origin)
 
