@@ -743,6 +743,86 @@ Execute the selected user story using the DevTeam agents with full Kanban Board 
       </dependency_update>
     </story_completion>
 
+    <!-- Phase 5.4: Agent Self-Learning -->
+    <agent_learning>
+      TRIGGER: After story completion, before git commit
+
+      <reflection>
+        PROMPT executing agent to reflect:
+        "Reflect on the story execution you just completed.
+
+        Consider:
+        1. Did you encounter any ERRORS that you had to fix?
+           - Build errors, test failures, lint issues?
+           - What was the root cause and solution?
+
+        2. Did you discover any PROJECT-SPECIFIC PATTERNS?
+           - File naming conventions?
+           - Code organization patterns?
+           - API/component patterns?
+
+        3. Did you find any WORKAROUNDS or CONFIGS?
+           - Framework quirks?
+           - Tool configurations?
+           - Environment specifics?
+
+        4. Did you learn something about the CODEBASE STRUCTURE?
+           - Unexpected file locations?
+           - Architecture decisions?
+
+        IF you learned something valuable that would help in future stories:
+          DOCUMENT it in your agent file."
+      </reflection>
+
+      <learning_evaluation>
+        FOR each potential learning:
+          EVALUATE:
+            - Is this likely to recur in future stories?
+            - Is this specific and actionable?
+            - Would this prevent mistakes for future sessions?
+
+          IF valuable:
+            DOCUMENT: Add to agent's Project Learnings section
+          ELSE:
+            SKIP: Don't document trivial or one-time fixes
+      </learning_evaluation>
+
+      <documentation>
+        IF learning_identified:
+          READ: Agent's own file from .claude/agents/dev-team/[agent-name].md
+
+          IF "## Project Learnings" section exists:
+            APPEND: New learning at TOP of section (newest first)
+          ELSE:
+            CREATE: "## Project Learnings (Auto-Generated)" section
+            ADD: First learning
+
+          FORMAT:
+          ```markdown
+          ### [YYYY-MM-DD]: [Short Title]
+          - **Kategorie:** [Error-Fix | Pattern | Workaround | Config | Structure]
+          - **Problem:** [What was the problem?]
+          - **Lösung:** [How was it solved?]
+          - **Kontext:** [Story-ID], [affected files]
+          - **Vermeiden:** [What to avoid in future]
+          ```
+
+          UPDATE kanban-board.md:
+            - ADD: Change Log entry: "Learning documented: [title]"
+
+          LOG: "Agent learning documented: [title]"
+      </documentation>
+
+      <learning_limits>
+        CHECK: Number of learnings in agent file
+        IF learnings > 30:
+          ARCHIVE: Oldest learnings to agent-os/team/learnings-archive/[agent-name].md
+          KEEP: 20 most recent learnings in agent file
+      </learning_limits>
+
+      REFERENCE: agent-os/docs/agent-learning-guide.md
+    </agent_learning>
+
     <!-- Phase 5.5: Per-Story Git Commit -->
     <per_story_commit>
       CHECK: agent-os/config.yml → workflows.auto_commit_per_story
@@ -836,17 +916,19 @@ Execute the selected user story using the DevTeam agents with full Kanban Board 
 <instructions>
   ACTION: Load orchestration skill
   FOR_EACH: Selected story from Step 2
-  EXECUTE: 7-phase execution flow:
+  EXECUTE: 8-phase execution flow:
     1. Story Preparation
     2. Agent Assignment
     3. Story Execution
     4. Quality Gates (Architect + UX + QA)
     5. Story Completion
+    5.4. Agent Self-Learning (document learnings)
     5.5. Per-Story Git Commit (if enabled)
     6. Next Story Check
   TRACK: State in kanban-board.md
   ENFORCE: Quality gates (Architect + QA)
   MANAGE: Dependencies and handovers
+  LEARN: Agents document discoveries in their own files
   COMMIT: After each story (configurable via config.yml)
   UPDATE: Board after every state change
   PERSIST: Progress for resumability
