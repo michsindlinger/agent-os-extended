@@ -743,6 +743,40 @@ Execute the selected user story using the DevTeam agents with full Kanban Board 
       </dependency_update>
     </story_completion>
 
+    <!-- Phase 5.5: Per-Story Git Commit -->
+    <per_story_commit>
+      CHECK: agent-os/config.yml → workflows.auto_commit_per_story
+
+      IF auto_commit_per_story = true (DEFAULT):
+        USE: git-workflow subagent
+
+        COMMIT:
+          FILES: All changed files for this story
+          MESSAGE: "[story-id] [Story Title]
+
+                   - [Brief description of changes]
+                   - DoD: All criteria met
+                   - Tests: Passing
+
+                   Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>"
+
+        PUSH: To spec branch (origin)
+
+        UPDATE kanban-board.md:
+          - ADD: Commit hash to story entry
+          - ADD: Change Log entry: "Committed [story-id]"
+
+        LOG: "Story [story-id] committed: [commit-hash]"
+
+      ELSE:
+        LOG: "Per-story commits disabled, deferring to Step 8"
+        SKIP: Commit (will be done in Step 8)
+
+      BENEFIT: Each story is a checkpoint for resumability
+      BENEFIT: Clear git history per story
+      BENEFIT: Automated sessions can resume from last commit
+    </per_story_commit>
+
     <!-- Phase 6: Next Story Check -->
     <next_story_check>
       CHECK kanban-board.md Backlog:
@@ -791,18 +825,29 @@ Execute the selected user story using the DevTeam agents with full Kanban Board 
   </auto_save>
 
   <git_commits>
-    OPTIONAL: Auto-commit kanban-board.md periodically
-    MESSAGE: "Kanban update: Story [story-id] → [new-status]"
+    DEFAULT: Commit after EACH story completion (Phase 5.5)
+    CONFIG: agent-os/config.yml → workflows.auto_commit_per_story
+    MESSAGE: "[story-id] [Story Title]"
+    PUSH: After each commit to enable session resume
+    BENEFIT: Clear checkpoints for automated execution
   </git_commits>
 </persistence>
 
 <instructions>
   ACTION: Load orchestration skill
   FOR_EACH: Selected story from Step 2
-  EXECUTE: 6-phase execution flow
+  EXECUTE: 7-phase execution flow:
+    1. Story Preparation
+    2. Agent Assignment
+    3. Story Execution
+    4. Quality Gates (Architect + UX + QA)
+    5. Story Completion
+    5.5. Per-Story Git Commit (if enabled)
+    6. Next Story Check
   TRACK: State in kanban-board.md
   ENFORCE: Quality gates (Architect + QA)
   MANAGE: Dependencies and handovers
+  COMMIT: After each story (configurable via config.yml)
   UPDATE: Board after every state change
   PERSIST: Progress for resumability
   LOOP: Until all stories complete or user pauses
@@ -841,35 +886,65 @@ Use the test-runner subagent to run the entire test suite to ensure no regressio
 
 <step number="8" subagent="git-workflow" name="git_workflow">
 
-### Step 8: Git Workflow
+### Step 8: Git Workflow - PR Creation
 
-Use the git-workflow subagent to create git commit, push to GitHub, and create pull request for the implemented features.
+Use the git-workflow subagent to create pull request for the implemented features.
+
+Note: If per-story commits are enabled (default), commits were already made in Phase 5.5.
+This step focuses on PR creation and any final uncommitted changes.
 
 <instructions>
   ACTION: Use git-workflow subagent
   REQUEST: "Complete git workflow for [SPEC_NAME] feature:
             - Spec: [SPEC_FOLDER_PATH]
-            - Changes: All modified files
+            - Branch: [spec-branch-name]
             - Target: main branch
+            - Per-story commits: Already pushed (if enabled)
             - Description: [SUMMARY_OF_IMPLEMENTED_FEATURES]"
   WAIT: For workflow completion
   PROCESS: Save PR URL for summary
 </instructions>
 
-<commit_process>
-  <commit>
-    <message>descriptive summary of changes</message>
-    <format>conventional commits if applicable</format>
-  </commit>
-  <push>
-    <target>spec branch</target>
-    <remote>origin</remote>
-  </push>
+<workflow_process>
+  <check_uncommitted>
+    RUN: git status
+    IF uncommitted changes exist:
+      COMMIT: Final changes (kanban-board.md, docs)
+      MESSAGE: "Complete [SPEC_NAME] - Final updates
+
+               - Kanban board finalized
+               - All stories completed
+               - Ready for review
+
+               Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>"
+  </check_uncommitted>
+
+  <ensure_pushed>
+    RUN: git status (check if ahead of remote)
+    IF ahead:
+      PUSH: All commits to origin
+  </ensure_pushed>
+
   <pull_request>
-    <title>descriptive PR title</title>
-    <description>functionality recap</description>
+    CREATE: PR via gh cli
+    TITLE: "[SPEC_NAME] - [Brief Description]"
+    BODY:
+      - Summary of all completed stories
+      - Link to kanban-board.md
+      - Test instructions (if applicable)
+    TARGET: main branch
   </pull_request>
-</commit_process>
+</workflow_process>
+
+<commit_history>
+  WITH per-story commits enabled, git log shows:
+    - [story-1-id] Story 1 Title
+    - [story-2-id] Story 2 Title
+    - [story-3-id] Story 3 Title
+    - Complete [SPEC_NAME] - Final updates (optional)
+
+  BENEFIT: Clear history, easy rollback per story
+</commit_history>
 
 </step>
 
