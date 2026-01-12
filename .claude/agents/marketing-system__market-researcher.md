@@ -1,4 +1,5 @@
 ---
+model: inherit
 name: marketing-system__market-researcher
 description: Market research specialist using Perplexity MCP and WebSearch for competitive intelligence
 tools: Read, Write, Grep, Glob, Bash

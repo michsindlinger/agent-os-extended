@@ -1,4 +1,5 @@
 ---
+model: inherit
 name: date-checker
 description: Use proactively to determine and output today's date including the current year, month and day. Checks if content is already in context before returning.
 tools: Read, Grep, Glob

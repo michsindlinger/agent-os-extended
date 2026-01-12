@@ -1,4 +1,5 @@
 ---
+model: inherit
 name: tech-architect
 description: Technical architecture specialist. Recommends tech stacks, generates standards, and defines architecture patterns.
 tools: Read, Write, Edit, Bash, WebSearch

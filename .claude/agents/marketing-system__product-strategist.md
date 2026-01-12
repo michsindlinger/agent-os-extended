@@ -1,4 +1,5 @@
 ---
+model: inherit
 name: marketing-system__product-strategist
 description: Product strategy specialist for market positioning, brand story, and tone of voice
 tools: Read, Write

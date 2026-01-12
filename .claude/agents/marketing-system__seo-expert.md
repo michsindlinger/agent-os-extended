@@ -1,4 +1,5 @@
 ---
+model: inherit
 name: marketing-system__seo-expert
 description: SEO optimization specialist for landing pages and content
 tools: Read, Write, Edit

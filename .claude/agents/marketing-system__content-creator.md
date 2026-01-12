@@ -1,4 +1,5 @@
 ---
+model: inherit
 name: marketing-system__content-creator
 description: Copywriting specialist for landing pages and ad campaigns
 tools: Read, Write

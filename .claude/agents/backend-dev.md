@@ -1,4 +1,5 @@
 ---
+model: inherit
 name: backend-dev
 description: Backend API development orchestrator
 tools: Read, Write, Edit, Bash

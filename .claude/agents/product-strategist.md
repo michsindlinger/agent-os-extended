@@ -1,4 +1,5 @@
 ---
+model: inherit
 name: product-strategist
 description: Product planning and strategy specialist. Refines product ideas, creates product briefs, and generates roadmaps.
 tools: Read, Write, Edit, Bash, WebSearch

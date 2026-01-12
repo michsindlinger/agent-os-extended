@@ -1,4 +1,5 @@
 ---
+model: inherit
 name: ux-designer
 description: User experience and interaction design specialist. Defines UX patterns and reviews frontend implementations.
 tools: Read, Write, Edit, Bash, WebSearch

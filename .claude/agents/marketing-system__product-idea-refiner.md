@@ -1,4 +1,5 @@
 ---
+model: inherit
 name: marketing-system__product-idea-refiner
 description: Transforms vague product ideas into structured product briefs for market validation
 tools: Read, Write, Edit

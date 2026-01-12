@@ -1,4 +1,5 @@
 ---
+model: inherit
 name: project-structure-manager
 description: File structure orchestrator and organization enforcer
 tools: Read, Write, Edit, Bash, Glob, Grep

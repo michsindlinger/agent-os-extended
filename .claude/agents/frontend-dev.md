@@ -1,4 +1,5 @@
 ---
+model: inherit
 name: frontend-dev
 description: Production frontend application orchestrator
 tools: Read, Write, Edit

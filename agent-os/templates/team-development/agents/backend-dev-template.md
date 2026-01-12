@@ -1,4 +1,5 @@
 ---
+model: inherit
 name: backend-dev
 description: [PROJECT NAME] backend development specialist
 tools: Read, Write, Edit, Bash

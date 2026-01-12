@@ -1,4 +1,5 @@
 ---
+model: inherit
 name: test-runner
 description: Use proactively to run tests and analyze failures for the current task. Returns detailed failure analysis without making fixes.
 tools: Bash, Read, Grep, Glob
