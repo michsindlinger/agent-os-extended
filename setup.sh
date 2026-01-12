@@ -52,6 +52,7 @@ mkdir -p agent-os/standards
 mkdir -p agent-os/workflows/core
 mkdir -p agent-os/workflows/meta
 mkdir -p agent-os/templates  # For optional project overrides
+mkdir -p agent-os/docs  # Documentation and guides
 
 # Function to download file if it doesn't exist or if overwrite is enabled
 download_file() {
@@ -83,6 +84,16 @@ echo "═══ Installing Standards ═══"
 # Core standards only (global fallback available via setup-devteam-global.sh)
 download_file "$REPO_URL/agent-os/standards/code-style.md" "agent-os/standards/code-style.md" "standards"
 download_file "$REPO_URL/agent-os/standards/best-practices.md" "agent-os/standards/best-practices.md" "standards"
+
+# ═══════════════════════════════════════════════════════════
+# DOCS - Documentation and Guides
+# ═══════════════════════════════════════════════════════════
+
+echo ""
+echo "═══ Installing Documentation ═══"
+
+download_file "$REPO_URL/agent-os/docs/story-sizing-guidelines.md" "agent-os/docs/story-sizing-guidelines.md" "docs"
+download_file "$REPO_URL/agent-os/docs/mcp-setup-guide.md" "agent-os/docs/mcp-setup-guide.md" "docs"
 
 # ═══════════════════════════════════════════════════════════
 # WORKFLOWS - Core DevTeam Workflows Only
