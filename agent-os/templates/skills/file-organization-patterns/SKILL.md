@@ -112,43 +112,43 @@ app/
 ### File Placement Rules
 
 **Controllers/Routes**:
-- ✅ MUST go in: [CUSTOMIZE: controller/ or controllers/ or routes/ or views/]
-- ❌ NEVER in: root, service/, random folders
+- MUST go in: [CUSTOMIZE: controller/ or controllers/ or routes/ or views/]
+- NEVER in: root, service/, random folders
 - Naming: [CUSTOMIZE: UserController.java or users.controller.ts or user_controller.py]
 
 **Services/Business Logic**:
-- ✅ MUST go in: [CUSTOMIZE: service/ or services/]
-- ❌ NEVER in: controller/, util/, root
+- MUST go in: [CUSTOMIZE: service/ or services/]
+- NEVER in: controller/, util/, root
 - Naming: [CUSTOMIZE: UserService.java or user.service.ts or user_service.py]
 
 **Repositories/Data Access**:
-- ✅ MUST go in: [CUSTOMIZE: repository/ or repositories/ or models/ or dao/]
-- ❌ NEVER in: service/, controller/, root
+- MUST go in: [CUSTOMIZE: repository/ or repositories/ or models/ or dao/]
+- NEVER in: service/, controller/, root
 - Naming: [CUSTOMIZE: UserRepository.java or user.repository.ts]
 
 **Entities/Models**:
-- ✅ MUST go in: [CUSTOMIZE: entity/ or entities/ or models/]
-- ❌ NEVER in: dto/, service/, root
+- MUST go in: [CUSTOMIZE: entity/ or entities/ or models/]
+- NEVER in: dto/, service/, root
 - Naming: [CUSTOMIZE: User.java or user.entity.ts or user.model.ts]
 
 **DTOs/Request-Response**:
-- ✅ MUST go in: [CUSTOMIZE: dto/ or dtos/ or serializers/]
-- ❌ NEVER in: entity/, model/, root
+- MUST go in: [CUSTOMIZE: dto/ or dtos/ or serializers/]
+- NEVER in: entity/, model/, root
 - Naming: [CUSTOMIZE: UserDTO.java or user.dto.ts or UserSerializer]
 
 **Exceptions/Errors**:
-- ✅ MUST go in: [CUSTOMIZE: exception/ or exceptions/ or errors/]
-- ❌ NEVER in: service/, root
+- MUST go in: [CUSTOMIZE: exception/ or exceptions/ or errors/]
+- NEVER in: service/, root
 - Naming: [CUSTOMIZE: UserNotFoundException.java or NotFoundError.ts]
 
 **Configuration**:
-- ✅ MUST go in: [CUSTOMIZE: config/ or configuration/]
-- ❌ NEVER in: service/, util/, root
+- MUST go in: [CUSTOMIZE: config/ or configuration/]
+- NEVER in: service/, util/, root
 - Naming: [CUSTOMIZE: SecurityConfig.java or database.config.ts]
 
 **Utilities/Helpers**:
-- ✅ MUST go in: [CUSTOMIZE: util/ or utils/ or helpers/]
-- ❌ NEVER in: service/, controller/
+- MUST go in: [CUSTOMIZE: util/ or utils/ or helpers/]
+- NEVER in: service/, controller/
 - Naming: [CUSTOMIZE: DateUtil.java or date.util.ts or date_util.py]
 
 ---
@@ -247,39 +247,39 @@ src/
 ### File Placement Rules
 
 **Components**:
-- ✅ MUST go in: [CUSTOMIZE: components/ or features/[feature]/components/]
-- ❌ NEVER in: root, services/, pages/ (unless page component)
+- MUST go in: [CUSTOMIZE: components/ or features/[feature]/components/]
+- NEVER in: root, services/, pages/ (unless page component)
 - Naming: [CUSTOMIZE: UserList.tsx or user-list.component.ts or UserList.vue]
 - Co-location: [CUSTOMIZE: CSS next to component? Tests next to component?]
 
 **Pages/Views**:
-- ✅ MUST go in: [CUSTOMIZE: pages/ or views/ or features/[feature]/pages/]
-- ❌ NEVER in: components/ (unless also reusable), root
+- MUST go in: [CUSTOMIZE: pages/ or views/ or features/[feature]/pages/]
+- NEVER in: components/ (unless also reusable), root
 - Naming: [CUSTOMIZE: Dashboard.tsx or dashboard.page.ts or Dashboard.vue]
 
 **Services/API Clients**:
-- ✅ MUST go in: [CUSTOMIZE: services/ or api/ or features/[feature]/services/]
-- ❌ NEVER in: components/, pages/, root
+- MUST go in: [CUSTOMIZE: services/ or api/ or features/[feature]/services/]
+- NEVER in: components/, pages/, root
 - Naming: [CUSTOMIZE: UserService.ts or user.service.ts or userService.ts]
 
 **Hooks/Composables** (if applicable):
-- ✅ MUST go in: [CUSTOMIZE: hooks/ or composables/ or features/[feature]/hooks/]
-- ❌ NEVER in: components/, root
+- MUST go in: [CUSTOMIZE: hooks/ or composables/ or features/[feature]/hooks/]
+- NEVER in: components/, root
 - Naming: [CUSTOMIZE: useUsers.ts or use-users.ts or useUsers.tsx]
 
 **Types/Interfaces**:
-- ✅ MUST go in: [CUSTOMIZE: types/ or models/ or features/[feature]/types/]
-- ❌ NEVER in: components/, services/, root
+- MUST go in: [CUSTOMIZE: types/ or models/ or features/[feature]/types/]
+- NEVER in: components/, services/, root
 - Naming: [CUSTOMIZE: User.ts or user.types.ts or IUser.ts]
 
 **Utilities**:
-- ✅ MUST go in: [CUSTOMIZE: utils/ or helpers/ or lib/]
-- ❌ NEVER in: components/, services/, root
+- MUST go in: [CUSTOMIZE: utils/ or helpers/ or lib/]
+- NEVER in: components/, services/, root
 - Naming: [CUSTOMIZE: format.ts or formatUtils.ts or format_utils.ts]
 
 **Assets** (Images, Fonts, Global CSS):
-- ✅ MUST go in: [CUSTOMIZE: assets/ or public/ or static/]
-- ❌ NEVER in: components/, src/, root
+- MUST go in: [CUSTOMIZE: assets/ or public/ or static/]
+- NEVER in: components/, src/, root
 - Subfolders: [CUSTOMIZE: assets/images/, assets/fonts/, assets/styles/]
 
 ---
@@ -297,7 +297,7 @@ src/
 Example:
 src/services/
 ├── UserService.ts
-├── UserService.test.ts  ← Next to source
+├── UserService.test.ts  <- Next to source
 ```
 
 **Separate Test Directory**:
@@ -306,7 +306,7 @@ src/services/
 
 Example:
 src/services/UserService.ts
-test/services/UserService.test.ts  ← Mirrors structure
+test/services/UserService.test.ts  <- Mirrors structure
 ```
 
 ### Test File Naming
@@ -314,7 +314,7 @@ test/services/UserService.test.ts  ← Mirrors structure
 **Convention**: [CUSTOMIZE: .test.ts / .spec.ts / Test.java / _test.py / _spec.rb]
 
 **Examples**:
-- UserService → [UserService.test.ts or UserServiceTest.java or user_service_test.py]
+- UserService -> [UserService.test.ts or UserServiceTest.java or user_service_test.py]
 
 ---
 
@@ -342,11 +342,11 @@ test/services/UserService.test.ts  ← Mirrors structure
 
 **Backend**:
 - Build output: [CUSTOMIZE: target/ or dist/ or build/]
-- ❌ NEVER commit build artifacts
+- NEVER commit build artifacts
 
 **Frontend**:
 - Build output: [CUSTOMIZE: dist/ or build/ or out/]
-- ❌ NEVER commit build artifacts
+- NEVER commit build artifacts
 
 **Rules**:
 - Always in .gitignore
@@ -358,7 +358,7 @@ test/services/UserService.test.ts  ← Mirrors structure
 
 **[CUSTOMIZE WITH PROJECT-SPECIFIC VIOLATIONS]**
 
-❌ **NEVER DO**:
+**NEVER DO**:
 - Controllers in root directory
 - Services mixed with controllers in same folder
 - DTOs in entity folder (or vice versa)
@@ -367,7 +367,7 @@ test/services/UserService.test.ts  ← Mirrors structure
 - Database queries in services (should be in repository)
 - [CUSTOMIZE: Project-specific violation]
 
-✅ **ALWAYS DO**:
+**ALWAYS DO**:
 - One file type per directory (controllers in controller/, services in service/)
 - Mirror test structure to source structure
 - Keep related files together (feature-based if that's your pattern)
@@ -420,8 +420,8 @@ test/services/UserService.test.ts  ← Mirrors structure
 - Then test: [CUSTOMIZE: src/test/java/.../service/UserServiceTest.java or test/service/UserService.test.ts]
 
 **Rule 4: No Code in Root**
-- ❌ Never: `project-root/UserController.java`
-- ✅ Always: Proper directory structure
+- NEVER: `project-root/UserController.java`
+- ALWAYS: Proper directory structure
 
 **[CUSTOMIZE: Add more rules]**
 
@@ -491,9 +491,9 @@ OR:
 [CUSTOMIZE: List path aliases if used]
 
 Examples:
-- @/components → src/components
-- @/services → src/services
-- ~/utils → src/utils
+- @/components -> src/components
+- @/services -> src/services
+- ~/utils -> src/utils
 ```
 
 ---
@@ -523,12 +523,12 @@ Examples:
 **[CUSTOMIZE WITH PROJECT STANDARDS]**
 
 **Recommended Limits**:
-- Controller: [≤200 lines / ≤300 lines]
-- Service: [≤300 lines / ≤500 lines]
-- Component: [≤250 lines / ≤300 lines]
+- Controller: [<=200 lines / <=300 lines]
+- Service: [<=300 lines / <=500 lines]
+- Component: [<=250 lines / <=300 lines]
 
 **When to Split**:
-- If file >limit → Split into multiple files
+- If file >limit -> Split into multiple files
 - Extract to separate concerns
 
 ---
@@ -596,22 +596,22 @@ Run before committing:
 ## Quick Reference
 
 **Backend Quick Lookup**:
-- Controller? → [PATH]
-- Service? → [PATH]
-- Repository? → [PATH]
-- Entity? → [PATH]
-- DTO? → [PATH]
-- Exception? → [PATH]
-- Test? → [PATH]
+- Controller? -> [PATH]
+- Service? -> [PATH]
+- Repository? -> [PATH]
+- Entity? -> [PATH]
+- DTO? -> [PATH]
+- Exception? -> [PATH]
+- Test? -> [PATH]
 
 **Frontend Quick Lookup**:
-- Component? → [PATH]
-- Page? → [PATH]
-- Service? → [PATH]
-- Hook? → [PATH]
-- Type? → [PATH]
-- Util? → [PATH]
-- Test? → [PATH]
+- Component? -> [PATH]
+- Page? -> [PATH]
+- Service? -> [PATH]
+- Hook? -> [PATH]
+- Type? -> [PATH]
+- Util? -> [PATH]
+- Test? -> [PATH]
 
 ---
 

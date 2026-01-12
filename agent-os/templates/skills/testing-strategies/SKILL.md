@@ -23,11 +23,11 @@ globs: ["**/*.{test,spec}.{ts,js,java,py,rb}", "**/test/**/*", "**/tests/**/*"]
 [CUSTOMIZE: Adjust ratios for your project]
 
         /\
-       /E2E\      ← [5-10%] Critical flows
+       /E2E\      <- [5-10%] Critical flows
       /------\
-     /Integr.\   ← [20%] API endpoints, DB
+     /Integr.\   <- [20%] API endpoints, DB
     /----------\
-   /   Unit     \ ← [70%] Functions, components
+   /   Unit     \ <- [70%] Functions, components
   /--------------\
 ```
 
@@ -329,7 +329,7 @@ Before deployment:
 - [ ] All unit tests pass
 - [ ] All integration tests pass
 - [ ] All E2E tests pass (critical flows)
-- [ ] Coverage ≥ [80]%
+- [ ] Coverage >= [80]%
 - [ ] Build succeeds
 - [ ] No linting errors
 - [ ] [PROJECT-SPECIFIC GATE]

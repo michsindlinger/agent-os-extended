@@ -537,9 +537,9 @@ One-page reference for common [feature] tasks.
 
 | Icon/Color | Meaning | Action |
 |------------|---------|--------|
-| 🟢 Green | [Status] | [What to do] |
-| 🟡 Yellow | [Status] | [What to do] |
-| 🔴 Red | [Status] | [What to do] |
+| Green | [Status] | [What to do] |
+| Yellow | [Status] | [What to do] |
+| Red | [Status] | [What to do] |
 
 ## Common Error Messages
 
