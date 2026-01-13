@@ -375,8 +375,226 @@ Delegate to Architect for technical analysis, identifying affected components an
   ACTION: Delegate to Architect for technical analysis
   WAIT: For completion
   VALIDATE: Technical spec complete
-  PROCEED: To completion step
+  PROCEED: To story size validation
 </instructions>
+
+</step>
+
+<step number="3.5" name="story_size_validation">
+
+### Step 3.5: Story Size Validation
+
+Validate that bug fix stories comply with size guidelines to prevent mid-execution context compaction.
+
+<validation_process>
+  READ: agent-os/specs/[SPEC_FOLDER]/user-stories.md
+  READ: agent-os/standards/story-size-guidelines.md (for reference thresholds)
+
+  FOR EACH story in user-stories.md:
+    <extract_metrics>
+      ANALYZE: WO (Where) field
+        COUNT: Number of file paths mentioned
+        EXTRACT: File paths list
+
+      ANALYZE: Story Points field
+        EXTRACT: Estimated story points
+        IF story_points > 5:
+          FLAG: As potentially too complex
+
+      ANALYZE: WAS (What) field
+        ESTIMATE: Lines of code based on components mentioned
+        HEURISTIC:
+          - Each bug fix file ~50-150 lines
+          - Tests ~50-100 lines per test file
+          - Investigation/analysis minimal LOC impact
+    </extract_metrics>
+
+    <check_thresholds>
+      CHECK: Number of files
+        IF files > 5:
+          FLAG: Story as "Too Large - File Count"
+          SEVERITY: High
+
+      CHECK: Story points
+        IF story_points > 8:
+          FLAG: Story as "Too Complex - High Story Points"
+          SEVERITY: High
+        ELSE IF story_points > 5:
+          FLAG: Story as "Watch - Moderate Complexity"
+          SEVERITY: Medium
+
+      CHECK: Estimated LOC
+        IF estimated_loc > 600:
+          FLAG: Story as "Too Large - Code Volume"
+          SEVERITY: Medium
+
+      CHECK: Cross-layer detection
+        IF WO contains backend AND frontend paths:
+          FLAG: Story as "Multi-Layer Bug"
+          SEVERITY: Medium
+          SUGGEST: "Split by layer (investigate + fix backend, then frontend)"
+    </check_thresholds>
+
+    <record_issues>
+      IF any flags raised:
+        ADD to validation_report:
+          - Story ID
+          - Story Title
+          - Issue(s) detected
+          - Current metrics (files, story points, LOC)
+          - Recommended action
+          - Suggested split pattern
+    </record_issues>
+</validation_process>
+
+<decision_tree>
+  IF no stories flagged:
+    LOG: "✅ All bug fix stories pass size validation"
+    PROCEED: To Step 4 (Completion Summary)
+
+  ELSE (stories flagged):
+    GENERATE: Validation Report
+
+    <validation_report_format>
+      ⚠️ Bug Story Size Validation Issues
+
+      **Bug fix stories exceeding guidelines:**
+
+      **Story [ID]: [Title]**
+      - Files: [count] (recommended: max 5) ❌
+      - Story Points: [points] (recommended: max 5-8) ⚠️
+      - Est. LOC: ~[count] (recommended: max 400-600) ⚠️
+      - Issue: [description]
+
+      **Recommendation for Bug Fix:** Split into [N] stories:
+      [Suggested split pattern based on story content]
+
+      ---
+
+      **Summary:**
+      - Total bug stories: [N]
+      - Stories passing validation: [N]
+      - Stories flagged: [N]
+        - High severity: [N]
+        - Medium severity: [N]
+
+      **Impact if proceeding with large bug stories:**
+      - Higher token consumption during bug investigation
+      - Risk of mid-story auto-compaction
+      - Potential context loss during complex debugging
+      - Higher costs (possibly crossing 200K threshold)
+    </validation_report_format>
+
+    PRESENT: Validation Report to user
+
+    ASK user via AskUserQuestion:
+    "Bug Story Size Validation detected issues. How would you like to proceed?
+
+    Options:
+    1. Review and manually edit stories (Recommended)
+       → Opens user-stories.md for editing
+       → Re-run validation after edits
+
+    2. Proceed anyway
+       → Accept higher token costs
+       → Risk mid-story compaction during debugging
+       → Continue to execution
+
+    3. Auto-split flagged stories
+       → System suggests splits based on bug complexity
+       → User reviews and approves splits
+       → Stories updated automatically"
+
+    WAIT for user choice
+
+    <user_choice_handling>
+      IF choice = "Review and manually edit":
+        INFORM: "Please edit: agent-os/specs/[SPEC_FOLDER]/user-stories.md"
+        INFORM: "Split large bug stories following patterns in:
+                 agent-os/standards/story-size-guidelines.md
+
+                 Common bug story split patterns:
+                 - Story 1: Investigation & Root Cause Analysis
+                 - Story 2: Implement Fix (Backend)
+                 - Story 3: Implement Fix (Frontend) [if multi-layer]
+                 - Story 4: Add Regression Tests
+                 - Story 5: Documentation Update"
+        PAUSE: Wait for user to edit
+        ASK: "Ready to re-validate? (yes/no)"
+        IF yes:
+          REPEAT: Step 3.5 (this validation step)
+        ELSE:
+          PROCEED: To Step 4 with warning flag
+
+      ELSE IF choice = "Proceed anyway":
+        WARN: "⚠️ Proceeding with oversized bug stories
+               - Expect higher token costs during investigation
+               - Mid-story compaction likely during debugging
+               - Resume Context will preserve state if needed"
+        LOG: Validation bypassed by user
+        PROCEED: To Step 4
+
+      ELSE IF choice = "Auto-split flagged stories":
+        FOR EACH flagged_story:
+          <suggest_split>
+            ANALYZE: Story content (WAS/WIE/WO fields)
+
+            DETERMINE: Split pattern for bugs
+              IF multi_layer (backend + frontend bug):
+                SUGGEST: "Split by layer"
+                SUB_STORIES:
+                  - Story [ID].1: Investigation & Root Cause Analysis
+                  - Story [ID].2: Fix Backend Components
+                  - Story [ID].3: Fix Frontend Components
+                  - Story [ID].4: Add Regression Tests
+
+              ELSE IF high_file_count OR high_story_points:
+                SUGGEST: "Split investigation from fix"
+                SUB_STORIES:
+                  - Story [ID].1: Investigation & Root Cause Analysis
+                  - Story [ID].2: Implement Fix
+                  - Story [ID].3: Add Regression Tests
+
+              ELSE IF complex_debugging:
+                SUGGEST: "Split by phase"
+                SUB_STORIES:
+                  - Story [ID].1: Reproduce & Isolate Bug
+                  - Story [ID].2: Identify Root Cause
+                  - Story [ID].3: Implement & Test Fix
+          </suggest_split>
+
+          PRESENT: Suggested split to user
+          ASK: "Accept this split for Bug Story [ID]? (yes/no/custom)"
+
+          IF yes:
+            UPDATE: user-stories.md with sub-stories
+            UPDATE: Dependencies (investigation before fix before tests)
+            MARK: Original story as "Split into [IDs]"
+
+          ELSE IF custom:
+            ALLOW: User to describe custom split
+            UPDATE: Based on user input
+
+        AFTER all splits:
+          INFORM: "Bug stories have been split. Re-running validation..."
+          REPEAT: Step 3.5 (this validation step)
+    </user_choice_handling>
+</decision_tree>
+
+<instructions>
+  ACTION: Validate all bug fix stories against size guidelines
+  CHECK: File count, story points, estimated LOC, cross-layer detection
+  REPORT: Any issues found with bug-specific recommendations
+  OFFER: Three options (edit, proceed, auto-split)
+  ENFORCE: Validation loop until passed or user explicitly bypasses
+  REFERENCE: agent-os/docs/story-sizing-guidelines.md
+  NOTE: Bug fixes often need investigation stories - use that for splitting
+</instructions>
+
+**Output:**
+- Validation report (if issues found)
+- User decision on how to proceed
+- Updated user-stories.md (if bug stories were split)
 
 </step>
 

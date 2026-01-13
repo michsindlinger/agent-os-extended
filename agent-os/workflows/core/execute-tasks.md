@@ -150,6 +150,66 @@ Use the file-creator subagent to create or load the kanban board for state persi
     > Last Updated: [TIMESTAMP]
   </header>
 
+  <resume_context>
+    ## 🔄 Resume Context (Post-Compaction Recovery)
+
+    > **IMPORTANT:** If conversation was compacted, read this section to resume workflow correctly.
+
+    | Field | Value |
+    |-------|-------|
+    | **Workflow** | /execute-tasks |
+    | **Workflow File** | agent-os/workflows/core/execute-tasks.md |
+    | **Current Step** | [Step number and name] |
+    | **Current Story** | [story-id] - [Story Title] |
+    | **Story Status** | [In Progress / In Review / Testing] |
+    | **Assigned Agent** | [Agent name or "orchestrator"] |
+    | **Last Action** | [Brief description of last completed action] |
+    | **Next Action** | [Brief description of next required action] |
+
+    ### Critical Rules (Always Apply):
+    1. **DELEGATE** - Use Task tool to delegate to DevTeam agents, never implement directly
+    2. **UPDATE BOARD** - Update this kanban-board.md after EVERY state change
+    3. **QUALITY GATES** - All stories must pass: Architect Review → UX Review (frontend) → QA Testing
+    4. **PERSIST STATE** - This board is the source of truth for execution state
+
+    ### Resume Instructions:
+    IF Current Step is incomplete:
+      1. Re-read the Workflow File for detailed step instructions
+      2. Continue from "Next Action" listed above
+      3. Update this Resume Context section after each significant action
+
+    ### Agent Assignment Rules:
+    - Backend stories → dev-team__backend-developer-*
+    - Frontend stories → dev-team__frontend-developer-*
+    - DevOps stories → dev-team__dev-ops-specialist
+    - Test stories → dev-team__qa-specialist
+    - Reviews → dev-team__architect (code) + ux-designer (frontend UX)
+  </resume_context>
+
+  <resume_context_update_rules>
+    **MANDATORY:** Update Resume Context table on EVERY kanban-board.md update:
+
+    WHEN updating kanban-board.md:
+      1. Update "Last Updated" timestamp in header
+      2. Update Resume Context table:
+         - Current Step: [current workflow step number + name]
+         - Current Story: [story currently being worked on]
+         - Story Status: [In Progress | In Review | Testing | Done]
+         - Assigned Agent: [agent handling current story]
+         - Last Action: [what was just completed]
+         - Next Action: [what needs to happen next]
+      3. Proceed with other kanban updates (story moves, metrics, etc.)
+
+    TRIGGER POINTS for Resume Context Update:
+      - Step 1 complete → Current Step: "Step 2 - Story Selection"
+      - Story selected → Current Story: [selected story]
+      - Agent assigned → Assigned Agent: [agent name]
+      - Story moved to In Review → Story Status: "In Review", Next Action: "Architect Review"
+      - Review complete → Next Action: "QA Testing" or "Fix issues"
+      - Story moved to Done → Current Story: "None - selecting next"
+      - Execution paused → Next Action: "Resume with /execute-tasks"
+  </resume_context_update_rules>
+
   <board_status>
     ## 📊 Board Status
 
@@ -903,15 +963,161 @@ Execute the selected user story using the DevTeam agents with full Kanban Board 
         ELSE:
           ASK user: "Story [story-id] complete. Continue with next story? (yes/no/which)"
           IF yes:
-            RETURN: To Step 2 (Story Selection)
+            CONTINUE: To Phase 6.5 (Context Management Checkpoint)
           ELSE IF which:
             ALLOW: User to specify story
-            RETURN: To Step 2 with user selection
+            CONTINUE: To Phase 6.5 (Context Management Checkpoint)
           ELSE:
             PAUSE: Execution
             STATE: "Execution paused. Resume with /execute-tasks"
             EXIT: Execution loop
     </next_story_check>
+
+    <!-- Phase 6.5: Context Management Checkpoint (Token Optimization) -->
+    <context_checkpoint>
+      <purpose>
+        Prevent mid-story auto-compaction by proactively managing context.
+        Based on Claude Code 1M token optimization best practices.
+      </purpose>
+
+      <checkpoint_trigger>
+        CALCULATE: Stories completed in current session
+        COUNT: completed_stories_count
+
+        IF completed_stories_count is MULTIPLE of 2:
+          TRIGGER: Context checkpoint (every 2 stories)
+          SHOW: Token optimization recommendation
+        ELSE:
+          SKIP: Checkpoint
+          PROCEED: To Step 2 (Story Selection)
+      </checkpoint_trigger>
+
+      <checkpoint_message>
+        WHEN triggered, present to user:
+
+        ---
+        💡 **Context Management Checkpoint**
+
+        **Stories completed this session:** [count]
+
+        **Token Optimization Recommendation:**
+
+        Running `/compact` now will:
+        ✅ Preserve current progress (saved in Resume Context + Kanban Board)
+        ✅ Clear old conversation history
+        ✅ Reduce token costs (stay under 200K threshold)
+        ✅ Prevent mid-story auto-compaction
+        ✅ Maintain perfect continuity via TODO list + Resume Context
+
+        **Benefits:**
+        - Faster agent responses
+        - Lower costs ($3/M vs $6/M above 200K)
+        - No risk of losing context mid-story
+
+        **What gets preserved:**
+        - ✅ Kanban Board state (all progress)
+        - ✅ Resume Context (workflow state)
+        - ✅ TODO list (current tasks)
+        - ✅ Git commits (all code)
+        - ✅ CLAUDE.md files (project context)
+
+        **What gets cleared:**
+        - ❌ Old conversation history (not needed)
+        - ❌ Previous file reads (cached in git)
+        - ❌ Completed story discussions
+
+        ---
+
+        Would you like to `/compact` now before continuing?
+
+        Options:
+        1. **Yes, compact now (Recommended)**
+           → Run `/compact` manually in terminal
+           → Then type 'done' to continue
+
+        2. **No, continue without compacting**
+           → Accept higher token usage
+           → Risk of auto-compaction during next story
+
+        3. **Check current token usage first**
+           → Run `/context` to see current usage
+           → Then decide
+        ---
+      </checkpoint_message>
+
+      <user_choice_handling>
+        ASK user via AskUserQuestion:
+        "Context Management: Would you like to compact now?
+
+        Options:
+        - Yes, compact now (Recommended)
+        - No, continue without compacting
+        - Check token usage first"
+
+        WAIT for user choice
+
+        IF choice = "Yes, compact now":
+          INFORM: "
+          Please run this command in your terminal:
+
+          → /compact
+
+          This will:
+          - Compress conversation history
+          - Preserve Resume Context + Kanban Board
+          - Keep TODO list intact
+
+          After compacting, the system will automatically:
+          1. Read the Resume Context from kanban-board.md
+          2. Continue from exactly where you left off
+          3. Select the next story from backlog
+
+          Type 'done' when you've completed the compact."
+
+          WAIT for user confirmation ("done")
+
+          LOG: "Context compacted by user at checkpoint"
+          NOTE: "Resume Context in kanban-board.md will guide continuation"
+          PROCEED: To Step 2 (Story Selection)
+
+        ELSE IF choice = "Check token usage first":
+          INFORM: "
+          Run this command to check your current token usage:
+
+          → /context
+
+          Look for:
+          - Total context: Should be under 150K for optimal cost
+          - Messages: Shows conversation history size
+          - If Total > 100K: Strongly recommend /compact
+          - If Total > 150K: Definitely /compact
+
+          After checking, we'll ask again if you want to compact."
+
+          WAIT for user to check
+
+          ASK: "After checking /context, would you like to compact? (yes/no)"
+          IF yes:
+            EXECUTE: "Yes, compact now" flow from above
+          ELSE:
+            PROCEED: To Step 2 with warning
+
+        ELSE IF choice = "No, continue without compacting":
+          WARN: "⚠️ Continuing without compacting
+                 - Token usage will continue to grow
+                 - Auto-compaction may occur mid-story
+                 - Resume Context will preserve state if needed"
+          LOG: "User declined context checkpoint"
+          PROCEED: To Step 2 (Story Selection)
+      </user_choice_handling>
+
+      <reference>
+        See: agent-os/docs/story-sizing-guidelines.md
+        Context Budget: Aim to stay under 100-150K tokens
+        Checkpoint Frequency: Every 2 completed stories
+        Threshold: 200K tokens (cost doubles above this)
+      </reference>
+    </context_checkpoint>
 
   END FOR
 </execution_flow>

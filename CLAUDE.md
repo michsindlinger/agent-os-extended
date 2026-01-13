@@ -170,6 +170,35 @@ Explicitly instruct them on correct file placement for any reports or documentat
 - `agent-os/specs/` - Feature specifications (development-oriented)
 - `agent-os/team/` - DevTeam agents and skills
 
+## Workflow Resume (Post-Compaction Recovery)
+
+**IMPORTANT:** After conversation compaction, workflow context may be lost. Follow these recovery steps:
+
+**Detecting Active Workflows:**
+```bash
+# Check for active Kanban boards (indicates /execute-tasks in progress)
+ls agent-os/specs/*/kanban-board.md 2>/dev/null
+```
+
+**Recovery Protocol:**
+1. **If Kanban Board exists with "In Progress" stories:**
+   - Read the Kanban Board file
+   - Find the "🔄 Resume Context" section at the top
+   - Follow the "Resume Instructions" in that section
+   - The Resume Context contains: current step, current story, assigned agent, next action
+
+2. **Critical: Maintain Delegation Pattern**
+   - ALWAYS delegate to DevTeam agents via Task tool
+   - NEVER implement code directly after compaction
+   - The Kanban Board "Agent Assignment Rules" shows which agent handles which story type
+
+3. **After Each Action:**
+   - Update the Kanban Board's Resume Context section
+   - This ensures the next compaction can also recover
+
+**Quick Resume Command:**
+If unsure, simply run `/execute-tasks` again - it will detect the existing Kanban Board and offer resume options.
+
 ## Development Notes
 
 <!-- CUSTOMIZE: Add your project-specific development context -->

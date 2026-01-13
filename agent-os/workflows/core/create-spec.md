@@ -274,6 +274,217 @@ Use dev-team__architect agent to add technical refinement to fachliche user stor
 
 </step>
 
+<step number="3.5" name="story_size_validation">
+
+### Step 3.5: Story Size Validation
+
+Validate that all stories comply with size guidelines to prevent mid-execution context compaction.
+
+<validation_process>
+  READ: agent-os/specs/[spec-name]/user-stories.md
+  READ: agent-os/standards/story-size-guidelines.md (for reference thresholds)
+
+  FOR EACH story in user-stories.md:
+    <extract_metrics>
+      ANALYZE: WO (Where) field
+        COUNT: Number of file paths mentioned
+        EXTRACT: File paths list
+
+      ANALYZE: Geschätzte Komplexität field
+        EXTRACT: Complexity rating (XS/S/M/L/XL)
+
+      ANALYZE: WAS (What) field
+        ESTIMATE: Lines of code based on components mentioned
+        HEURISTIC:
+          - Each new file/component ~100-150 lines
+          - Each modified file ~50-100 lines
+          - Tests ~50-100 lines per test file
+    </extract_metrics>
+
+    <check_thresholds>
+      CHECK: Number of files
+        IF files > 5:
+          FLAG: Story as "Too Large - File Count"
+          SEVERITY: High
+
+      CHECK: Complexity rating
+        IF complexity in [M, L, XL]:
+          FLAG: Story as "Too Complex"
+          SEVERITY: High
+
+      CHECK: Estimated LOC
+        IF estimated_loc > 600:
+          FLAG: Story as "Too Large - Code Volume"
+          SEVERITY: Medium
+        ELSE IF estimated_loc > 400:
+          FLAG: Story as "Watch - Approaching Limit"
+          SEVERITY: Low
+
+      CHECK: Cross-layer detection
+        IF WO contains backend AND frontend paths:
+          FLAG: Story as "Multi-Layer"
+          SEVERITY: Medium
+          SUGGEST: "Split by layer (backend/frontend)"
+    </check_thresholds>
+
+    <record_issues>
+      IF any flags raised:
+        ADD to validation_report:
+          - Story ID
+          - Story Title
+          - Issue(s) detected
+          - Current metrics (files, complexity, LOC)
+          - Recommended action
+          - Suggested split pattern
+    </record_issues>
+</validation_process>
+
+<decision_tree>
+  IF no stories flagged:
+    LOG: "✅ All stories pass size validation"
+    PROCEED: To Step 4 (Spec Complete)
+
+  ELSE (stories flagged):
+    GENERATE: Validation Report
+
+    <validation_report_format>
+      ⚠️ Story Size Validation Issues
+
+      **Stories Exceeding Guidelines:**
+
+      **Story [ID]: [Title]**
+      - Files: [count] (recommended: max 5) ❌
+      - Complexity: [rating] (recommended: max S) ❌
+      - Est. LOC: ~[count] (recommended: max 400-600) ⚠️
+      - Issue: [description]
+
+      **Recommendation:** Split into [N] stories:
+      [Suggested split pattern based on story content]
+
+      ---
+
+      **Story [ID]: [Title]**
+      ...
+
+      **Summary:**
+      - Total stories: [N]
+      - Stories passing validation: [N]
+      - Stories flagged: [N]
+        - High severity: [N]
+        - Medium severity: [N]
+        - Low severity: [N]
+
+      **Impact if proceeding with large stories:**
+      - Higher token consumption per story
+      - Risk of mid-story auto-compaction
+      - Potential context loss during execution
+      - Higher costs (possibly crossing 200K threshold)
+    </validation_report_format>
+
+    PRESENT: Validation Report to user
+
+    ASK user via AskUserQuestion:
+    "Story Size Validation detected issues. How would you like to proceed?
+
+    Options:
+    1. Review and manually edit stories (Recommended)
+       → Opens user-stories.md for editing
+       → Re-run validation after edits
+
+    2. Proceed anyway
+       → Accept higher token costs
+       → Risk mid-story compaction
+       → Continue to execution
+
+    3. Auto-split flagged stories
+       → System suggests splits based on content
+       → User reviews and approves splits
+       → Stories updated automatically"
+
+    WAIT for user choice
+
+    <user_choice_handling>
+      IF choice = "Review and manually edit":
+        INFORM: "Please edit: agent-os/specs/[spec-name]/user-stories.md"
+        INFORM: "Split large stories following patterns in:
+                 agent-os/standards/story-size-guidelines.md"
+        PAUSE: Wait for user to edit
+        ASK: "Ready to re-validate? (yes/no)"
+        IF yes:
+          REPEAT: Step 3.5 (this validation step)
+        ELSE:
+          PROCEED: To Step 4 with warning flag
+
+      ELSE IF choice = "Proceed anyway":
+        WARN: "⚠️ Proceeding with oversized stories
+               - Expect higher token costs
+               - Mid-story compaction likely
+               - Resume Context will preserve state if needed"
+        LOG: Validation bypassed by user
+        PROCEED: To Step 4
+
+      ELSE IF choice = "Auto-split flagged stories":
+        FOR EACH flagged_story:
+          <suggest_split>
+            ANALYZE: Story content (WAS/WIE/WO fields)
+
+            DETERMINE: Split pattern
+              IF multi_layer (backend + frontend):
+                SUGGEST: "Split by layer"
+                SUB_STORIES:
+                  - Story [ID].1: Backend implementation
+                  - Story [ID].2: Frontend implementation
+                  - Story [ID].3: Integration
+
+              ELSE IF high_file_count:
+                SUGGEST: "Split by component"
+                SUB_STORIES:
+                  - Story [ID].1: Core component
+                  - Story [ID].2: Supporting components
+                  - Story [ID].3: Tests
+
+              ELSE IF complex_feature:
+                SUGGEST: "Split by vertical slice"
+                SUB_STORIES:
+                  - Story [ID].1: Basic functionality
+                  - Story [ID].2: Advanced features
+                  - Story [ID].3: Edge cases + tests
+          </suggest_split>
+
+          PRESENT: Suggested split to user
+          ASK: "Accept this split for Story [ID]? (yes/no/custom)"
+
+          IF yes:
+            UPDATE: user-stories.md with sub-stories
+            UPDATE: Dependencies (sub-stories link to each other)
+            MARK: Original story as "Split into [IDs]"
+
+          ELSE IF custom:
+            ALLOW: User to describe custom split
+            UPDATE: Based on user input
+
+        AFTER all splits:
+          INFORM: "Stories have been split. Re-running validation..."
+          REPEAT: Step 3.5 (this validation step)
+    </user_choice_handling>
+</decision_tree>
+
+<instructions>
+  ACTION: Validate all stories against size guidelines
+  CHECK: File count, complexity, estimated LOC, cross-layer detection
+  REPORT: Any issues found with specific recommendations
+  OFFER: Three options (edit, proceed, auto-split)
+  ENFORCE: Validation loop until passed or user explicitly bypasses
+  REFERENCE: agent-os/docs/story-sizing-guidelines.md
+</instructions>
+
+**Output:**
+- Validation report (if issues found)
+- User decision on how to proceed
+- Updated user-stories.md (if stories were split)
+
+</step>
+
 <step number="4" name="spec_complete">
 
 ### Step 4: Spec Ready for Execution
