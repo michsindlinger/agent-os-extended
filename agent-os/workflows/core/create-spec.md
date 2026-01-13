@@ -107,13 +107,10 @@ Use dev-team__po agent to gather fachliche (business) requirements from user and
   - FALLBACK: ~/.agent-os/templates/docs/spec-template.md
   (Same for spec-lite-template.md, user-stories-template.md)
 
-  STORY SIZING RULES (for automated execution):
-  - Max 5 Dateien pro Story
-  - Max 400 LOC pro Story
-  - Wenn Story > 5 Dateien: MANDATORY SPLIT in Sub-Stories
-  - Komplexität max 'S' (Small, 1-3 SP)
-  - Bei 'M' oder größer: MANDATORY SPLIT
-  - Reference: agent-os/docs/story-sizing-guidelines.md
+  STORY SIZING:
+  - Keep stories small (max 5 files, max 400 LOC)
+  - Automated validation occurs in Step 3.5
+  - Full guidelines: agent-os/docs/story-sizing-guidelines.md
 
   ACCEPTANCE CRITERIA FORMAT (for automated verification):
   - Use prefix format: FILE_EXISTS:, CONTAINS:, LINT_PASS:, TEST_PASS:
@@ -259,7 +256,7 @@ Use dev-team__architect agent to add technical refinement to fachliche user stor
   - Define clear DoD per story
   - Map ALL dependencies
   - Add Completion Check section with bash verify commands
-  - Ensure story complexity max 'S' (split if larger)
+  - Keep stories small (automated validation in Step 3.5)
   - Reference: agent-os/docs/story-sizing-guidelines.md"
 
   WAIT for dev-team__architect completion
