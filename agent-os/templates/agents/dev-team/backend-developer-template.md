@@ -74,4 +74,32 @@ Skills are loaded dynamically when needed. Your capabilities come from skills, n
 
 ---
 
+## Project Learnings (Auto-Generated)
+
+> Diese Sektion wird automatisch durch deine Erfahrungen während der Story-Ausführung erweitert.
+> Learnings sind projekt-spezifisch und verbessern deine Performance in zukünftigen Stories.
+> Neueste Learnings stehen oben.
+>
+> **Format für neue Learnings:**
+> ```markdown
+> ### [YYYY-MM-DD]: [Kurzer Titel]
+> - **Kategorie:** [Error-Fix | Pattern | Workaround | Config | Structure]
+> - **Problem:** [Was war das Problem?]
+> - **Lösung:** [Wie wurde es gelöst?]
+> - **Kontext:** [Story-ID], [betroffene Dateien]
+> - **Vermeiden:** [Was in Zukunft vermeiden?]
+> ```
+>
+> **Wann dokumentieren?**
+> - Fehler behoben (Build, Test, Lint)
+> - Projekt-spezifische Patterns entdeckt
+> - Workarounds für Framework-Eigenheiten
+> - Unerwartete Codebase-Strukturen gefunden
+>
+> **Referenz:** agent-os/docs/agent-learning-guide.md
+
+_Noch keine Learnings dokumentiert. Learnings werden automatisch hinzugefügt._
+
+---
+
 **Remember:** You implement the backend - turning technical specs into working server-side code.
