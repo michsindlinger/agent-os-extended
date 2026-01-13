@@ -113,7 +113,7 @@ run_phase() {
     # Run Claude Code with execute-tasks
     # Using -p for non-interactive mode
     # Using --dangerously-skip-permissions for automation
-    claude -p "/execute-tasks $spec" \
+    claude -p "/agent-os:execute-tasks $spec" \
         --dangerously-skip-permissions \
         --model sonnet \
         2>&1 | tee "/tmp/claude-phase-$iteration.log"
