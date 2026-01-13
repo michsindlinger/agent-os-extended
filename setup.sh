@@ -127,6 +127,9 @@ download_file "$REPO_URL/agent-os/workflows/core/execute-bug.md" "agent-os/workf
 # Task execution
 download_file "$REPO_URL/agent-os/workflows/core/execute-tasks.md" "agent-os/workflows/core/execute-tasks.md" "workflows"
 
+# Skill management
+download_file "$REPO_URL/agent-os/workflows/core/add-skill.md" "agent-os/workflows/core/add-skill.md" "workflows"
+
 # ═══════════════════════════════════════════════════════════
 # CONFIGURATION
 # ═══════════════════════════════════════════════════════════
@@ -194,7 +197,7 @@ echo "📁 Installed Structure:"
 echo ""
 echo "  agent-os/"
 echo "    ├── standards/              (2 core files)"
-echo "    ├── workflows/core/         (8 core workflows)"
+echo "    ├── workflows/core/         (9 core workflows)"
 echo "    ├── workflows/meta/         (1 meta workflow)"
 echo "    └── config.yml              (minimal configuration)"
 echo ""
@@ -202,9 +205,9 @@ echo "  CLAUDE.md                     (project instructions template)"
 echo ""
 echo "📊 Statistics:"
 echo "  • Standards: 2 files"
-echo "  • Workflows: 9 files"
+echo "  • Workflows: 10 files"
 echo "  • Config: 1 file"
-echo "  • Total: 12 files + CLAUDE.md"
+echo "  • Total: 13 files + CLAUDE.md"
 echo ""
 echo "📚 Templates (53 files) installed globally:"
 echo "  Templates are loaded from ~/.agent-os/templates/"
@@ -239,6 +242,7 @@ echo "5. Develop features:"
 echo "   /create-spec        → PO + Architect create user stories"
 echo "   /execute-tasks      → Orchestrator executes via DevTeam"
 echo "   /add-bug [spec]     → Add bugs to existing specs"
+echo "   /add-skill          → Create custom skills for agents"
 echo ""
 echo "📚 Documentation:"
 echo "  • Installation Guide: INSTALL.md (created after Claude Code setup)"
