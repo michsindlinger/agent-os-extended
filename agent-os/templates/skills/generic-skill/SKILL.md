@@ -65,8 +65,8 @@
 
 ### Anti-Patterns to Avoid
 
-- ❌ [Anti-pattern 1] - [Why to avoid]
-- ❌ [Anti-pattern 2] - [Why to avoid]
+- [Anti-pattern 1] - [Why to avoid]
+- [Anti-pattern 2] - [Why to avoid]
 
 ## Tools Required
 

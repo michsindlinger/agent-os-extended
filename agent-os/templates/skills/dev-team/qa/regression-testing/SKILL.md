@@ -742,6 +742,6 @@ Track these metrics for regression testing:
 
 ## Related Skills
 
-- **test-strategy-template.md** - For planning regression approach
-- **test-automation-template.md** - For implementing tests
-- **quality-metrics-template.md** - For tracking test health
+- **test-strategy** - For planning regression approach
+- **test-automation** - For implementing tests
+- **quality-metrics** - For tracking test health
