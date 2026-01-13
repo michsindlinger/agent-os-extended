@@ -162,7 +162,7 @@ run_phase() {
     local spec="$1"
     local iteration="$2"
     local retry=0
-    local log_file="/tmp/claude-phase-$iteration.log"
+    local log_file="/tmp/claude-phase-${spec}-$iteration.log"
 
     log_info "Starting Phase (Iteration $iteration)..."
     log_debug "Spec: $spec"
@@ -328,7 +328,7 @@ main() {
 
         # Run the next phase
         if ! run_phase "$spec" "$iteration"; then
-            log_error "Phase failed. Check logs at /tmp/claude-phase-$iteration.log"
+            log_error "Phase failed. Check logs at /tmp/claude-phase-${spec}-$iteration.log"
             # Continue anyway to allow manual intervention
         fi
 
@@ -346,7 +346,7 @@ main() {
 cleanup() {
     echo ""
     log_warning "Interrupted. Exiting..."
-    log_info "Logs available at: /tmp/claude-phase-*.log"
+    log_info "Logs available at: /tmp/claude-phase-<spec>-*.log"
     exit 130
 }
 
