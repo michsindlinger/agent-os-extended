@@ -150,9 +150,26 @@ get_story_counts() {
         return 0
     fi
 
-    # Count stories in Done vs Total (improved regex)
-    local total=$(grep -E "^\- \[[ x]\] \*\*Story" "$kanban_file" 2>/dev/null | wc -l | xargs)
-    local done_count=$(grep -E "^\- \[x\] \*\*Story" "$kanban_file" 2>/dev/null | wc -l | xargs)
+    # Try to get total from header (e.g., "**Total Stories**: 4")
+    local total=$(grep -E "\*\*Total Stories\*\*.*[0-9]+" "$kanban_file" 2>/dev/null | grep -oE "[0-9]+" | head -1)
+
+    # Fallback: count checkbox format
+    if [[ -z "$total" || "$total" == "0" ]]; then
+        total=$(grep -E "^\- \[[ x]\] \*\*Story" "$kanban_file" 2>/dev/null | wc -l | xargs)
+    fi
+
+    # Count done stories from Done section table (lines starting with | followed by story ID)
+    # Extract content between "## Done" and next "---"
+    local done_count=$(awk '/^## Done/,/^---/' "$kanban_file" 2>/dev/null | grep -E "^\| [A-Z]+-[0-9]+" | wc -l | xargs)
+
+    # Fallback: checkbox format
+    if [[ -z "$done_count" || "$done_count" == "0" ]]; then
+        done_count=$(grep -E "^\- \[x\] \*\*Story" "$kanban_file" 2>/dev/null | wc -l | xargs)
+    fi
+
+    # Ensure we have numbers
+    total=${total:-0}
+    done_count=${done_count:-0}
 
     echo "$done_count/$total"
 }
@@ -292,6 +309,7 @@ main() {
     local iteration=0
     local phase=""
     local last_phase=""
+    local last_counts=""
 
     while [[ $iteration -lt $MAX_ITERATIONS ]]; do
         iteration=$((iteration + 1))
@@ -304,14 +322,15 @@ main() {
         log_info "=== Iteration $iteration ==="
         log_info "=========================================="
         log_info "Current Phase: $phase"
-        log_info "Progress: $counts stories"
+        log_info "Progress: $counts stories done"
 
-        # Detect stuck state
-        if [[ "$phase" == "$last_phase" && $iteration -gt 1 ]]; then
-            log_warning "Phase unchanged from last iteration!"
+        # Detect stuck state (only warn if BOTH phase AND progress unchanged)
+        if [[ "$phase" == "$last_phase" && "$counts" == "$last_counts" && $iteration -gt 1 ]]; then
+            log_warning "No progress detected (phase and story count unchanged)"
             log_warning "This might indicate a problem."
         fi
         last_phase="$phase"
+        last_counts="$counts"
 
         # Check if complete (multiple completion indicators)
         if [[ "$phase" == "complete" || "$phase" == "None" || "$phase" == "none" || "$phase" == "4-complete" ]]; then
