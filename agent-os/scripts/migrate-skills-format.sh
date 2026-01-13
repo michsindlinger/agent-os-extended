@@ -2,7 +2,9 @@
 # migrate-skills-format.sh
 # Migriert Skills vom alten flachen Format zum Anthropic Ordner-Format
 #
-# Konvertiert: skill-name-template.md -> skill-name/SKILL.md
+# Konvertiert:
+#   skill-name-template.md -> skill-name/SKILL.md
+#   skill-name.md          -> skill-name/SKILL.md
 #
 # Usage: ./migrate-skills-format.sh [OPTIONS] <directory>
 #
@@ -14,7 +16,7 @@
 #
 # Example:
 #   ./migrate-skills-format.sh --dry-run ./agent-os/templates/skills/
-#   ./migrate-skills-format.sh --verbose --delete ./my-project/skills/
+#   ./migrate-skills-format.sh --verbose --delete .claude/skills/dev-team/
 
 set -euo pipefail
 
@@ -61,7 +63,11 @@ usage() {
     cat << EOF
 Usage: $(basename "$0") [OPTIONS] <directory>
 
-Migrate skill files from flat format (*-template.md) to Anthropic folder format (*/SKILL.md)
+Migrate skill files from flat format to Anthropic folder format (*/SKILL.md)
+
+Supported input formats:
+    skill-name-template.md  ->  skill-name/SKILL.md
+    skill-name.md           ->  skill-name/SKILL.md
 
 Options:
     -d, --dry-run    Show what would be done without making changes
@@ -71,13 +77,61 @@ Options:
 
 Examples:
     $(basename "$0") --dry-run ./skills/
-    $(basename "$0") --verbose --delete ./agent-os/templates/skills/
+    $(basename "$0") --verbose --delete .claude/skills/dev-team/
 
-Migration Format:
-    Before: skill-name-template.md
-    After:  skill-name/SKILL.md
+Excluded from migration:
+    - SKILL.md files (already in new format)
+    - Files inside skill folders (already migrated)
+    - README.md, CLAUDE.md and other non-skill files
 
 EOF
+}
+
+# Check if file should be excluded from migration
+should_exclude() {
+    local filename="$1"
+    local filepath="$2"
+
+    # Exclude SKILL.md files
+    if [[ "$filename" == "SKILL.md" ]]; then
+        return 0
+    fi
+
+    # Exclude common non-skill files
+    if [[ "$filename" == "README.md" ]] || \
+       [[ "$filename" == "CLAUDE.md" ]] || \
+       [[ "$filename" == "INDEX.md" ]] || \
+       [[ "$filename" == "index.md" ]]; then
+        return 0
+    fi
+
+    # Exclude if parent directory has same name as file (already in folder structure)
+    local parent_dir
+    parent_dir=$(basename "$(dirname "$filepath")")
+    local skill_name="${filename%.md}"
+    skill_name="${skill_name%-template}"
+
+    if [[ "$parent_dir" == "$skill_name" ]]; then
+        return 0
+    fi
+
+    return 1
+}
+
+# Extract skill name from filename
+get_skill_name() {
+    local filename="$1"
+    local skill_name
+
+    # First try to remove -template.md suffix
+    skill_name="${filename%-template.md}"
+
+    # If that didn't change anything, try removing just .md
+    if [[ "$skill_name" == "$filename" ]]; then
+        skill_name="${filename%.md}"
+    fi
+
+    echo "$skill_name"
 }
 
 # Migrate a single skill file
@@ -92,12 +146,18 @@ migrate_skill() {
     source_dir=$(dirname "$source_file")
     filename=$(basename "$source_file")
 
-    # Extract skill name (remove -template.md suffix)
-    skill_name="${filename%-template.md}"
+    # Check if file should be excluded
+    if should_exclude "$filename" "$source_file"; then
+        log_verbose "Skipping excluded file: $filename"
+        return 1
+    fi
 
-    # Skip if filename doesn't match expected pattern
-    if [[ "$skill_name" == "$filename" ]]; then
-        log_verbose "Skipping non-template file: $filename"
+    # Extract skill name
+    skill_name=$(get_skill_name "$filename")
+
+    # Skip if we couldn't extract a skill name
+    if [[ -z "$skill_name" ]] || [[ "$skill_name" == "$filename" ]]; then
+        log_verbose "Skipping file (no .md extension): $filename"
         return 1
     fi
 
@@ -106,13 +166,11 @@ migrate_skill() {
 
     log_verbose "Processing: $filename -> ${skill_name}/SKILL.md"
 
-    # Check if target directory already exists
-    if [[ -d "$target_dir" ]]; then
-        if [[ -f "$target_file" ]]; then
-            log_warning "Target already exists, skipping: $target_file"
-            ((SKIPPED_COUNT++))
-            return 0
-        fi
+    # Check if target directory already exists with SKILL.md
+    if [[ -d "$target_dir" ]] && [[ -f "$target_file" ]]; then
+        log_warning "Target already exists, skipping: $target_file"
+        ((SKIPPED_COUNT++))
+        return 0
     fi
 
     # Check if source file is readable
@@ -213,19 +271,23 @@ main() {
     [[ "$DELETE_ORIGINALS" == "true" ]] && log_info "Original files will be deleted after migration"
     echo ""
 
-    # Find and process all template files
-    local template_files
-    template_files=$(find "$target_directory" -name "*-template.md" -type f 2>/dev/null || true)
+    # Find all .md files (excluding files already in SKILL.md format or in subdirectories)
+    # We use maxdepth to only look at immediate .md files in each directory level
+    local md_files
+    md_files=$(find "$target_directory" -name "*.md" -type f 2>/dev/null || true)
 
-    if [[ -z "$template_files" ]]; then
-        log_info "No *-template.md files found in $target_directory"
+    if [[ -z "$md_files" ]]; then
+        log_info "No .md files found in $target_directory"
         exit 0
     fi
 
-    # Process each template file
+    # Process each file
+    local found_any=false
     while IFS= read -r file; do
-        migrate_skill "$file" || true
-    done <<< "$template_files"
+        if migrate_skill "$file"; then
+            found_any=true
+        fi
+    done <<< "$md_files"
 
     # Print summary
     echo ""
@@ -234,7 +296,11 @@ main() {
     log_info "Files skipped:  $SKIPPED_COUNT"
     log_info "Errors:         $ERROR_COUNT"
 
-    if [[ "$DRY_RUN" == "true" ]]; then
+    if [[ $MIGRATED_COUNT -eq 0 ]] && [[ $SKIPPED_COUNT -eq 0 ]] && [[ $ERROR_COUNT -eq 0 ]]; then
+        log_info "No migratable skill files found (files may already be in folder format)"
+    fi
+
+    if [[ "$DRY_RUN" == "true" ]] && [[ $MIGRATED_COUNT -gt 0 ]]; then
         echo ""
         log_info "This was a dry run. Run without --dry-run to apply changes."
     fi
