@@ -63,6 +63,9 @@ command_files=(
 
     # Task execution
     "execute-tasks.md"
+
+    # Skill management
+    "add-skill.md"
 )
 
 for file in "${command_files[@]}"; do
@@ -104,7 +107,7 @@ echo ""
 echo "📁 Installed Structure:"
 echo ""
 echo "  .claude/"
-echo "    ├── commands/agent-os/   (8 core commands)"
+echo "    ├── commands/agent-os/   (9 core commands)"
 echo "    └── agents/              (9 utility agents)"
 echo ""
 echo "📋 Available Commands:"
@@ -127,6 +130,9 @@ echo ""
 echo "  Execution:"
 echo "    /execute-tasks            → Orchestrator executes user stories via DevTeam"
 echo "                                 (includes bugs, docs, and changelog generation)"
+echo ""
+echo "  Skill Management:"
+echo "    /add-skill                → Create custom skills for DevTeam agents"
 echo ""
 echo "🤖 Utility Agents Installed:"
 echo "  • context-fetcher    → Conditional file loading"

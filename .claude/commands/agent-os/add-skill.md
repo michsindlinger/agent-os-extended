@@ -1,60 +1,53 @@
 # Add Skill
 
-Generate project-specific Claude Code skills based on existing codebase patterns or framework best practices.
+Interaktiv einen neuen Custom Skill im Anthropic Folder Format anlegen.
 
-Refer to the instructions located in @agent-os/workflows/skill/add-skill.md
+Refer to the instructions located in agent-os/workflows/core/add-skill.md
 
 ## Command Arguments
 
 Parse the following arguments from the user's command:
 
-- `--type <skill-type>`: **Required** - Type of skill to create
-  - `api`: Backend API patterns (controllers, services, repositories)
-  - `component`: Frontend component patterns (components, state, styling)
-  - `testing`: Testing patterns (unit, integration, e2e)
-  - `deployment`: CI/CD and deployment patterns
-
-- `--analyze`: Mode A - Analyze existing codebase patterns
-- `--best-practices`: Mode B - Use framework best practices templates
-  - **Note**: User must provide one of these two mode flags
-
-- `--framework <framework-name>`: Optional - Override auto-detected framework
-  - Backend: `spring-boot`, `express`, `fastapi`, `django`, `rails`
-  - Frontend: `react`, `angular`, `vue`, `svelte`
-  - Testing: `playwright`, `jest`, `vitest`, `pytest`, `rspec`, `cypress`
-  - CI/CD: `github-actions`, `gitlab-ci`, `jenkins`, `docker`
+- `skill-name`: Optional - Name des Skills (wird sonst interaktiv abgefragt)
+- `--category <category>`: Optional - Kategorie/Ordner (default: interaktiv)
+- `--agent <agent-name>`: Optional - Agent dem der Skill zugewiesen wird
 
 ## Usage Examples
 
 ```bash
-# Mode A: Analyze existing code patterns
-/add-skill --analyze --type api
-/add-skill --analyze --type component
-/add-skill --analyze --type testing
+# Interaktiv (empfohlen)
+/add-skill
 
-# Mode B: Use framework best practices
-/add-skill --best-practices --type api --framework spring-boot
-/add-skill --best-practices --type component --framework react
-/add-skill --best-practices --type testing --framework playwright
+# Mit Skill-Name
+/add-skill api-error-handling
 
-# Auto-detect framework (works for both modes)
-/add-skill --analyze --type api
-/add-skill --best-practices --type component
+# Direkt einem Agent zuweisen
+/add-skill form-validation --agent backend-dev
+
+# Projektweiter Skill
+/add-skill form-validation --category project
 ```
 
 ## Output
 
-The command generates a skill file in `.claude/skills/` with the format:
+### Für Agent-Skills:
 ```
-.claude/skills/[project-name]-[type]-patterns.md
+.claude/skills/dev-team/{agent-role}/{skill-name}/
+└── SKILL.md
+
+.claude/agents/{agent-name}.md (aktualisiert mit neuem Skill)
+```
+
+### Für Project-Skills:
+```
+.claude/skills/{category}/{skill-name}/
+└── SKILL.md
 ```
 
 ## Features
 
-- **Auto-Detection**: Automatically detects frameworks, versions, and project structure
-- **Pattern Analysis**: Extracts real patterns from your codebase (Mode A)
-- **Best Practices**: Includes industry-standard framework best practices (Mode B)
-- **Interactive**: Presents improvement suggestions for user selection
-- **Customized**: Generates skills tailored to your project
-- **Validated**: Ensures patterns follow best practices
-- **Documented**: Includes code examples and common pitfalls
+- **Interaktiv**: Führt durch alle Schritte mit AskUserQuestion
+- **Agent-Integration**: Weist Skills automatisch DevTeam-Agents zu
+- **Templates**: Standard, Minimal, oder Pattern-focused
+- **Auto-Aktivierung**: Konfigurierbare Glob-Patterns für Dateitypen
+- **YAML Frontmatter**: Generiert korrektes Anthropic Skills Format
