@@ -4,15 +4,13 @@ Interaktiv einen neuen Custom Skill im Anthropic Folder Format anlegen.
 
 ## Übersicht
 
-Erstellt einen neuen Skill in der Struktur:
+Erstellt einen neuen Skill in der flachen Struktur (Claude Code Limitation - keine verschachtelten Ordner):
 ```
-.claude/skills/{category}/{skill-name}/SKILL.md
+.claude/skills/{skill-name}/SKILL.md
 ```
 
-Oder für DevTeam-Agents:
-```
-.claude/skills/dev-team/{agent-role}/{skill-name}/SKILL.md
-```
+**Wichtig:** Claude Code unterstützt KEINE verschachtelten Ordner in `.claude/skills/`.
+Alle Skills müssen direkt in `.claude/skills/` liegen.
 
 ## Argumente
 
@@ -58,16 +56,16 @@ QUESTION: "Gehört dieser Skill zu einem DevTeam-Agent?"
 HEADER: "Agent-Zuordnung"
 OPTIONS:
   - label: "Ja, zu einem Agent (Recommended)"
-    description: "Skill wird im Agent-Verzeichnis angelegt und dem Agent zugewiesen"
+    description: "Skill wird mit Agent-Präfix angelegt und dem Agent zugewiesen"
   - label: "Nein, projektweiter Skill"
-    description: "Skill wird in .claude/skills/project/ angelegt"
+    description: "Skill wird direkt in .claude/skills/ angelegt"
 
 IF "Ja, zu einem Agent" selected:
   GOTO: Step 2a (Agent auswählen)
 ELSE:
   SET: is_agent_skill = false
   SET: agent_role = null
-  GOTO: Step 3 (Kategorie - nur für project skills)
+  GOTO: Step 4 (Beschreibung - keine Kategorie mehr nötig)
 </instructions>
 
 ### Step 2a: Agent auswählen
@@ -82,14 +80,14 @@ EXTRACT: Agent list from files
 
 FILTER: Only show dev-team related agents (backend-dev, frontend-dev, qa-specialist, etc.)
 
-KNOWN_AGENT_MAPPINGS:
-  backend-dev        → dev-team/backend
-  frontend-dev       → dev-team/frontend
-  qa-specialist      → dev-team/qa
-  tech-architect     → dev-team/architect
-  devops-specialist  → dev-team/devops
-  documenter         → dev-team/documenter
-  po                 → dev-team/po
+KNOWN_AGENT_PREFIXES:
+  backend-dev        → backend
+  frontend-dev       → frontend
+  qa-specialist      → qa
+  tech-architect     → architect
+  devops-specialist  → devops
+  documenter         → documenter
+  po                 → po
 
 USE: AskUserQuestion
 QUESTION: "Zu welchem Agent soll der Skill gehören?"
@@ -101,49 +99,38 @@ OPTIONS: (dynamically generated from scan, max 4)
 
 RECEIVE: selected_agent
 
-MAP: agent_name to folder path using KNOWN_AGENT_MAPPINGS
-  IF agent contains "backend" → agent_role = "backend"
-  IF agent contains "frontend" → agent_role = "frontend"
-  IF agent contains "qa" → agent_role = "qa"
-  IF agent contains "architect" → agent_role = "architect"
-  IF agent contains "devops" → agent_role = "devops"
-  IF agent contains "documenter" → agent_role = "documenter"
-  IF agent contains "po" → agent_role = "po"
-  ELSE → agent_role = agent_name (use as-is)
+MAP: agent_name to prefix using KNOWN_AGENT_PREFIXES
+  IF agent contains "backend" → agent_prefix = "backend"
+  IF agent contains "frontend" → agent_prefix = "frontend"
+  IF agent contains "qa" → agent_prefix = "qa"
+  IF agent contains "architect" → agent_prefix = "architect"
+  IF agent contains "devops" → agent_prefix = "devops"
+  IF agent contains "documenter" → agent_prefix = "documenter"
+  IF agent contains "po" → agent_prefix = "po"
+  ELSE → agent_prefix = agent_name (use as-is)
 
 SET: is_agent_skill = true
 SET: selected_agent_file = path to agent .md file
-SET: skill_path = ".claude/skills/dev-team/{agent_role}/{skill_name}/SKILL.md"
+SET: full_skill_name = "{agent_prefix}-{skill_name}"
+SET: skill_path = ".claude/skills/{full_skill_name}/SKILL.md"
 
-SKIP: Step 3 (keine Kategorie-Auswahl für Agent-Skills)
+NOTE: Skills are flat in .claude/skills/ - Claude Code does NOT support nested directories!
+
 GOTO: Step 4 (Beschreibung)
 </instructions>
 
-### Step 3: Kategorie wählen (nur für Project-Skills)
+### Step 3: Skill-Pfad für Project-Skills (DEPRECATED)
 
 <instructions>
-IF is_agent_skill == true:
-  SKIP: This step
+NOTE: Step 3 ist nicht mehr erforderlich!
 
-USE: AskUserQuestion
-QUESTION: "In welcher Kategorie soll der Skill angelegt werden?"
-HEADER: "Kategorie"
-OPTIONS:
-  - label: "project (Recommended)"
-    description: "Projekt-spezifische Skills"
-  - label: "shared"
-    description: "Team-übergreifende Skills"
-  - label: "custom"
-    description: "Eigenen Pfad angeben"
+Claude Code unterstützt KEINE verschachtelten Ordner in .claude/skills/
+Alle Skills werden direkt in .claude/skills/{skill_name}/ angelegt.
 
-IF "custom" selected:
-  ASK: "Gib den Pfad relativ zu .claude/skills/ ein:"
-  RECEIVE: custom_path
-  SET: category = custom_path
-ELSE:
-  SET: category = selected_option
+IF is_agent_skill == false:
+  SET: skill_path = ".claude/skills/{skill_name}/SKILL.md"
 
-SET: skill_path = ".claude/skills/{category}/{skill_name}/SKILL.md"
+GOTO: Step 4 (Beschreibung)
 </instructions>
 
 ### Step 4: Beschreibung erfragen
@@ -483,35 +470,40 @@ IF "Weiteren Skill erstellen":
 
 # Direkt einem Agent zuweisen
 /add-skill form-validation --agent backend-dev
-
-# Projektweiter Skill
-/add-skill form-validation --category project
 ```
 
 ## Output
 
+**WICHTIG:** Claude Code unterstützt keine verschachtelten Ordner in `.claude/skills/`!
+
 ### Für Agent-Skills:
 ```
-.claude/skills/dev-team/{agent-role}/{skill-name}/
+.claude/skills/{agent-prefix}-{skill-name}/
 └── SKILL.md
+
+Beispiel: /add-skill form-validation --agent backend-dev
+→ .claude/skills/backend-form-validation/SKILL.md
 
 .claude/agents/{agent-name}.md (aktualisiert mit neuem Skill)
 ```
 
 ### Für Project-Skills:
 ```
-.claude/skills/{category}/{skill-name}/
+.claude/skills/{skill-name}/
 └── SKILL.md
+
+Beispiel: /add-skill my-custom-skill
+→ .claude/skills/my-custom-skill/SKILL.md
 ```
 
-## Agent-Role Mappings
+## Agent-Prefix Mappings
 
-| Agent Name | Skill-Verzeichnis |
-|------------|-------------------|
-| backend-dev | dev-team/backend |
-| frontend-dev | dev-team/frontend |
-| qa-specialist | dev-team/qa |
-| tech-architect | dev-team/architect |
-| devops-specialist | dev-team/devops |
-| documenter | dev-team/documenter |
-| po | dev-team/po |
+| Agent Name | Skill-Präfix |
+|------------|--------------|
+| backend-dev | backend |
+| frontend-dev | frontend |
+| qa-specialist | qa |
+| tech-architect | architect |
+| devops-specialist | devops |
+| documenter | documenter |
+| po | po |

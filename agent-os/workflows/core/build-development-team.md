@@ -271,53 +271,53 @@ Use file-creator agent to generate skills for each created agent from skill temp
 
     **dev-team__architect (5 skills):**
     Load templates from ~/.agent-os/templates/skills/dev-team/architect/:
-    1. pattern-enforcement-template.md + tech-stack.md → .claude/skills/dev-team/[PROJECT]-architect-pattern-enforcement.md
-    2. api-designing-template.md + tech-stack.md → .claude/skills/dev-team/[PROJECT]-architect-api-designing.md
-    3. security-guidance-template.md + tech-stack.md → .claude/skills/dev-team/[PROJECT]-architect-security-guidance.md
-    4. data-modeling-template.md + tech-stack.md → .claude/skills/dev-team/[PROJECT]-architect-data-modeling.md
-    5. dependency-checking-template.md + tech-stack.md → .claude/skills/dev-team/[PROJECT]-architect-dependency-checking.md
+    1. pattern-enforcement-template.md + tech-stack.md → .claude/skills/[PROJECT]-architect-pattern-enforcement/SKILL.md
+    2. api-designing-template.md + tech-stack.md → .claude/skills/[PROJECT]-architect-api-designing/SKILL.md
+    3. security-guidance-template.md + tech-stack.md → .claude/skills/[PROJECT]-architect-security-guidance/SKILL.md
+    4. data-modeling-template.md + tech-stack.md → .claude/skills/[PROJECT]-architect-data-modeling/SKILL.md
+    5. dependency-checking-template.md + tech-stack.md → .claude/skills/[PROJECT]-architect-dependency-checking/SKILL.md
 
     **dev-team__backend-developer (4 skills):**
     Load templates from ~/.agent-os/templates/skills/dev-team/backend/:
-    1. logic-implementing-template.md + tech-stack.md → .claude/skills/dev-team/[PROJECT]-backend-logic-implementing.md
-    2. persistence-adapter-template.md + tech-stack.md → .claude/skills/dev-team/[PROJECT]-backend-persistence-adapter.md
-    3. integration-adapter-template.md + tech-stack.md → .claude/skills/dev-team/[PROJECT]-backend-integration-adapter.md
-    4. test-engineering-template.md + tech-stack.md → .claude/skills/dev-team/[PROJECT]-backend-test-engineering.md
+    1. logic-implementing-template.md + tech-stack.md → .claude/skills/[PROJECT]-backend-logic-implementing/SKILL.md
+    2. persistence-adapter-template.md + tech-stack.md → .claude/skills/[PROJECT]-backend-persistence-adapter/SKILL.md
+    3. integration-adapter-template.md + tech-stack.md → .claude/skills/[PROJECT]-backend-integration-adapter/SKILL.md
+    4. test-engineering-template.md + tech-stack.md → .claude/skills/[PROJECT]-backend-test-engineering/SKILL.md
 
     **dev-team__frontend-developer (4 skills):**
     Load templates from ~/.agent-os/templates/skills/dev-team/frontend/:
-    1. ui-component-architecture-template.md + tech-stack.md → .claude/skills/dev-team/[PROJECT]-frontend-ui-component-architecture.md
-    2. state-management-template.md + tech-stack.md → .claude/skills/dev-team/[PROJECT]-frontend-state-management.md
-    3. api-bridge-building-template.md + tech-stack.md → .claude/skills/dev-team/[PROJECT]-frontend-api-bridge-building.md
-    4. interaction-designing-template.md + tech-stack.md → .claude/skills/dev-team/[PROJECT]-frontend-interaction-designing.md
+    1. ui-component-architecture-template.md + tech-stack.md → .claude/skills/[PROJECT]-frontend-ui-component-architecture/SKILL.md
+    2. state-management-template.md + tech-stack.md → .claude/skills/[PROJECT]-frontend-state-management/SKILL.md
+    3. api-bridge-building-template.md + tech-stack.md → .claude/skills/[PROJECT]-frontend-api-bridge-building/SKILL.md
+    4. interaction-designing-template.md + tech-stack.md → .claude/skills/[PROJECT]-frontend-interaction-designing/SKILL.md
 
     **dev-team__devops-specialist (4 skills):**
     Load templates from ~/.agent-os/templates/skills/dev-team/devops/:
-    1. infrastructure-provisioning-template.md + tech-stack.md → .claude/skills/dev-team/[PROJECT]-devops-infrastructure-provisioning.md
-    2. pipeline-engineering-template.md + tech-stack.md → .claude/skills/dev-team/[PROJECT]-devops-pipeline-engineering.md
-    3. observability-template.md + tech-stack.md → .claude/skills/dev-team/[PROJECT]-devops-observability.md
-    4. security-hardening-template.md + tech-stack.md → .claude/skills/dev-team/[PROJECT]-devops-security-hardening.md
+    1. infrastructure-provisioning-template.md + tech-stack.md → .claude/skills/[PROJECT]-devops-infrastructure-provisioning/SKILL.md
+    2. pipeline-engineering-template.md + tech-stack.md → .claude/skills/[PROJECT]-devops-pipeline-engineering/SKILL.md
+    3. observability-template.md + tech-stack.md → .claude/skills/[PROJECT]-devops-observability/SKILL.md
+    4. security-hardening-template.md + tech-stack.md → .claude/skills/[PROJECT]-devops-security-hardening/SKILL.md
 
     **dev-team__qa-specialist (4 skills):**
     Load templates from ~/.agent-os/templates/skills/dev-team/qa/:
-    1. test-strategy-template.md + tech-stack.md → .claude/skills/dev-team/[PROJECT]-qa-test-strategy.md
-    2. test-automation-template.md + tech-stack.md → .claude/skills/dev-team/[PROJECT]-qa-test-automation.md
-    3. quality-gates-template.md + tech-stack.md → .claude/skills/dev-team/[PROJECT]-qa-quality-gates.md
-    4. test-analysis-template.md + tech-stack.md → .claude/skills/dev-team/[PROJECT]-qa-test-analysis.md
+    1. test-strategy-template.md + tech-stack.md → .claude/skills/[PROJECT]-qa-test-strategy/SKILL.md
+    2. test-automation-template.md + tech-stack.md → .claude/skills/[PROJECT]-qa-test-automation/SKILL.md
+    3. quality-gates-template.md + tech-stack.md → .claude/skills/[PROJECT]-qa-quality-gates/SKILL.md
+    4. test-analysis-template.md + tech-stack.md → .claude/skills/[PROJECT]-qa-test-analysis/SKILL.md
 
     **dev-team__po (4 skills):**
     Load templates from ~/.agent-os/templates/skills/dev-team/po/:
-    1. backlog-organization-template.md + tech-stack.md → .claude/skills/dev-team/[PROJECT]-po-backlog-organization.md
-    2. requirements-engineering-template.md + tech-stack.md → .claude/skills/dev-team/[PROJECT]-po-requirements-engineering.md
-    3. acceptance-testing-template.md + tech-stack.md → .claude/skills/dev-team/[PROJECT]-po-acceptance-testing.md
-    4. data-analysis-template.md + tech-stack.md → .claude/skills/dev-team/[PROJECT]-po-data-analysis.md
+    1. backlog-organization-template.md + tech-stack.md → .claude/skills/[PROJECT]-po-backlog-organization/SKILL.md
+    2. requirements-engineering-template.md + tech-stack.md → .claude/skills/[PROJECT]-po-requirements-engineering/SKILL.md
+    3. acceptance-testing-template.md + tech-stack.md → .claude/skills/[PROJECT]-po-acceptance-testing/SKILL.md
+    4. data-analysis-template.md + tech-stack.md → .claude/skills/[PROJECT]-po-data-analysis/SKILL.md
 
     **dev-team__documenter (4 skills):**
     Load templates from ~/.agent-os/templates/skills/dev-team/documenter/:
-    1. changelog-generation-template.md + tech-stack.md → .claude/skills/dev-team/[PROJECT]-documenter-changelog-generation.md
-    2. api-documentation-template.md + tech-stack.md → .claude/skills/dev-team/[PROJECT]-documenter-api-documentation.md
-    3. user-guide-writing-template.md + tech-stack.md → .claude/skills/dev-team/[PROJECT]-documenter-user-guide-writing.md
-    4. code-documentation-template.md + tech-stack.md → .claude/skills/dev-team/[PROJECT]-documenter-code-documentation.md
+    1. changelog-generation-template.md + tech-stack.md → .claude/skills/[PROJECT]-documenter-changelog-generation/SKILL.md
+    2. api-documentation-template.md + tech-stack.md → .claude/skills/[PROJECT]-documenter-api-documentation/SKILL.md
+    3. user-guide-writing-template.md + tech-stack.md → .claude/skills/[PROJECT]-documenter-user-guide-writing/SKILL.md
+    4. code-documentation-template.md + tech-stack.md → .claude/skills/[PROJECT]-documenter-code-documentation/SKILL.md
 </skill_generation_process>
 
 <skill_customization>
@@ -329,7 +329,8 @@ Use file-creator agent to generate skills for each created agent from skill temp
        - React projects → TypeScript/Jest patterns
        - Node.js projects → JavaScript/TS patterns
     4. FILL [MCP_TOOLS] placeholder (ask user or use recommendations)
-    5. WRITE to .claude/skills/dev-team/[PROJECT]-[agent]-[skill].md
+    5. CREATE directory: .claude/skills/[PROJECT]-[agent]-[skill]/
+    6. WRITE to .claude/skills/[PROJECT]-[agent]-[skill]/SKILL.md
 </skill_customization>
 
 <template_lookup>
@@ -339,9 +340,10 @@ Use file-creator agent to generate skills for each created agent from skill temp
 </template_lookup>
 
 **Output:**
-- Created skills in `.claude/skills/dev-team/`
+- Created skills in `.claude/skills/[skill-name]/SKILL.md` (Anthropic folder format)
 - Each skill is tech-stack-aware
 - [PROJECT] is derived from project name or tech stack
+- Skills are directly in `.claude/skills/` (no nested folders - Claude Code limitation)
 
 </step>
 
@@ -459,7 +461,8 @@ ALWAYS use tech-architect agent to analyze tech-stack.md for specialized technol
        * crypto-security-testing → security-scanner, vulnerability-db
      - Add installation instructions for MCP tools
      - Create quality checklist specific to technology
-     - Write to .claude/skills/dev-team/[PROJECT]-[agent]-[custom-skill].md
+     - CREATE directory: .claude/skills/[PROJECT]-[agent]-[custom-skill]/
+     - WRITE to .claude/skills/[PROJECT]-[agent]-[custom-skill]/SKILL.md
 
   6. Present MCP Installation Guide to user:
      'Custom skills created!
@@ -509,7 +512,7 @@ ALWAYS use tech-architect agent to analyze tech-stack.md for specialized technol
 - sensor-data-processing.md
 
 **Output:**
-- Custom skills in `.claude/skills/dev-team/[PROJECT]-[agent]-[custom-skill].md`
+- Custom skills in `.claude/skills/[PROJECT]-[agent]-[custom-skill]/SKILL.md`
 - Added to skill list for assignment in Step 7
 
 </step>
@@ -525,7 +528,8 @@ If design-system.md exists, create a skill for frontend developers to use it.
 
     USE file-creator to create design-system skill:
 
-    CREATE: .claude/skills/dev-team/[PROJECT]-frontend-design-system.md
+    CREATE directory: .claude/skills/[PROJECT]-frontend-design-system/
+    CREATE: .claude/skills/[PROJECT]-frontend-design-system/SKILL.md
 
     Content:
     ```markdown
@@ -593,7 +597,8 @@ If ux-patterns.md exists, create a skill for frontend developers to follow UX pa
 
     USE file-creator to create ux-patterns skill:
 
-    CREATE: .claude/skills/dev-team/[PROJECT]-frontend-ux-patterns.md
+    CREATE directory: .claude/skills/[PROJECT]-frontend-ux-patterns/
+    CREATE: .claude/skills/[PROJECT]-frontend-ux-patterns/SKILL.md
 
     Content:
     ```markdown
@@ -677,13 +682,14 @@ Use file-creator agent to update each agent with their generated skills in BOTH 
 
     1. READ agent file
 
-    2. COLLECT generated skills for this agent from .claude/skills/dev-team/:
+    2. COLLECT generated skills for this agent from .claude/skills/:
        Example for backend-developer:
        - [PROJECT]-backend-logic-implementing
        - [PROJECT]-backend-persistence-adapter
        - [PROJECT]-backend-integration-adapter
        - [PROJECT]-backend-test-engineering
        (+ any custom skills)
+       Note: Each skill is in its own folder with SKILL.md file
 
     3. UPDATE YAML frontmatter:
        FIND: `skills: [SKILLS_LIST]`
@@ -707,7 +713,8 @@ Use file-creator agent to update each agent with their generated skills in BOTH 
        - [PROJECT]-backend-test-engineering
 
        **Skill Loading:**
-       Skills are loaded dynamically from .claude/skills/dev-team/ when needed.
+       Skills are loaded dynamically from .claude/skills/ when needed.
+       Each skill is in folder format: .claude/skills/[skill-name]/SKILL.md
        ```
 
     5. SAVE updated agent file
@@ -726,7 +733,7 @@ Use file-creator agent to update each agent with their generated skills in BOTH 
   - ✅ YAML frontmatter with skills array
   - ✅ Markdown body with skills list
   - ✅ All [SKILLS_LIST] placeholders replaced
-  - ✅ Skills reference actual generated files in .claude/skills/dev-team/
+  - ✅ Skills reference actual generated folders in .claude/skills/[skill-name]/
 </verification>
 
 </step>
