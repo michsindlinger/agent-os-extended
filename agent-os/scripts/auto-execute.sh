@@ -106,25 +106,40 @@ get_story_counts() {
 run_phase() {
     local spec="$1"
     local iteration="$2"
+    local max_retries=3
+    local retry=0
 
     log_info "Starting Phase (Iteration $iteration)..."
     log_info "Spec: $spec"
 
-    # Run Claude Code with execute-tasks
-    # Using -p for non-interactive mode
-    # Using --dangerously-skip-permissions for automation
-    claude -p "/agent-os:execute-tasks $spec" \
-        --dangerously-skip-permissions \
-        --model sonnet \
-        2>&1 | tee "/tmp/claude-phase-$iteration.log"
+    while [[ $retry -lt $max_retries ]]; do
+        # Run Claude Code with execute-tasks
+        # Using -p for non-interactive mode
+        # Using --dangerously-skip-permissions for automation
+        claude -p "/agent-os:execute-tasks $spec" \
+            --dangerously-skip-permissions \
+            --model sonnet \
+            2>&1 | tee "/tmp/claude-phase-$iteration.log"
 
-    local exit_code=$?
+        local exit_code=$?
 
-    if [[ $exit_code -ne 0 ]]; then
-        log_warning "Claude exited with code $exit_code"
-    fi
+        # Check for "Unknown skill" error
+        if grep -q "Unknown skill" "/tmp/claude-phase-$iteration.log" 2>/dev/null; then
+            retry=$((retry + 1))
+            log_warning "Unknown skill error detected. Retry $retry/$max_retries..."
+            sleep 3
+            continue
+        fi
 
-    return $exit_code
+        if [[ $exit_code -ne 0 ]]; then
+            log_warning "Claude exited with code $exit_code"
+        fi
+
+        return $exit_code
+    done
+
+    log_error "Failed after $max_retries retries due to Unknown skill error"
+    return 1
 }
 
 # Main execution loop
