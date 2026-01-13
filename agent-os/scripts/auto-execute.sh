@@ -5,11 +5,11 @@
 # until all stories are complete.
 #
 # Usage:
-#   ./auto-execute.sh [spec-name]
+#   ./auto-execute.sh [spec-name] [-v|--verbose]
 #
 # Example:
 #   ./auto-execute.sh 2026-01-13-multi-delete-projects
-#   ./auto-execute.sh  # Auto-detects spec with kanban board
+#   ./auto-execute.sh -v  # Verbose mode with debug output
 #
 
 set -e
@@ -19,18 +19,74 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
+CYAN='\033[0;36m'
+GRAY='\033[0;90m'
 NC='\033[0m' # No Color
 
 # Configuration
 SPECS_DIR="agent-os/specs"
 MAX_ITERATIONS=50  # Safety limit
 DELAY_BETWEEN_PHASES=2  # Seconds to wait between phases
+MAX_RETRIES=3
+VERBOSE=false
 
 # Logging
 log_info() { echo -e "${BLUE}[INFO]${NC} $1"; }
 log_success() { echo -e "${GREEN}[SUCCESS]${NC} $1"; }
 log_warning() { echo -e "${YELLOW}[WARNING]${NC} $1"; }
 log_error() { echo -e "${RED}[ERROR]${NC} $1"; }
+log_debug() {
+    if [[ "$VERBOSE" == true ]]; then
+        echo -e "${GRAY}[DEBUG]${NC} $1"
+    fi
+}
+
+# Check prerequisites
+check_prerequisites() {
+    log_info "Checking prerequisites..."
+
+    # Check if claude is installed
+    if ! command -v claude &> /dev/null; then
+        log_error "Claude CLI not found. Please install it first."
+        exit 1
+    fi
+    log_debug "Claude CLI found: $(which claude)"
+
+    # Check current directory
+    log_debug "Working directory: $(pwd)"
+
+    # Check if .claude/commands/agent-os exists
+    if [[ -d ".claude/commands/agent-os" ]]; then
+        log_debug "Skills directory: .claude/commands/agent-os/"
+        log_debug "Available skills: $(ls .claude/commands/agent-os/ | tr '\n' ' ')"
+
+        if [[ -f ".claude/commands/agent-os/execute-tasks.md" ]]; then
+            log_success "execute-tasks.md skill found"
+        else
+            log_error "execute-tasks.md NOT found in .claude/commands/agent-os/"
+            exit 1
+        fi
+    else
+        log_warning ".claude/commands/agent-os/ directory not found"
+        log_warning "Checking global skills..."
+
+        if [[ -d "$HOME/.claude/commands/agent-os" ]]; then
+            log_debug "Global skills: $HOME/.claude/commands/agent-os/"
+        else
+            log_error "No agent-os skills found (local or global)"
+            exit 1
+        fi
+    fi
+
+    # Check specs directory
+    if [[ ! -d "$SPECS_DIR" ]]; then
+        log_error "Specs directory not found: $SPECS_DIR"
+        exit 1
+    fi
+    log_debug "Specs directory: $SPECS_DIR"
+
+    log_success "Prerequisites OK"
+}
 
 # Find spec with kanban board or use provided spec
 find_active_spec() {
@@ -94,10 +150,9 @@ get_story_counts() {
         return 0
     fi
 
-    # Count stories in Done vs Total
-    local done=$(grep -c "^## .*Done" "$kanban_file" 2>/dev/null || echo "0")
-    local total=$(grep -c "^\- \[ \] \*\*Story" "$kanban_file" 2>/dev/null || echo "0")
-    local done_count=$(grep -A100 "^## .*Done" "$kanban_file" 2>/dev/null | grep -c "^\- \[x\] \*\*Story" || echo "0")
+    # Count stories in Done vs Total (improved regex)
+    local total=$(grep -E "^\- \[[ x]\] \*\*Story" "$kanban_file" 2>/dev/null | wc -l | xargs)
+    local done_count=$(grep -E "^\- \[x\] \*\*Story" "$kanban_file" 2>/dev/null | wc -l | xargs)
 
     echo "$done_count/$total"
 }
@@ -106,40 +161,102 @@ get_story_counts() {
 run_phase() {
     local spec="$1"
     local iteration="$2"
-    local max_retries=3
     local retry=0
+    local log_file="/tmp/claude-phase-$iteration.log"
 
     log_info "Starting Phase (Iteration $iteration)..."
-    log_info "Spec: $spec"
+    log_debug "Spec: $spec"
+    log_debug "Log file: $log_file"
 
-    while [[ $retry -lt $max_retries ]]; do
+    while [[ $retry -lt $MAX_RETRIES ]]; do
+        local cmd="claude -p \"/agent-os:execute-tasks $spec\" --dangerously-skip-permissions --model sonnet"
+        log_debug "Command: $cmd"
+        log_debug "Attempt: $((retry + 1))/$MAX_RETRIES"
+
+        echo -e "${CYAN}--- Claude Output Start ---${NC}"
+
         # Run Claude Code with execute-tasks
-        # Using -p for non-interactive mode
-        # Using --dangerously-skip-permissions for automation
         claude -p "/agent-os:execute-tasks $spec" \
             --dangerously-skip-permissions \
             --model sonnet \
-            2>&1 | tee "/tmp/claude-phase-$iteration.log"
+            2>&1 | tee "$log_file"
 
-        local exit_code=$?
+        local exit_code=${PIPESTATUS[0]}
+
+        echo -e "${CYAN}--- Claude Output End ---${NC}"
+
+        log_debug "Exit code: $exit_code"
+        log_debug "Log file size: $(wc -c < "$log_file" | xargs) bytes"
 
         # Check for "Unknown skill" error
-        if grep -q "Unknown skill" "/tmp/claude-phase-$iteration.log" 2>/dev/null; then
+        if grep -q "Unknown skill" "$log_file" 2>/dev/null; then
             retry=$((retry + 1))
-            log_warning "Unknown skill error detected. Retry $retry/$max_retries..."
-            sleep 3
+            log_warning "Unknown skill error detected!"
+            log_warning "Retry $retry/$MAX_RETRIES in 5 seconds..."
+
+            # Show more debug info
+            log_debug "Full error from log:"
+            grep -i "unknown\|error\|skill" "$log_file" 2>/dev/null | head -5
+
+            sleep 5
             continue
+        fi
+
+        # Check for other common errors
+        if grep -qi "error\|failed\|exception" "$log_file" 2>/dev/null; then
+            log_warning "Potential error detected in output"
+            log_debug "Error lines:"
+            grep -i "error\|failed\|exception" "$log_file" 2>/dev/null | head -5
         fi
 
         if [[ $exit_code -ne 0 ]]; then
             log_warning "Claude exited with code $exit_code"
+        else
+            log_success "Phase completed successfully"
         fi
 
         return $exit_code
     done
 
-    log_error "Failed after $max_retries retries due to Unknown skill error"
+    log_error "Failed after $MAX_RETRIES retries due to Unknown skill error"
+    log_error "Please check:"
+    log_error "  1. .claude/commands/agent-os/execute-tasks.md exists"
+    log_error "  2. File has correct format"
+    log_error "  3. Try running manually: claude -p '/agent-os:execute-tasks'"
     return 1
+}
+
+# Parse arguments
+parse_args() {
+    local spec=""
+
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            -v|--verbose)
+                VERBOSE=true
+                shift
+                ;;
+            -h|--help)
+                echo "Usage: $0 [spec-name] [-v|--verbose]"
+                echo ""
+                echo "Options:"
+                echo "  -v, --verbose    Enable debug output"
+                echo "  -h, --help       Show this help"
+                echo ""
+                echo "Examples:"
+                echo "  $0 2026-01-13-feature-name"
+                echo "  $0 -v"
+                echo "  $0 2026-01-13-feature-name --verbose"
+                exit 0
+                ;;
+            *)
+                spec="$1"
+                shift
+                ;;
+        esac
+    done
+
+    echo "$spec"
 }
 
 # Main execution loop
@@ -147,7 +264,11 @@ main() {
     local spec_name="$1"
 
     log_info "=== Automated Story Execution ==="
+    log_info "Verbose mode: $VERBOSE"
     log_info "Starting automated execution..."
+
+    # Check prerequisites first
+    check_prerequisites
 
     # Find active spec
     local spec=$(find_active_spec "$spec_name")
@@ -157,9 +278,20 @@ main() {
     fi
 
     log_success "Using spec: $spec"
+    log_debug "Spec path: $SPECS_DIR/$spec"
+
+    # Show kanban board status
+    local kanban_file="$SPECS_DIR/$spec/kanban-board.md"
+    if [[ -f "$kanban_file" ]]; then
+        log_debug "Kanban board exists: $kanban_file"
+        log_debug "Kanban size: $(wc -l < "$kanban_file" | xargs) lines"
+    else
+        log_debug "No kanban board yet (will be created in Phase 1)"
+    fi
 
     local iteration=0
     local phase=""
+    local last_phase=""
 
     while [[ $iteration -lt $MAX_ITERATIONS ]]; do
         iteration=$((iteration + 1))
@@ -168,13 +300,24 @@ main() {
         phase=$(get_current_phase "$spec")
         local counts=$(get_story_counts "$spec")
 
+        log_info "=========================================="
         log_info "=== Iteration $iteration ==="
+        log_info "=========================================="
         log_info "Current Phase: $phase"
         log_info "Progress: $counts stories"
 
+        # Detect stuck state
+        if [[ "$phase" == "$last_phase" && $iteration -gt 1 ]]; then
+            log_warning "Phase unchanged from last iteration!"
+            log_warning "This might indicate a problem."
+        fi
+        last_phase="$phase"
+
         # Check if complete
         if [[ "$phase" == "complete" ]]; then
+            log_success "=========================================="
             log_success "=== All phases complete! ==="
+            log_success "=========================================="
             log_success "Spec execution finished successfully."
 
             # Play completion sound
@@ -184,7 +327,10 @@ main() {
         fi
 
         # Run the next phase
-        run_phase "$spec" "$iteration"
+        if ! run_phase "$spec" "$iteration"; then
+            log_error "Phase failed. Check logs at /tmp/claude-phase-$iteration.log"
+            # Continue anyway to allow manual intervention
+        fi
 
         # Brief pause between phases
         log_info "Waiting ${DELAY_BETWEEN_PHASES}s before next phase..."
@@ -198,11 +344,14 @@ main() {
 
 # Handle interrupts
 cleanup() {
+    echo ""
     log_warning "Interrupted. Exiting..."
+    log_info "Logs available at: /tmp/claude-phase-*.log"
     exit 130
 }
 
 trap cleanup SIGINT SIGTERM
 
-# Run main
-main "$1"
+# Parse arguments and run
+SPEC_ARG=$(parse_args "$@")
+main "$SPEC_ARG"
