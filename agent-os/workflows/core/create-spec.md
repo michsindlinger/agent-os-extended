@@ -195,11 +195,18 @@ Use dev-team__architect agent to add technical refinement to fachliche user stor
 
        **Technical Details:**
 
-       **WAS:** [What needs to be implemented - components/features]
+       **WAS:** [What components/features need to be created or modified - NO code]
 
-       **WIE:** [How - technical approach, patterns, frameworks]
+       **WIE (Architecture Guidance ONLY):**
+       - Which architectural patterns to apply (e.g., "Use Repository Pattern", "Apply Service Object")
+       - Constraints to respect (e.g., "No direct DB calls from controllers", "Must use existing AuthService")
+       - Existing patterns to follow (e.g., "Follow pattern from existing UserController")
+       - Security/Performance considerations (e.g., "Requires rate limiting", "Use caching")
 
-       **WO:** [Where - file paths and components]
+       ⚠️ IMPORTANT: NO implementation code, NO pseudo-code, NO detailed algorithms.
+       The implementing agent decides HOW to write the code - you only set guardrails.
+
+       **WO:** [Which files/folders to modify or create - paths only, no content]
 
        **WER:** [Which agent - check .claude/agents/dev-team/ for available agents]
        Examples: dev-team__backend-developer, dev-team__frontend-developer
@@ -257,7 +264,16 @@ Use dev-team__architect agent to add technical refinement to fachliche user stor
   - Map ALL dependencies
   - Add Completion Check section with bash verify commands
   - Keep stories small (automated validation in Step 3.5)
-  - Reference: agent-os/docs/story-sizing-guidelines.md"
+  - Reference: agent-os/docs/story-sizing-guidelines.md
+
+  ARCHITECTURE GUIDANCE RULES:
+  - WIE = Architectural constraints and patterns ONLY
+  - NO code snippets, NO pseudo-code, NO implementation details
+  - Focus on: What patterns to use, what to avoid, what to reuse
+  - Let implementing agents decide the actual code
+  - Example GOOD: 'Use Service Object pattern, follow UserService as template'
+  - Example BAD: 'Create a method that takes user_id, calls find(), then updates...'
+  - If you find yourself writing code, you're doing the implementer's job"
 
   WAIT for dev-team__architect completion
   RECEIVE:

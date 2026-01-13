@@ -83,9 +83,22 @@ claude mcp list | grep -q "[TOOL_NAME]"
 - [ ] No linting errors
 - [ ] Completion Check commands all pass
 
-### Technical Notes
+### Technical Notes (Architecture Guidance)
 
-[TECHNICAL_NOTES]
+**Architectural Patterns:**
+[PATTERNS_TO_APPLY] (e.g., "Use Service Object pattern", "Apply Repository pattern")
+
+**Constraints:**
+[CONSTRAINTS] (e.g., "No direct DB calls from controllers", "Must use existing AuthService")
+
+**Follow Existing Code:**
+[REFERENCE_FILES] (e.g., "Follow pattern from app/services/user_service.rb")
+
+**Security/Performance:**
+[CONSIDERATIONS] (e.g., "Requires rate limiting", "Use caching for expensive queries")
+
+⚠️ Note: This section provides architectural guidance ONLY - no implementation code.
+The implementing agent decides HOW to write the code.
 
 ### Completion Check
 
