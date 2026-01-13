@@ -313,8 +313,8 @@ main() {
         fi
         last_phase="$phase"
 
-        # Check if complete
-        if [[ "$phase" == "complete" ]]; then
+        # Check if complete (multiple completion indicators)
+        if [[ "$phase" == "complete" || "$phase" == "None" || "$phase" == "none" || "$phase" == "4-complete" ]]; then
             log_success "=========================================="
             log_success "=== All phases complete! ==="
             log_success "=========================================="
