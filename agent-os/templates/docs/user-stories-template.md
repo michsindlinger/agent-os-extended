@@ -62,48 +62,75 @@ claude mcp list | grep -q "[TOOL_NAME]"
 
 **If Missing:** Story wird als BLOCKED markiert
 
-### Definition of Ready (DoR)
+---
 
-- [ ] User story is clearly defined
-- [ ] Acceptance criteria are specific and testable (using FILE_EXISTS, CONTAINS, etc.)
-- [ ] Dependencies identified and resolved
-- [ ] Technical approach discussed with team
-- [ ] UI/UX designs available (if applicable)
-- [ ] Required MCP tools documented (if applicable)
-- [ ] Story is estimated and sized appropriately (max 5 files, 400 LOC)
+### Technisches Refinement (vom Architect)
 
-### Definition of Done (DoD)
+> **⚠️ WICHTIG:** Dieser Abschnitt wird vom Architect ausgefüllt
+> Das technische Refinement muss DIREKT unter der fachlichen User Story stehen.
 
-- [ ] Code implemented and follows style guide
-- [ ] All acceptance criteria met (verified via Completion Check)
-- [ ] Unit tests written and passing
-- [ ] Integration tests written and passing
-- [ ] Code reviewed and approved
-- [ ] Documentation updated
-- [ ] No linting errors
-- [ ] Completion Check commands all pass
+#### DoR (Definition of Ready) - Vom Architect
 
-### Technical Notes (Architecture Guidance)
+**Fachliche Anforderungen:**
+- [x] Fachliche requirements klar definiert
+- [x] Akzeptanzkriterien sind spezifisch und prüfbar
+- [x] Business Value verstanden
 
-**Architectural Patterns:**
-[PATTERNS_TO_APPLY] (e.g., "Use Service Object pattern", "Apply Repository pattern")
+**Technische Vorbereitung:**
+- [x] Technischer Ansatz definiert (WAS/WIE/WO)
+- [x] Abhängigkeiten identifiziert
+- [x] Betroffene Komponenten bekannt
+- [x] Erforderliche MCP Tools dokumentiert (falls zutreffend)
+- [x] Story ist angemessen geschätzt (max 5 Dateien, 400 LOC)
 
-**Constraints:**
-[CONSTRAINTS] (e.g., "No direct DB calls from controllers", "Must use existing AuthService")
+**Story ist READY wenn alle Checkboxen angehakt sind.**
 
-**Follow Existing Code:**
-[REFERENCE_FILES] (e.g., "Follow pattern from app/services/user_service.rb")
+#### DoD (Definition of Done) - Vom Architect
 
-**Security/Performance:**
-[CONSIDERATIONS] (e.g., "Requires rate limiting", "Use caching for expensive queries")
+**Implementierung:**
+- [ ] Code implementiert und folgt Style Guide
+- [ ] Architektur-Vorgaben eingehalten (WIE section)
+- [ ] Security/Performance Anforderungen erfüllt
 
-⚠️ Note: This section provides architectural guidance ONLY - no implementation code.
-The implementing agent decides HOW to write the code.
+**Qualitätssicherung:**
+- [ ] Alle Akzeptanzkriterien erfüllt (via Completion Check verifiziert)
+- [ ] Unit Tests geschrieben und bestanden
+- [ ] Integration Tests geschrieben und bestanden
+- [ ] Code Review durchgeführt und genehmigt
 
-### Completion Check
+**Dokumentation:**
+- [ ] Dokumentation aktualisiert
+- [ ] Keine Linting Errors
+- [ ] Completion Check Commands alle erfolgreich (exit 0)
+
+**Story ist DONE wenn alle Checkboxen angehakt sind.**
+
+#### Technical Details
+
+**WAS:** [Was für Komponenten/Features erstellt oder modifiziert werden müssen - KEIN Code]
+
+**WIE (Architektur-Guidance ONLY):**
+- Welche Architektur-Pattern anwenden (z.B. "Use Repository Pattern", "Apply Service Object")
+- Constraints zu beachten (z.B. "Keine direkten DB-Aufrufe aus Controllers", "Must use existing AuthService")
+- Existierende Patterns folgen (z.B. "Follow pattern from existing UserController")
+- Security/Performance Überlegungen (z.B. "Requires rate limiting", "Use caching")
+
+⚠️ **WICHTIG:** KEIN Implementierungscode, KEIN Pseudo-Code, KEIN detaillierte Algorithmen.
+Der implementierende Agent entscheidet WIE er den Code schreibt - du setzt nur Guardrails.
+
+**WO:** [Welche Dateien/Ordner zu modifizieren oder erstellen sind - nur Pfade, kein Inhalt]
+
+**WER:** [Welcher Agent - siehe .claude/agents/dev-team/ für verfügbare Agents]
+Beispiele: dev-team__backend-developer, dev-team__frontend-developer
+
+**Abhängigkeiten:** [Story IDs von denen diese Story abhängt, oder "None"]
+
+**Geschätzte Komplexität:** [XS/S/M/L/XL]
+
+#### Completion Check
 
 ```bash
-# Auto-Verify - All commands must exit with 0
+# Auto-Verify Commands - alle müssen mit 0 exiten
 [VERIFY_COMMAND_1]
 [VERIFY_COMMAND_2]
 ```
@@ -120,6 +147,24 @@ The implementing agent decides HOW to write the code.
 ---
 
 ## Template Usage Instructions
+
+### Structure
+
+**Jede Story muss folgende Struktur haben:**
+
+1. **Fachliche User Story** (vom PO)
+   - User Story Format
+   - Akzeptanzkriterien (prüfbar mit FILE_EXISTS, CONTAINS, etc.)
+   - Required MCP Tools (falls zutreffend)
+
+2. **Technisches Refinement** (vom Architect) - DIREKT nach fachlicher Story
+   - DoR (vom Architect abgehakt)
+   - DoD (vom Architect definiert)
+   - WAS/WIE/WO/WER Details
+   - Completion Check mit bash Commands
+
+**WICHTIG:** Das technische Refinement muss DIREKT unter der fachlichen Story stehen,
+nicht am Ende des Dokuments!
 
 ### Placeholders
 
@@ -168,6 +213,17 @@ The implementing agent decides HOW to write the code.
 - MUST include exact file paths
 - Avoid MANUAL criteria when possible
 
+**DoR (Definition of Ready)**:
+- Architect marks items as done [x] during refinement
+- All checkboxes MUST be checked before /execute-tasks
+- Story cannot start if DoR is incomplete
+
+**DoD (Definition of Done)**:
+- Architect defines completion criteria
+- All items start unchecked [ ]
+- Implementing agent marks as done [x] during execution
+- Story is DONE only when all DoD items are checked
+
 **MCP Tools**:
 - Document required tools in "Required MCP Tools" section
 - Include Pre-Flight Check command
@@ -177,7 +233,7 @@ The implementing agent decides HOW to write the code.
 - Include bash commands that verify story completion
 - All commands must exit with code 0 for story to be DONE
 
-### Example
+### Example Complete Story
 
 ```markdown
 ## Story 1: Create User Profile API
@@ -211,15 +267,73 @@ damit ich mein Profil in der App anzeigen kann.
 
 _No MCP tools required for this story._
 
-### Completion Check
+---
 
-\`\`\`bash
+### Technisches Refinement (vom Architect)
+
+#### DoR (Definition of Ready)
+
+**Fachliche Anforderungen:**
+- [x] Fachliche requirements klar definiert
+- [x] Akzeptanzkriterien sind spezifisch und prüfbar
+- [x] Business Value verstanden
+
+**Technische Vorbereitung:**
+- [x] Technischer Ansatz definiert
+- [x] Abhängigkeiten identifiziert (None)
+- [x] Betroffene Komponenten bekannt (API Routes, User Service)
+- [x] Erforderliche MCP Tools dokumentiert (None)
+- [x] Story ist angemessen geschätzt (2 Dateien, ~150 LOC)
+
+**Story ist READY.**
+
+#### DoD (Definition of Done)
+
+**Implementierung:**
+- [ ] API Route implementiert (src/api/profile/route.ts)
+- [ ] Service Layer Pattern verwendet
+- [ ] TypeScript Strict Mode
+
+**Qualitätssicherung:**
+- [ ] Alle Akzeptanzkriterien erfüllt
+- [ ] Unit Tests für GET Endpoint
+- [ ] Code Review bestanden
+
+**Dokumentation:**
+- [ ] JSDoc Comments hinzugefügt
+- [ ] Keine TypeScript Errors
+- [ ] Completion Check erfolgreich
+
+#### Technical Details
+
+**WAS:** API Route für Profil-Abfrage, Integration mit existierendem UserService
+
+**WIE (Architektur-Guidance):**
+- Nutze Next.js App Router Route Handlers
+- Folge Pattern aus src/api/auth/route.ts
+- Keine direkten DB-Aufrufe aus Route (nutze UserService)
+- TypeScript Zod Validation für Query Params
+
+**WO:**
+- src/api/profile/route.ts (neu)
+- src/api/profile/route.test.ts (neu)
+
+**WER:** dev-team__backend-developer
+
+**Abhängigkeiten:** None
+
+**Geschätzte Komplexität:** S
+
+#### Completion Check
+
+```bash
 # Auto-Verify
 test -f src/api/profile/route.ts && echo "FILE OK"
+test -f src/api/profile/route.test.ts && echo "TEST FILE OK"
 grep -q "export async function GET" src/api/profile/route.ts && echo "EXPORT OK"
 npm run lint --quiet && echo "LINT OK"
 npm test -- --grep "profile" && echo "TEST OK"
-\`\`\`
+```
 
 **Story ist DONE wenn:**
 1. Alle FILE_EXISTS/CONTAINS checks bestanden

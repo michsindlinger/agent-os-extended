@@ -26,12 +26,22 @@
 | **In Review** | {{IN_REVIEW_COUNT}} |
 | **Testing** | {{TESTING_COUNT}} |
 | **Backlog** | {{BACKLOG_COUNT}} |
+| **Blocked** | {{BLOCKED_COUNT}} |
+
+---
+
+## ⚠️ Blocked (Incomplete DoR)
+
+<!-- Stories that cannot start due to incomplete Definition of Ready -->
+<!-- These stories need technical refinement completion via /create-spec -->
+
+{{BLOCKED_STORIES}}
 
 ---
 
 ## Backlog
 
-<!-- Stories that have not started yet -->
+<!-- Stories that have not started yet (with complete DoR) -->
 
 {{BACKLOG_STORIES}}
 
@@ -76,3 +86,38 @@
 | Timestamp | Story | From | To | Notes |
 |-----------|-------|------|-----|-------|
 {{CHANGE_LOG_ENTRIES}}
+
+---
+
+## DoR Status Legend
+
+| Status | Meaning | Action Required |
+|--------|---------|-----------------|
+| ✅ Ready | All DoR checkboxes checked | Can be executed |
+| ⚠️ Blocked | Some DoR checkboxes unchecked | Run /create-spec again |
+
+## Story Table Format
+
+For each section, use this table format:
+
+```markdown
+| Story ID | Title | Type | Dependencies | DoR Status | Points |
+|----------|-------|------|--------------|------------|--------|
+| STORY-ID | Story Title | Backend/Frontend/DevOps/Test | None or STORY-ID, STORY-ID | ✅ Ready / ⚠️ Blocked | 1/2/3/5/8 |
+```
+
+**Type Categories:**
+- Backend: Backend development work
+- Frontend: Frontend/UI work
+- DevOps: Infrastructure, CI/CD, deployment
+- Test: Testing framework, test automation
+- Docs: Documentation work
+
+**DoR Status:**
+- ✅ Ready: All Definition of Ready checkboxes are [x] checked
+- ⚠️ Blocked: Some DoR checkboxes are [ ] unchecked - story needs technical refinement
+
+**Dependencies:**
+- None: No dependencies
+- STORY-ID: Depends on another story
+- STORY-ID, STORY-ID: Multiple dependencies
