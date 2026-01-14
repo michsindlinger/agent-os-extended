@@ -93,7 +93,7 @@ Select specification and create Kanban Board. This is a one-time setup phase.
 
   Source: Parse user-stories.md in that folder
   Output: agent-os/specs/{SELECTED_SPEC}/kanban-board.md
-  Template: agent-os/templates/kanban-board.md
+  Template: agent-os/templates/docs/kanban-board-template.md (global) or agent-os/templates/docs/kanban-board-template.md (project)
 
   CRITICAL: Use the template structure EXACTLY as defined. The template contains:
   - Resume Context section (CRITICAL for phase recovery)
@@ -544,7 +544,9 @@ Create pull request and provide final summary.
 <resume_context_schema>
   The Resume Context in kanban-board.md follows the template structure.
 
-  **Template Location**: agent-os/templates/kanban-board.md
+  **Template Location**:
+  - Global: ~/.agent-os/templates/docs/kanban-board-template.md
+  - Project: agent-os/templates/docs/kanban-board-template.md
 
   The Resume Context MUST contain:
 
