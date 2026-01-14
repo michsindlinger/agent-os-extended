@@ -93,25 +93,43 @@ Select specification and create Kanban Board. This is a one-time setup phase.
 
   Source: Parse user-stories.md in that folder
   Output: agent-os/specs/{SELECTED_SPEC}/kanban-board.md
+  Template: agent-os/templates/kanban-board.md
 
-  Structure:
+  CRITICAL: Use the template structure EXACTLY as defined. The template contains:
   - Resume Context section (CRITICAL for phase recovery)
-  - Board Status metrics
-  - Backlog (all stories)
-  - In Progress (empty)
-  - In Review (empty)
-  - Testing (empty)
-  - Done (empty)
-  - Change Log
+  - Board Status metrics (with exact field names for parsing)
+  - Backlog, In Progress, In Review, Testing, Done sections
+  - Change Log section
 
-  IMPORTANT: Set Resume Context to:
-  | Field | Value |
-  |-------|-------|
-  | **Current Phase** | 1-complete |
-  | **Next Phase** | 2 - Git Branch |
-  | **Current Story** | None |
-  | **Last Action** | Kanban board created |
-  | **Next Action** | Create/switch git branch |
+  Template Variables to Replace:
+  - {{SPEC_NAME}} → Spec folder name
+  - {{SPEC_FOLDER}} → Spec folder name (same)
+  - {{TOTAL_STORIES}} → Count from user-stories.md
+  - {{COMPLETED_COUNT}} → 0
+  - {{IN_PROGRESS_COUNT}} → 0
+  - {{IN_REVIEW_COUNT}} → 0
+  - {{TESTING_COUNT}} → 0
+  - {{BACKLOG_COUNT}} → Total stories count
+  - {{CURRENT_PHASE}} → 1-complete
+  - {{NEXT_PHASE}} → 2 - Git Branch
+  - {{CURRENT_STORY}} → None
+  - {{LAST_ACTION}} → Kanban board created
+  - {{NEXT_ACTION}} → Create/switch git branch
+  - {{BACKLOG_STORIES}} → All stories from user-stories.md in table format
+  - {{IN_PROGRESS_STORIES}} → (empty section with comment)
+  - {{IN_REVIEW_STORIES}} → (empty section with comment)
+  - {{TESTING_STORIES}} → (empty section with comment)
+  - {{DONE_STORIES}} → (empty section with comment)
+  - {{CHANGE_LOG_ENTRIES}} → Initial entry: Board created
+
+  Story Table Format (use for each story section):
+  | Story ID | Title | Type | Dependencies | Points |
+  |----------|-------|------|--------------|--------|
+  | STORY-ID | Story Title | Backend/Frontend/DevOps/Test | None or STORY-ID, STORY-ID | 1/2/3/5/8 |
+
+  IMPORTANT: The Board Status section MUST be parseable by shell scripts:
+  - Use exact field names: Total Stories, Completed, In Progress, In Review, Testing, Backlog
+  - Format: **Fieldname**: number
   "
 
   WAIT: For file-creator completion
@@ -199,11 +217,12 @@ Create or switch to the appropriate git branch for this spec.
 ### Phase Completion
 
 <phase_complete>
-  UPDATE: kanban-board.md Resume Context
+  UPDATE: kanban-board.md using template structure
     - Current Phase: 2-complete
     - Next Phase: 3 - Execute Story
     - Last Action: Git branch created/switched
     - Next Action: Select and execute first story
+    - Add Change Log entry
 
   OUTPUT to user:
   ---
@@ -265,10 +284,16 @@ This phase repeats for each story in the backlog.
 </step>
 
 <step name="update_kanban_in_progress">
-  UPDATE: kanban-board.md
-    - MOVE: Selected story to "In Progress"
-    - SET: Resume Context → Current Story = [story-id]
-    - ADD: Change Log entry
+  UPDATE: kanban-board.md following template structure
+    - MOVE: Selected story from Backlog to "In Progress" section
+    - UPDATE Board Status:
+      - In Progress: +1
+      - Backlog: -1
+    - SET Resume Context:
+      - Current Story = [story-id]
+    - ADD Change Log entry with timestamp
+
+  CRITICAL: Maintain exact template structure for shell script parsing
 </step>
 
 <step name="execute_story" subagent="dev-team">
@@ -300,7 +325,12 @@ This phase repeats for each story in the backlog.
 </step>
 
 <step name="architect_review" subagent="dev-team__architect">
-  UPDATE: kanban-board.md → Story to "In Review"
+  UPDATE: kanban-board.md following template structure
+    - MOVE: Story from "In Progress" to "In Review" section
+    - UPDATE Board Status:
+      - In Progress: -1
+      - In Review: +1
+    - ADD Change Log entry with timestamp
 
   DELEGATE: dev-team__architect
   "Review code for Story [story-id].
@@ -330,7 +360,12 @@ This phase repeats for each story in the backlog.
 </step>
 
 <step name="qa_testing" subagent="dev-team__qa-specialist">
-  UPDATE: kanban-board.md → Story to "Testing"
+  UPDATE: kanban-board.md following template structure
+    - MOVE: Story from "In Review" to "Testing" section
+    - UPDATE Board Status:
+      - In Review: -1
+      - Testing: +1
+    - ADD Change Log entry with timestamp
 
   DELEGATE: dev-team__qa-specialist
   "Test Story [story-id]:
@@ -345,7 +380,12 @@ This phase repeats for each story in the backlog.
 </step>
 
 <step name="story_commit" subagent="git-workflow">
-  UPDATE: kanban-board.md → Story to "Done"
+  UPDATE: kanban-board.md following template structure
+    - MOVE: Story from "Testing" to "Done" section
+    - UPDATE Board Status:
+      - Testing: -1
+      - Completed: +1
+    - ADD Change Log entry with timestamp
 
   USE: git-workflow subagent
   "Commit story [story-id]:
@@ -360,12 +400,14 @@ This phase repeats for each story in the backlog.
   CHECK: Remaining stories in Backlog
 
   IF backlog NOT empty:
-    UPDATE: kanban-board.md Resume Context
-      - Current Phase: story-complete
-      - Next Phase: 3 - Execute Story (next)
-      - Current Story: None
-      - Last Action: Story [story-id] completed
-      - Next Action: Execute next story
+    UPDATE: kanban-board.md following template structure
+      - Resume Context:
+        - Current Phase: story-complete
+        - Next Phase: 3 - Execute Story (next)
+        - Current Story: None
+        - Last Action: Story [story-id] completed
+        - Next Action: Execute next story
+      - ADD Change Log entry with timestamp
 
     OUTPUT to user:
     ---
@@ -388,9 +430,14 @@ This phase repeats for each story in the backlog.
     STOP: Do not proceed to next story
 
   ELSE (backlog empty):
-    UPDATE: kanban-board.md Resume Context
-      - Current Phase: all-stories-done
-      - Next Phase: 4 - Finalize
+    UPDATE: kanban-board.md following template structure
+      - Resume Context:
+        - Current Phase: all-stories-done
+        - Next Phase: 4 - Finalize
+        - Current Story: None
+        - Last Action: All stories completed
+        - Next Action: Create PR
+      - ADD Change Log entry with timestamp
 
     OUTPUT to user:
     ---
@@ -461,10 +508,13 @@ Create pull request and provide final summary.
 ### Phase Completion
 
 <phase_complete>
-  UPDATE: kanban-board.md Resume Context
-    - Current Phase: complete
-    - Next Phase: None
-    - Last Action: PR created
+  UPDATE: kanban-board.md following template structure
+    - Resume Context:
+      - Current Phase: complete
+      - Next Phase: None
+      - Last Action: PR created
+      - Next Action: None
+    - ADD Change Log entry: Spec execution complete
 
   OUTPUT to user:
   ---
@@ -492,7 +542,11 @@ Create pull request and provide final summary.
 ## Resume Context Structure
 
 <resume_context_schema>
-  The Resume Context in kanban-board.md MUST always contain:
+  The Resume Context in kanban-board.md follows the template structure.
+
+  **Template Location**: agent-os/templates/kanban-board.md
+
+  The Resume Context MUST contain:
 
   | Field | Description | Example Values |
   |-------|-------------|----------------|
@@ -503,11 +557,23 @@ Create pull request and provide final summary.
   | **Last Action** | What just happened | Kanban board created |
   | **Next Action** | What needs to happen | Create git branch |
 
+  **Board Status Metrics** (for shell script parsing):
+  | Field | Parse Pattern | Example |
+  |-------|---------------|---------|
+  | **Total Stories** | `Total Stories.*\*\*.*([0-9]+)` | 4 |
+  | **Completed** | `Completed.*\*\*.*([0-9]+)` | 2 |
+  | **In Progress** | `In Progress.*\*\*.*([0-9]+)` | 0 |
+  | **In Review** | `In Review.*\*\*.*([0-9]+)` | 0 |
+  | **Testing** | `Testing.*\*\*.*([0-9]+)` | 0 |
+  | **Backlog** | `Backlog.*\*\*.*([0-9]+)` | 2 |
+
   <update_rules>
-    UPDATE Resume Context at:
-    - End of each phase
+    UPDATE kanban-board.md at:
+    - End of each phase (Resume Context + Change Log)
     - Before any STOP point
-    - After any state change
+    - After any state change (story movement, status change)
+
+    CRITICAL: Always maintain the template structure exactly.
   </update_rules>
 </resume_context_schema>
 
