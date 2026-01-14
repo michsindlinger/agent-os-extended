@@ -835,19 +835,32 @@ Use file-creator agent to update each agent with their generated skills in BOTH 
 
 </step>
 
-<step number="8" name="create_definition_of_done">
+<step number="8" subagent="file-creator" name="create_definition_of_done">
 
 ### Step 8: Create Definition of Done
 
 Generate Definition of Done based on tech stack and team.
 
-**Process:**
-1. Load template
-2. Customize based on:
-   - Tech stack (testing frameworks, linting tools)
-   - Selected agents (quality gates)
-   - Architecture (layer compliance)
-3. Present for review
+<instructions>
+  ACTION: Use file-creator agent to create dod.md
+
+  TARGET DIRECTORY: agent-os/team/ (NOT .agent-os/team/!)
+
+  PROCESS:
+    1. CREATE directory: agent-os/team/ (if not exists)
+    2. LOAD template with hybrid lookup:
+       - TRY: agent-os/templates/docs/dod-template.md
+       - FALLBACK: ~/.agent-os/templates/docs/dod-template.md
+    3. CUSTOMIZE template:
+       - [TESTING_FRAMEWORK]: From tech-stack.md
+       - [LINTER]: From tech-stack.md
+       - [QUALITY_GATES]: Based on selected agents
+       - [ARCHITECTURE_COMPLIANCE]: From architecture-decision.md
+    4. WRITE to: agent-os/team/dod.md
+    5. VERIFY: File was created in agent-os/team/ (not .agent-os/)
+
+  CRITICAL: Output path is agent-os/team/dod.md (with leading 'a', not dot!)
+</instructions>
 
 **Prompt User:**
 ```
@@ -865,35 +878,35 @@ Key quality gates:
 Adjust any criteria?
 ```
 
-**Template:** `agent-os/templates/docs/definition-of-done-template.md`
-
-<template_lookup>
-  PATH: agent-os/templates/docs/definition-of-done-template.md
-
-  LOOKUP STRATEGY (Hybrid):
-    1. TRY: Read from project (agent-os/templates/docs/definition-of-done-template.md)
-    2. IF NOT FOUND: Read from global (~/.agent-os/templates/docs/definition-of-done-template.md)
-    3. IF STILL NOT FOUND: Error - setup-devteam-global.sh not run
-
-  NOTE: Most projects use global templates. Project override only when customizing.
-</template_lookup>
-
 **Output:** `agent-os/team/dod.md`
 
 </step>
 
-<step number="9" name="create_definition_of_ready">
+<step number="9" subagent="file-creator" name="create_definition_of_ready">
 
 ### Step 9: Create Definition of Ready
 
 Generate Definition of Ready for user stories.
 
-**Process:**
-1. Load template
-2. Customize based on:
-   - Team roles (who approves)
-   - Architecture (technical requirements)
-3. Present for review
+<instructions>
+  ACTION: Use file-creator agent to create dor.md
+
+  TARGET DIRECTORY: agent-os/team/ (NOT .agent-os/team/!)
+
+  PROCESS:
+    1. VERIFY directory exists: agent-os/team/
+    2. LOAD template with hybrid lookup:
+       - TRY: agent-os/templates/docs/dor-template.md
+       - FALLBACK: ~/.agent-os/templates/docs/dor-template.md
+    3. CUSTOMIZE template:
+       - [APPROVER_ROLE]: Based on selected agents (usually Architect)
+       - [TECHNICAL_REQUIREMENTS]: From architecture-decision.md
+       - [ESTIMATION_REQUIREMENTS]: Team process
+    4. WRITE to: agent-os/team/dor.md
+    5. VERIFY: File was created in agent-os/team/ (not .agent-os/)
+
+  CRITICAL: Output path is agent-os/team/dor.md (with leading 'a', not dot!)
+</instructions>
 
 **Prompt User:**
 ```
@@ -910,12 +923,6 @@ Key readiness criteria:
 
 Adjust any criteria?
 ```
-
-**Template:** `agent-os/templates/docs/definition-of-ready-template.md`
-
-<template_lookup>
-  LOOKUP: agent-os/templates/ (project) → ~/.agent-os/templates/ (global fallback)
-</template_lookup>
 
 **Output:** `agent-os/team/dor.md`
 
