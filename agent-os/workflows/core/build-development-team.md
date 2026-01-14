@@ -262,87 +262,184 @@ Product ownership and requirements management.
 
 <step number="6" subagent="file-creator" name="generate_skills">
 
-### Step 6: Generate Tech-Stack-Specific Skills
+### Step 6: Generate Tech-Stack-Specific Skills with Frontmatter
 
-Use file-creator agent to generate skills for each created agent from skill templates.
+Use file-creator agent to generate skills for each created agent from skill templates, ensuring proper YAML frontmatter is generated for each skill.
 
 <skill_generation_process>
   FOR EACH created agent:
 
+    **Step 6.1: Load Globs Mapping**
+    READ: @agent-os/workflows/skill/utils/globs-mapping.md
+    EXTRACT: Framework-specific globs for each skill type
+    STORE: In globs_mapping variable
+
     **dev-team__architect (5 skills):**
     Load templates from ~/.agent-os/templates/skills/dev-team/architect/:
-    1. pattern-enforcement-template.md + tech-stack.md → .claude/skills/[PROJECT]-architect-pattern-enforcement/SKILL.md
-    2. api-designing-template.md + tech-stack.md → .claude/skills/[PROJECT]-architect-api-designing/SKILL.md
-    3. security-guidance-template.md + tech-stack.md → .claude/skills/[PROJECT]-architect-security-guidance/SKILL.md
-    4. data-modeling-template.md + tech-stack.md → .claude/skills/[PROJECT]-architect-data-modeling/SKILL.md
-    5. dependency-checking-template.md + tech-stack.md → .claude/skills/[PROJECT]-architect-dependency-checking/SKILL.md
+    1. pattern-enforcement → Generate frontmatter + content → .claude/skills/[PROJECT]-architect-pattern-enforcement/SKILL.md
+    2. api-designing → Generate frontmatter + content → .claude/skills/[PROJECT]-architect-api-designing/SKILL.md
+    3. security-guidance → Generate frontmatter + content → .claude/skills/[PROJECT]-architect-security-guidance/SKILL.md
+    4. data-modeling → Generate frontmatter + content → .claude/skills/[PROJECT]-architect-data-modeling/SKILL.md
+    5. dependency-checking → Generate frontmatter + content → .claude/skills/[PROJECT]-architect-dependency-checking/SKILL.md
 
     **dev-team__backend-developer (4 skills):**
     Load templates from ~/.agent-os/templates/skills/dev-team/backend/:
-    1. logic-implementing-template.md + tech-stack.md → .claude/skills/[PROJECT]-backend-logic-implementing/SKILL.md
-    2. persistence-adapter-template.md + tech-stack.md → .claude/skills/[PROJECT]-backend-persistence-adapter/SKILL.md
-    3. integration-adapter-template.md + tech-stack.md → .claude/skills/[PROJECT]-backend-integration-adapter/SKILL.md
-    4. test-engineering-template.md + tech-stack.md → .claude/skills/[PROJECT]-backend-test-engineering/SKILL.md
+    1. logic-implementing → Generate frontmatter + content → .claude/skills/[PROJECT]-backend-logic-implementing/SKILL.md
+    2. persistence-adapter → Generate frontmatter + content → .claude/skills/[PROJECT]-backend-persistence-adapter/SKILL.md
+    3. integration-adapter → Generate frontmatter + content → .claude/skills/[PROJECT]-backend-integration-adapter/SKILL.md
+    4. test-engineering → Generate frontmatter + content → .claude/skills/[PROJECT]-backend-test-engineering/SKILL.md
 
     **dev-team__frontend-developer (4 skills):**
     Load templates from ~/.agent-os/templates/skills/dev-team/frontend/:
-    1. ui-component-architecture-template.md + tech-stack.md → .claude/skills/[PROJECT]-frontend-ui-component-architecture/SKILL.md
-    2. state-management-template.md + tech-stack.md → .claude/skills/[PROJECT]-frontend-state-management/SKILL.md
-    3. api-bridge-building-template.md + tech-stack.md → .claude/skills/[PROJECT]-frontend-api-bridge-building/SKILL.md
-    4. interaction-designing-template.md + tech-stack.md → .claude/skills/[PROJECT]-frontend-interaction-designing/SKILL.md
+    1. ui-component-architecture → Generate frontmatter + content → .claude/skills/[PROJECT]-frontend-ui-component-architecture/SKILL.md
+    2. state-management → Generate frontmatter + content → .claude/skills/[PROJECT]-frontend-state-management/SKILL.md
+    3. api-bridge-building → Generate frontmatter + content → .claude/skills/[PROJECT]-frontend-api-bridge-building/SKILL.md
+    4. interaction-designing → Generate frontmatter + content → .claude/skills/[PROJECT]-frontend-interaction-designing/SKILL.md
 
     **dev-team__devops-specialist (4 skills):**
     Load templates from ~/.agent-os/templates/skills/dev-team/devops/:
-    1. infrastructure-provisioning-template.md + tech-stack.md → .claude/skills/[PROJECT]-devops-infrastructure-provisioning/SKILL.md
-    2. pipeline-engineering-template.md + tech-stack.md → .claude/skills/[PROJECT]-devops-pipeline-engineering/SKILL.md
-    3. observability-template.md + tech-stack.md → .claude/skills/[PROJECT]-devops-observability/SKILL.md
-    4. security-hardening-template.md + tech-stack.md → .claude/skills/[PROJECT]-devops-security-hardening/SKILL.md
+    1. infrastructure-provisioning → Generate frontmatter + content → .claude/skills/[PROJECT]-devops-infrastructure-provisioning/SKILL.md
+    2. pipeline-engineering → Generate frontmatter + content → .claude/skills/[PROJECT]-devops-pipeline-engineering/SKILL.md
+    3. observability → Generate frontmatter + content → .claude/skills/[PROJECT]-devops-observability/SKILL.md
+    4. security-hardening → Generate frontmatter + content → .claude/skills/[PROJECT]-devops-security-hardening/SKILL.md
 
     **dev-team__qa-specialist (4 skills):**
     Load templates from ~/.agent-os/templates/skills/dev-team/qa/:
-    1. test-strategy-template.md + tech-stack.md → .claude/skills/[PROJECT]-qa-test-strategy/SKILL.md
-    2. test-automation-template.md + tech-stack.md → .claude/skills/[PROJECT]-qa-test-automation/SKILL.md
-    3. quality-gates-template.md + tech-stack.md → .claude/skills/[PROJECT]-qa-quality-gates/SKILL.md
-    4. test-analysis-template.md + tech-stack.md → .claude/skills/[PROJECT]-qa-test-analysis/SKILL.md
+    1. test-strategy → Generate frontmatter + content → .claude/skills/[PROJECT]-qa-test-strategy/SKILL.md
+    2. test-automation → Generate frontmatter + content → .claude/skills/[PROJECT]-qa-test-automation/SKILL.md
+    3. quality-gates → Generate frontmatter + content → .claude/skills/[PROJECT]-qa-quality-gates/SKILL.md
+    4. test-analysis → Generate frontmatter + content → .claude/skills/[PROJECT]-qa-test-analysis/SKILL.md
 
     **dev-team__po (4 skills):**
     Load templates from ~/.agent-os/templates/skills/dev-team/po/:
-    1. backlog-organization-template.md + tech-stack.md → .claude/skills/[PROJECT]-po-backlog-organization/SKILL.md
-    2. requirements-engineering-template.md + tech-stack.md → .claude/skills/[PROJECT]-po-requirements-engineering/SKILL.md
-    3. acceptance-testing-template.md + tech-stack.md → .claude/skills/[PROJECT]-po-acceptance-testing/SKILL.md
-    4. data-analysis-template.md + tech-stack.md → .claude/skills/[PROJECT]-po-data-analysis/SKILL.md
+    1. backlog-organization → Generate frontmatter + content → .claude/skills/[PROJECT]-po-backlog-organization/SKILL.md
+    2. requirements-engineering → Generate frontmatter + content → .claude/skills/[PROJECT]-po-requirements-engineering/SKILL.md
+    3. acceptance-testing → Generate frontmatter + content → .claude/skills/[PROJECT]-po-acceptance-testing/SKILL.md
+    4. data-analysis → Generate frontmatter + content → .claude/skills/[PROJECT]-po-data-analysis/SKILL.md
 
     **dev-team__documenter (4 skills):**
     Load templates from ~/.agent-os/templates/skills/dev-team/documenter/:
-    1. changelog-generation-template.md + tech-stack.md → .claude/skills/[PROJECT]-documenter-changelog-generation/SKILL.md
-    2. api-documentation-template.md + tech-stack.md → .claude/skills/[PROJECT]-documenter-api-documentation/SKILL.md
-    3. user-guide-writing-template.md + tech-stack.md → .claude/skills/[PROJECT]-documenter-user-guide-writing/SKILL.md
-    4. code-documentation-template.md + tech-stack.md → .claude/skills/[PROJECT]-documenter-code-documentation/SKILL.md
+    1. changelog-generation → Generate frontmatter + content → .claude/skills/[PROJECT]-documenter-changelog-generation/SKILL.md
+    2. api-documentation → Generate frontmatter + content → .claude/skills/[PROJECT]-documenter-api-documentation/SKILL.md
+    3. user-guide-writing → Generate frontmatter + content → .claude/skills/[PROJECT]-documenter-user-guide-writing/SKILL.md
+    4. code-documentation → Generate frontmatter + content → .claude/skills/[PROJECT]-documenter-code-documentation/SKILL.md
 </skill_generation_process>
 
-<skill_customization>
-  FOR EACH skill template:
+<frontmatter_generation>
+  FOR EACH skill being generated:
+    **Step 6.2: Generate YAML Frontmatter**
+
+    1. DETERMINE skill components:
+       - project_name: Extract from tech-stack.md or directory name
+       - agent_role: architect, backend, frontend, devops, qa, po, documenter
+       - skill_name: pattern-enforcement, logic-implementing, etc.
+       - framework: From tech-stack.md (spring-boot, react, rails, etc.)
+
+    2. GENERATE frontmatter fields:
+
+       ```yaml
+       skill_full_name = "{project_name}-{agent_role}-{skill_name}"
+       skill_description = "{agent_role} {skill_name} skill for {project_name}. Use when: (1) [trigger_1], (2) [trigger_2], (3) [trigger_3]"
+       current_date = YYYY-MM-DD (today)
+       framework_version = from tech-stack.md
+       ```
+
+    3. LOOKUP globs from globs-mapping.md:
+       - Use framework + skill_type as key
+       - Fallback to generic patterns if framework not found
+       - For DevOps/PO/Documenter/Architect: Use technology-agnostic globs
+
+    4. BUILD complete frontmatter:
+
+       ```yaml
+       ---
+       name: {skill_full_name}
+       description: "{skill_description}"
+       version: 1.0
+       framework: {framework}
+       created: {current_date}
+       encoding: UTF-8
+       globs:
+         - "{glob_pattern_1}"
+         - "{glob_pattern_2}"
+         - "{glob_pattern_3}"
+       always_apply: false
+       ---
+       ```
+
+    5. SPECIAL CASES:
+       - If no globs available (e.g., generic skills): Omit `globs` field entirely
+       - If skill should always be active: Set `always_apply: true`
+       - If skill is technology-agnostic: Omit `framework` field
+</frontmatter_generation>
+
+<skill_content_assembly>
+  FOR EACH skill:
+    **Step 6.3: Assemble Complete Skill File**
+
     1. LOAD skill template (hybrid lookup: project → global)
     2. READ tech-stack.md for framework information
-    3. FILL [TECH_STACK_SPECIFIC] sections with actual patterns:
-       - Rails projects → Ruby/RSpec patterns
-       - React projects → TypeScript/Jest patterns
-       - Node.js projects → JavaScript/TS patterns
-    4. FILL [MCP_TOOLS] placeholder (ask user or use recommendations)
-    5. CREATE directory: .claude/skills/[PROJECT]-[agent]-[skill]/
-    6. WRITE to .claude/skills/[PROJECT]-[agent]-[skill]/SKILL.md
-</skill_customization>
+    3. GENERATE YAML frontmatter (using process above)
+    4. CUSTOMIZE template content:
+       - FILL [TECH_STACK_SPECIFIC] sections with actual patterns
+       - FILL [SKILL_NAME] placeholder
+       - FILL [SKILL_DESCRIPTION] placeholder
+       - FILL [CURRENT_DATE] with today's date
+       - FILL [GLOB_LIST] with actual globs (if applicable)
+       - FILL [FRAMEWORK] with detected framework
+       - FILL [MCP_TOOLS] placeholder (ask user or use recommendations)
+    5. COMBINE: frontmatter + customized template content
+    6. CREATE directory: .claude/skills/[skill_full_name]/
+    7. WRITE to .claude/skills/[skill_full_name]/SKILL.md
+
+    **Final file structure:**
+    ```markdown
+    ---
+    name: my-project-backend-logic-implementing
+    description: "Backend logic implementation for my-project. Use when: (1) Implementing services, (2) Business logic, (3) Domain operations"
+    version: 1.0
+    framework: spring-boot
+    created: 2026-01-14
+    encoding: UTF-8
+    globs:
+      - "src/**/*Service.java"
+      - "src/**/service/**/*.java"
+    ---
+
+    # Backend Logic Implementing
+
+    > Project: my-project
+    > Framework: Spring Boot
+    > Generated: 2026-01-14
+
+    [... rest of skill content ...]
+    ```
+</skill_content_assembly>
 
 <template_lookup>
   For all skill templates:
   1. TRY: agent-os/templates/skills/dev-team/[role]/[skill]-template.md
   2. FALLBACK: ~/.agent-os/templates/skills/dev-team/[role]/[skill]-template.md
+
+  For base skill template (if specific not found):
+  1. TRY: agent-os/templates/skills/skill/SKILL.md
+  2. FALLBACK: ~/.agent-os/templates/skills/skill/SKILL.md
 </template_lookup>
+
+<verification>
+  AFTER generating all skills:
+    1. VERIFY each skill file has valid YAML frontmatter
+    2. VERIFY required fields: name, description
+    3. VERIFY globs are properly formatted (if present)
+    4. VERIFY no unresolved placeholders remain
+    5. REPORT: Number of skills generated, list of skill names
+</verification>
 
 **Output:**
 - Created skills in `.claude/skills/[skill-name]/SKILL.md` (Anthropic folder format)
+- Each skill has complete YAML frontmatter with name, description, globs
 - Each skill is tech-stack-aware
-- [PROJECT] is derived from project name or tech stack
+- Skills auto-activate based on file patterns (globs)
 - Skills are directly in `.claude/skills/` (no nested folders - Claude Code limitation)
 
 </step>
