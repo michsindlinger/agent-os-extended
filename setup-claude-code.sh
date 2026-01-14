@@ -2,7 +2,7 @@
 
 # Agent OS Extended - Claude Code Setup
 # Installs Claude Code specific commands and agents for DevTeam workflow
-# Version: 2.1
+# Version: 2.2
 
 set -e
 
@@ -66,6 +66,8 @@ command_files=(
 
     # Skill management
     "add-skill.md"
+    "migrate-skills.md"
+    "toggle-skill-activation.md"
 )
 
 for file in "${command_files[@]}"; do
@@ -107,7 +109,7 @@ echo ""
 echo "📁 Installed Structure:"
 echo ""
 echo "  .claude/"
-echo "    ├── commands/agent-os/   (9 core commands)"
+echo "    ├── commands/agent-os/   (11 core commands)"
 echo "    └── agents/              (9 utility agents)"
 echo ""
 echo "📋 Available Commands:"
@@ -133,6 +135,8 @@ echo "                                 (includes bugs, docs, and changelog gener
 echo ""
 echo "  Skill Management:"
 echo "    /add-skill                → Create custom skills for DevTeam agents"
+echo "    /migrate-skills           → Add YAML frontmatter to existing skills"
+echo "    /toggle-skill-activation  → Change skill activation mode"
 echo ""
 echo "🤖 Utility Agents Installed:"
 echo "  • context-fetcher    → Conditional file loading"
