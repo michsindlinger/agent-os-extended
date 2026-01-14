@@ -2,7 +2,7 @@
 
 # Agent OS DevTeam System - Global Installation
 # Installs standards and templates to ~/.agent-os/ as fallback for all projects
-# Version: 2.2 - Added Platform Planning Support
+# Version: 2.3 - Added YAML frontmatter support
 
 set -e
 
@@ -62,6 +62,7 @@ mkdir -p "$GLOBAL_DIR/templates/skills/dev-team/po"
 mkdir -p "$GLOBAL_DIR/templates/skills/dev-team/documenter"
 mkdir -p "$GLOBAL_DIR/templates/skills/orchestration"
 mkdir -p "$GLOBAL_DIR/templates/skills/platform"
+mkdir -p "$GLOBAL_DIR/templates/skills/skill"
 mkdir -p "$GLOBAL_DIR/templates/skills"
 mkdir -p "$GLOBAL_DIR/templates/docs"
 
@@ -187,6 +188,10 @@ download_file "$REPO_URL/agent-os/templates/skills/orchestration/orchestration-t
 echo "→ Generic skill template (1)..."
 download_file "$REPO_URL/agent-os/templates/skills/generic-skill-template.md" "$GLOBAL_DIR/templates/skills/generic-skill-template.md"
 
+# Base skill template (1) - NEW with YAML frontmatter
+echo "→ Base skill template (1)..."
+download_file "$REPO_URL/agent-os/templates/skills/skill/SKILL.md" "$GLOBAL_DIR/templates/skills/skill/SKILL.md"
+
 # Documentation templates (10)
 echo "→ Documentation templates (10)..."
 download_file "$REPO_URL/agent-os/templates/docs/spec-template.md" "$GLOBAL_DIR/templates/docs/spec-template.md"
@@ -213,7 +218,7 @@ echo ""
 echo "  agents/ (1 file)"
 echo "    └── platform-architect.md"
 echo ""
-echo "  templates/ (66 files)"
+echo "  templates/ (67 files)"
 echo "    ├── product/ (8)"
 echo "    ├── platform/ (6) ← NEW"
 echo "    ├── agents/dev-team/ (7)"
@@ -228,6 +233,7 @@ echo "    │   │   ├── po/ (4)"
 echo "    │   │   └── documenter/ (4)"
 echo "    │   ├── platform/ (4) ← NEW"
 echo "    │   ├── orchestration/ (1)"
+echo "    │   ├── skill/ (1) ← NEW YAML frontmatter"
 echo "    │   └── generic-skill-template.md (1)"
 echo "    └── docs/ (10)"
 echo ""
