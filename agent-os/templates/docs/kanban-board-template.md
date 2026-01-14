@@ -10,6 +10,8 @@
 | **Current Phase** | {{CURRENT_PHASE}} |
 | **Next Phase** | {{NEXT_PHASE}} |
 | **Spec Folder** | agent-os/specs/{{SPEC_FOLDER}} |
+| **Worktree Path** | {{WORKTREE_PATH}} |
+| **Git Branch** | {{GIT_BRANCH}} |
 | **Current Story** | {{CURRENT_STORY}} |
 | **Last Action** | {{LAST_ACTION}} |
 | **Next Action** | {{NEXT_ACTION}} |
