@@ -152,8 +152,8 @@ get_story_counts() {
 
     # Parse from Board Status section (template structure)
     # Format: | **Completed** | 2 |
-    local completed=$(grep "^\| \*\*Completed\*\*" "$kanban_file" 2>/dev/null | sed 's/.*| *\([^|]*\) *|.*/\1/' | xargs)
-    local total=$(grep "^\| \*\*Total Stories\*\*" "$kanban_file" 2>/dev/null | sed 's/.*| *\([^|]*\) *|.*/\1/' | xargs)
+    local completed=$(grep "\*\*Completed\*\*" "$kanban_file" 2>/dev/null | sed 's/.*\*\*Completed\*\*[[:space:]]*|[[:space:]]*\([0-9]*\).*/\1/' | xargs)
+    local total=$(grep "\*\*Total Stories\*\*" "$kanban_file" 2>/dev/null | sed 's/.*\*\*Total Stories\*\*[[:space:]]*|[[:space:]]*\([0-9]*\).*/\1/' | xargs)
 
     # Fallback: Try old format (header style)
     if [[ -z "$total" || "$total" == "0" ]]; then
