@@ -1,0 +1,1 @@
+/Users/michaelsindlinger/Entwicklung/agent-os-extended/agent-os/templates/docs/kanban-board-template.md
