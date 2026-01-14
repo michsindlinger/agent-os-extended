@@ -2,7 +2,7 @@
 description: Create Feature Specification with DevTeam (PO + Architect)
 globs:
 alwaysApply: false
-version: 2.2
+version: 2.3
 encoding: UTF-8
 ---
 
@@ -56,46 +56,195 @@ ALWAYS present roadmap features as options to user, even if they provided a cust
 
 </step>
 
-<step number="2" subagent="dev-team__po" name="po_fachliche_requirements">
+<step number="2" name="po_fachliche_requirements_dialog">
 
-### Step 2: PO Phase - Fachliche Requirements
+### Step 2: PO Phase - Dialog-Based Requirements Gathering
 
-Use dev-team__po agent to gather fachliche (business) requirements from user and create user stories.
+⚠️ **NEW APPROACH:** For larger/complex features, engage in iterative dialog with user
+to fully understand requirements BEFORE generating user stories.
 
-<delegation>
-  DELEGATE to dev-team__po via Task tool:
+<process_overview>
+  1. **Requirements Dialog** (Iterative clarification)
+  2. **Clarification Document** (Summary for approval)
+  3. **User Approval** (User confirms or requests changes)
+  4. **User Story Generation** (Only after approval)
+</process_overview>
 
-  PROMPT:
-  "Create fachliche specification for: [SPEC_IDEA]
+<substep number="2.1" name="requirements_dialog">
 
-  Context:
-  - Product Brief: agent-os/product/product-brief-lite.md
-  - Roadmap: agent-os/product/roadmap.md (if from roadmap)
+### Step 2.1: Requirements Dialog (Iterative)
 
-  Tasks:
-  1. Clarify fachliche requirements with user:
-     - What is the feature? (user perspective)
+<mandatory_actions>
+  1. LOAD context:
+     - Product Brief: agent-os/product/product-brief-lite.md
+     - Roadmap: agent-os/product/roadmap.md (if from roadmap)
+     - Existing specs: agent-os/specs/ (for context)
+
+  2. INITIAL questions to user:
+     - What is the feature? (user's perspective)
      - Who needs it? (target users)
      - Why is it valuable? (business value)
-     - What are acceptance criteria? (user-facing)
-     - What is in scope? What is out of scope?
+     - What problem does it solve?
 
-  2. Use date-checker to get current date (YYYY-MM-DD)
+  3. ITERATIVE clarification (CONTINUE until complete):
+     - What are the edge cases?
+     - Where does this feature affect the system? (explore dependencies)
+     - What existing features/components are related?
+     - What should happen in error scenarios?
+     - What is IN scope? What is OUT of scope?
+     - Are there permissions/security considerations?
+     - Are there performance requirements?
 
-  3. Create spec folder: agent-os/specs/YYYY-MM-DD-spec-name/
+  4. DEEP-DIVE based on complexity:
+     - If complex: Ask follow-up about integration points
+     - If affects multiple components: Map the relationships
+     - If unclear: Request examples or use cases
+     - If risky: Discuss mitigation strategies
 
-  4. Create spec.md (load template with hybrid lookup):
+  5. CONTINUE asking questions until:
+     - All aspects are clear
+     - Dependencies are mapped
+     - Edge cases are identified
+     - User confirms "no more questions"
+</mandatory_actions>
+
+<instructions>
+  ACTION: Engage in dialog with user
+  FORMAT: Ask questions one section at a time
+  WAIT: For user answers before proceeding
+  PROBE: Deeper into unclear areas
+  DOCUMENT: Keep track of all answers
+  STOP: Only when user says requirements are complete
+</instructions>
+
+</substep>
+
+<substep number="2.2" name="clarification_document">
+
+### Step 2.2: Create Clarification Document
+
+Before generating user stories, create a summary document for user approval.
+
+<mandatory_actions>
+  1. Use date-checker to get current date (YYYY-MM-DD)
+
+  2. Create spec folder: agent-os/specs/YYYY-MM-DD-spec-name/
+
+  3. CREATE requirements-clarification.md:
+
+     <clarification_template>
+       # Requirements Clarification - [SPEC_NAME]
+
+       **Created:** [DATE]
+       **Status:** Pending User Approval
+
+       ## Feature Overview
+       [1-2 sentence summary of the feature]
+
+       ## Target Users
+       [Who will use this feature]
+
+       ## Business Value
+       [Why this feature matters]
+
+       ## Functional Requirements
+       [List of WHAT the feature should do - user-facing]
+
+       ## Affected Areas & Dependencies
+       [Where this feature impacts the system]
+       - [Component 1] - [Impact description]
+       - [Component 2] - [Impact description]
+       - [External System] - [Integration point]
+
+       ## Edge Cases & Error Scenarios
+       [What happens when things go wrong]
+       - [Edge case 1] - [Expected behavior]
+       - [Edge case 2] - [Expected behavior]
+
+       ## Security & Permissions
+       [Who can access what]
+
+       ## Performance Considerations
+       [Any performance requirements]
+
+       ## Scope Boundaries
+       **IN SCOPE:**
+       - [Item 1]
+       - [Item 2]
+
+       **OUT OF SCOPE:**
+       - [Item 1]
+       - [Item 2]
+
+       ## Open Questions (if any)
+       - [Question 1]
+       - [Question 2]
+
+       ## Proposed User Stories (High Level)
+       [List of story titles with brief descriptions - NOT full stories yet]
+       1. [Story 1 Title] - [Brief description]
+       2. [Story 2 Title] - [Brief description]
+       3. [Story 3 Title] - [Brief description]
+
+       ---
+       *Review this document carefully. Once approved, detailed user stories will be generated.*
+     </clarification_template>
+
+  4. PRESENT clarification document to user
+</mandatory_actions>
+
+</substep>
+
+<substep number="2.3" name="user_approval">
+
+### Step 2.3: User Approval
+
+<mandatory_actions>
+  1. ASK user via AskUserQuestion:
+
+     ```
+     Question: "I've created a Requirements Clarification document based on our discussion.
+                Please review it before I generate the detailed user stories."
+
+     Options:
+     1. Approve & Generate Stories
+        → Requirements are correct
+        → Proceed to generate full user stories
+
+     2. Request Changes
+        → Need to modify the clarification
+        → I'll update based on your feedback
+
+     3. Continue Discussion
+        → Need to explore more aspects
+        → Return to dialog mode
+     ```
+
+  2. BASED on user choice:
+     - If "Approve": Proceed to Step 2.4
+     - If "Request Changes": Update clarification, re-ask approval
+     - If "Continue": Return to Step 2.1 with focused questions
+</mandatory_actions>
+
+</substep>
+
+<substep number="2.4" name="generate_stories">
+
+### Step 2.4: Generate User Stories (After Approval)
+
+<mandatory_actions>
+  1. CREATE spec.md (load template with hybrid lookup):
      - Overview (1-2 sentences goal)
      - User stories list
      - Spec scope (what's included)
      - Out of scope (what's excluded)
      - Expected deliverable (testable outcomes)
 
-  5. Create spec-lite.md (load template with hybrid lookup):
+  2. CREATE spec-lite.md (load template with hybrid lookup):
      - 1-3 sentence summary of core goal
 
-  6. Create user-stories.md with FACHLICHE stories only:
-     For each feature:
+  3. CREATE user-stories.md with FACHLICHE stories only:
+     For each story from clarification:
      - Story title
      - Als [User] möchte ich [Aktion], damit [Nutzen]
      - Fachliche acceptance criteria (user-facing, 3-5 items)
@@ -116,7 +265,7 @@ Use dev-team__po agent to gather fachliche (business) requirements from user and
   - Use prefix format: FILE_EXISTS:, CONTAINS:, LINT_PASS:, TEST_PASS:
   - Each criterion must be verifiable via bash command
   - Include exact file paths
-  - For browser tests: MCP_PLAYWRIGHT: prefix (document in Required MCP Tools section)
+  - For browser tests: MCP_PLAYWRIGHT: prefix
   - Avoid MANUAL: criteria when possible
   - Reference: agent-os/templates/docs/user-stories-template.md
 
@@ -126,16 +275,13 @@ Use dev-team__po agent to gather fachliche (business) requirements from user and
   - NO DoR/DoD (Architect adds this)
   - NO dependencies
   - Focus on WHAT user needs, not HOW to implement
-  - Stories must be small enough for single Claude Code session"
+  - Stories must be small enough for single Claude Code session
+</mandatory_actions>
 
-  WAIT for dev-team__po completion
-  RECEIVE:
-    - agent-os/specs/YYYY-MM-DD-spec-name/spec.md
-    - agent-os/specs/YYYY-MM-DD-spec-name/spec-lite.md
-    - agent-os/specs/YYYY-MM-DD-spec-name/user-stories.md (fachlich only)
-</delegation>
+</substep>
 
 **Output:**
+- `agent-os/specs/YYYY-MM-DD-spec-name/requirements-clarification.md` (approved)
 - `agent-os/specs/YYYY-MM-DD-spec-name/spec.md`
 - `agent-os/specs/YYYY-MM-DD-spec-name/spec-lite.md`
 - `agent-os/specs/YYYY-MM-DD-spec-name/user-stories.md` (fachlich only)
@@ -652,6 +798,7 @@ Present completed specification to user.
   **Location:** agent-os/specs/[YYYY-MM-DD-spec-name]/
 
   **Files:**
+  - requirements-clarification.md - Approved requirements summary
   - spec.md - Full specification
   - spec-lite.md - Quick reference summary
   - user-stories.md - User stories (fachlich + technisch)
@@ -696,6 +843,7 @@ Present completed specification to user.
 
 <verify>
   - [ ] Spec folder created (YYYY-MM-DD prefix)
+  - [ ] requirements-clarification.md created and approved by user
   - [ ] spec.md complete (all sections)
   - [ ] spec-lite.md concise
   - [ ] user-stories.md has fachlich + technical
