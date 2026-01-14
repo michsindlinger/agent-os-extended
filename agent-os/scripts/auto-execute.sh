@@ -140,7 +140,7 @@ get_current_phase() {
     fi
 }
 
-# Get story count from kanban board
+# Get story count from kanban board (using template structure)
 get_story_counts() {
     local spec="$1"
     local kanban_file="$SPECS_DIR/$spec/kanban-board.md"
@@ -150,28 +150,32 @@ get_story_counts() {
         return 0
     fi
 
-    # Try to get total from header (e.g., "**Total Stories**: 4")
-    local total=$(grep -E "\*\*Total Stories\*\*.*[0-9]+" "$kanban_file" 2>/dev/null | grep -oE "[0-9]+" | head -1)
+    # Parse from Board Status section (template structure)
+    # Format: | **Completed** | 2 |
+    local completed=$(grep "^\| \*\*Completed\*\*" "$kanban_file" 2>/dev/null | sed 's/.*| *\([^|]*\) *|.*/\1/' | xargs)
+    local total=$(grep "^\| \*\*Total Stories\*\*" "$kanban_file" 2>/dev/null | sed 's/.*| *\([^|]*\) *|.*/\1/' | xargs)
 
-    # Fallback: count checkbox format
+    # Fallback: Try old format (header style)
+    if [[ -z "$total" || "$total" == "0" ]]; then
+        total=$(grep -E "\*\*Total Stories\*\*.*[0-9]+" "$kanban_file" 2>/dev/null | grep -oE "[0-9]+" | head -1)
+    fi
+    if [[ -z "$completed" || "$completed" == "-" ]]; then
+        completed=$(grep -E "\*\*Completed\*\*.*[0-9]+" "$kanban_file" 2>/dev/null | grep -oE "[0-9]+" | head -1)
+    fi
+
+    # Fallback: count checkbox format (legacy)
     if [[ -z "$total" || "$total" == "0" ]]; then
         total=$(grep -E "^\- \[[ x]\] \*\*Story" "$kanban_file" 2>/dev/null | wc -l | xargs)
     fi
-
-    # Count done stories from Done section table (lines starting with | followed by story ID)
-    # Extract content between "## Done" and next "---"
-    local done_count=$(awk '/^## Done/,/^---/' "$kanban_file" 2>/dev/null | grep -E "^\| [A-Z]+-[0-9]+" | wc -l | xargs)
-
-    # Fallback: checkbox format
-    if [[ -z "$done_count" || "$done_count" == "0" ]]; then
-        done_count=$(grep -E "^\- \[x\] \*\*Story" "$kanban_file" 2>/dev/null | wc -l | xargs)
+    if [[ -z "$completed" || "$completed" == "0" ]]; then
+        completed=$(grep -E "^\- \[x\] \*\*Story" "$kanban_file" 2>/dev/null | wc -l | xargs)
     fi
 
     # Ensure we have numbers
     total=${total:-0}
-    done_count=${done_count:-0}
+    completed=${completed:-0}
 
-    echo "$done_count/$total"
+    echo "$completed/$total"
 }
 
 # Run one phase of execute-tasks
