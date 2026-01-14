@@ -95,6 +95,21 @@ Select specification and create Kanban Board. This is a one-time setup phase.
   Output: agent-os/specs/{SELECTED_SPEC}/kanban-board.md
   Template: agent-os/templates/docs/kanban-board-template.md (global) or agent-os/templates/docs/kanban-board-template.md (project)
 
+  CRITICAL STEPS:
+  1. READ user-stories.md
+  2. VALIDATE DoR for each story:
+     - CHECK: All DoR checkboxes are marked [x] (checked)
+     - IF any DoR checkbox is [ ] (unchecked):
+       - STORY_STATUS: BLOCKED - Incomplete DoR
+       - ADD_NOTE: 'Missing DoR items. Please run /create-spec again to complete technical refinement.'
+     - IF all DoR checkboxes are [x]:
+       - STORY_STATUS: Ready
+
+  3. PARSE story details into table format
+  4. CREATE kanban board with:
+     - All valid stories in Backlog
+     - Blocked stories marked with status
+
   CRITICAL: Use the template structure EXACTLY as defined. The template contains:
   - Resume Context section (CRITICAL for phase recovery)
   - Board Status metrics (with exact field names for parsing)
@@ -109,30 +124,55 @@ Select specification and create Kanban Board. This is a one-time setup phase.
   - {{IN_PROGRESS_COUNT}} → 0
   - {{IN_REVIEW_COUNT}} → 0
   - {{TESTING_COUNT}} → 0
-  - {{BACKLOG_COUNT}} → Total stories count
+  - {{BACKLOG_COUNT}} → Count of READY stories (excluding blocked)
   - {{CURRENT_PHASE}} → 1-complete
   - {{NEXT_PHASE}} → 2 - Git Branch
   - {{CURRENT_STORY}} → None
   - {{LAST_ACTION}} → Kanban board created
   - {{NEXT_ACTION}} → Create/switch git branch
-  - {{BACKLOG_STORIES}} → All stories from user-stories.md in table format
+  - {{BACKLOG_STORIES}} → All READY stories from user-stories.md in table format
+  - {{BLOCKED_STORIES}} → Section for stories with incomplete DoR
   - {{IN_PROGRESS_STORIES}} → (empty section with comment)
   - {{IN_REVIEW_STORIES}} → (empty section with comment)
   - {{TESTING_STORIES}} → (empty section with comment)
   - {{DONE_STORIES}} → (empty section with comment)
-  - {{CHANGE_LOG_ENTRIES}} → Initial entry: Board created
+  - {{CHANGE_LOG_ENTRIES}} → Initial entry: Board created with DoR validation
 
   Story Table Format (use for each story section):
-  | Story ID | Title | Type | Dependencies | Points |
-  |----------|-------|------|--------------|--------|
-  | STORY-ID | Story Title | Backend/Frontend/DevOps/Test | None or STORY-ID, STORY-ID | 1/2/3/5/8 |
+  | Story ID | Title | Type | Dependencies | DoR Status | Points |
+  |----------|-------|------|--------------|------------|--------|
+  | STORY-ID | Story Title | Backend/Frontend/DevOps/Test | None or STORY-ID, STORY-ID | ✅ Ready or ⚠️ Blocked | 1/2/3/5/8 |
 
   IMPORTANT: The Board Status section MUST be parseable by shell scripts:
   - Use exact field names: Total Stories, Completed, In Progress, In Review, Testing, Backlog
   - Format: **Fieldname**: number
-  "
+
+  DoR VALIDATION RULES:
+  - Story must have '### Technisches Refinement (vom Architect)' section
+  - Under '#### DoR (Definition of Ready)':
+    - 'Fachliche Anforderungen' subsection must have all [x] checked
+    - 'Technische Vorbereitung' subsection must have all [x] checked
+  - If any [ ] (unchecked) found: Mark as BLOCKED with note which items are missing
+
+  OUTPUT VALIDATION:
+  - Count total stories from user-stories.md
+  - Count stories with complete DoR (ready for execution)
+  - Count stories with incomplete DoR (blocked)
+  - Report summary to user after creation
+
+  IF BLOCKED stories found:
+    ADD_WARNING: '⚠️ Some stories are BLOCKED due to incomplete Definition of Ready.
+                   Please run /create-spec again to complete technical refinement.
+                   Blocked stories: [list of story IDs]'"
 
   WAIT: For file-creator completion
+
+  VALIDATE: DoR validation was performed
+  CHECK: If any stories were marked as BLOCKED
+  IF blocked_stories > 0:
+    DISPLAY: Warning about blocked stories
+    LIST: Each blocked story with missing DoR items
+    OFFER: 'Run /create-spec again to complete technical refinement?'
 </step>
 
 ### Phase Completion
