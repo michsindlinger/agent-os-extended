@@ -2,7 +2,7 @@
 description: Create Feature Specification with DevTeam (PO + Architect)
 globs:
 alwaysApply: false
-version: 2.1
+version: 2.2
 encoding: UTF-8
 ---
 
@@ -154,6 +154,11 @@ Use dev-team__architect agent to add technical refinement to fachliche user stor
   PROMPT:
   "Add technical refinement to user stories.
 
+  ⚠️ **CRITICAL: Technical Refinement Placement**
+  The technical refinement MUST be inserted DIRECTLY after each fachliche user story,
+  specifically AFTER the '---' separator that follows the 'Required MCP Tools' section.
+  Do NOT append all technical refinements at the end of the document.
+
   Context:
   - Spec: agent-os/specs/[YYYY-MM-DD-spec-name]/spec.md
   - User Stories: agent-os/specs/[YYYY-MM-DD-spec-name]/user-stories.md
@@ -173,8 +178,8 @@ Use dev-team__architect agent to add technical refinement to fachliche user stor
   FOR EACH user story in user-stories.md:
 
     1. Read fachliche story from PO
-
-    2. Add technical refinement section after fachliche description:
+    2. Find the '---' separator after 'Required MCP Tools' section
+    3. INSERT technical refinement section IMMEDIATELY after that separator
 
        ---
 
@@ -259,11 +264,12 @@ Use dev-team__architect agent to add technical refinement to fachliche user stor
   IMPORTANT:
   - Add ONLY technical sections (WAS/WIE/WO/WER/DoR/DoD)
   - Do NOT modify fachliche descriptions
-  - Ensure DoR met for all stories
+  - **MUST mark ALL DoR checkboxes as [x] complete**
   - Define clear DoD per story
   - Map ALL dependencies
   - Add Completion Check section with bash verify commands
   - Keep stories small (automated validation in Step 3.5)
+  - **DoR validation will run in Step 3.4 - all checkboxes must be [x]**
   - Reference: agent-os/docs/story-sizing-guidelines.md
 
   ARCHITECTURE GUIDANCE RULES:
@@ -284,6 +290,142 @@ Use dev-team__architect agent to add technical refinement to fachliche user stor
 **Output:**
 - `agent-os/specs/[spec-name]/user-stories.md` (COMPLETE with technical refinement)
 - `agent-os/specs/[spec-name]/sub-specs/cross-cutting-decisions.md` (optional)
+
+</step>
+
+<step number="3.4" name="dor_validation">
+
+### Step 3.4: Definition of Ready (DoR) Validation
+
+Validate that all stories have complete DoR before proceeding to execution.
+
+<validation_process>
+  READ: agent-os/specs/[spec-name]/user-stories.md
+
+  FOR EACH story in user-stories.md:
+    <extract_dor_checkboxes>
+      FIND: "### Technisches Refinement (vom Architect)" section
+      FIND: "DoR (Definition of Ready)" subsection
+      EXTRACT: All checkbox lines starting with "- [" or "- [x]"
+    </extract_dor_checkboxes>
+
+    <check_completion>
+      COUNT: Total number of DoR checkboxes
+      COUNT: Number of checked checkboxes [x]
+
+      IF checked_count < total_count:
+        FLAG: Story as "DoR Incomplete"
+        LIST: Unchecked DoR items
+        SEVERITY: Critical - Story cannot start execution
+    </check_completion>
+</validation_process>
+
+<decision_tree>
+  IF all stories have complete DoR:
+    LOG: "✅ All stories have complete DoR - Ready for execution"
+    PROCEED: To Step 3.5 (Story Size Validation)
+
+  ELSE (stories with incomplete DoR):
+    GENERATE: DoR Validation Report
+
+    <dor_report_format>
+      ⚠️ Definition of Ready Validation - INCOMPLETE
+
+      **Stories with Incomplete DoR:**
+
+      **Story [ID]: [Title]**
+      - Total DoR items: [N]
+      - Checked: [N]
+      - Unchecked: [N]
+
+      **Missing DoR Items:**
+      - [ ] [Unchecked item 1]
+      - [ ] [Unchecked item 2]
+      - [ ] [Unchecked item 3]
+
+      ---
+
+      **Summary:**
+      - Total stories: [N]
+      - Stories with complete DoR: [N]
+      - Stories with incomplete DoR: [N] ⚠️
+
+      **IMPORTANT:** Stories with incomplete DoR cannot start execution.
+      The Architect must complete all DoR items before /execute-tasks can run.
+    </dor_report_format>
+
+    PRESENT: DoR Validation Report to user
+
+    INFORM: "The Architect must complete all DoR checkboxes before stories can be executed.
+             Incomplete DoR means stories are not ready for implementation."
+
+    ASK user via AskUserQuestion:
+    "How would you like to proceed?
+
+    Options:
+    1. Return to Architect to complete DoR
+       → Architect will complete all unchecked DoR items
+       → Validation will run again after completion
+
+    2. Review and manually complete DoR
+       → Opens user-stories.md for editing
+       → You can manually complete DoR items
+       → Re-run validation after edits
+
+    3. Proceed anyway (NOT RECOMMENDED)
+       → Stories with incomplete DoR will fail during execution
+       → Risk: Blocked stories, missing requirements, unclear implementation"
+
+    WAIT for user choice
+
+    <user_choice_handling>
+      IF choice = "Return to Architect":
+        DELEGATE: To dev-team__architect with prompt:
+        "Complete all DoR checkboxes for stories in agent-os/specs/[spec-name]/user-stories.md
+
+        For EACH story with incomplete DoR:
+        1. Review the unchecked DoR items
+        2. Complete the required analysis/design
+        3. Mark all DoR items as [x] complete
+
+        Return: Updated user-stories.md with all DoR items checked"
+
+        WAIT for architect completion
+        REPEAT: Step 3.4 (DoR Validation)
+
+      ELSE IF choice = "Review and manually edit":
+        INFORM: "Please edit: agent-os/specs/[spec-name]/user-stories.md"
+        INFORM: "Mark all DoR checkboxes as [x] complete"
+        PAUSE: Wait for user to edit
+        ASK: "Ready to re-validate? (yes/no)"
+        IF yes:
+          REPEAT: Step 3.4 (DoR Validation)
+        ELSE:
+          PROCEED: To Step 3.5 with warning flag
+
+      ELSE IF choice = "Proceed anyway":
+        WARN: "⚠️ Proceeding with incomplete DoR
+               - Stories may be blocked during execution
+               - Missing requirements may cause implementation issues
+               - Architect should complete DoR before execution"
+
+        LOG: DoR validation bypassed by user
+        PROCEED: To Step 3.5
+    </user_choice_handling>
+</decision_tree>
+
+<instructions>
+  ACTION: Validate all DoR checkboxes are marked [x]
+  CHECK: Each story's DoR section
+  REQUIRE: All checkboxes must be checked before execution
+  BLOCK: Stories with incomplete DoR from starting
+  REFERENCE: agent-os/team/dor.md (if exists)
+</instructions>
+
+**Output:**
+- DoR validation report (if issues found)
+- User decision on how to proceed
+- Updated user-stories.md (if DoR completed)
 
 </step>
 
@@ -557,8 +699,12 @@ Present completed specification to user.
   - [ ] spec.md complete (all sections)
   - [ ] spec-lite.md concise
   - [ ] user-stories.md has fachlich + technical
+  - [ ] **Technical refinement directly under each story (not at end)**
   - [ ] All stories have DoR/DoD
+  - [ ] **All DoR checkboxes are marked [x] complete**
   - [ ] Dependencies identified
   - [ ] Cross-cutting decisions (if applicable)
+  - [ ] **DoR validation passed (Step 3.4)**
+  - [ ] **Story size validation passed (Step 3.5)**
   - [ ] Ready for /execute-tasks
 </verify>
