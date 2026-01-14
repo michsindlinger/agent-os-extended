@@ -48,7 +48,7 @@ Each phase is a discrete unit that ends with a pause point for `/clear`.
     | Resume Context State | Next Phase |
     |---------------------|------------|
     | No kanban board | Phase 1: Initialize |
-    | Phase: 1-complete | Phase 2: Git Branch |
+    | Phase: 1-complete | Phase 2: Git Worktree |
     | Phase: 2-complete | Phase 3: Execute Story |
     | Phase: story-complete | Phase 3: Execute Story (next) |
     | Phase: all-stories-done | Phase 4: Finalize |
@@ -125,11 +125,14 @@ Select specification and create Kanban Board. This is a one-time setup phase.
   - {{IN_REVIEW_COUNT}} → 0
   - {{TESTING_COUNT}} → 0
   - {{BACKLOG_COUNT}} → Count of READY stories (excluding blocked)
+  - {{BLOCKED_COUNT}} → Count of BLOCKED stories (incomplete DoR)
   - {{CURRENT_PHASE}} → 1-complete
-  - {{NEXT_PHASE}} → 2 - Git Branch
+  - {{NEXT_PHASE}} → 2 - Git Worktree
+  - {{WORKTREE_PATH}} → Pending (set in Phase 2)
+  - {{GIT_BRANCH}} → Pending (set in Phase 2)
   - {{CURRENT_STORY}} → None
   - {{LAST_ACTION}} → Kanban board created
-  - {{NEXT_ACTION}} → Create/switch git branch
+  - {{NEXT_ACTION}} → Create git worktree for parallel execution
   - {{BACKLOG_STORIES}} → All READY stories from user-stories.md in table format
   - {{BLOCKED_STORIES}} → Section for stories with incomplete DoR
   - {{IN_PROGRESS_STORIES}} → (empty section with comment)
@@ -180,7 +183,7 @@ Select specification and create Kanban Board. This is a one-time setup phase.
 <phase_complete>
   UPDATE: kanban-board.md Resume Context
     - Current Phase: 1-complete
-    - Next Phase: 2 - Git Branch
+    - Next Phase: 2 - Git Worktree
 
   OUTPUT to user:
   ---
@@ -190,7 +193,7 @@ Select specification and create Kanban Board. This is a one-time setup phase.
   - Kanban Board: agent-os/specs/{SELECTED_SPEC}/kanban-board.md
   - Stories loaded: [X] stories in Backlog
 
-  **Next Phase:** Git Branch Setup
+  **Next Phase:** Git Worktree Setup (for parallel execution)
 
   ---
   **👉 To continue, run:**
@@ -234,24 +237,67 @@ Create or switch to the appropriate git branch for this spec.
     IF yes: Kill server
 </step>
 
-<step name="git_branch_management" subagent="git-workflow">
+<step name="git_worktree_creation" subagent="git-workflow">
   USE: git-workflow subagent
 
-  PROMPT: "Manage git branch for spec: {SELECTED_SPEC}
+  PROMPT: "Create git worktree for parallel spec execution: {SELECTED_SPEC}
+
+  **CRITICAL: Use Git Worktree for Parallel Execution**
+
+  This enables multiple specs to execute simultaneously without branch conflicts.
 
   Rules:
-  - Extract branch name from spec folder (remove YYYY-MM-DD- prefix)
-  - If 'bugfix' in name: use 'bugfix/' prefix
-  - Create branch if not exists
-  - Switch to branch
-  - Handle any uncommitted changes
+  1. Extract worktree name from spec folder (remove YYYY-MM-DD- prefix)
+     - Example: 2026-01-13-multi-delete-projects → multi-delete-projects
+     - Example: 2026-01-12-bugfix-login-error → bugfix-login-error
 
-  Examples:
-  - 2026-01-13-multi-delete-projects → multi-delete-projects
-  - 2026-01-12-bugfix-login-error → bugfix/login-error
+  2. Extract branch name (same as worktree name)
+     - If 'bugfix' in worktree name: use 'bugfix/' prefix for branch
+     - Example: bugfix-login-error → branch: bugfix/login-error
+
+  3. Create git worktree:
+     ```bash
+     # Base directory for worktrees
+     WORKTREE_BASE='agent-os/worktrees'
+
+     # Create worktree directory
+     mkdir -p '$WORKTREE_BASE'
+
+     # Create worktree with new branch
+     git worktree add '$WORKTREE_BASE/$WORKTREE_NAME' -b '$BRANCH_NAME'
+     ```
+
+  4. Verify worktree was created:
+     ```bash
+     git worktree list
+     ```
+
+  5. Return these values for Resume Context:
+     - WORKTREE_PATH: agent-os/worktrees/$WORKTREE_NAME
+     - GIT_BRANCH: $BRANCH_NAME
+
+  **Handle Edge Cases:**
+  - If worktree already exists: Verify it matches the spec, use it
+  - If branch already exists: Create worktree with existing branch
+  - If uncommitted changes in main repo: Commit or stash first
+
+  **Examples:**
+  - Spec: 2026-01-13-multi-delete-projects
+    → Worktree: agent-os/worktrees/multi-delete-projects
+    → Branch: multi-delete-projects
+
+  - Spec: 2026-01-12-bugfix-login-error
+    → Worktree: agent-os/worktrees/bugfix-login-error
+    → Branch: bugfix/login-error
+
+  - Spec: 2026-01-14-user-authentication
+    → Worktree: agent-os/worktrees/user-authentication
+    → Branch: user-authentication
   "
 
   WAIT: For git-workflow completion
+
+  CAPTURE: WORKTREE_PATH and GIT_BRANCH values for Resume Context
 </step>
 
 ### Phase Completion
@@ -260,16 +306,19 @@ Create or switch to the appropriate git branch for this spec.
   UPDATE: kanban-board.md using template structure
     - Current Phase: 2-complete
     - Next Phase: 3 - Execute Story
-    - Last Action: Git branch created/switched
+    - Worktree Path: [captured from git-workflow]
+    - Git Branch: [captured from git-workflow]
+    - Last Action: Git worktree created for parallel execution
     - Next Action: Select and execute first story
     - Add Change Log entry
 
   OUTPUT to user:
   ---
-  ## ✅ Phase 2 Complete: Git Branch Setup
+  ## ✅ Phase 2 Complete: Git Worktree Setup
 
+  **Worktree:** [worktree-path]
   **Branch:** [branch-name]
-  **Status:** Ready for story execution
+  **Status:** Ready for parallel story execution
 
   **Next Phase:** Execute First Story
 
@@ -545,6 +594,44 @@ Create pull request and provide final summary.
   RUN: afplay /System/Library/Sounds/Glass.aiff
 </step>
 
+<step name="worktree_cleanup" subagent="git-workflow">
+  USE: git-workflow subagent
+
+  PROMPT: "Clean up git worktree after successful PR creation: {SELECTED_SPEC}
+
+  **IMPORTANT: Only clean up worktree AFTER PR is created and merged**
+
+  Read Resume Context from kanban-board.md to get:
+  - WORKTREE_PATH: Path to the worktree
+  - GIT_BRANCH: Branch name
+
+  Cleanup steps:
+  1. Verify PR was created successfully
+  2. Remove worktree:
+     ```bash
+     git worktree remove [WORKTREE_PATH]
+     ```
+  3. Verify worktree was removed:
+     ```bash
+     git worktree list
+     ```
+
+  **Handle Edge Cases:**
+  - If PR not yet created: Skip cleanup, warn user
+  - If worktree has uncommitted changes: Warn user, don't remove
+  - If worktree path doesn't exist: Already cleaned up, continue
+
+  **Output:**
+  - Confirm worktree removal
+  - Show remaining worktrees (if any)
+  "
+
+  WAIT: For git-workflow completion
+
+  UPDATE: kanban-board.md Resume Context
+    - Last Action: Worktree cleaned up after PR
+</step>
+
 ### Phase Completion
 
 <phase_complete>
@@ -593,11 +680,13 @@ Create pull request and provide final summary.
   | Field | Description | Example Values |
   |-------|-------------|----------------|
   | **Current Phase** | Phase identifier | 1-complete, 2-complete, story-complete, all-stories-done, complete |
-  | **Next Phase** | What to execute next | 2 - Git Branch, 3 - Execute Story, 4 - Finalize, None |
+  | **Next Phase** | What to execute next | 2 - Git Worktree, 3 - Execute Story, 4 - Finalize, None |
   | **Spec Folder** | Full path | agent-os/specs/2026-01-13-multi-delete-projects |
+  | **Worktree Path** | Path to git worktree for parallel execution | agent-os/worktrees/multi-delete-projects or Pending |
+  | **Git Branch** | Branch name for this spec | multi-delete-projects or Pending |
   | **Current Story** | Story being worked on | MDP-001 or None |
   | **Last Action** | What just happened | Kanban board created |
-  | **Next Action** | What needs to happen | Create git branch |
+  | **Next Action** | What needs to happen | Create git worktree |
 
   **Board Status Metrics** (for shell script parsing):
   | Field | Parse Pattern | Example |
@@ -661,7 +750,7 @@ Create pull request and provide final summary.
   <user_flow>
     1. /execute-tasks → Phase 1 runs → "Run /clear, then /execute-tasks"
     2. /clear
-    3. /execute-tasks → Phase 2 runs → "Run /clear, then /execute-tasks"
+    3. /execute-tasks → Phase 2 (Git Worktree) runs → "Run /clear, then /execute-tasks"
     4. /clear
     5. /execute-tasks → Phase 3 (Story 1) runs → "Run /clear, then /execute-tasks"
     6. /clear
@@ -678,7 +767,7 @@ Create pull request and provide final summary.
   | Phase | Purpose | Subagents Used |
   |-------|---------|----------------|
   | 1 | Initialize | file-creator |
-  | 2 | Git Branch | git-workflow |
+  | 2 | Git Worktree (parallel execution) | git-workflow |
   | 3 | Execute Story | dev-team__*, architect, ux-designer, qa-specialist, git-workflow |
   | 4 | Finalize | test-runner, git-workflow |
 
