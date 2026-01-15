@@ -206,13 +206,24 @@ CREATE: Directory
   USE: Bash
   COMMAND: mkdir -p "$(dirname "{skill_path}")"
 
+PREPARE: globs_yaml_lines (convert array to YAML format)
+  IF globs is empty OR globs == []:
+    SET: globs_yaml_lines = ""  # Empty, no glob lines
+  ELSE:
+    CONVERT: globs array to YAML array format
+    FOR EACH glob in globs:
+      PREFIX with "- " and newline
+      INDENT with 2 spaces
+    EXAMPLE: ["**/*.ts", "**/*.tsx"] → "- **/*.ts\n  - **/*.tsx"
+
 GENERATE: SKILL.md content based on template_type
 
 IF template_type == "Standard":
   content = """---
 name: {skill_name}
 description: {description}
-globs: {globs_yaml}
+globs:
+{globs_yaml_lines}
 ---
 
 # {Skill Name Title Case}
@@ -284,7 +295,8 @@ ELSE IF template_type == "Minimal":
   content = """---
 name: {skill_name}
 description: {description}
-globs: {globs_yaml}
+globs:
+{globs_yaml_lines}
 ---
 
 # {Skill Name Title Case}
@@ -313,7 +325,8 @@ ELSE IF template_type == "Pattern-focused":
   content = """---
 name: {skill_name}
 description: {description}
-globs: {globs_yaml}
+globs:
+{globs_yaml_lines}
 ---
 
 # {Skill Name Title Case}
