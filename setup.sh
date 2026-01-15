@@ -128,6 +128,9 @@ download_file "$REPO_URL/agent-os/workflows/core/execute-bug.md" "agent-os/workf
 # Task execution
 download_file "$REPO_URL/agent-os/workflows/core/execute-tasks.md" "agent-os/workflows/core/execute-tasks.md" "workflows"
 
+# Backlog / Quick tasks
+download_file "$REPO_URL/agent-os/workflows/core/add-todo.md" "agent-os/workflows/core/add-todo.md" "workflows"
+
 # Skill management
 download_file "$REPO_URL/agent-os/workflows/core/add-skill.md" "agent-os/workflows/core/add-skill.md" "workflows"
 
