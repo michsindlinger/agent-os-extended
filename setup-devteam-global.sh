@@ -65,6 +65,7 @@ mkdir -p "$GLOBAL_DIR/templates/skills/platform"
 mkdir -p "$GLOBAL_DIR/templates/skills/skill"
 mkdir -p "$GLOBAL_DIR/templates/skills"
 mkdir -p "$GLOBAL_DIR/templates/docs"
+mkdir -p "$GLOBAL_DIR/templates/feasibility"
 
 # ═══════════════════════════════════════════════════════════
 # STANDARDS
@@ -83,11 +84,11 @@ download_file "$REPO_URL/agent-os/standards/tech-stack.md" \
   "$GLOBAL_DIR/standards/tech-stack.md" "tech-stack template"
 
 # ═══════════════════════════════════════════════════════════
-# TEMPLATES (54 files)
+# TEMPLATES (55 files)
 # ═══════════════════════════════════════════════════════════
 
 echo ""
-echo "═══ Installing Templates (54 files) ═══"
+echo "═══ Installing Templates (55 files) ═══"
 
 # Product templates (8)
 echo "→ Product templates (8)..."
@@ -99,6 +100,10 @@ download_file "$REPO_URL/agent-os/templates/product/architecture-decision-templa
 download_file "$REPO_URL/agent-os/templates/product/boilerplate-structure-template.md" "$GLOBAL_DIR/templates/product/boilerplate-structure-template.md"
 download_file "$REPO_URL/agent-os/templates/product/design-system-template.md" "$GLOBAL_DIR/templates/product/design-system-template.md"
 download_file "$REPO_URL/agent-os/templates/product/ux-patterns-template.md" "$GLOBAL_DIR/templates/product/ux-patterns-template.md"
+
+# Feasibility templates (1)
+echo "→ Feasibility templates (1)..."
+download_file "$REPO_URL/agent-os/templates/feasibility/feasibility-report.md" "$GLOBAL_DIR/templates/feasibility/feasibility-report.md"
 
 # Platform templates (6)
 echo "→ Platform templates (6)..."

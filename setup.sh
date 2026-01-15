@@ -108,6 +108,7 @@ download_file "$REPO_URL/agent-os/workflows/meta/pre-flight.md" "agent-os/workfl
 
 # Product planning
 download_file "$REPO_URL/agent-os/workflows/core/plan-product.md" "agent-os/workflows/core/plan-product.md" "workflows"
+download_file "$REPO_URL/agent-os/workflows/core/analyze-feasibility.md" "agent-os/workflows/core/analyze-feasibility.md" "workflows"
 
 # Platform planning
 download_file "$REPO_URL/agent-os/workflows/core/plan-platform.md" "agent-os/workflows/core/plan-platform.md" "workflows"
@@ -197,7 +198,7 @@ echo "📁 Installed Structure:"
 echo ""
 echo "  agent-os/"
 echo "    ├── standards/              (2 core files)"
-echo "    ├── workflows/core/         (9 core workflows)"
+echo "    ├── workflows/core/         (10 core workflows)"
 echo "    ├── workflows/meta/         (1 meta workflow)"
 echo "    └── config.yml              (minimal configuration)"
 echo ""
