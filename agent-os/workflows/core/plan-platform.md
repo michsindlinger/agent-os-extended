@@ -231,6 +231,85 @@ Use tech-architect agent to analyze platform requirements and recommend tech sta
 
 </step>
 
+<step number="5.5" subagent="design-extractor" name="extract_design_system">
+
+### Step 5.5: Extract Platform Design System (Optional)
+
+Use design-extractor agent to analyze existing design and create design-system.md for frontend guidance.
+
+<conditional_check>
+  ASK user via AskUserQuestion:
+  "Does this platform have a user interface (web app, dashboard, mobile app)?
+
+  If yes: Do you have existing design references?
+  - URL of existing website/app
+  - Screenshots of the design
+
+  This will create a design system (colors, typography, spacing, components)
+  that frontend developers will use during implementation.
+
+  Options:
+  1. YES - Provide URL
+  2. YES - Provide screenshots
+  3. NO UI - Skip (backend-only platform)
+  4. LATER - Skip for now, run /extract-design later"
+</conditional_check>
+
+<conditional_logic>
+  IF user selects URL or Screenshots:
+    DELEGATE to design-extractor via Task tool:
+
+    PROMPT:
+    "Extract design system from platform UI reference.
+
+    [IF URL:] Source URL: [user provided URL]
+    [IF Screenshots:] Screenshots provided by user
+
+    Context:
+    - Platform Brief: agent-os/product/platform-brief.md
+    - This is a multi-module platform
+
+    Tasks:
+    1. Load design-system-template.md (hybrid lookup: project → global)
+    2. Analyze design source:
+       - Color palette (primary, secondary, accent, backgrounds, text)
+       - Typography (fonts, sizes, weights, line heights)
+       - Spacing system (base unit, section padding, gaps)
+       - Component styles (buttons, cards, inputs, navigation)
+       - Visual effects (shadows, gradients, animations)
+       - Layout patterns (grid, breakpoints, containers)
+    3. Create CSS variables for design tokens
+    4. Write to: agent-os/product/design-system.md
+    5. If screenshots: Copy to agent-os/product/design/screenshots/
+
+    Templates (hybrid lookup):
+    - TRY: agent-os/templates/product/design-system-template.md
+    - FALLBACK: ~/.agent-os/templates/product/design-system-template.md
+
+    Output:
+    - Complete design-system.md with colors, typography, spacing, components
+    - Design tokens as CSS variables for frontend implementation"
+
+    WAIT for design-extractor completion
+    NOTE: "Design system created at agent-os/product/design-system.md"
+
+  ELSE IF user selects "NO UI" or "LATER":
+    NOTE: "Skipping design system extraction"
+    IF "LATER":
+      NOTE: "Run /extract-design when ready to setup design system"
+</conditional_logic>
+
+**Template:** `agent-os/templates/product/design-system-template.md`
+**Output:** `agent-os/product/design-system.md` (optional)
+
+<note>
+  Design system is optional for platforms without UI.
+  Can be extracted later via standalone /extract-design command.
+  Frontend modules will use this during implementation.
+</note>
+
+</step>
+
 <step number="6" subagent="tech-architect" name="dependency_analysis">
 
 ### Step 6: Module Dependency Analysis
@@ -426,6 +505,7 @@ Created Documentation:
 ✅ platform-brief.md - Platform vision
 ✅ [N] module-brief.md files - Module definitions
 ✅ tech-stack.md - Technology choices (platform + modules)
+✅ design-system.md - UI design tokens (if platform has UI)
 ✅ module-dependencies.md - Dependency graph
 ✅ platform-architecture.md - System architecture
 ✅ platform-roadmap.md - Implementation phases
@@ -435,6 +515,7 @@ Directory Structure:
 agent-os/product/
 ├── platform-brief.md
 ├── tech-stack.md
+├── design-system.md          # Optional (if UI exists)
 ├── modules/
 │   ├── [module-1]/
 │   │   └── module-brief.md
@@ -454,8 +535,9 @@ agent-os/product/
 Next Steps:
 1. Review all documentation
 2. Run /build-development-team for platform-wide agents
-3. Start with Phase 1 modules from platform-roadmap.md
-4. Use /create-spec for each module's features
+3. If UI exists but design not extracted: Run /extract-design
+4. Start with Phase 1 modules from platform-roadmap.md
+5. Use /create-spec for each module's features
 ```
 
 </step>
@@ -475,6 +557,7 @@ Next Steps:
 | platform-brief.md | Platform vision | platform-brief-template.md |
 | modules/[name]/module-brief.md | Module definitions | module-brief-template.md |
 | tech-stack.md | Tech choices | tech-stack-template.md |
+| design-system.md | UI design tokens (optional) | design-system-template.md |
 | architecture/module-dependencies.md | Dependency graph | module-dependencies-template.md |
 | architecture/platform-architecture.md | System architecture | platform-architecture-template.md |
 | roadmap/platform-roadmap.md | Platform phases | platform-roadmap-template.md |
