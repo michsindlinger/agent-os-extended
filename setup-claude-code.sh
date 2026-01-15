@@ -51,6 +51,9 @@ command_files=(
     # Platform planning
     "plan-platform.md"
 
+    # Blocker analysis
+    "analyze-blockers.md"
+
     # Team setup
     "build-development-team.md"
 
@@ -112,7 +115,7 @@ echo ""
 echo "📁 Installed Structure:"
 echo ""
 echo "  .claude/"
-echo "    ├── commands/agent-os/   (14 core commands)"
+echo "    ├── commands/agent-os/   (15 core commands)"
 echo "    └── agents/              (9 utility agents)"
 echo ""
 echo "📋 Available Commands:"
@@ -121,6 +124,7 @@ echo "  Product Planning:"
 echo "    /plan-product             → Single-product planning"
 echo "    /plan-platform            → Multi-module platform planning"
 echo "    /analyze-feasibility      → Feasibility analysis (GO/CAUTION/NO-GO)"
+echo "    /analyze-blockers         → Identify external dependencies and blockers"
 echo ""
 echo "  Team Setup:"
 echo "    /build-development-team   → Create DevTeam agents and skills"
