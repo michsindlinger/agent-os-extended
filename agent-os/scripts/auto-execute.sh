@@ -29,6 +29,7 @@ MAX_ITERATIONS=50  # Safety limit
 DELAY_BETWEEN_PHASES=2  # Seconds to wait between phases
 MAX_RETRIES=3
 VERBOSE=false
+MODEL="opus"  # Default model (can override with --model)
 
 # Logging
 log_info() { echo -e "${BLUE}[INFO]${NC} $1"; }
@@ -190,7 +191,7 @@ run_phase() {
     log_debug "Log file: $log_file"
 
     while [[ $retry -lt $MAX_RETRIES ]]; do
-        local cmd="claude -p \"/agent-os:execute-tasks $spec\" --dangerously-skip-permissions --model sonnet"
+        local cmd="claude -p \"/agent-os:execute-tasks $spec\" --dangerously-skip-permissions --model $MODEL"
         log_debug "Command: $cmd"
         log_debug "Attempt: $((retry + 1))/$MAX_RETRIES"
 
@@ -199,7 +200,7 @@ run_phase() {
         # Run Claude Code with execute-tasks
         claude -p "/agent-os:execute-tasks $spec" \
             --dangerously-skip-permissions \
-            --model sonnet \
+            --model "$MODEL" \
             2>&1 | tee "$log_file"
 
         local exit_code=${PIPESTATUS[0]}
@@ -257,17 +258,25 @@ parse_args() {
                 VERBOSE=true
                 shift
                 ;;
+            -m|--model)
+                MODEL="$2"
+                shift 2
+                ;;
             -h|--help)
-                echo "Usage: $0 [spec-name] [-v|--verbose]"
+                echo "Usage: $0 [spec-name] [-v|--verbose] [-m|--model MODEL]"
                 echo ""
                 echo "Options:"
-                echo "  -v, --verbose    Enable debug output"
-                echo "  -h, --help       Show this help"
+                echo "  -v, --verbose       Enable debug output"
+                echo "  -m, --model MODEL   Set Claude model (default: opus)"
+                echo "                      Options: opus, sonnet, haiku"
+                echo "  -h, --help          Show this help"
                 echo ""
                 echo "Examples:"
                 echo "  $0 2026-01-13-feature-name"
                 echo "  $0 -v"
                 echo "  $0 2026-01-13-feature-name --verbose"
+                echo "  $0 2026-01-13-feature-name --model sonnet"
+                echo "  $0 -m haiku -v"
                 exit 0
                 ;;
             *)
@@ -285,6 +294,7 @@ main() {
     local spec_name="$1"
 
     log_info "=== Automated Story Execution ==="
+    log_info "Model: $MODEL"
     log_info "Verbose mode: $VERBOSE"
     log_info "Starting automated execution..."
 
