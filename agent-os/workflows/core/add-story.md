@@ -139,8 +139,18 @@ Gather fachliche requirements for the new story. Keep it focused since spec cont
      FORMAT: story-[NUMBER]-[slug].md
      Example: story-004-bulk-export.md
 
-  2. USE: story-template.md
-     Template: agent-os/templates/docs/story-template.md
+  2. USE: story-template.md (hybrid lookup)
+
+     <template_lookup>
+       PATH: agent-os/templates/docs/story-template.md
+
+       LOOKUP STRATEGY (Hybrid):
+         1. TRY: Read from project (agent-os/templates/docs/story-template.md)
+         2. IF NOT FOUND: Read from global (~/.agent-os/templates/docs/story-template.md)
+         3. IF STILL NOT FOUND: Error - story template not installed
+
+       NOTE: Global templates preferred for consistency.
+     </template_lookup>
 
   3. FILL fachliche content (PO perspective):
      - Story ID: [PREFIX]-[NUMBER]
