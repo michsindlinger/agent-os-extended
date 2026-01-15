@@ -1,257 +1,488 @@
 ---
-description: Add Bug to Existing Spec
+description: Add bug to backlog with hypothesis-driven root-cause analysis
 globs:
 alwaysApply: false
-version: 1.0
+version: 2.0
 encoding: UTF-8
 ---
 
-# Add Bug to Existing Spec
+# Add Bug Workflow
 
 ## Overview
 
-Add a bug story to an existing specification's user-stories.md and kanban-board.md for tracking and execution.
+Add a bug to the backlog with structured root-cause analysis. Uses hypothesis-driven debugging to identify the actual cause before creating the fix story.
+
+**Key Difference to /add-todo:**
+- Includes systematic Root-Cause-Analyse (RCA)
+- 3 Hypothesen mit Wahrscheinlichkeiten
+- Zuständiger Agent prüft jede Hypothese
+- Dokumentierter Analyseprozess
 
 <pre_flight_check>
-  EXECUTE: @~/.agent-os/workflows/meta/pre-flight.md
+  EXECUTE: agent-os/workflows/meta/pre-flight.md
 </pre_flight_check>
 
 <process_flow>
 
-<step number="1" name="spec_identification">
+<step number="1" name="backlog_setup">
 
-### Step 1: Identify Target Spec
+### Step 1: Backlog Setup
 
-Identify which specification the bug belongs to.
+<mandatory_actions>
+  1. CHECK: Does agent-os/backlog/ directory exist?
+     ```bash
+     ls -la agent-os/backlog/ 2>/dev/null
+     ```
 
-<user_input>
-  REQUIRE: Spec name or path
-  FORMAT: "spec-name" or "2025-01-09-feature-name"
-  VALIDATE: Spec folder exists at agent-os/specs/[spec-name]/
-</user_input>
+  2. IF NOT exists:
+     CREATE: agent-os/backlog/ directory
+     CREATE: agent-os/backlog/story-index.md (from template)
 
-<validation>
-  IF spec_not_found:
-    LIST available specs from agent-os/specs/
-    ASK user to select from list
-</validation>
+  3. USE: date-checker to get current date (YYYY-MM-DD)
 
-</step>
+  4. DETERMINE: Next bug index for today
+     COUNT: Existing bugs with today's date prefix
+     ```bash
+     ls agent-os/backlog/ | grep "^bug-$(date +%Y-%m-%d)" | wc -l
+     ```
+     NEXT_INDEX = count + 1 (formatted as 3 digits: 001, 002, etc.)
 
-<step number="2" subagent="dev-team__po" name="bug_details_gathering">
-
-### Step 2: Gather Bug Details
-
-Use dev-team__po agent to gather complete bug information from user through structured questions.
-
-<po_questions>
-  ASK user:
-    1. "Can you reproduce the bug reliably? (yes/no)"
-    2. "What are the steps to reproduce?"
-       - Provide numbered list
-       - Include specific inputs/actions
-    3. "What is the expected behavior?"
-       - Describe what should happen
-    4. "What is the actual behavior?"
-       - Describe what actually happens
-       - Include error messages if any
-    5. "What is the severity/priority? (High/Medium/Low)"
-    6. "Which component or feature is affected?"
-</po_questions>
-
-<instructions>
-  ACTION: Use dev-team__po agent to gather information
-  FORMAT: Structured bug report
-  VALIDATE: All required fields completed
-</instructions>
+  5. GENERATE: Bug ID = YYYY-MM-DD-[INDEX]
+     Example: 2025-01-15-001, 2025-01-15-002
+</mandatory_actions>
 
 </step>
 
-<step number="3" name="complexity_assessment">
+<step number="2" name="bug_description">
 
-### Step 3: Assess Bug Complexity
+### Step 2: Bug Description (PO Phase)
 
-Determine if bug requires technical analysis from architect.
+Gather structured bug information from user.
 
-<complexity_check>
-  CHECK for complexity indicators:
-    - Multiple components affected
-    - Database schema involved
-    - API contract changes needed
-    - Security implications
-    - Performance issues
-    - Unknown root cause
+<mandatory_actions>
+  1. IF user provided bug description in command:
+     EXTRACT: Bug description from input
 
-  IF any_indicator_present:
-    Bug is complex
-  ELSE:
-    Bug is simple
-</complexity_check>
+  2. ASK structured questions:
 
-</step>
+     **Symptom:**
+     - Was genau passiert? (Fehlermeldung, falsches Verhalten, etc.)
 
-<step number="4" subagent="dev-team__architect" name="technical_analysis">
+     **Reproduktion:**
+     - Wie kann der Bug reproduziert werden?
+     - Schritt-für-Schritt Anleitung
 
-### Step 4: Technical Analysis (Conditional)
+     **Expected vs. Actual:**
+     - Was sollte passieren? (Expected)
+     - Was passiert stattdessen? (Actual)
 
-Use dev-team__architect agent for technical analysis if bug is complex.
+     **Kontext:**
+     - Welche Komponente/Seite ist betroffen?
+     - Wann tritt es auf? (immer, manchmal, nach bestimmter Aktion)
+     - Gibt es Fehlermeldungen in Console/Logs?
 
-<conditional_logic>
-  IF bug_complex (from Step 3):
-    DELEGATE to dev-team__architect:
-      "Analyze bug: [bug description]
+  3. DETERMINE: Bug-Typ
+     - Frontend (UI, JavaScript, Styling)
+     - Backend (API, Logik, Database)
+     - DevOps (Build, Deployment, Infrastructure)
+     - Integration (Zusammenspiel mehrerer Komponenten)
 
-      Provide:
-      1. Root cause analysis
-      2. Affected components
-      3. Technical approach to fix
-      4. Risks and dependencies
-      5. Estimated complexity"
-  ELSE:
-    SKIP this step
-</conditional_logic>
+  4. DETERMINE: Severity
+     - Critical: System unbenutzbar
+     - High: Wichtige Funktion kaputt
+     - Medium: Funktion eingeschränkt
+     - Low: Kosmetisch oder Workaround vorhanden
+</mandatory_actions>
 
 </step>
 
-<step number="5" subagent="file-creator" name="create_bug_story">
+<step number="3" name="hypothesis_driven_rca">
 
-### Step 5: Create Bug Story
+### Step 3: Hypothesis-Driven Root-Cause-Analyse
 
-Use file-creator agent to add bug story to existing user-stories.md.
+⚠️ **KERNSTÜCK:** Systematische Fehleranalyse statt blindes Suchen.
 
-<bug_story_structure>
-  APPEND to: agent-os/specs/[spec-name]/user-stories.md
+<determine_agent>
+  BASED ON bug_type (from Step 2):
 
-  Format:
-  ```markdown
-  ## 🐛 Bug X: [Bug Title]
+  IF bug_type = "Frontend":
+    AGENT = dev-team__frontend-developer-*
+  ELSE IF bug_type = "Backend":
+    AGENT = dev-team__backend-developer-*
+  ELSE IF bug_type = "DevOps":
+    AGENT = dev-team__devops-specialist
+  ELSE IF bug_type = "Integration":
+    AGENT = dev-team__architect
 
-  ### Bug Description (vom User)
+  FALLBACK: If specific agent not available, use dev-team__architect
+</determine_agent>
 
-  [Description from user]
+<delegation>
+  DELEGATE to [AGENT] via Task tool:
 
-  **Steps to reproduce:**
-  1. [Step 1]
-  2. [Step 2]
-  ...
+  PROMPT:
+  "Führe eine Hypothesis-Driven Root-Cause-Analyse durch.
+
+  **Bug-Symptom:**
+  [Bug description from Step 2]
+
+  **Reproduktionsschritte:**
+  [Steps from Step 2]
 
   **Expected:** [Expected behavior]
   **Actual:** [Actual behavior]
 
-  **Severity:** [High/Medium/Low]
-  **Affected Component:** [Component name]
+  **Betroffene Komponente:** [Component]
 
   ---
 
-  ### Technical Analysis (vom Architect - optional)
+  ## Deine Aufgabe: Root-Cause-Analyse
 
-  [IF Step 4 executed, include technical analysis]
+  ### Phase 1: Hypothesen aufstellen
 
-  **Root Cause:** [Cause]
+  Basierend auf dem Symptom, stelle 3 wahrscheinliche Ursachen auf.
+  Ordne jeder Hypothese eine Wahrscheinlichkeit zu (muss 100% ergeben).
 
-  **DoR (Definition of Ready):**
-  - [x] Bug reproducible
-  - [x] Expected behavior clear
-  - [x] Affected component identified
+  FORMAT:
+  | # | Hypothese | Wahrscheinlichkeit | Prüfmethode |
+  |---|-----------|-------------------|-------------|
+  | 1 | [Vermutung] | XX% | [Wie prüfen - konkret] |
+  | 2 | [Vermutung] | XX% | [Wie prüfen - konkret] |
+  | 3 | [Vermutung] | XX% | [Wie prüfen - konkret] |
 
-  **DoD (Definition of Done):**
-  - [ ] Bug fixed in [component]
-  - [ ] Test added to prevent regression
-  - [ ] Tested manually with reproduction steps
-  - [ ] No related bugs introduced
+  REGELN für Hypothesen:
+  - Beginne mit der wahrscheinlichsten Ursache (höchster %)
+  - Hypothesen müssen prüfbar sein
+  - Prüfmethode muss konkret sein (Datei lesen, Log prüfen, Code analysieren)
+  - Keine vagen Vermutungen ('irgendwo im Code')
 
-  **Technical Details:**
+  ### Phase 2: Hypothesen prüfen
 
-  **WAS:** [Fix description]
-  **WIE:** [Technical approach]
-  **WO:** [Files to modify]
-  **WER:** [Assigned agent type, e.g., Backend Developer]
-  **Abhängigkeiten:** [Dependencies or "None"]
-  **Priority:** [High/Medium/Low]
+  Prüfe jede Hypothese der Reihe nach (höchste Wahrscheinlichkeit zuerst).
+
+  FORMAT für jede Prüfung:
   ```
-</bug_story_structure>
+  **Hypothese X prüfen:** [Hypothese]
+  - Aktion: [Was du konkret geprüft hast]
+  - Befund: [Was du gefunden hast - Code-Snippets, Logs, etc.]
+  - Ergebnis: ❌ Ausgeschlossen / ✅ BESTÄTIGT
+  - Begründung: [Warum ausgeschlossen oder bestätigt]
+  ```
 
-<instructions>
-  ACTION: Use file-creator to append bug story
-  PATH: agent-os/specs/[spec-name]/user-stories.md
-  POSITION: End of file
-  NUMBERING: Increment bug number (Bug 1, Bug 2, etc.)
-</instructions>
+  REGELN für Prüfung:
+  - Prüfe TATSÄCHLICH (lies Code, prüfe Logs, analysiere Daten)
+  - Dokumentiere konkrete Befunde (Zeilen, Werte, Fehlermeldungen)
+  - Stoppe wenn Root Cause gefunden (✅ BESTÄTIGT)
+  - Wenn H1 ausgeschlossen → H2 prüfen → H3 prüfen
+
+  ### Phase 3: Root Cause dokumentieren
+
+  Wenn Root Cause gefunden:
+
+  ```
+  ## ROOT CAUSE
+
+  **Ursache:** [Klare Beschreibung der Ursache]
+
+  **Beweis:** [Konkreter Nachweis - Code, Logs, etc.]
+
+  **Betroffene Dateien:**
+  - [Datei 1]: [Was ist dort falsch]
+  - [Datei 2]: [Was ist dort falsch]
+
+  **Fix-Ansatz:** [Kurze Beschreibung wie zu beheben]
+  ```
+
+  ### Falls KEINE Hypothese bestätigt:
+
+  Wenn alle 3 Hypothesen ausgeschlossen:
+  1. Stelle 3 NEUE Hypothesen auf (andere Richtung)
+  2. Wiederhole Prüfung
+  3. Maximal 2 Runden, dann eskalieren an User
+
+  ---
+
+  WICHTIG:
+  - Sei gründlich aber effizient
+  - Dokumentiere jeden Schritt
+  - Finde die ECHTE Ursache, nicht nur Symptome
+  - Gib mir am Ende den vollständigen Analyse-Bericht zurück"
+
+  WAIT for agent completion
+
+  RECEIVE: Root-Cause-Analyse Bericht
+</delegation>
 
 </step>
 
-<step number="6" subagent="file-creator" name="update_kanban_board">
+<step number="4" name="create_bug_story">
 
-### Step 6: Update Kanban Board
+### Step 4: Create Bug Story File
 
-Use file-creator agent to add bug to kanban-board.md Backlog if board exists.
+<mandatory_actions>
+  1. GENERATE: File name
+     FORMAT: bug-[YYYY-MM-DD]-[INDEX]-[slug].md
+     Example: bug-2025-01-15-001-login-after-reset.md
 
-<conditional_logic>
-  IF kanban-board.md EXISTS at agent-os/specs/[spec-name]/:
-    UPDATE kanban-board.md:
-      ADD bug to "🔴 Backlog" section
+  2. CREATE bug story file with RCA included:
 
-      Format:
-      ```markdown
-      - [ ] 🐛 **Bug X**: [Bug Title]
-        - **ID**: bug-x
-        - **Type**: [Backend/Frontend/DevOps/etc.] Bug
-        - **Severity**: [High/Medium/Low]
-        - **Assigned**: Pending
-        - **Reporter**: User ([User name if available])
-        - **Created**: [ISO 8601 timestamp]
-        - **Dependencies**: [Dependencies or "None"]
-        - **Estimated**: [Story Points]
-      ```
+     <bug_story_template>
+       # 🐛 [BUG_TITLE]
 
-      UPDATE Board Status metrics:
-        - Increment Backlog count
-        - Update Total Stories count
+       > Bug ID: [BUG_ID]
+       > Created: [DATE]
+       > Severity: [SEVERITY]
+       > Status: Ready
 
-      ADD Change Log entry:
-        | [Timestamp] | Bug Added | bug-x | dev-team__po | Bug reported by user |
+       **Priority**: [PRIORITY]
+       **Type**: Bug - [Frontend/Backend/DevOps]
+       **Affected Component**: [COMPONENT]
 
-  ELSE:
-    NOTE: "Kanban board will be created when /execute-tasks runs"
-</conditional_logic>
+       ---
+
+       ## Bug Description
+
+       ### Symptom
+       [Bug symptom description]
+
+       ### Reproduktion
+       1. [Step 1]
+       2. [Step 2]
+       3. [Step 3]
+
+       ### Expected vs. Actual
+       - **Expected:** [What should happen]
+       - **Actual:** [What happens instead]
+
+       ---
+
+       ## Root-Cause-Analyse
+
+       ### Hypothesen (vor Analyse)
+
+       | # | Hypothese | Wahrscheinlichkeit | Prüfmethode |
+       |---|-----------|-------------------|-------------|
+       | 1 | [H1] | XX% | [Method] |
+       | 2 | [H2] | XX% | [Method] |
+       | 3 | [H3] | XX% | [Method] |
+
+       ### Prüfung
+
+       **Hypothese 1 prüfen:** [H1]
+       - Aktion: [What was checked]
+       - Befund: [What was found]
+       - Ergebnis: [❌/✅]
+       - Begründung: [Why]
+
+       [... weitere Hypothesen ...]
+
+       ### Root Cause
+
+       **Ursache:** [Root cause description]
+
+       **Beweis:** [Evidence]
+
+       **Betroffene Dateien:**
+       - [File 1]
+       - [File 2]
+
+       ---
+
+       ## User Story (Fix)
+
+       Als [USER_ROLE]
+       möchte ich dass [BUG] behoben wird,
+       damit [BENEFIT/EXPECTED_BEHAVIOR].
+
+       ---
+
+       ## Akzeptanzkriterien
+
+       - [ ] BUG_FIXED: [Description of fix verification]
+       - [ ] TEST_PASS: Regression test added and passing
+       - [ ] LINT_PASS: No linting errors
+       - [ ] MANUAL: Bug no longer reproducible with original steps
+
+       ---
+
+       ## Technisches Refinement (vom Architect)
+
+       > **⚠️ WICHTIG:** Dieser Abschnitt wird vom Architect ausgefüllt
+
+       ### DoR (Definition of Ready) - Vom Architect
+
+       #### Bug-Analyse
+       - [x] Bug reproduzierbar
+       - [x] Root Cause identifiziert
+       - [x] Betroffene Dateien bekannt
+
+       #### Technische Vorbereitung
+       - [ ] Fix-Ansatz definiert (WAS/WIE/WO)
+       - [ ] Abhängigkeiten identifiziert
+       - [ ] Risiken bewertet
+
+       **Bug ist READY wenn alle Checkboxen angehakt sind.**
+
+       ---
+
+       ### DoD (Definition of Done) - Vom Architect
+
+       - [ ] Bug behoben gemäß Root Cause
+       - [ ] Regression Test hinzugefügt
+       - [ ] Keine neuen Bugs eingeführt
+       - [ ] Code Review durchgeführt
+       - [ ] Original Reproduktionsschritte führen nicht mehr zum Bug
+
+       **Bug ist DONE wenn alle Checkboxen angehakt sind.**
+
+       ---
+
+       ### Technical Details
+
+       **WAS:** [What needs to be fixed - based on Root Cause]
+
+       **WIE (Architektur-Guidance ONLY):**
+       - [Fix approach based on RCA]
+       - [Constraints to respect]
+
+       **WO:** [Files to modify - from RCA]
+
+       **WER:** [Agent based on bug type]
+
+       **Abhängigkeiten:** None
+
+       **Geschätzte Komplexität:** [XS/S/M based on RCA]
+
+       ---
+
+       ### Completion Check
+
+       ```bash
+       # Verify bug is fixed
+       [VERIFY_COMMAND based on bug type]
+       ```
+
+       **Bug ist DONE wenn:**
+       1. Original Reproduktionsschritte funktionieren korrekt
+       2. Regression Test besteht
+       3. Keine verwandten Fehler auftreten
+     </bug_story_template>
+
+  3. FILL in all fields from:
+     - Step 2 (Bug Description)
+     - Step 3 (RCA - vollständig übernehmen)
+
+  4. LEAVE Architect sections partially empty (Step 5 fills them)
+
+  5. WRITE: Bug file to agent-os/backlog/
+</mandatory_actions>
 
 </step>
 
-<step number="7" name="execution_decision">
+<step number="5" subagent="dev-team__architect" name="architect_refinement">
 
-### Step 7: Ask User About Execution
+### Step 5: Architect Phase - Technical Refinement
 
-Ask user if they want to fix the bug immediately or leave it in backlog.
+<delegation>
+  DELEGATE to dev-team__architect via Task tool:
 
-<user_prompt>
-  "Bug story created successfully!
+  PROMPT:
+  "Add technical refinement to bug story.
 
-  **Bug:** [Bug Title]
-  **Location:** agent-os/specs/[spec-name]/user-stories.md#bug-x
-  **Kanban:** [Added to backlog OR Will be added when /execute-tasks runs]
+  Bug File: agent-os/backlog/bug-[YYYY-MM-DD]-[INDEX]-[slug].md
 
-  Would you like to:
-  1. Fix this bug immediately (/execute-tasks)
-  2. Leave in backlog for later
-  3. View the bug story first
+  Context:
+  - Root Cause bereits identifiziert (in Bug Story)
+  - Tech Stack: agent-os/product/tech-stack.md
+  - Architecture: agent-os/product/architecture-decision.md (if exists)
 
-  Your choice: [1/2/3]"
-</user_prompt>
+  Tasks:
+  1. READ the bug story file (especially Root Cause section)
+  2. BASED ON the identified Root Cause:
 
-<execution_flow>
-  IF user_choice = 1:
-    NOTE: "Starting /execute-tasks..."
-    EXECUTE: @~/.agent-os/workflows/core/execute-tasks.md
-    FOCUS: On bug-x specifically
+     **DoR vervollständigen:**
+     - Mark technical preparation items as [x]
 
-  ELSE IF user_choice = 2:
-    NOTE: "Bug added to backlog. Run /execute-tasks when ready to fix."
-    EXIT
+     **Technical Details ausfüllen:**
+     - WAS: What needs to be fixed (based on Root Cause)
+     - WIE: Fix approach (architecture guidance only, NO code)
+     - WO: Files to modify (from RCA, verify paths)
+     - WER: Which agent (based on bug type)
+     - Geschätzte Komplexität: XS/S/M (bugs should be small)
 
-  ELSE IF user_choice = 3:
-    DISPLAY: Contents of bug story from user-stories.md
-    RETURN: To execution decision
-</execution_flow>
+     **Completion Check:**
+     - Add specific bash commands to verify fix
+
+  3. IF bug seems too complex (>3 files, requires architectural changes):
+     WARN: 'This bug may require a full spec. Consider /create-spec instead.'
+     ASK: 'Proceed as bug or create spec?'
+
+  IMPORTANT:
+  - Root Cause is already identified - don't re-analyze
+  - Focus on HOW to fix, not WHAT is wrong
+  - Keep it lightweight - this is a bug fix, not a feature
+  - Mark ALL DoR checkboxes as [x] when complete"
+
+  WAIT for dev-team__architect completion
+</delegation>
+
+</step>
+
+<step number="6" name="update_story_index">
+
+### Step 6: Update Backlog Story Index
+
+<mandatory_actions>
+  1. READ: agent-os/backlog/story-index.md
+
+  2. ADD new bug to Story Summary table:
+     | Bug ID | Title | Type | Priority | Dependencies | Status | Points |
+     Note: Use 🐛 emoji prefix for bug entries
+
+  3. UPDATE totals:
+     - Total Stories: +1
+     - Backlog Count: +1
+
+  4. UPDATE: Last Updated date
+
+  5. WRITE: Updated story-index.md
+</mandatory_actions>
+
+</step>
+
+<step number="7" name="completion_summary">
+
+### Step 7: Bug Added Confirmation
+
+<summary_template>
+  ✅ Bug added to backlog with Root-Cause-Analyse!
+
+  **Bug ID:** [YYYY-MM-DD-INDEX]
+  **File:** agent-os/backlog/bug-[YYYY-MM-DD]-[INDEX]-[slug].md
+
+  **Summary:**
+  - Title: 🐛 [Bug Title]
+  - Severity: [Critical/High/Medium/Low]
+  - Root Cause: [Brief RC description]
+  - Complexity: [XS/S/M]
+  - Status: Ready
+
+  **Root-Cause-Analyse:**
+  - Hypothesen geprüft: [N]
+  - Root Cause gefunden: ✅
+  - Betroffene Dateien: [N]
+
+  **Backlog Status:**
+  - Total tasks: [N]
+  - Bugs: [N]
+  - Ready for execution: [N]
+
+  **Next Steps:**
+  1. Add more bugs: /add-bug "[description]"
+  2. Add quick tasks: /add-todo "[description]"
+  3. Execute backlog: /execute-tasks backlog
+  4. View backlog: agent-os/backlog/story-index.md
+</summary_template>
 
 </step>
 
@@ -260,11 +491,23 @@ Ask user if they want to fix the bug immediately or leave it in backlog.
 ## Final Checklist
 
 <verify>
-  - [ ] Spec identified and validated
-  - [ ] Bug details gathered from user
-  - [ ] Complexity assessed
-  - [ ] Technical analysis completed (if complex)
-  - [ ] Bug story added to user-stories.md
-  - [ ] Kanban board updated (if exists)
-  - [ ] User informed of next steps
+  - [ ] Backlog directory exists
+  - [ ] Bug description gathered (symptom, repro, expected/actual)
+  - [ ] Bug type determined (Frontend/Backend/DevOps)
+  - [ ] Hypothesis-Driven RCA completed
+  - [ ] Root Cause identified and documented
+  - [ ] Bug story file created with correct naming
+  - [ ] Technical refinement complete
+  - [ ] All DoR checkboxes marked [x]
+  - [ ] Story-index.md updated
+  - [ ] Ready for /execute-tasks backlog
 </verify>
+
+## When NOT to Use /add-bug
+
+Suggest /create-spec instead when:
+- Root Cause requires architectural changes
+- Fix affects >5 files
+- Multiple related bugs need coordinated fix
+- Bug reveals larger design issue
+- Estimated complexity > M
