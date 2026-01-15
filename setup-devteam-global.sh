@@ -84,14 +84,14 @@ download_file "$REPO_URL/agent-os/standards/tech-stack.md" \
   "$GLOBAL_DIR/standards/tech-stack.md" "tech-stack template"
 
 # ═══════════════════════════════════════════════════════════
-# TEMPLATES (55 files)
+# TEMPLATES (57 files)
 # ═══════════════════════════════════════════════════════════
 
 echo ""
-echo "═══ Installing Templates (55 files) ═══"
+echo "═══ Installing Templates (57 files) ═══"
 
-# Product templates (8)
-echo "→ Product templates (8)..."
+# Product templates (9)
+echo "→ Product templates (9)..."
 download_file "$REPO_URL/agent-os/templates/product/product-brief-template.md" "$GLOBAL_DIR/templates/product/product-brief-template.md"
 download_file "$REPO_URL/agent-os/templates/product/product-brief-lite-template.md" "$GLOBAL_DIR/templates/product/product-brief-lite-template.md"
 download_file "$REPO_URL/agent-os/templates/product/tech-stack-template.md" "$GLOBAL_DIR/templates/product/tech-stack-template.md"
@@ -100,19 +100,21 @@ download_file "$REPO_URL/agent-os/templates/product/architecture-decision-templa
 download_file "$REPO_URL/agent-os/templates/product/boilerplate-structure-template.md" "$GLOBAL_DIR/templates/product/boilerplate-structure-template.md"
 download_file "$REPO_URL/agent-os/templates/product/design-system-template.md" "$GLOBAL_DIR/templates/product/design-system-template.md"
 download_file "$REPO_URL/agent-os/templates/product/ux-patterns-template.md" "$GLOBAL_DIR/templates/product/ux-patterns-template.md"
+download_file "$REPO_URL/agent-os/templates/product/blocker-analysis-template.md" "$GLOBAL_DIR/templates/product/blocker-analysis-template.md"
 
 # Feasibility templates (1)
 echo "→ Feasibility templates (1)..."
 download_file "$REPO_URL/agent-os/templates/feasibility/feasibility-report.md" "$GLOBAL_DIR/templates/feasibility/feasibility-report.md"
 
-# Platform templates (6)
-echo "→ Platform templates (6)..."
+# Platform templates (7)
+echo "→ Platform templates (7)..."
 download_file "$REPO_URL/agent-os/templates/platform/platform-brief-template.md" "$GLOBAL_DIR/templates/platform/platform-brief-template.md"
 download_file "$REPO_URL/agent-os/templates/platform/module-brief-template.md" "$GLOBAL_DIR/templates/platform/module-brief-template.md"
 download_file "$REPO_URL/agent-os/templates/platform/module-dependencies-template.md" "$GLOBAL_DIR/templates/platform/module-dependencies-template.md"
 download_file "$REPO_URL/agent-os/templates/platform/platform-architecture-template.md" "$GLOBAL_DIR/templates/platform/platform-architecture-template.md"
 download_file "$REPO_URL/agent-os/templates/platform/platform-roadmap-template.md" "$GLOBAL_DIR/templates/platform/platform-roadmap-template.md"
 download_file "$REPO_URL/agent-os/templates/platform/module-roadmap-template.md" "$GLOBAL_DIR/templates/platform/module-roadmap-template.md"
+download_file "$REPO_URL/agent-os/templates/platform/platform-blocker-analysis-template.md" "$GLOBAL_DIR/templates/platform/platform-blocker-analysis-template.md"
 
 # Global agents (1)
 echo "→ Global agents (1)..."
@@ -226,9 +228,9 @@ echo ""
 echo "  agents/ (1 file)"
 echo "    └── platform-architect.md"
 echo ""
-echo "  templates/ (70 files)"
-echo "    ├── product/ (8)"
-echo "    ├── platform/ (6)"
+echo "  templates/ (72 files)"
+echo "    ├── product/ (9)"
+echo "    ├── platform/ (7)"
 echo "    ├── agents/dev-team/ (7)"
 echo "    ├── skills/ (35 total)"
 echo "    │   ├── dev-team/ (29)"

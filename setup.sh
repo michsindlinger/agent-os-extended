@@ -113,6 +113,9 @@ download_file "$REPO_URL/agent-os/workflows/core/analyze-feasibility.md" "agent-
 # Platform planning
 download_file "$REPO_URL/agent-os/workflows/core/plan-platform.md" "agent-os/workflows/core/plan-platform.md" "workflows"
 
+# Blocker analysis
+download_file "$REPO_URL/agent-os/workflows/core/analyze-blockers.md" "agent-os/workflows/core/analyze-blockers.md" "workflows"
+
 # Team setup
 download_file "$REPO_URL/agent-os/workflows/core/build-development-team.md" "agent-os/workflows/core/build-development-team.md" "workflows"
 
@@ -202,7 +205,7 @@ echo "📁 Installed Structure:"
 echo ""
 echo "  agent-os/"
 echo "    ├── standards/              (2 core files)"
-echo "    ├── workflows/core/         (13 core workflows)"
+echo "    ├── workflows/core/         (14 core workflows)"
 echo "    ├── workflows/meta/         (1 meta workflow)"
 echo "    └── config.yml              (minimal configuration)"
 echo ""
@@ -210,9 +213,9 @@ echo "  CLAUDE.md                     (project instructions template)"
 echo ""
 echo "📊 Statistics:"
 echo "  • Standards: 2 files"
-echo "  • Workflows: 10 files"
+echo "  • Workflows: 15 files (14 core + 1 meta)"
 echo "  • Config: 1 file"
-echo "  • Total: 13 files + CLAUDE.md"
+echo "  • Total: 18 files + CLAUDE.md"
 echo ""
 echo "📚 Templates (53 files) installed globally:"
 echo "  Templates are loaded from ~/.agent-os/templates/"
