@@ -2,7 +2,7 @@
 description: Rules to initiate execution of a set of tasks using Agent OS
 globs:
 alwaysApply: false
-version: 2.0
+version: 2.1
 encoding: UTF-8
 ---
 
@@ -12,6 +12,10 @@ encoding: UTF-8
 
 Execute tasks using a **phase-based architecture** optimized for token efficiency.
 Each phase is a discrete unit that ends with a pause point for `/clear`.
+
+**Supports two modes:**
+- **Spec Mode**: Full feature execution from `agent-os/specs/[spec-name]/`
+- **Backlog Mode**: Quick task execution from `agent-os/backlog/`
 
 <architecture>
   <principle>Each phase = One focused task + State persistence + Pause</principle>
@@ -26,12 +30,116 @@ Each phase is a discrete unit that ends with a pause point for `/clear`.
 
 ---
 
-## Phase Detection (Entry Point)
+## Execution Mode Detection (Entry Point)
 
-<phase_detection>
+<mode_detection>
   WHEN /execute-tasks is invoked:
 
-  1. CHECK: Does kanban-board.md exist for any spec?
+  1. CHECK: Was a parameter provided?
+
+     IF parameter = "backlog":
+       SET: EXECUTION_MODE = "backlog"
+       GOTO: Backlog Mode Detection
+
+     ELSE IF parameter = [spec-name]:
+       SET: EXECUTION_MODE = "spec"
+       SET: SELECTED_SPEC = [spec-name]
+       GOTO: Spec Mode Detection
+
+     ELSE (no parameter):
+       GOTO: User Mode Selection
+
+  <user_mode_selection>
+    CHECK: Are there active kanban boards?
+
+    ```bash
+    # Check for active spec kanbans
+    SPEC_KANBANS=$(ls agent-os/specs/*/kanban-board.md 2>/dev/null | head -5)
+
+    # Check for active backlog kanban (today)
+    TODAY=$(date +%Y-%m-%d)
+    BACKLOG_KANBAN=$(ls agent-os/backlog/kanban-${TODAY}.md 2>/dev/null)
+
+    # Check for pending backlog stories
+    BACKLOG_STORIES=$(ls agent-os/backlog/user-story-*.md 2>/dev/null | wc -l)
+    ```
+
+    IF active kanban exists (spec or backlog):
+      DETECT: Which kanban is active
+      RESUME: That execution automatically
+
+    ELSE IF backlog has stories AND specs exist:
+      ASK via AskUserQuestion:
+      "What would you like to execute?
+
+      Options:
+      1. Execute Backlog ([N] quick tasks)
+         → Run tasks from agent-os/backlog/
+         → Creates daily kanban
+
+      2. Execute Spec
+         → Select from available specifications
+         → Full feature execution
+
+      3. View status only
+         → Show backlog and spec status
+         → No execution"
+
+    ELSE IF only backlog has stories:
+      SET: EXECUTION_MODE = "backlog"
+      GOTO: Backlog Mode Detection
+
+    ELSE IF only specs exist:
+      SET: EXECUTION_MODE = "spec"
+      GOTO: Spec Mode Detection
+
+    ELSE:
+      ERROR: "No tasks to execute. Use /add-todo or /create-spec first."
+  </user_mode_selection>
+</mode_detection>
+
+---
+
+## Backlog Mode Detection
+
+<backlog_mode_detection>
+  WHEN EXECUTION_MODE = "backlog":
+
+  1. USE: date-checker to get current date (YYYY-MM-DD)
+
+  2. CHECK: Does today's kanban exist?
+     ```bash
+     ls agent-os/backlog/kanban-${TODAY}.md 2>/dev/null
+     ```
+
+  3. IF kanban exists:
+     READ: Resume Context section
+     EXTRACT: Current Phase field
+     GOTO: Appropriate backlog phase based on state
+
+  4. IF NO kanban:
+     GOTO: Backlog Phase 1 (Initialize Daily Kanban)
+
+  <backlog_phase_routing>
+    | Resume Context State | Next Phase |
+    |---------------------|------------|
+    | No kanban | Backlog Phase 1: Initialize Daily Kanban |
+    | Phase: 1-complete | Backlog Phase 2: Execute Story |
+    | Phase: story-complete | Backlog Phase 2: Execute Story (next) |
+    | Phase: all-stories-done | Backlog Phase 3: Daily Summary |
+  </backlog_phase_routing>
+
+  NOTE: Backlog mode does NOT use git worktrees (works on current branch)
+</backlog_mode_detection>
+
+---
+
+## Spec Mode Detection
+
+<spec_mode_detection>
+  WHEN EXECUTION_MODE = "spec":
+
+  1. CHECK: Does kanban-board.md exist for target/any spec?
      ```bash
      ls agent-os/specs/*/kanban-board.md 2>/dev/null | head -1
      ```
@@ -39,12 +147,12 @@ Each phase is a discrete unit that ends with a pause point for `/clear`.
   2. IF kanban-board.md EXISTS:
      READ: Resume Context section
      EXTRACT: Current Phase field
-     GOTO: Appropriate phase based on state
+     GOTO: Appropriate spec phase based on state
 
   3. IF NO kanban-board.md:
-     GOTO: Phase 1 (Initialize)
+     GOTO: Spec Phase 1 (Initialize)
 
-  <phase_routing>
+  <spec_phase_routing>
     | Resume Context State | Next Phase |
     |---------------------|------------|
     | No kanban board | Phase 1: Initialize |
@@ -53,8 +161,366 @@ Each phase is a discrete unit that ends with a pause point for `/clear`.
     | Phase: story-complete | Phase 3: Execute Story (next) |
     | Phase: all-stories-done | Phase 4.5: Integration Validation |
     | Phase: 5-ready | Phase 5: Finalize |
-  </phase_routing>
-</phase_detection>
+  </spec_phase_routing>
+</spec_mode_detection>
+
+---
+
+# BACKLOG MODE PHASES
+
+---
+
+## Backlog Phase 1: Initialize Daily Kanban
+
+<backlog_phase number="1" name="initialize_daily_kanban">
+
+### Purpose
+Create today's Kanban Board for backlog execution. Daily kanbans keep tasks organized.
+
+### Entry Condition
+- EXECUTION_MODE = "backlog"
+- No kanban-[TODAY].md exists in agent-os/backlog/
+
+### Actions
+
+<step name="get_today_date">
+  USE: date-checker to get current date
+  SET: TODAY = YYYY-MM-DD
+</step>
+
+<step name="collect_ready_stories">
+  LIST: All ready stories in backlog
+  ```bash
+  ls agent-os/backlog/user-story-*.md 2>/dev/null
+  ```
+
+  FOR EACH story file:
+    READ: Story file
+    CHECK: DoR status (all [x] checked?)
+    IF DoR complete:
+      ADD: To ready_stories list
+    ELSE:
+      ADD: To blocked_stories list
+</step>
+
+<step name="create_daily_kanban" subagent="file-creator">
+  USE: file-creator subagent
+
+  PROMPT: "Create daily kanban board for backlog execution.
+
+  Output: agent-os/backlog/kanban-{TODAY}.md
+
+  Content Structure:
+  ```markdown
+  # Backlog Kanban - {TODAY}
+
+  > Daily task execution board
+  > Created: {TODAY}
+
+  ## Resume Context
+
+  | Field | Value |
+  |-------|-------|
+  | **Execution Mode** | Backlog |
+  | **Current Phase** | 1-complete |
+  | **Next Phase** | 2 - Execute Story |
+  | **Current Story** | None |
+  | **Last Action** | Daily kanban created |
+  | **Next Action** | Execute first story |
+
+  ---
+
+  ## Board Status
+
+  - **Total Stories**: {TOTAL}
+  - **Completed**: 0
+  - **In Progress**: 0
+  - **Backlog**: {READY_COUNT}
+  - **Blocked**: {BLOCKED_COUNT}
+
+  ---
+
+  ## Backlog
+
+  | Story ID | Title | Type | Priority | Points |
+  |----------|-------|------|----------|--------|
+  {READY_STORIES_TABLE}
+
+  ---
+
+  ## In Progress
+
+  <!-- Currently executing story -->
+
+  ---
+
+  ## Done
+
+  <!-- Completed stories today -->
+
+  ---
+
+  ## Blocked
+
+  {BLOCKED_STORIES_TABLE}
+
+  ---
+
+  ## Change Log
+
+  | Time | Action |
+  |------|--------|
+  | {TIMESTAMP} | Daily kanban created with {TOTAL} stories |
+  ```
+
+  Replace placeholders with actual values from collected stories."
+
+  WAIT: For file-creator completion
+</step>
+
+### Phase Completion
+
+<phase_complete>
+  OUTPUT to user:
+  ---
+  ## ✅ Backlog Phase 1 Complete: Daily Kanban Created
+
+  **Date:** {TODAY}
+  **Stories Ready:** {READY_COUNT}
+  **Blocked:** {BLOCKED_COUNT}
+
+  **Kanban:** agent-os/backlog/kanban-{TODAY}.md
+
+  **Next Phase:** Execute First Story
+
+  ---
+  **👉 To continue, run:**
+  ```
+  /clear
+  /execute-tasks backlog
+  ```
+  ---
+
+  STOP: Do not proceed to Backlog Phase 2
+</phase_complete>
+
+</backlog_phase>
+
+---
+
+## Backlog Phase 2: Execute Story (Repeats for Each Story)
+
+<backlog_phase number="2" name="execute_backlog_story">
+
+### Purpose
+Execute ONE backlog story. Simpler than spec execution (no git worktree, no integration phase).
+
+### Entry Condition
+- kanban-[TODAY].md exists
+- Resume Context shows: Phase 1-complete OR story-complete
+- Stories remain in Backlog
+
+### Actions
+
+<step name="load_state">
+  READ: agent-os/backlog/kanban-{TODAY}.md
+  EXTRACT: Resume Context
+  IDENTIFY: Next story from Backlog
+</step>
+
+<step name="story_selection">
+  SELECT: First story from Backlog section
+  (Backlog stories have no dependencies - execute in order)
+</step>
+
+<step name="update_kanban_in_progress">
+  UPDATE: kanban-{TODAY}.md
+    - MOVE: Selected story from Backlog to "In Progress"
+    - UPDATE Board Status
+    - SET Resume Context: Current Story = [story-id]
+    - ADD Change Log entry
+</step>
+
+<step name="execute_story" subagent="dev-team">
+  DETERMINE: Agent type from story.type
+
+  <agent_selection>
+    IF story.type = "Backend": SELECT dev-team__backend-developer-*
+    IF story.type = "Frontend": SELECT dev-team__frontend-developer-*
+    IF story.type = "DevOps": SELECT dev-team__dev-ops-specialist
+    IF story.type = "Test": SELECT dev-team__qa-specialist
+  </agent_selection>
+
+  DELEGATE via Task tool:
+  "Execute Backlog Story: [Story Title]
+
+  **Story File:** agent-os/backlog/user-story-{STORY_ID}-[slug].md
+
+  **DoD Criteria:**
+  [DoD checklist from story file]
+
+  **IMPORTANT:**
+  - This is a quick task, keep it focused
+  - No extensive refactoring
+  - Commit when done
+  "
+
+  WAIT: For agent completion
+</step>
+
+<step name="quick_review">
+  VERIFY: DoD criteria met
+  RUN: Completion Check commands from story
+
+  IF all pass:
+    PROCEED: To commit
+  ELSE:
+    DELEGATE_BACK: To agent with feedback
+</step>
+
+<step name="story_commit" subagent="git-workflow">
+  UPDATE: kanban-{TODAY}.md
+    - MOVE: Story from "In Progress" to "Done"
+    - UPDATE Board Status
+    - ADD Change Log entry
+
+  USE: git-workflow subagent
+  "Commit backlog story {STORY_ID}:
+  - Message: fix/feat: {STORY_ID} [Story Title]
+  - Stage only relevant files
+  - Push to current branch
+  "
+</step>
+
+### Phase Completion
+
+<phase_complete>
+  CHECK: Remaining stories in Backlog
+
+  IF backlog NOT empty:
+    UPDATE: kanban-{TODAY}.md Resume Context
+      - Current Phase: story-complete
+      - Next Phase: 2 - Execute Story (next)
+      - Current Story: None
+
+    OUTPUT to user:
+    ---
+    ## ✅ Story Complete: {STORY_ID}
+
+    **Progress:** {COMPLETED} of {TOTAL} stories today
+
+    **Next:** Execute next story
+
+    ---
+    **👉 To continue, run:**
+    ```
+    /clear
+    /execute-tasks backlog
+    ```
+    ---
+
+    STOP: Do not proceed to next story
+
+  ELSE (backlog empty):
+    UPDATE: kanban-{TODAY}.md Resume Context
+      - Current Phase: all-stories-done
+      - Next Phase: 3 - Daily Summary
+
+    OUTPUT to user:
+    ---
+    ## ✅ All Backlog Stories Complete!
+
+    **Today's Progress:** {TOTAL} stories completed
+
+    **Next Phase:** Daily Summary
+
+    ---
+    **👉 To continue, run:**
+    ```
+    /clear
+    /execute-tasks backlog
+    ```
+    ---
+
+    STOP: Do not proceed to Backlog Phase 3
+</phase_complete>
+
+</backlog_phase>
+
+---
+
+## Backlog Phase 3: Daily Summary
+
+<backlog_phase number="3" name="daily_summary">
+
+### Purpose
+Summarize today's work and update story-index.
+
+### Entry Condition
+- kanban-{TODAY}.md shows: all-stories-done
+- All stories in Done column
+
+### Actions
+
+<step name="update_story_index">
+  READ: agent-os/backlog/story-index.md
+
+  FOR EACH completed story:
+    UPDATE: Status = "Done"
+    UPDATE: Completed date
+
+  UPDATE: Totals
+    - Completed: +N
+    - Ready for Execution: -N
+
+  ADD: Today's kanban to Execution History table
+
+  WRITE: Updated story-index.md
+</step>
+
+<step name="archive_completed_stories">
+  OPTIONAL: Move completed story files to archive
+  ```bash
+  mkdir -p agent-os/backlog/archive/{TODAY}
+  mv agent-os/backlog/user-story-{TODAY}-*.md agent-os/backlog/archive/{TODAY}/
+  ```
+
+  NOTE: Keep story files accessible for reference
+</step>
+
+### Phase Completion
+
+<phase_complete>
+  UPDATE: kanban-{TODAY}.md Resume Context
+    - Current Phase: complete
+    - Next Phase: None
+
+  OUTPUT to user:
+  ---
+  ## ✅ Daily Backlog Execution Complete!
+
+  ### Today's Summary ({TODAY})
+
+  **Completed Stories:**
+  {LIST_OF_COMPLETED_STORIES}
+
+  **Kanban:** agent-os/backlog/kanban-{TODAY}.md
+
+  ### What's Next?
+  1. Add more tasks: `/add-todo "[description]"`
+  2. Create spec for larger features: `/create-spec`
+  3. Tomorrow: `/execute-tasks backlog` for new daily kanban
+
+  ---
+  **Backlog execution finished for today.**
+  ---
+</phase_complete>
+
+</backlog_phase>
+
+---
+
+# SPEC MODE PHASES
 
 ---
 
@@ -970,6 +1436,17 @@ Create pull request and provide final summary.
 ## Quick Reference
 
 <quick_reference>
+
+  ### Command Variants
+
+  | Command | Description |
+  |---------|-------------|
+  | `/execute-tasks` | Ask user: Backlog or Spec? |
+  | `/execute-tasks backlog` | Execute quick tasks from backlog |
+  | `/execute-tasks [spec-name]` | Execute specific specification |
+
+  ### Spec Mode Phases
+
   | Phase | Purpose | Subagents Used |
   |-------|---------|----------------|
   | 1 | Initialize | file-creator |
@@ -978,8 +1455,26 @@ Create pull request and provide final summary.
   | 4.5 | Integration Validation | test-runner |
   | 5 | Finalize (PR Creation) | git-workflow |
 
+  ### Backlog Mode Phases
+
+  | Phase | Purpose | Subagents Used |
+  |-------|---------|----------------|
+  | 1 | Initialize Daily Kanban | file-creator |
+  | 2 | Execute Story | dev-team__*, git-workflow |
+  | 3 | Daily Summary | - |
+
+  **Key Differences:**
+  - Backlog: No git worktree (works on current branch)
+  - Backlog: No integration validation phase
+  - Backlog: Daily kanban (kanban-YYYY-MM-DD.md)
+  - Backlog: Simpler review process
+
   <resume_command>
-    After /clear, simply run /execute-tasks again.
+    After /clear, simply run the appropriate command:
+    - `/execute-tasks backlog` for backlog
+    - `/execute-tasks [spec-name]` for spec
+    - `/execute-tasks` to choose
+
     Phase detection automatically routes to correct phase.
   </resume_command>
 </quick_reference>
