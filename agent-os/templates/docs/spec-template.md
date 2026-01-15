@@ -24,6 +24,32 @@
 
 [DELIVERABLE_CONTENT]
 
+## Integration Requirements
+
+> ⚠️ **IMPORTANT:** These integration tests will be executed automatically after all stories complete.
+> They ensure that the complete system works end-to-end, not just individual stories.
+
+**Integration Type:** [INTEGRATION_TYPE]
+
+- [ ] **Integration Test 1:** [TEST_DESCRIPTION]
+   - Command: `[TEST_COMMAND]`
+   - Validates: `[WHAT_THIS_CHECKS]`
+   - Requires MCP: [yes/no] (e.g., Playwright)
+
+- [ ] **Integration Test 2:** [TEST_DESCRIPTION]
+   - Command: `[TEST_COMMAND]`
+   - Validates: `[WHAT_THIS_CHECKS]`
+   - Requires MCP: [yes/no]
+
+**Integration Scenarios:**
+- [ ] Scenario 1: [END_TO_END_USER_JOURNEY_DESCRIPTION]
+- [ ] Scenario 2: [END_TO_END_USER_JOURNEY_DESCRIPTION]
+
+**Notes:**
+- Tests marked with "Requires MCP: yes" are optional (skip if MCP tool not available)
+- Integration validation runs in Phase 4.5 of execute-tasks
+- If integration tests fail, an integration-fix story will be created automatically
+
 ## Spec Documentation
 
 - Tasks: @.agent-os/specs/[SPEC_FOLDER]/tasks.md
@@ -43,6 +69,11 @@
 - `[SCOPE_CONTENT]`: What IS included in this implementation
 - `[OUT_OF_SCOPE_CONTENT]`: What is explicitly NOT included
 - `[DELIVERABLE_CONTENT]`: Concrete, measurable outcomes
+- `[INTEGRATION_TYPE]`: Type of integration: Backend-only, Frontend-only, Full-stack
+- `[TEST_DESCRIPTION]`: Brief description of what the integration test validates
+- `[TEST_COMMAND]`: Bash command or test script to run
+- `[WHAT_THIS_CHECKS]`: What functionality this test verifies
+- `[END_TO_END_USER_JOURNEY_DESCRIPTION]`: Complete user workflow to test
 - `[SPEC_FOLDER]`: Date-prefixed folder name (YYYY-MM-DD-feature-name)
 - `[ADDITIONAL_DOCS]`: Additional sub-spec references as needed
 

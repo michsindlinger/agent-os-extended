@@ -32,17 +32,26 @@ Parse the following arguments from the user's command:
 
 ### Für Agent-Skills:
 ```
-.claude/skills/dev-team/{agent-role}/{skill-name}/
+.claude/skills/{agent-prefix}-{skill-name}/
 └── SKILL.md
+
+Beispiel: /add-skill form-validation --agent backend-dev
+.claude/skills/backend-form-validation/SKILL.md
 
 .claude/agents/{agent-name}.md (aktualisiert mit neuem Skill)
 ```
 
 ### Für Project-Skills:
 ```
-.claude/skills/{category}/{skill-name}/
+.claude/skills/{skill-name}/
 └── SKILL.md
+
+Beispiel: /add-skill my-custom-skill
+.claude/skills/my-custom-skill/SKILL.md
 ```
+
+**Wichtig:** Claude Code unterstützt KEINE verschachtelten Ordner in `.claude/skills/`.
+Alle Skills müssen direkt in `.claude/skills/` liegen (flache Struktur).
 
 ## Features
 

@@ -51,7 +51,8 @@ Each phase is a discrete unit that ends with a pause point for `/clear`.
     | Phase: 1-complete | Phase 2: Git Worktree |
     | Phase: 2-complete | Phase 3: Execute Story |
     | Phase: story-complete | Phase 3: Execute Story (next) |
-    | Phase: all-stories-done | Phase 4: Finalize |
+    | Phase: all-stories-done | Phase 4.5: Integration Validation |
+    | Phase: 5-ready | Phase 5: Finalize |
   </phase_routing>
 </phase_detection>
 
@@ -91,19 +92,22 @@ Select specification and create Kanban Board. This is a one-time setup phase.
 
   PROMPT: "Create kanban board for spec: agent-os/specs/{SELECTED_SPEC}/
 
-  Source: Parse user-stories.md in that folder
+  Source: Parse story files in stories/ directory (NOT user-stories.md)
   Output: agent-os/specs/{SELECTED_SPEC}/kanban-board.md
   Template: agent-os/templates/docs/kanban-board-template.md (global) or agent-os/templates/docs/kanban-board-template.md (project)
 
   CRITICAL STEPS:
-  1. READ user-stories.md
-  2. VALIDATE DoR for each story:
-     - CHECK: All DoR checkboxes are marked [x] (checked)
-     - IF any DoR checkbox is [ ] (unchecked):
-       - STORY_STATUS: BLOCKED - Incomplete DoR
-       - ADD_NOTE: 'Missing DoR items. Please run /create-spec again to complete technical refinement.'
-     - IF all DoR checkboxes are [x]:
-       - STORY_STATUS: Ready
+  1. LIST all story files in agent-os/specs/{SELECTED_SPEC}/stories/
+  2. FOR EACH story file:
+     - READ the story file
+     - VALIDATE DoR for each story:
+       * CHECK: All DoR checkboxes are marked [x] (checked)
+       * IF any DoR checkbox is [ ] (unchecked):
+         - STORY_STATUS: BLOCKED - Incomplete DoR
+         - ADD_NOTE: 'Missing DoR items. Please run /create-spec again to complete technical refinement.'
+       * IF all DoR checkboxes are [x]:
+         - STORY_STATUS: Ready
+     - EXTRACT: Story ID, Title, Type, Dependencies, Points
 
   3. PARSE story details into table format
   4. CREATE kanban board with:
@@ -119,7 +123,7 @@ Select specification and create Kanban Board. This is a one-time setup phase.
   Template Variables to Replace:
   - {{SPEC_NAME}} → Spec folder name
   - {{SPEC_FOLDER}} → Spec folder name (same)
-  - {{TOTAL_STORIES}} → Count from user-stories.md
+  - {{TOTAL_STORIES}} → Count from story files
   - {{COMPLETED_COUNT}} → 0
   - {{IN_PROGRESS_COUNT}} → 0
   - {{IN_REVIEW_COUNT}} → 0
@@ -133,7 +137,7 @@ Select specification and create Kanban Board. This is a one-time setup phase.
   - {{CURRENT_STORY}} → None
   - {{LAST_ACTION}} → Kanban board created
   - {{NEXT_ACTION}} → Create git worktree for parallel execution
-  - {{BACKLOG_STORIES}} → All READY stories from user-stories.md in table format
+  - {{BACKLOG_STORIES}} → All READY stories from story files in table format
   - {{BLOCKED_STORIES}} → Section for stories with incomplete DoR
   - {{IN_PROGRESS_STORIES}} → (empty section with comment)
   - {{IN_REVIEW_STORIES}} → (empty section with comment)
@@ -158,7 +162,7 @@ Select specification and create Kanban Board. This is a one-time setup phase.
   - If any [ ] (unchecked) found: Mark as BLOCKED with note which items are missing
 
   OUTPUT VALIDATION:
-  - Count total stories from user-stories.md
+  - Count total stories from story files
   - Count stories with complete DoR (ready for execution)
   - Count stories with incomplete DoR (blocked)
   - Report summary to user after creation
@@ -399,7 +403,7 @@ This phase repeats for each story in the backlog.
   "Execute User Story: [Story Title]
 
   **Story Details:**
-  [Full story from user-stories.md]
+  [Read story file from agent-os/specs/{SELECTED_SPEC}/stories/story-XXX-[slug].md]
 
   **DoD Criteria:**
   [DoD checklist - this is completion criteria]
@@ -425,7 +429,7 @@ This phase repeats for each story in the backlog.
   "Review code for Story [story-id].
 
   Context:
-  - Story: agent-os/specs/{SELECTED_SPEC}/user-stories.md
+  - Story: agent-os/specs/{SELECTED_SPEC}/stories/story-XXX-[slug].md
   - Git changes: [git status --short output]
 
   Review: Architecture, patterns, security, code quality.
@@ -522,10 +526,10 @@ This phase repeats for each story in the backlog.
     UPDATE: kanban-board.md following template structure
       - Resume Context:
         - Current Phase: all-stories-done
-        - Next Phase: 4 - Finalize
+        - Next Phase: 4.5 - Integration Validation
         - Current Story: None
         - Last Action: All stories completed
-        - Next Action: Create PR
+        - Next Action: Validate integration before PR
       - ADD Change Log entry with timestamp
 
     OUTPUT to user:
@@ -534,7 +538,7 @@ This phase repeats for each story in the backlog.
 
     **Progress:** [TOTAL] of [TOTAL] stories completed
 
-    **Next Phase:** Finalize (PR creation)
+    **Next Phase:** Integration Validation (before PR)
 
     ---
     **👉 To continue, run:**
@@ -544,16 +548,218 @@ This phase repeats for each story in the backlog.
     ```
     ---
 
-    STOP: Do not proceed to Phase 4
+    STOP: Do not proceed to Phase 4.5
 </phase_complete>
 
 </phase>
 
 ---
 
-## Phase 4: Finalize (PR Creation + Summary)
+## Phase 4.5: Integration Validation (Before PR)
 
-<phase number="4" name="finalize">
+<phase number="4.5" name="integration_validation">
+
+### Purpose
+Validate that the complete system works end-to-end AFTER all stories complete, BEFORE creating the PR.
+This prevents the "stories are done but system doesn't work" problem.
+
+### Entry Condition
+- kanban-board.md shows: all-stories-done
+- All stories in Done column
+- Next Phase: 5 - Finalize (PR Creation)
+
+### Actions
+
+<step name="load_spec_integration_requirements">
+  READ: agent-os/specs/{SELECTED_SPEC}/spec.md
+  EXTRACT: Integration Requirements section
+  CHECK: Does spec have integration requirements defined?
+</step>
+
+<step name="check_mcp_tools">
+  CHECK: Which MCP tools are available?
+
+  RUN: claude mcp list
+
+  EXTRACT: Available MCP tools (e.g., playwright, browser automation)
+  NOTE: Tests that require unavailable MCP tools will be skipped
+</step>
+
+<step name="detect_integration_type">
+  ANALYZE: Integration Type from spec.md
+
+  <integration_detection>
+    IF Integration Type = "Backend-only":
+      SKIP: Browser/UI tests
+      RUN: API integration tests, database integration tests
+
+    IF Integration Type = "Frontend-only":
+      SKIP: Backend integration tests
+      RUN: Component integration tests
+      OPTIONAL: Browser tests (if Playwright MCP available)
+
+    IF Integration Type = "Full-stack":
+      RUN: All integration tests
+      RUN: API + UI integration tests
+      OPTIONAL: End-to-end browser tests (if Playwright MCP available)
+
+    IF no Integration Requirements defined:
+      CHECK: Does spec have Backend + Frontend stories?
+      IF yes:
+        LOG: "⚠️ Integration Requirements not defined but spec has multiple layers"
+        LOG: "Running basic integration checks..."
+        RUN: Basic smoke tests (build passes, tests pass)
+      ELSE:
+        LOG: "✅ No integration validation needed (single-layer spec)"
+        PROCEED: To Phase 5 (PR Creation)
+  </integration_detection>
+</step>
+
+<step name="run_integration_tests" subagent="test-runner">
+  USE: test-runner subagent
+
+  PROMPT: "Run integration validation for spec: {SELECTED_SPEC}
+
+  **Integration Requirements from spec.md:**
+  [EXTRACT integration test commands from spec.md]
+
+  **Test Execution Strategy:**
+  1. Filter tests by available MCP tools:
+     - Skip tests marked with 'Requires MCP: yes' if tool not available
+     - Run all other tests
+
+  2. Execute integration tests in order:
+     - Backend integration tests first
+     - Frontend integration tests second
+     - End-to-end tests last (if MCP available)
+
+  3. Report results:
+     - PASSED: All integration tests passed
+     - FAILED: [List of failed tests with details]
+     - SKIPPED: [List of tests skipped due to missing MCP tools]
+
+  **Expected Exit Codes:**
+  - 0: All integration tests passed
+  - 1: One or more integration tests failed
+
+  **Important:**
+  - This is not about unit tests (those ran during story execution)
+  - This is about validating that components work TOGETHER
+  - Examples: UI connects to API, API writes to DB correctly, etc."
+</step>
+
+<step name="handle_integration_failures">
+  CHECK: Integration test results
+
+  IF all tests PASSED:
+    LOG: "✅ Integration validation passed - System is functional"
+    PROCEED: To Phase 5 (PR Creation)
+
+  ELSE (some tests FAILED):
+    GENERATE: Integration Fix Report
+
+    <failure_report_format>
+      ⚠️ Integration Validation Failed
+
+      **Failed Tests:**
+      - [Test 1]: [Failure reason]
+      - [Test 2]: [Failure reason]
+
+      **Root Cause Analysis:**
+      [Analyze what's missing - e.g., UI not connected to API]
+
+      **Required Fix:**
+      [Brief description of what needs to be fixed]
+
+      **Creating Integration Fix Story...**
+    </failure_report_format>
+
+    CREATE: Integration fix story
+    - File: agent-os/specs/{SELECTED_SPEC}/stories/story-999-integration-fix.md
+    - Content: Based on failure analysis
+
+    UPDATE: kanban-board.md
+    - Move integration-fix story to Backlog
+    - Update Board Status
+    - Set Resume Context: Phase 4.5 (Integration Fix Needed)
+
+    INFORM: User about integration failures
+    DISPLAY: Failure report and fix story details
+
+    ASK via AskUserQuestion:
+    "Integration validation failed. An integration-fix story has been created.
+     How would you like to proceed?
+
+     Options:
+     1. Execute integration-fix story now (Recommended)
+        → Automatically fix the integration issues
+        → Re-run integration validation
+
+     2. Review and manually fix
+        → You can manually fix the issues
+        → Re-run /execute-tasks after fixing
+
+     3. Skip and create PR anyway (NOT RECOMMENDED)
+        → System may not be fully functional
+        → Risk: Broken deployment"
+
+    WAIT for user choice
+
+    <user_choice_handling>
+      IF choice = "Execute integration-fix story now":
+        EXECUTE: Integration fix story immediately
+        REPEAT: Phase 4.5 (Integration Validation)
+
+      ELSE IF choice = "Review and manually fix":
+        INFORM: "Please fix the integration issues manually"
+        INFORM: "Run /execute-tasks again after fixing"
+        STOP: Wait for user to fix
+
+      ELSE IF choice = "Skip and create PR anyway":
+        WARN: "⚠️ Proceeding with integration failures"
+        WARN: "System may not be fully functional"
+        LOG: Integration validation bypassed by user
+        PROCEED: To Phase 5 (PR Creation)
+    </user_choice_handling>
+</step>
+
+### Phase Completion
+
+<phase_complete>
+  UPDATE: kanban-board.md Resume Context
+    - Current Phase: 5-ready
+    - Next Phase: 5 - Finalize (PR Creation)
+    - Last Action: Integration validation passed
+    - Integration Status: PASSED
+
+  OUTPUT to user:
+  ---
+  ## ✅ Phase 4.5 Complete: Integration Validation
+
+  **Integration Tests:** All passed ✅
+
+  **System Status:** Fully functional and integrated
+
+  **Next Phase:** Create Pull Request
+
+  ---
+  **👉 To continue, run:**
+  ```
+  /clear
+  /execute-tasks
+  ```
+  ---
+
+  STOP: Do not proceed to Phase 5
+</phase_complete>
+
+</phase>
+
+---
+
+## Phase 5: Finalize (PR Creation + Summary)
+
+<phase number="5" name="finalize">
 
 ### Purpose
 Create pull request and provide final summary.
@@ -679,8 +885,8 @@ Create pull request and provide final summary.
 
   | Field | Description | Example Values |
   |-------|-------------|----------------|
-  | **Current Phase** | Phase identifier | 1-complete, 2-complete, story-complete, all-stories-done, complete |
-  | **Next Phase** | What to execute next | 2 - Git Worktree, 3 - Execute Story, 4 - Finalize, None |
+  | **Current Phase** | Phase identifier | 1-complete, 2-complete, story-complete, all-stories-done, 5-ready, complete |
+  | **Next Phase** | What to execute next | 2 - Git Worktree, 3 - Execute Story, 4.5 - Integration Validation, 5 - Finalize, None |
   | **Spec Folder** | Full path | agent-os/specs/2026-01-13-multi-delete-projects |
   | **Worktree Path** | Path to git worktree for parallel execution | agent-os/worktrees/multi-delete-projects or Pending |
   | **Git Branch** | Branch name for this spec | multi-delete-projects or Pending |
@@ -769,7 +975,8 @@ Create pull request and provide final summary.
   | 1 | Initialize | file-creator |
   | 2 | Git Worktree (parallel execution) | git-workflow |
   | 3 | Execute Story | dev-team__*, architect, ux-designer, qa-specialist, git-workflow |
-  | 4 | Finalize | test-runner, git-workflow |
+  | 4.5 | Integration Validation | test-runner |
+  | 5 | Finalize (PR Creation) | git-workflow |
 
   <resume_command>
     After /clear, simply run /execute-tasks again.

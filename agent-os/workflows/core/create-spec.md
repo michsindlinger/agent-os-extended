@@ -233,28 +233,75 @@ Before generating user stories, create a summary document for user approval.
 ### Step 2.4: Generate User Stories (After Approval)
 
 <mandatory_actions>
-  1. CREATE spec.md (load template with hybrid lookup):
+  1. USE date-checker to get current date (YYYY-MM-DD)
+
+  2. CREATE spec folder structure:
+     ```
+     agent-os/specs/YYYY-MM-DD-spec-name/
+     ├── stories/              # NEW: Individual story files
+     │   ├── story-001-[slug].md
+     │   ├── story-002-[slug].md
+     │   └── ...
+     ├── spec.md
+     ├── spec-lite.md
+     ├── story-index.md       # NEW: Story overview
+     └── requirements-clarification.md
+     ```
+
+  3. CREATE spec.md (load template with hybrid lookup):
      - Overview (1-2 sentences goal)
      - User stories list
      - Spec scope (what's included)
      - Out of scope (what's excluded)
      - Expected deliverable (testable outcomes)
+     - **Integration Requirements** (NEW - critical for end-to-end validation):
+       * Integration Type: Backend-only, Frontend-only, or Full-stack
+       * Integration Test Commands (bash commands to run)
+       * End-to-End Scenarios (user journeys to validate)
+       * For each test: mark if MCP tool required (e.g., Playwright)
 
-  2. CREATE spec-lite.md (load template with hybrid lookup):
+  **INTEGRATION REQUIREMENTS GUIDELINES:**
+  - If spec has Backend + Frontend stories: Integration Type = "Full-stack"
+  - If spec only affects one layer: Integration Type = "Backend-only" or "Frontend-only"
+  - Include at least 1-2 integration tests that verify the complete feature works
+  - Integration tests should be bash commands that exit 0 if successful
+  - Mark Playwright/browser tests with "Requires MCP: yes" (they will be optional)
+  - These tests will be executed automatically in Phase 4.5 of execute-tasks
+
+  4. CREATE spec-lite.md (load template with hybrid lookup):
      - 1-3 sentence summary of core goal
 
-  3. CREATE user-stories.md with FACHLICHE stories only:
-     For each story from clarification:
-     - Story title
-     - Als [User] möchte ich [Aktion], damit [Nutzen]
-     - Fachliche acceptance criteria (user-facing, 3-5 items)
-     - Business value explanation
-     - Leave section marker: [ARCHITECT ADDS TECHNICAL REFINEMENT HERE]
+  5. CREATE stories/ directory
+
+  6. CREATE individual story files (stories/story-XXX-[slug].md):
+     FOR EACH story from clarification:
+     - Generate story ID: [SPEC_PREFIX]-### (e.g., PROF-001, PROF-002)
+     - Create file: stories/story-###-[slug].md
+       where [slug] = title lowercase with hyphens
+     - Use template: agent-os/templates/docs/story-template.md
+     - Fill with FACHLICHE content:
+       * Story title
+       * Als [User] möchte ich [Aktion], damit [Nutzen]
+       * Fachliche acceptance criteria (user-facing, 3-5 items)
+       * Business value explanation
+       * Required MCP Tools (if applicable)
+     - Leave technical sections EMPTY (Architect fills in Step 3):
+       * DoR/DoD checkboxes (unchecked)
+       * WAS/WIE/WO/WER fields
+       * Completion Check commands
+
+  7. CREATE story-index.md (load template with hybrid lookup):
+     - Use template: agent-os/templates/docs/story-index-template.md
+     - Fill with:
+       * Story Summary table (all stories)
+       * Dependency Graph (initially all "None")
+       * Execution Plan (initially all parallel)
+       * List of story files
+       * Blocked Stories section (initially empty)
 
   Templates (hybrid lookup):
-  - TRY: agent-os/templates/docs/spec-template.md
-  - FALLBACK: ~/.agent-os/templates/docs/spec-template.md
-  (Same for spec-lite-template.md, user-stories-template.md)
+  - TRY: agent-os/templates/docs/[template].md
+  - FALLBACK: ~/.agent-os/templates/docs/[template].md
 
   STORY SIZING:
   - Keep stories small (max 5 files, max 400 LOC)
@@ -267,15 +314,16 @@ Before generating user stories, create a summary document for user approval.
   - Include exact file paths
   - For browser tests: MCP_PLAYWRIGHT: prefix
   - Avoid MANUAL: criteria when possible
-  - Reference: agent-os/templates/docs/user-stories-template.md
+  - Reference: agent-os/templates/docs/story-template.md
 
   IMPORTANT:
   - Write ONLY fachliche (business) content
   - NO technical details (WAS/WIE/WO/WER)
-  - NO DoR/DoD (Architect adds this)
-  - NO dependencies
+  - NO DoR/DoD (Architect adds this in Step 3)
+  - NO dependencies (Architect adds this in Step 3)
   - Focus on WHAT user needs, not HOW to implement
   - Stories must be small enough for single Claude Code session
+  - Each story gets its OWN file for better context efficiency
 </mandatory_actions>
 
 </substep>
@@ -284,7 +332,10 @@ Before generating user stories, create a summary document for user approval.
 - `agent-os/specs/YYYY-MM-DD-spec-name/requirements-clarification.md` (approved)
 - `agent-os/specs/YYYY-MM-DD-spec-name/spec.md`
 - `agent-os/specs/YYYY-MM-DD-spec-name/spec-lite.md`
-- `agent-os/specs/YYYY-MM-DD-spec-name/user-stories.md` (fachlich only)
+- `agent-os/specs/YYYY-MM-DD-spec-name/story-index.md` (NEW)
+- `agent-os/specs/YYYY-MM-DD-spec-name/stories/story-001-[slug].md` (NEW - fachlich only)
+- `agent-os/specs/YYYY-MM-DD-spec-name/stories/story-002-[slug].md` (NEW - fachlich only)
+- ... (one file per story)
 
 </step>
 
@@ -300,14 +351,14 @@ Use dev-team__architect agent to add technical refinement to fachliche user stor
   PROMPT:
   "Add technical refinement to user stories.
 
-  ⚠️ **CRITICAL: Technical Refinement Placement**
-  The technical refinement MUST be inserted DIRECTLY after each fachliche user story,
-  specifically AFTER the '---' separator that follows the 'Required MCP Tools' section.
-  Do NOT append all technical refinements at the end of the document.
+  ⚠️ **NEW: Individual Story Files**
+  Each story now has its OWN file in the stories/ directory.
+  You must edit EACH story file individually to add technical refinement.
 
   Context:
   - Spec: agent-os/specs/[YYYY-MM-DD-spec-name]/spec.md
-  - User Stories: agent-os/specs/[YYYY-MM-DD-spec-name]/user-stories.md
+  - Story Index: agent-os/specs/[YYYY-MM-DD-spec-name]/story-index.md
+  - Story Files: agent-os/specs/[YYYY-MM-DD-spec-name]/stories/*.md
   - Tech Stack: agent-os/product/tech-stack.md
   - Architecture Decision: agent-os/product/architecture-decision.md
   - Architecture Structure: agent-os/product/architecture-structure.md (folder structure)
@@ -321,101 +372,170 @@ Use dev-team__architect agent to add technical refinement to fachliche user stor
   - Use agent names as they appear in .claude/agents/dev-team/ folder
 
   Tasks:
-  FOR EACH user story in user-stories.md:
+  1. LIST all story files: ls agent-os/specs/[spec-name]/stories/
 
-    1. Read fachliche story from PO
-    2. Find the '---' separator after 'Required MCP Tools' section
-    3. INSERT technical refinement section IMMEDIATELY after that separator
+  2. FOR EACH story file in stories/ directory:
 
-       ---
+     a. READ the story file to understand fachliche requirements
 
-       ### Technisches Refinement (vom Architect)
+     b. FIND the '## Technisches Refinement (vom Architect)' section
+        (This section should already exist but be EMPTY/incomplete)
 
-       **DoR (Definition of Ready):**
-       - [x] Fachliche requirements clear
-       - [x] Technical approach defined
-       - [x] Dependencies identified
-       - [x] Affected components known
+     c. FILL IN the following sections:
 
-       **DoD (Definition of Done):**
-       - [ ] Code implemented
-       - [ ] Tests written and passing
-       - [ ] Code review by architect
-       - [ ] QA testing completed
-       - [ ] Documentation generated
+        **DoR (Definition of Ready):**
+        - Mark ALL checkboxes as [x] complete when done
+        - Fachliche requirements clear
+        - Technical approach defined
+        - Dependencies identified
+        - Affected components known
+        - Required MCP Tools documented (if applicable)
+        - Story is appropriately sized (max 5 files, 400 LOC)
+
+        **DoD (Definition of Done):**
+        - Define completion criteria (all start unchecked [ ])
+        - Code implemented and follows Style Guide
+        - Architecture requirements met
+        - Security/Performance requirements satisfied
+        - All acceptance criteria met
+        - Tests written and passing
+        - Code review approved
+        - Documentation updated
+        - No linting errors
+        - Completion Check commands successful
+
+        **Technical Details:**
+
+        **WAS:** [What components/features need to be created or modified - NO code]
+
+        **WIE (Architecture Guidance ONLY):**
+        - Which architectural patterns to apply (e.g., "Use Repository Pattern", "Apply Service Object")
+        - Constraints to respect (e.g., "No direct DB calls from controllers", "Must use existing AuthService")
+        - Existing patterns to follow (e.g., "Follow pattern from existing UserController")
+        - Security/Performance considerations (e.g., "Requires rate limiting", "Use caching")
+
+        ⚠️ IMPORTANT: NO implementation code, NO pseudo-code, NO detailed algorithms.
+        The implementing agent decides HOW to write the code - you only set guardrails.
+
+        **WO:** [Which files/folders to modify or create - paths only, no content]
+
+        **WER:** [Which agent - check .claude/agents/dev-team/ for available agents]
+        Examples: dev-team__backend-developer, dev-team__frontend-developer
+
+        **Abhängigkeiten:** [Story IDs this depends on, or \"None\"]
+
+        **Geschätzte Komplexität:** [XS/S/M/L/XL]
+
+        **Completion Check:**
+        ```bash
+        # Auto-Verify Commands - all must exit with 0
+        [VERIFY_COMMAND_1]
+        [VERIFY_COMMAND_2]
+        ```
+
+        **Story ist DONE wenn:**
+        1. Alle FILE_EXISTS/CONTAINS checks bestanden
+        2. Alle *_PASS commands exit 0
+        3. Git diff zeigt nur erwartete Änderungen
+
+     d. UPDATE the story file with filled technical sections
+
+     e. UPDATE story-index.md:
+        - Mark story status as "Ready" if DoR is complete
+        - Mark story status as "Blocked" if DoR is incomplete
+        - Update Dependencies column
+        - Update Type column (Backend/Frontend/DevOps/Test)
+
+  3. AFTER all stories are refined:
+
+     a. ANALYZE dependencies across ALL stories:
+        - Can stories run in parallel?
+        - Must some finish before others start?
+        - Document dependency chain
+
+     b. UPDATE story-index.md:
+        - Update Dependency Graph
+        - Update Execution Plan (parallel vs sequential)
+        - Update Total Estimated Effort
+
+     c. For dependent stories, note required handover documents:
+        - API contracts
+        - Data structures
+        - Integration points
+
+  4. EVALUATE cross-cutting concerns:
+     - New external dependencies?
+     - Global technical patterns needed?
+     - Security patterns?
+     - Performance requirements?
+
+     If YES, create:
+     agent-os/specs/[spec-name]/sub-specs/cross-cutting-decisions.md
+
+     Include:
+     - External dependencies (with justification)
+     - Global patterns (auth, error handling)
+     - Performance requirements
+     - Security patterns
+
+  5. ⚠️ **INTEGRATION STORY REQUIREMENT** (CRITICAL for multi-story specs):
+
+     CHECK: Does this spec have multiple stories that need integration?
+
+     IF (Backend stories + Frontend stories) OR (Multiple dependent stories):
+
+       CREATE an additional Integration & Validation story:
+       - Story ID: [PREFIX]-999 (last story to execute)
+       - Title: "Integration & End-to-End Validation"
+       - Type: Test/Integration
+       - Dependencies: All other stories in this spec
+
+       Fill this story with:
+       **User Story:**
+       Als Systemadministrator
+       möchte ich dass alle Komponenten dieser Spec zusammenwirken,
+       damit das Feature vollständig funktioniert.
+
+       **Akzeptanzkriterien:**
+       - [ ] INTEGRATION_PASS: All integration tests from spec.md pass
+       - [ ] END_TO_END: Complete user journey works
+       - [ ] COMPONENT_INTEGRATION: Backend and Frontend are connected
+       - [ ] [Optional MCP_PLAYWRIGHT]: UI flow works end-to-end
 
        **Technical Details:**
-
-       **WAS:** [What components/features need to be created or modified - NO code]
-
-       **WIE (Architecture Guidance ONLY):**
-       - Which architectural patterns to apply (e.g., "Use Repository Pattern", "Apply Service Object")
-       - Constraints to respect (e.g., "No direct DB calls from controllers", "Must use existing AuthService")
-       - Existing patterns to follow (e.g., "Follow pattern from existing UserController")
-       - Security/Performance considerations (e.g., "Requires rate limiting", "Use caching")
-
-       ⚠️ IMPORTANT: NO implementation code, NO pseudo-code, NO detailed algorithms.
-       The implementing agent decides HOW to write the code - you only set guardrails.
-
-       **WO:** [Which files/folders to modify or create - paths only, no content]
-
-       **WER:** [Which agent - check .claude/agents/dev-team/ for available agents]
-       Examples: dev-team__backend-developer, dev-team__frontend-developer
-
-       **Abhängigkeiten:** [Story IDs this depends on, or \"None\"]
-
-       **Geschätzte Komplexität:** [XS/S/M/L/XL]
+       - WAS: Integration validation of all stories in this spec
+       - WIE: Run integration tests defined in spec.md Integration Requirements
+       - WO: Integration test scripts or manual test procedures
+       - WER: dev-team__qa-specialist or test-runner
+       - Abhängigkeiten: All other stories in this spec
+       - Geschätzte Komplexität: S
 
        **Completion Check:**
        ```bash
-       # Auto-Verify Commands - all must exit with 0
-       [VERIFY_COMMAND_1]
-       [VERIFY_COMMAND_2]
+       # Run integration tests from spec.md
+       [INTEGRATION_TEST_COMMANDS_FROM_SPEC]
        ```
 
-       **Story ist DONE wenn:**
-       1. Alle FILE_EXISTS/CONTAINS checks bestanden
-       2. Alle *_PASS commands exit 0
-       3. Git diff zeigt nur erwartete Änderungen
+       UPDATE story-index.md to include this story as the LAST story
 
-    3. Analyze dependencies:
-       - Can stories run in parallel?
-       - Must some finish before others start?
-       - Document dependency chain
-
-    4. For dependent stories, note required handover documents:
-       - API contracts
-       - Data structures
-       - Integration points
-
-    5. Evaluate cross-cutting concerns:
-       - New external dependencies?
-       - Global technical patterns needed?
-       - Security patterns?
-       - Performance requirements?
-
-       If YES, create:
-       agent-os/specs/[spec-name]/sub-specs/cross-cutting-decisions.md
-
-       Include:
-       - External dependencies (with justification)
-       - Global patterns (auth, error handling)
-       - Performance requirements
-       - Security patterns
+       MARK: This story ensures the complete system works, not just individual parts
 
   Templates (hybrid lookup):
-  - user-stories-template.md (for structure reference)
+  - story-template.md (for structure reference)
+  - story-index-template.md (for index structure)
   - cross-cutting-decisions-template.md (if needed)
 
   IMPORTANT:
   - Add ONLY technical sections (WAS/WIE/WO/WER/DoR/DoD)
   - Do NOT modify fachliche descriptions
-  - **MUST mark ALL DoR checkboxes as [x] complete**
+  - **MUST mark ALL DoR checkboxes as [x] complete** when story is ready
   - Define clear DoD per story
   - Map ALL dependencies
   - Add Completion Check section with bash verify commands
   - Keep stories small (automated validation in Step 3.5)
   - **DoR validation will run in Step 3.4 - all checkboxes must be [x]**
+  - Update story-index.md after refining each story
+  - **Create Integration Story for multi-story specs (Backend + Frontend)**
   - Reference: agent-os/docs/story-sizing-guidelines.md
 
   ARCHITECTURE GUIDANCE RULES:
@@ -429,12 +549,14 @@ Use dev-team__architect agent to add technical refinement to fachliche user stor
 
   WAIT for dev-team__architect completion
   RECEIVE:
-    - Updated user-stories.md (fachlich + technisch)
+    - Updated story files in stories/ directory (fachlich + technisch)
+    - Updated story-index.md
     - Optional: sub-specs/cross-cutting-decisions.md
 </delegation>
 
 **Output:**
-- `agent-os/specs/[spec-name]/user-stories.md` (COMPLETE with technical refinement)
+- `agent-os/specs/[spec-name]/stories/*.md` (COMPLETE with technical refinement)
+- `agent-os/specs/[spec-name]/story-index.md` (updated with dependencies and status)
 - `agent-os/specs/[spec-name]/sub-specs/cross-cutting-decisions.md` (optional)
 
 </step>
@@ -446,10 +568,11 @@ Use dev-team__architect agent to add technical refinement to fachliche user stor
 Validate that all stories have complete DoR before proceeding to execution.
 
 <validation_process>
-  READ: agent-os/specs/[spec-name]/user-stories.md
+  LIST all story files: ls agent-os/specs/[spec-name]/stories/
 
-  FOR EACH story in user-stories.md:
+  FOR EACH story file in stories/ directory:
     <extract_dor_checkboxes>
+      READ: The story file
       FIND: "### Technisches Refinement (vom Architect)" section
       FIND: "DoR (Definition of Ready)" subsection
       EXTRACT: All checkbox lines starting with "- [" or "- [x]"
@@ -514,8 +637,7 @@ Validate that all stories have complete DoR before proceeding to execution.
        → Validation will run again after completion
 
     2. Review and manually complete DoR
-       → Opens user-stories.md for editing
-       → You can manually complete DoR items
+       → You can manually complete DoR items in story files
        → Re-run validation after edits
 
     3. Proceed anyway (NOT RECOMMENDED)
@@ -527,21 +649,23 @@ Validate that all stories have complete DoR before proceeding to execution.
     <user_choice_handling>
       IF choice = "Return to Architect":
         DELEGATE: To dev-team__architect with prompt:
-        "Complete all DoR checkboxes for stories in agent-os/specs/[spec-name]/user-stories.md
+        "Complete all DoR checkboxes for stories in agent-os/specs/[spec-name]/stories/
 
-        For EACH story with incomplete DoR:
-        1. Review the unchecked DoR items
-        2. Complete the required analysis/design
-        3. Mark all DoR items as [x] complete
+        For EACH story file with incomplete DoR:
+        1. Read the story file
+        2. Review the unchecked DoR items
+        3. Complete the required analysis/design
+        4. Mark all DoR items as [x] complete
+        5. Update story-index.md to mark story as 'Ready'
 
-        Return: Updated user-stories.md with all DoR items checked"
+        Return: Updated story files with all DoR items checked"
 
         WAIT for architect completion
         REPEAT: Step 3.4 (DoR Validation)
 
       ELSE IF choice = "Review and manually edit":
-        INFORM: "Please edit: agent-os/specs/[spec-name]/user-stories.md"
-        INFORM: "Mark all DoR checkboxes as [x] complete"
+        INFORM: "Please edit the story files in: agent-os/specs/[spec-name]/stories/"
+        INFORM: "Mark all DoR checkboxes as [x] complete in each story file"
         PAUSE: Wait for user to edit
         ASK: "Ready to re-validate? (yes/no)"
         IF yes:
@@ -562,7 +686,7 @@ Validate that all stories have complete DoR before proceeding to execution.
 
 <instructions>
   ACTION: Validate all DoR checkboxes are marked [x]
-  CHECK: Each story's DoR section
+  CHECK: Each story file's DoR section
   REQUIRE: All checkboxes must be checked before execution
   BLOCK: Stories with incomplete DoR from starting
   REFERENCE: agent-os/team/dor.md (if exists)
@@ -571,7 +695,7 @@ Validate that all stories have complete DoR before proceeding to execution.
 **Output:**
 - DoR validation report (if issues found)
 - User decision on how to proceed
-- Updated user-stories.md (if DoR completed)
+- Updated story files (if DoR completed)
 
 </step>
 
@@ -582,10 +706,10 @@ Validate that all stories have complete DoR before proceeding to execution.
 Validate that all stories comply with size guidelines to prevent mid-execution context compaction.
 
 <validation_process>
-  READ: agent-os/specs/[spec-name]/user-stories.md
+  LIST all story files: ls agent-os/specs/[spec-name]/stories/
   READ: agent-os/standards/story-size-guidelines.md (for reference thresholds)
 
-  FOR EACH story in user-stories.md:
+  FOR EACH story file in stories/ directory:
     <extract_metrics>
       ANALYZE: WO (Where) field
         COUNT: Number of file paths mentioned
@@ -689,7 +813,7 @@ Validate that all stories comply with size guidelines to prevent mid-execution c
 
     Options:
     1. Review and manually edit stories (Recommended)
-       → Opens user-stories.md for editing
+       → Edit the story files in stories/ directory
        → Re-run validation after edits
 
     2. Proceed anyway
@@ -700,13 +824,13 @@ Validate that all stories comply with size guidelines to prevent mid-execution c
     3. Auto-split flagged stories
        → System suggests splits based on content
        → User reviews and approves splits
-       → Stories updated automatically"
+       → New story files created automatically"
 
     WAIT for user choice
 
     <user_choice_handling>
       IF choice = "Review and manually edit":
-        INFORM: "Please edit: agent-os/specs/[spec-name]/user-stories.md"
+        INFORM: "Please edit the story files in: agent-os/specs/[spec-name]/stories/"
         INFORM: "Split large stories following patterns in:
                  agent-os/standards/story-size-guidelines.md"
         PAUSE: Wait for user to edit
@@ -756,9 +880,10 @@ Validate that all stories comply with size guidelines to prevent mid-execution c
           ASK: "Accept this split for Story [ID]? (yes/no/custom)"
 
           IF yes:
-            UPDATE: user-stories.md with sub-stories
+            CREATE: New story files for sub-stories
+            UPDATE: story-index.md with new stories
             UPDATE: Dependencies (sub-stories link to each other)
-            MARK: Original story as "Split into [IDs]"
+            MARK: Original story file as "Split into [IDs]"
 
           ELSE IF custom:
             ALLOW: User to describe custom split
@@ -782,7 +907,8 @@ Validate that all stories comply with size guidelines to prevent mid-execution c
 **Output:**
 - Validation report (if issues found)
 - User decision on how to proceed
-- Updated user-stories.md (if stories were split)
+- Updated story files (if stories were split)
+- Updated story-index.md (if stories were split)
 
 </step>
 
@@ -801,7 +927,9 @@ Present completed specification to user.
   - requirements-clarification.md - Approved requirements summary
   - spec.md - Full specification
   - spec-lite.md - Quick reference summary
-  - user-stories.md - User stories (fachlich + technisch)
+  - story-index.md - Story overview and dependency mapping
+  - stories/ - Individual story files (fachlich + technisch)
+    * story-001-[slug].md, story-002-[slug].md, etc.
     * Fachliche descriptions (PO)
     * Technical refinement (Architect): WAS/WIE/WO/WER/DoR/DoD
     * Dependencies mapped
@@ -818,7 +946,8 @@ Present completed specification to user.
   **Next Steps:**
 
   1. Review specification:
-     → agent-os/specs/[spec-name]/user-stories.md
+     → agent-os/specs/[spec-name]/story-index.md (overview)
+     → agent-os/specs/[spec-name]/stories/ (individual stories)
 
   2. When ready, execute:
      → /execute-tasks
@@ -846,11 +975,12 @@ Present completed specification to user.
   - [ ] requirements-clarification.md created and approved by user
   - [ ] spec.md complete (all sections)
   - [ ] spec-lite.md concise
-  - [ ] user-stories.md has fachlich + technical
-  - [ ] **Technical refinement directly under each story (not at end)**
+  - [ ] story-index.md created with all stories listed
+  - [ ] stories/ directory created with individual story files
+  - [ ] Each story file has fachlich + technical content
   - [ ] All stories have DoR/DoD
   - [ ] **All DoR checkboxes are marked [x] complete**
-  - [ ] Dependencies identified
+  - [ ] Dependencies identified in story-index.md
   - [ ] Cross-cutting decisions (if applicable)
   - [ ] **DoR validation passed (Step 3.4)**
   - [ ] **Story size validation passed (Step 3.5)**
