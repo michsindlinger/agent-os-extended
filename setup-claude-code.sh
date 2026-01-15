@@ -56,6 +56,7 @@ command_files=(
 
     # Spec development
     "create-spec.md"
+    "add-story.md"
     "retroactive-doc.md"
 
     # Bug management
@@ -111,7 +112,7 @@ echo ""
 echo "📁 Installed Structure:"
 echo ""
 echo "  .claude/"
-echo "    ├── commands/agent-os/   (13 core commands)"
+echo "    ├── commands/agent-os/   (14 core commands)"
 echo "    └── agents/              (9 utility agents)"
 echo ""
 echo "📋 Available Commands:"
@@ -126,6 +127,7 @@ echo "    /build-development-team   → Create DevTeam agents and skills"
 echo ""
 echo "  Feature Development:"
 echo "    /create-spec              → PO + Architect create spec with user stories"
+echo "    /add-story [spec]         → Add new story to existing spec"
 echo "    /retroactive-doc          → Document existing features (legacy code)"
 echo ""
 echo "  Bug Management:"

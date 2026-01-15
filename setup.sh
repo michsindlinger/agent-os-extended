@@ -118,6 +118,7 @@ download_file "$REPO_URL/agent-os/workflows/core/build-development-team.md" "age
 
 # Spec development
 download_file "$REPO_URL/agent-os/workflows/core/create-spec.md" "agent-os/workflows/core/create-spec.md" "workflows"
+download_file "$REPO_URL/agent-os/workflows/core/add-story.md" "agent-os/workflows/core/add-story.md" "workflows"
 download_file "$REPO_URL/agent-os/workflows/core/retroactive-doc.md" "agent-os/workflows/core/retroactive-doc.md" "workflows"
 
 # Bug management
@@ -201,7 +202,7 @@ echo "📁 Installed Structure:"
 echo ""
 echo "  agent-os/"
 echo "    ├── standards/              (2 core files)"
-echo "    ├── workflows/core/         (10 core workflows)"
+echo "    ├── workflows/core/         (13 core workflows)"
 echo "    ├── workflows/meta/         (1 meta workflow)"
 echo "    └── config.yml              (minimal configuration)"
 echo ""
