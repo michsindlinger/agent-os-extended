@@ -60,8 +60,8 @@ Each phase is a discrete unit that ends with a pause point for `/clear`.
     TODAY=$(date +%Y-%m-%d)
     BACKLOG_KANBAN=$(ls agent-os/backlog/kanban-${TODAY}.md 2>/dev/null)
 
-    # Check for pending backlog stories
-    BACKLOG_STORIES=$(ls agent-os/backlog/user-story-*.md 2>/dev/null | wc -l)
+    # Check for pending backlog stories (user-story-* AND bug-*)
+    BACKLOG_STORIES=$(ls agent-os/backlog/user-story-*.md agent-os/backlog/bug-*.md 2>/dev/null | wc -l)
     ```
 
     IF active kanban exists (spec or backlog):
@@ -189,9 +189,9 @@ Create today's Kanban Board for backlog execution. Daily kanbans keep tasks orga
 </step>
 
 <step name="collect_ready_stories">
-  LIST: All ready stories in backlog
+  LIST: All ready stories in backlog (user-story-* AND bug-*)
   ```bash
-  ls agent-os/backlog/user-story-*.md 2>/dev/null
+  ls agent-os/backlog/user-story-*.md agent-os/backlog/bug-*.md 2>/dev/null
   ```
 
   FOR EACH story file:
@@ -354,7 +354,8 @@ Execute ONE backlog story. Simpler than spec execution (no git worktree, no inte
   DELEGATE via Task tool:
   "Execute Backlog Story: [Story Title]
 
-  **Story File:** agent-os/backlog/user-story-{STORY_ID}-[slug].md
+  **Story File:** agent-os/backlog/{STORY_FILE}
+  (Note: File pattern is user-story-{ID}-[slug].md or bug-{ID}-[slug].md)
 
   **DoD Criteria:**
   [DoD checklist from story file]
@@ -482,7 +483,8 @@ Summarize today's work and update story-index.
   OPTIONAL: Move completed story files to archive
   ```bash
   mkdir -p agent-os/backlog/archive/{TODAY}
-  mv agent-os/backlog/user-story-{TODAY}-*.md agent-os/backlog/archive/{TODAY}/
+  # Archive both user-story-* and bug-* files
+  mv agent-os/backlog/user-story-*.md agent-os/backlog/bug-*.md agent-os/backlog/archive/{TODAY}/ 2>/dev/null
   ```
 
   NOTE: Keep story files accessible for reference
