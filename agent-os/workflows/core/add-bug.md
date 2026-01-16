@@ -395,12 +395,18 @@ Gather structured bug information from user.
   - Root Cause bereits identifiziert (in Bug Story)
   - Tech Stack: agent-os/product/tech-stack.md
   - Architecture: agent-os/product/architecture-decision.md (if exists)
+  - Definition of Ready: agent-os/team/dor.md (if exists)
+  - Definition of Done: agent-os/team/dod.md (if exists)
 
   Tasks:
   1. READ the bug story file (especially Root Cause section)
-  2. BASED ON the identified Root Cause:
+  2. LOAD project quality definitions:
+     - DoR from agent-os/team/dor.md (if exists)
+     - DoD from agent-os/team/dod.md (if exists)
+  3. BASED ON the identified Root Cause:
 
      **DoR vervollständigen:**
+     - Apply relevant DoR criteria from project dor.md
      - Mark technical preparation items as [x]
 
      **Technical Details ausfüllen:**
