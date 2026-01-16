@@ -131,6 +131,8 @@ Add a lightweight task to the backlog without full spec creation. Uses same stor
   - Tech Stack: agent-os/product/tech-stack.md
   - Architecture: agent-os/product/architecture-decision.md (if exists)
   - Architecture Structure: agent-os/product/architecture-structure.md (if exists)
+  - Definition of Ready: agent-os/team/dor.md (if exists)
+  - Definition of Done: agent-os/team/dod.md (if exists)
 
   Available DevTeam Agents:
   - List agents from .claude/agents/dev-team/
@@ -141,9 +143,13 @@ Add a lightweight task to the backlog without full spec creation. Uses same stor
   3. FILL technical sections:
 
      **DoR (Definition of Ready):**
+     - Load project DoR from agent-os/team/dor.md (if exists)
+     - Apply relevant DoR criteria to this story
      - Mark ALL checkboxes as [x] when complete
 
      **DoD (Definition of Done):**
+     - Load project DoD from agent-os/team/dod.md (if exists)
+     - Apply relevant DoD criteria to this story
      - Define completion criteria (start unchecked [ ])
 
      **Technical Details:**
