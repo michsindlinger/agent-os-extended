@@ -14,7 +14,7 @@ echo "========================================="
 echo ""
 echo "This installs to ~/.agent-os/:"
 echo "  • Global coding standards (fallback)"
-echo "  • All DevTeam templates (53 files)"
+echo "  • All DevTeam templates (54 files)"
 echo ""
 
 # Download helper function
@@ -84,14 +84,14 @@ download_file "$REPO_URL/agent-os/standards/tech-stack.md" \
   "$GLOBAL_DIR/standards/tech-stack.md" "tech-stack template"
 
 # ═══════════════════════════════════════════════════════════
-# TEMPLATES (57 files)
+# TEMPLATES (58 files)
 # ═══════════════════════════════════════════════════════════
 
 echo ""
-echo "═══ Installing Templates (57 files) ═══"
+echo "═══ Installing Templates (58 files) ═══"
 
-# Product templates (9)
-echo "→ Product templates (9)..."
+# Product templates (10)
+echo "→ Product templates (10)..."
 download_file "$REPO_URL/agent-os/templates/product/product-brief-template.md" "$GLOBAL_DIR/templates/product/product-brief-template.md"
 download_file "$REPO_URL/agent-os/templates/product/product-brief-lite-template.md" "$GLOBAL_DIR/templates/product/product-brief-lite-template.md"
 download_file "$REPO_URL/agent-os/templates/product/tech-stack-template.md" "$GLOBAL_DIR/templates/product/tech-stack-template.md"
@@ -101,6 +101,7 @@ download_file "$REPO_URL/agent-os/templates/product/boilerplate-structure-templa
 download_file "$REPO_URL/agent-os/templates/product/design-system-template.md" "$GLOBAL_DIR/templates/product/design-system-template.md"
 download_file "$REPO_URL/agent-os/templates/product/ux-patterns-template.md" "$GLOBAL_DIR/templates/product/ux-patterns-template.md"
 download_file "$REPO_URL/agent-os/templates/product/blocker-analysis-template.md" "$GLOBAL_DIR/templates/product/blocker-analysis-template.md"
+download_file "$REPO_URL/agent-os/templates/product/milestone-plan-template.md" "$GLOBAL_DIR/templates/product/milestone-plan-template.md"
 
 # Feasibility templates (1)
 echo "→ Feasibility templates (1)..."
@@ -228,8 +229,8 @@ echo ""
 echo "  agents/ (1 file)"
 echo "    └── platform-architect.md"
 echo ""
-echo "  templates/ (72 files)"
-echo "    ├── product/ (9)"
+echo "  templates/ (73 files)"
+echo "    ├── product/ (10)"
 echo "    ├── platform/ (7)"
 echo "    ├── agents/dev-team/ (7)"
 echo "    ├── skills/ (35 total)"
