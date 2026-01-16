@@ -526,9 +526,48 @@ boilerplate/
 
 </step>
 
-<step number="9" name="summary">
+<step number="9" subagent="file-creator" name="update_claude_md">
 
-### Step 9: Planning Summary
+### Step 9: Update Project CLAUDE.md
+
+Use file-creator agent to update the project's CLAUDE.md with product-specific configuration.
+
+<delegation>
+  DELEGATE to file-creator via Task tool:
+
+  PROMPT:
+  "Update project CLAUDE.md with product configuration.
+
+  Context:
+  - Product Brief: agent-os/product/product-brief.md
+  - Tech Stack: agent-os/product/tech-stack.md
+
+  Tasks:
+  1. Load CLAUDE-LITE.md template (hybrid lookup: project → global)
+     - TRY: agent-os/templates/CLAUDE-LITE.md
+     - FALLBACK: ~/.agent-os/templates/CLAUDE-LITE.md
+  2. Extract product information:
+     - Product name from product-brief.md
+     - Current date
+  3. Replace placeholders in template:
+     - [PROJECT_NAME] → Actual product name
+     - [CURRENT_DATE] → Today's date (YYYY-MM-DD)
+  4. Write to project root: CLAUDE.md
+
+  Ensure CLAUDE.md is properly formatted and all placeholders are replaced."
+
+  WAIT for file-creator completion
+  NOTE: "CLAUDE.md updated with product configuration"
+</delegation>
+
+**Template:** `agent-os/templates/CLAUDE-LITE.md`
+**Output:** `CLAUDE.md` (project root)
+
+</step>
+
+<step number="10" name="summary">
+
+### Step 10: Planning Summary
 
 Present summary of all created documentation.
 
@@ -544,8 +583,11 @@ Created Documentation:
 ✅ architecture-decision.md - Architecture pattern
 ✅ architecture-structure.md - Folder conventions
 ✅ boilerplate/ - Project structure template
+✅ CLAUDE.md - Updated with product configuration
 
 Location: agent-os/product/
+
+CLAUDE.md (project root) - Updated with product references
 
 Next Steps:
 1. Review all documentation
@@ -575,9 +617,10 @@ Next Steps:
 | architecture-decision.md | Architecture ADRs | architecture-decision.md |
 | architecture-structure.md | Folder conventions | architecture-structure.md |
 | boilerplate/ | Directory template | Generated |
+| CLAUDE.md (project root) | Project configuration | CLAUDE-LITE.md |
 
 ## Execution Summary
 
 **Duration:** 15-25 minutes
 **User Interactions:** 3-4 decision points
-**Output:** 6 files + 1 directory structure
+**Output:** 6 files + 1 directory structure + CLAUDE.md update

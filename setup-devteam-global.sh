@@ -90,6 +90,11 @@ download_file "$REPO_URL/agent-os/standards/tech-stack.md" \
 echo ""
 echo "═══ Installing Templates (58 files) ═══"
 
+# CLAUDE templates (2)
+echo "→ CLAUDE templates (2)..."
+download_file "$REPO_URL/agent-os/templates/CLAUDE-LITE.md" "$GLOBAL_DIR/templates/CLAUDE-LITE.md"
+download_file "$REPO_URL/agent-os/templates/CLAUDE-PLATFORM.md" "$GLOBAL_DIR/templates/CLAUDE-PLATFORM.md"
+
 # Product templates (10)
 echo "→ Product templates (10)..."
 download_file "$REPO_URL/agent-os/templates/product/product-brief-template.md" "$GLOBAL_DIR/templates/product/product-brief-template.md"
@@ -229,7 +234,9 @@ echo ""
 echo "  agents/ (1 file)"
 echo "    └── platform-architect.md"
 echo ""
-echo "  templates/ (73 files)"
+echo "  templates/ (75 files)"
+echo "    ├── CLAUDE-LITE.md (for single products)"
+echo "    ├── CLAUDE-PLATFORM.md (for platforms)"
 echo "    ├── product/ (10)"
 echo "    ├── platform/ (7)"
 echo "    ├── agents/dev-team/ (7)"
