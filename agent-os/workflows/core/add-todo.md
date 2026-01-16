@@ -38,6 +38,15 @@ Add a lightweight task to the backlog without full spec creation. Uses same stor
      CREATE: agent-os/backlog/ directory
      CREATE: agent-os/backlog/story-index.md (from template)
 
+     <template_lookup>
+       PATH: backlog-story-index-template.md
+
+       LOOKUP STRATEGY (Hybrid):
+         1. TRY: agent-os/templates/docs/backlog-story-index-template.md
+         2. IF NOT FOUND: ~/.agent-os/templates/docs/backlog-story-index-template.md
+         3. IF STILL NOT FOUND: Error - run setup-devteam-global.sh
+     </template_lookup>
+
   3. USE: date-checker to get current date (YYYY-MM-DD)
 
   4. DETERMINE: Next story index for today
@@ -92,7 +101,15 @@ Add a lightweight task to the backlog without full spec creation. Uses same stor
      Example: user-story-2025-01-15-001-loading-state-modal.md
 
   2. USE: story-template.md (same as create-spec)
-     Template: agent-os/templates/docs/story-template.md
+
+     <template_lookup>
+       PATH: story-template.md
+
+       LOOKUP STRATEGY (Hybrid):
+         1. TRY: agent-os/templates/docs/story-template.md
+         2. IF NOT FOUND: ~/.agent-os/templates/docs/story-template.md
+         3. IF STILL NOT FOUND: Error - run setup-devteam-global.sh
+     </template_lookup>
 
   3. FILL fachliche content (PO perspective):
      - Story Title

@@ -38,6 +38,15 @@ Add a bug to the backlog with structured root-cause analysis. Uses hypothesis-dr
      CREATE: agent-os/backlog/ directory
      CREATE: agent-os/backlog/story-index.md (from template)
 
+     <template_lookup>
+       PATH: backlog-story-index-template.md
+
+       LOOKUP STRATEGY (Hybrid):
+         1. TRY: agent-os/templates/docs/backlog-story-index-template.md
+         2. IF NOT FOUND: ~/.agent-os/templates/docs/backlog-story-index-template.md
+         3. IF STILL NOT FOUND: Error - run setup-devteam-global.sh
+     </template_lookup>
+
   3. USE: date-checker to get current date (YYYY-MM-DD)
 
   4. DETERMINE: Next bug index for today
