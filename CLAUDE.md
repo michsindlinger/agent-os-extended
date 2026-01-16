@@ -1,211 +1,135 @@
-# CLAUDE.md
+# CLAUDE.md - Agent OS Extended
 
-> [PROJECT_NAME] Development Guide
-> Last Updated: [CURRENT_DATE]
+> Agent OS Extended Development Guide
+> Last Updated: 2026-01-16
+> Type: Framework Repository
 
 ## Purpose
-Essential guidance for Claude Code development in the [PROJECT_NAME] repository. All detailed standards and product information are maintained in Agent OS structure.
+Essential guidance for Claude Code development in the Agent OS Extended repository. This is the **framework repository** that provides workflows, templates, agents, and skills for other projects.
 
-## Agent OS References (Lazy Loading)
+## Repository Structure
 
-**IMPORTANT:** Documents are loaded on-demand, not at startup. Use context-fetcher subagent when needed.
+**This is NOT a product project - it's the Agent OS framework itself.**
 
-### Product Information (load via context-fetcher)
-- **Product Vision**: agent-os/product/product-brief.md
-- **Technical Architecture**: agent-os/product/tech-stack.md
-- **Development Roadmap**: agent-os/product/roadmap.md
-- **Architecture Decision**: agent-os/product/architecture-decision.md
+```
+agent-os-extended/
+├── agent-os/
+│   ├── workflows/core/       # Core workflows (plan-product, create-spec, etc.)
+│   ├── workflows/meta/       # Meta workflows (pre-flight)
+│   ├── templates/            # All templates (product, platform, docs, skills)
+│   ├── standards/            # Global coding standards
+│   └── docs/                 # Documentation and guides
+├── .claude/
+│   ├── commands/agent-os/    # Slash command definitions
+│   └── agents/               # Agent definitions
+├── setup.sh                  # Project installation script
+├── setup-claude-code.sh      # Claude Code installation script
+└── setup-devteam-global.sh   # Global templates installation script
+```
 
-### Development Standards (load via context-fetcher)
+## Development Standards (load via context-fetcher when needed)
 - **Tech Stack Defaults**: agent-os/standards/tech-stack.md
 - **Code Style Preferences**: agent-os/standards/code-style.md
 - **Best Practices Philosophy**: agent-os/standards/best-practices.md
 
-### Agent OS Workflows (loaded automatically via slash commands)
-Available commands - workflow context loads when invoked:
-- `/plan-product` - Single-product planning
-- `/plan-platform` - Multi-module platform planning
-- `/build-development-team` - Create DevTeam agents
-- `/create-spec` - Feature specifications
-- `/execute-tasks` - Task execution
-- `/retroactive-doc` - Document existing features
-
-
 ## Critical Rules
-- **FOLLOW ALL INSTRUCTIONS** - These are mandatory, not optional
+- **FOLLOW ALL INSTRUCTIONS** - Mandatory, not optional
 - **ASK FOR CLARIFICATION** - If uncertain about any requirement
 - **MINIMIZE CHANGES** - Edit only what's necessary
-- **PRODUCTION SAFETY** - [CUSTOMIZE: Add your production safety context]
+- **PRESERVE BACKWARD COMPATIBILITY** - Changes affect all users of the framework
+
+## Framework Development Guidelines
+
+**When modifying workflows:**
+- Test changes conceptually before committing
+- Update version numbers in workflow frontmatter
+- Ensure template references use hybrid lookup (project → global)
+- Update setup scripts if new files are added
+
+**When adding templates:**
+- Add to `agent-os/templates/` directory
+- Update `setup-devteam-global.sh` to include in global installation
+- Use consistent placeholder naming: `[PLACEHOLDER_NAME]`
+
+**When adding commands:**
+- Create in `.claude/commands/agent-os/`
+- Reference corresponding workflow in `agent-os/workflows/core/`
 
 ## Sub-Agents
-**MANDATORY DELEGATION** - Sub-agents have separate context windows. You are the strategic brain that makes high-level decisions.
-
-**Delegation Strategy:**
-- **Strategic Planning** → You decide WHAT needs to be done
-- **Implementation Planning** → Delegate to Core Development specialists  
-- **Execution Tasks** → Delegate to Utility & Support agents
-- **Context Optimization** → Use sub-agents to keep routine tasks out of your main context
-
-**Rule:** Never do what a specialist can do better. Always delegate when sub-agents are available.
-
-### Core Development
-<!-- CUSTOMIZE: Add your project-specific development agents -->
-- **[ROLE-NAME]** - [TECHNOLOGY_DESCRIPTION]
-- **[ROLE-NAME]** - [TECHNOLOGY_DESCRIPTION]
-
-### Quality & Infrastructure
-<!-- CUSTOMIZE: Add your project-specific quality agents -->
-- **testing-specialist** - [YOUR_TESTING_STACK]
-- **security-specialist** - [YOUR_SECURITY_SETUP]
-- **devops-specialist** - [YOUR_DEPLOYMENT_PLATFORM]
 
 ### Utility & Support
-- **context-fetcher** - Retrieve and extract relevant information from Agent OS documentation
-- **date-checker** - Determine today's date including current year, month and day
-- **file-creator** - Create files, directories, and apply templates for Agent OS workflows
-- **git-workflow** - Handle git operations, branch management, commits, and PR creation
-- **debugger** - Immediate bug fixes and runtime errors
-- **analyzer** - Strategic problem analysis (5-Why methodology)
+- **context-fetcher** - Load documents on demand
+- **date-checker** - Determine today's date
+- **file-creator** - Create files and apply templates
+- **git-workflow** - Git operations, commits, PRs
 
+## File Organization Rules
 
-## Essential Commands
+**CRITICAL - No Files in Project Root:**
+- Implementation reports: `agent-os/specs/[spec-name]/implementation-reports/`
+- Architecture docs: `agent-os/product/`
+- Team docs: `agent-os/team/`
+
+## Essential Commands (for testing the framework)
 
 ```bash
 # Product Planning
-/plan-product            # Single-product planning (brief, tech-stack, roadmap)
-/plan-platform           # Multi-module platform planning (modules, dependencies, architecture)
+/plan-product            # Single-product planning
+/plan-platform           # Multi-module platform planning
 
 # Team Setup
 /build-development-team  # Create DevTeam agents and skills
 
 # Feature Development
-/create-spec             # Create detailed specifications for new features
-/execute-tasks           # Execute planned implementation tasks
-/retroactive-doc         # Document existing features without specs
+/create-spec             # Create detailed specifications
+/execute-tasks           # Execute planned tasks
+/retroactive-doc         # Document existing features
 
 # Bug Management
 /create-bug              # Create bug specification
 /add-bug                 # Add bug to existing spec
 
-# CUSTOMIZE: Add your project-specific commands
-# Development
-[COMMAND]                # [DESCRIPTION]
-[COMMAND]                # [DESCRIPTION]
+# Quick Tasks
+/add-todo                # Add lightweight task to backlog
 
-# Testing
-[COMMAND]                # [DESCRIPTION]
-[COMMAND]                # [DESCRIPTION]
+# Skill Management
+/add-skill               # Create custom skills
+/migrate-skills          # Add YAML frontmatter to existing skills
 ```
-
-## MCP Server Integration
-
-<!-- CUSTOMIZE: Add your MCP server integrations -->
-- **[MCP_NAME]** - [DESCRIPTION]
-- **[MCP_NAME]** - [DESCRIPTION]
-
-## File Organization Rules
-
-**CRITICAL - No Files in Project Root:**
-- ❌ NEVER create markdown reports, checklists, or documentation in project root
-- ❌ NEVER create implementation reports like `STORY-001-IMPLEMENTATION.md` in root
-- ❌ NEVER create temporary files in root
-
-**Correct Locations:**
-- ✅ Implementation reports: `agent-os/specs/[spec-name]/implementation-reports/`
-- ✅ Testing checklists: `agent-os/specs/[spec-name]/implementation-reports/`
-- ✅ Handover docs: `agent-os/specs/[spec-name]/handover-docs/`
-- ✅ Architecture docs: `agent-os/product/`
-- ✅ Team docs: `agent-os/team/`
-- ✅ Temporary files: `/tmp/` or `node_modules/.cache/`
-
-**When delegating to DevTeam agents:**
-Explicitly instruct them on correct file placement for any reports or documentation.
 
 ## Quality Requirements
 
 **Mandatory Checks:**
-- Run linting after ALL code changes
-- ALL lint errors must be fixed before task completion
-- Follow TypeScript strict mode (no `any` types)
-<!-- CUSTOMIZE: Add your project-specific quality requirements -->
+- Ensure all workflow steps are numbered correctly
+- Verify template paths use hybrid lookup
+- Check that setup scripts include all new files
+- Test slash commands work correctly
 
 ## Production Safety Rules
 
 **CRITICAL RESTRICTIONS:**
-<!-- CUSTOMIZE: Add your production safety rules -->
-- Never modify [CRITICAL_SYSTEM] without approval
-- Never deploy [SENSITIVE_COMPONENT] without approval  
-- Never create automatic Git commits
-- Always ask before infrastructure changes
+- Never break backward compatibility without migration path
+- Never remove templates without deprecation notice
+- Always update setup scripts when adding files
+- Test changes in a separate project before committing
 
-## Feature Development Workflow
+## Workflow Development
 
-**Complete Lifecycle Management:**
+**Adding a new workflow:**
+1. Create workflow in `agent-os/workflows/core/[workflow-name].md`
+2. Create command in `.claude/commands/agent-os/[command-name].md`
+3. Add any new templates to `agent-os/templates/`
+4. Update `setup.sh` to download the workflow
+5. Update `setup-claude-code.sh` to download the command
+6. Update `setup-devteam-global.sh` for new templates
 
-1. **Product/Platform Planning:**
-   - `/plan-product` → Single cohesive products
-   - `/plan-platform` → Multi-module platforms
-   - Creates: product-brief.md, tech-stack.md, roadmap.md, architecture-decision.md
-
-2. **Team Setup:**
-   - `/build-development-team` → Creates DevTeam agents & skills
-   - Generates role-specific agents based on tech-stack
-
-3. **Feature Development:**
-   - `/create-spec` → Creates detailed specification
-   - `/execute-tasks` → Executes planned tasks with DevTeam
-   - Creates spec in `agent-os/specs/YYYY-MM-DD-feature-name/`
-
-4. **Bug Management:**
-   - `/create-bug` → Creates bug specification
-   - `/add-bug` → Adds bug to existing spec
-
-5. **Retroactive Documentation:**
-   - `/retroactive-doc` → Documents existing features without specs
-   - Analyzes code to create comprehensive documentation
-   - Perfect for legacy features
-
-**Directory Structure:**
-- `agent-os/product/` - Product vision, tech-stack, roadmap
-- `agent-os/specs/` - Feature specifications (development-oriented)
-- `agent-os/team/` - DevTeam agents and skills
-
-## Workflow Resume (Post-Compaction Recovery)
-
-**IMPORTANT:** After conversation compaction, workflow context may be lost. Follow these recovery steps:
-
-**Detecting Active Workflows:**
-```bash
-# Check for active Kanban boards (indicates /execute-tasks in progress)
-ls agent-os/specs/*/kanban-board.md 2>/dev/null
-```
-
-**Recovery Protocol:**
-1. **If Kanban Board exists with "In Progress" stories:**
-   - Read the Kanban Board file
-   - Find the "🔄 Resume Context" section at the top
-   - Follow the "Resume Instructions" in that section
-   - The Resume Context contains: current step, current story, assigned agent, next action
-
-2. **Critical: Maintain Delegation Pattern**
-   - ALWAYS delegate to DevTeam agents via Task tool
-   - NEVER implement code directly after compaction
-   - The Kanban Board "Agent Assignment Rules" shows which agent handles which story type
-
-3. **After Each Action:**
-   - Update the Kanban Board's Resume Context section
-   - This ensures the next compaction can also recover
-
-**Quick Resume Command:**
-If unsure, simply run `/execute-tasks` again - it will detect the existing Kanban Board and offer resume options.
-
-## Development Notes
-
-<!-- CUSTOMIZE: Add your project-specific development context -->
-- **Platform:** [YOUR_PLATFORM_DESCRIPTION]
-- **Current Focus:** [CURRENT_DEVELOPMENT_PRIORITIES]
-- **Architecture Notes:** [IMPORTANT_ARCHITECTURAL_DECISIONS]
+**Modifying existing workflows:**
+1. Read the current workflow completely
+2. Understand all steps and their dependencies
+3. Make minimal changes to achieve the goal
+4. Update version number in frontmatter
+5. Test conceptually with edge cases
 
 ---
 
-**Remember:** This is a [PRODUCTION/DEVELOPMENT] system serving [TARGET_AUDIENCE]. Quality, [KEY_REQUIREMENTS], and reliability are paramount. Always refer to Agent OS documentation for detailed guidance.
+**Remember:** This repository is used by many projects. Changes here affect all Agent OS users. Quality, backward compatibility, and documentation are paramount.

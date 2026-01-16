@@ -491,9 +491,59 @@ Generate individual roadmaps for each module showing internal features.
 
 </step>
 
-<step number="10" name="summary">
+<step number="10" subagent="file-creator" name="update_claude_md">
 
-### Step 10: Planning Summary
+### Step 10: Update Project CLAUDE.md
+
+Use file-creator agent to update the project's CLAUDE.md with platform-specific configuration.
+
+<delegation>
+  DELEGATE to file-creator via Task tool:
+
+  PROMPT:
+  "Update project CLAUDE.md with platform configuration.
+
+  Context:
+  - Platform Brief: agent-os/product/platform-brief.md
+  - Modules: agent-os/product/modules/*/module-brief.md
+
+  Tasks:
+  1. Load CLAUDE-PLATFORM.md template (hybrid lookup: project → global)
+     - TRY: agent-os/templates/CLAUDE-PLATFORM.md
+     - FALLBACK: ~/.agent-os/templates/CLAUDE-PLATFORM.md
+  2. Extract platform information:
+     - Platform name from platform-brief.md
+     - List of all modules from agent-os/product/modules/
+     - Module count
+  3. Replace placeholders in template:
+     - [PLATFORM_NAME] → Actual platform name
+     - [CURRENT_DATE] → Today's date (YYYY-MM-DD)
+     - [MODULE_COUNT] → Number of modules
+     - [MODULE_LIST] → Formatted list of modules with descriptions
+     - [MODULE_BRIEF_PATHS] → List of module brief paths
+     - [MODULE_ROADMAP_PATHS] → List of module roadmap paths
+  4. Write to project root: CLAUDE.md
+
+  Module list format:
+  - **[Module Name]**: [Short description from module brief]
+
+  Module paths format:
+  - **[Module Name]**: agent-os/product/modules/[module-name]/module-brief.md
+
+  Ensure CLAUDE.md is properly formatted and all placeholders are replaced."
+
+  WAIT for file-creator completion
+  NOTE: "CLAUDE.md updated with platform configuration"
+</delegation>
+
+**Template:** `agent-os/templates/CLAUDE-PLATFORM.md`
+**Output:** `CLAUDE.md` (project root)
+
+</step>
+
+<step number="11" name="summary">
+
+### Step 11: Planning Summary
 
 Present summary of all created documentation.
 
@@ -510,6 +560,7 @@ Created Documentation:
 ✅ platform-architecture.md - System architecture
 ✅ platform-roadmap.md - Implementation phases
 ✅ [N] module roadmaps - Per-module feature plans
+✅ CLAUDE.md - Updated with platform configuration
 
 Directory Structure:
 agent-os/product/
@@ -531,6 +582,8 @@ agent-os/product/
         ├── [module-1]/
         │   └── roadmap.md
         └── ...
+
+CLAUDE.md (project root) - Updated with platform references
 
 Next Steps:
 1. Review all documentation
@@ -562,12 +615,13 @@ Next Steps:
 | architecture/platform-architecture.md | System architecture | platform-architecture-template.md |
 | roadmap/platform-roadmap.md | Platform phases | platform-roadmap-template.md |
 | roadmap/modules/[name]/roadmap.md | Module roadmaps | module-roadmap-template.md |
+| CLAUDE.md (project root) | Project configuration | CLAUDE-PLATFORM.md |
 
 ## Execution Summary
 
 **Duration:** 30-45 minutes
 **User Interactions:** 3-4 decision points
-**Output:** 5+ core files + N module briefs + N module roadmaps
+**Output:** 5+ core files + N module briefs + N module roadmaps + CLAUDE.md update
 
 ## Differences from /plan-product
 
