@@ -146,6 +146,7 @@ download_file "$REPO_URL/agent-os/workflows/core/transfer-and-plan-product.md" "
 
 # Skill management
 download_file "$REPO_URL/agent-os/workflows/core/add-skill.md" "agent-os/workflows/core/add-skill.md" "workflows"
+download_file "$REPO_URL/agent-os/workflows/core/migrate-devteam-v2.md" "agent-os/workflows/core/migrate-devteam-v2.md" "workflows"
 
 # ═══════════════════════════════════════════════════════════
 # CONFIGURATION

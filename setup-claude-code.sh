@@ -77,6 +77,7 @@ command_files=(
     "add-skill.md"
     "migrate-skills.md"
     "toggle-skill-activation.md"
+    "migrate-devteam-v2.md"
 
     # Brainstorming
     "start-brainstorming.md"
@@ -169,6 +170,7 @@ echo "  Skill Management:"
 echo "    /add-skill                → Create custom skills for DevTeam agents"
 echo "    /migrate-skills           → Add YAML frontmatter to existing skills"
 echo "    /toggle-skill-activation  → Change skill activation mode"
+echo "    /migrate-devteam-v2       → Migrate DevTeam to v2.0 (skill-index)"
 echo ""
 echo "🤖 Utility Agents Installed:"
 echo "  • context-fetcher    → Conditional file loading"
