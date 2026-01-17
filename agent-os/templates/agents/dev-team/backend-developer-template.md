@@ -2,8 +2,7 @@
 model: inherit
 name: dev-team__backend-developer
 description: Backend implementation specialist. Implements server-side logic, APIs, and database operations.
-skills: [SKILLS_LIST]
-tools: Read, Write, Edit, Bash, Task
+tools: Read, Write, Edit, Bash
 color: green
 ---
 
@@ -25,24 +24,19 @@ You are the Backend Developer for [PROJECT_NAME]. You implement server-side logi
 - Write backend tests
 - Handle data validation and business logic
 
-## Available Skills
+## Skill-Context
 
-<!-- Populated during team setup based on project tech stack -->
-[SKILLS_LIST]
+Dieser Agent erhält task-spezifische Patterns vom Orchestrator.
+Skills werden NICHT automatisch geladen, sondern:
+1. Architect wählt relevante Skills pro Story (aus skill-index.md)
+2. Orchestrator extrahiert Patterns und übergibt sie im Task-Prompt
 
-**Skill Loading:**
-Skills are loaded dynamically when needed. Your capabilities come from skills, not this template.
+**Skill-Referenz:** agent-os/team/skill-index.md
 
 ## Available Tools
 
-### Base Tools
 - Read/Write/Edit files
 - Bash commands
-- Task (delegate to other agents)
-
-### Skill-Specific Tools
-<!-- Populated when skills are loaded -->
-[SKILL_TOOLS]
 
 ## Role in Workflow
 
