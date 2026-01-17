@@ -132,6 +132,20 @@ Beispiele: dev-team__backend-developer, dev-team__frontend-developer
 
 ---
 
+### Relevante Skills
+
+> Vom Architect ausgewählt basierend auf skill-index.md
+> Diese Skills werden vom Orchestrator gelesen und Patterns extrahiert
+
+| Skill | Pfad | Grund |
+|-------|------|-------|
+| [SKILL_NAME_1] | agent-os/skills/[skill-path].md | [Warum relevant für diese Story] |
+| [SKILL_NAME_2] | agent-os/skills/[skill-path].md | [Warum relevant für diese Story] |
+
+**Skill-Referenz:** agent-os/team/skill-index.md
+
+---
+
 ### Completion Check
 
 ```bash
