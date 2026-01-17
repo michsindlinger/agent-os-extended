@@ -8,6 +8,6 @@ Transfer a completed brainstorming session into a comprehensive product plan
 - Fill gaps through interactive questionnaire if needed
 - Create complete product documentation with mission, roadmap, and technical decisions
 
-**Requirements:** Active or completed brainstorming session about a product in .agent-os/brainstorming/
+**Requirements:** Active or completed brainstorming session about a product in agent-os/brainstorming/
 
 Refer to the instructions located in @agent-os/workflows/core/transfer-and-plan-product.md

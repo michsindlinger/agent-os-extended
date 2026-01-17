@@ -8,6 +8,6 @@ Transfer a completed brainstorming session into a formal feature specification
 - Fill gaps through interactive questionnaire if needed
 - Create complete spec with all technical details
 
-**Requirements:** Active or completed brainstorming session in .agent-os/brainstorming/
+**Requirements:** Active or completed brainstorming session in agent-os/brainstorming/
 
 Refer to the instructions located in @agent-os/workflows/core/transfer-and-create-spec.md

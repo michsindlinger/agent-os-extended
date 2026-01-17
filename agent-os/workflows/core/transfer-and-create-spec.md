@@ -25,7 +25,7 @@ Transfer a completed brainstorming session into a formal feature specification, 
 Use the context-fetcher subagent to find and analyze the relevant brainstorming session.
 
 <session_discovery>
-  SCAN .agent-os/brainstorming/ for sessions
+  SCAN agent-os/brainstorming/ for sessions
   IF multiple_sessions_found:
     FILTER by status: ready-for-spec OR active
     PRESENT numbered list to user
@@ -182,7 +182,7 @@ Prepare all gathered information in the format expected by create-spec command.
   <add_transfer_metadata>
     - source: "brainstorming_transfer"
     - session_id: [SESSION_ID]
-    - session_path: ".agent-os/brainstorming/[SESSION_ID]/session.md"
+    - session_path: "agent-os/brainstorming/[SESSION_ID]/session.md"
     - transfer_date: [CURRENT_DATE]
     - gaps_filled: [LIST_OF_QUESTIONNAIRE_ITEMS]
   </add_transfer_metadata>

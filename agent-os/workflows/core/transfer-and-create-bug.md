@@ -25,7 +25,7 @@ Transfer a brainstorming session about a bug into a formal bug report, validatin
 Use the context-fetcher subagent to find and analyze the relevant bug-related brainstorming session.
 
 <session_discovery>
-  SCAN .agent-os/brainstorming/ for sessions
+  SCAN agent-os/brainstorming/ for sessions
   FILTER by:
     - status: ready-for-bug OR active
     - type: bug OR general (with bug content)
@@ -195,7 +195,7 @@ Prepare all gathered information in the format expected by create-bug command.
   <add_transfer_metadata>
     - source: "brainstorming_transfer"
     - session_id: [SESSION_ID]
-    - session_path: ".agent-os/brainstorming/[SESSION_ID]/session.md"
+    - session_path: "agent-os/brainstorming/[SESSION_ID]/session.md"
     - transfer_date: [CURRENT_DATE]
     - gaps_filled: [LIST_OF_QUESTIONNAIRE_ITEMS]
     - investigation_notes: [FROM_BRAINSTORMING]
