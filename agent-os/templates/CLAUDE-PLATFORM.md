@@ -157,4 +157,4 @@ agent-os/
 
 ---
 
-**Context Efficiency Note:** This CLAUDE.md uses ~600 tokens instead of loading all platform docs. Documents are loaded on-demand via context-fetcher or automatically when skills are invoked.
+**Context Efficiency Note:** This CLAUDE.md uses ~600 tokens instead of loading all platform docs. Documents are loaded on-demand via context-fetcher. Skills are extracted by Orchestrator during task execution (see `agent-os/team/skill-index.md`).
