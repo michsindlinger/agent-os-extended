@@ -2,7 +2,7 @@
 description: Rules to initiate execution of a set of tasks using Agent OS
 globs:
 alwaysApply: false
-version: 2.1
+version: 2.2
 encoding: UTF-8
 ---
 
@@ -12,6 +12,12 @@ encoding: UTF-8
 
 Execute tasks using a **phase-based architecture** optimized for token efficiency.
 Each phase is a discrete unit that ends with a pause point for `/clear`.
+
+**v2.2 Changes:**
+- Orchestrator now extracts skill patterns before delegating to sub-agents
+- Reads "Relevante Skills" section from story files
+- Extracts only "## Quick Reference" from each skill (50-100 lines instead of full skill)
+- Includes focused patterns in task prompts for sub-agents
 
 **Supports two modes:**
 - **Spec Mode**: Full feature execution from `agent-os/specs/[spec-name]/`
@@ -341,6 +347,37 @@ Execute ONE backlog story. Simpler than spec execution (no git worktree, no inte
     - ADD Change Log entry
 </step>
 
+<step name="extract_skill_patterns_backlog">
+  ### Skill Pattern Extraction for Backlog (v2.2)
+
+  Extract relevant patterns from skills for backlog stories.
+
+  <skill_extraction_process>
+    1. READ: Story file (agent-os/backlog/{STORY_FILE})
+
+    2. FIND: "### Relevante Skills" section
+       IF found: EXTRACT skill paths from table
+
+    3. IF "Relevante Skills" NOT found:
+       FALLBACK: Use skill-index.md to auto-select based on story type
+       READ: agent-os/team/skill-index.md (if exists)
+       MATCH: Story type to skill category
+       SELECT: 1-2 default skills
+
+       IF skill-index.md NOT found:
+         SKIP: Skill extraction (backlog tasks are often simpler)
+         SET: SKILL_PATTERNS = ""
+
+    4. FOR EACH skill (if any):
+       READ: Skill file
+       EXTRACT: "## Quick Reference" section (or first 100 lines)
+
+    5. FORMAT: Same as Spec Mode
+  </skill_extraction_process>
+
+  OUTPUT: SKILL_PATTERNS variable (may be empty for simple tasks)
+</step>
+
 <step name="execute_story" subagent="dev-team">
   DETERMINE: Agent type from story.type
 
@@ -359,6 +396,9 @@ Execute ONE backlog story. Simpler than spec execution (no git worktree, no inte
 
   **DoD Criteria:**
   [DoD checklist from story file]
+
+  {SKILL_PATTERNS}
+  <!-- Patterns extracted from skills (if available) -->
 
   **IMPORTANT:**
   - This is a quick task, keep it focused
@@ -857,6 +897,86 @@ This phase repeats for each story in the backlog.
   CRITICAL: Maintain exact template structure for shell script parsing
 </step>
 
+<step name="extract_skill_patterns">
+  ### Skill Pattern Extraction (v2.2)
+
+  Extract relevant patterns from skills to include in task prompt.
+  This replaces full skill loading by sub-agents.
+
+  <skill_extraction_process>
+    1. READ: Story file (agent-os/specs/{SELECTED_SPEC}/stories/story-XXX-[slug].md)
+
+    2. FIND: "### Relevante Skills" section
+       EXTRACT: Table rows with skill paths
+
+       Example:
+       | Skill | Pfad | Grund |
+       |-------|------|-------|
+       | Logic Implementing | agent-os/skills/backend-logic-implementing.md | Service Object |
+       | Test Engineering | agent-os/skills/backend-test-engineering.md | Unit Tests |
+
+    3. IF "Relevante Skills" section NOT found OR empty:
+       FALLBACK: Use skill-index.md to auto-select based on story type (WER field)
+       READ: agent-os/team/skill-index.md
+       MATCH: Story type (Backend/Frontend/DevOps/Test) to skill category
+       SELECT: 1-2 default skills for that category
+
+    4. FOR EACH skill in "Relevante Skills":
+       READ: Skill file at specified path
+       FIND: "## Quick Reference" section
+       EXTRACT: Content between "## Quick Reference" and next "---" or "##"
+
+       IF "## Quick Reference" not found:
+         EXTRACT: First 100 lines of skill file
+
+       STORE: Extracted patterns in SKILL_PATTERNS variable
+
+    5. FORMAT extracted patterns:
+       ```
+       ### Patterns & Guidelines (from skills)
+
+       #### [Skill 1 Name]
+       [Extracted Quick Reference content - 50-100 lines]
+
+       #### [Skill 2 Name]
+       [Extracted Quick Reference content - 50-100 lines]
+       ```
+  </skill_extraction_process>
+
+  <extraction_example>
+    **Story has:**
+    | Skill | Pfad | Grund |
+    |-------|------|-------|
+    | Logic Implementing | agent-os/skills/backend-logic-implementing.md | Service Object |
+
+    **Extracted from skill file:**
+    ```markdown
+    ## Quick Reference
+    **When to use:** Service Objects, Business Logic, Domain Operations
+
+    **Key Patterns:**
+    1. Service Object: One class per use case, `call` method as entry point
+    2. Validation: Fail fast at start of `call` method
+    3. Error Handling: Custom exceptions for business errors
+
+    **Example:**
+    ```ruby
+    class Users::Register
+      def call(params)
+        validate!(params)
+        user = User.create!(params)
+        Result.success(user: user)
+      end
+    end
+    ```
+    ```
+
+    **Result:** This 15-line excerpt replaces loading a 600+ line skill file
+  </extraction_example>
+
+  OUTPUT: SKILL_PATTERNS variable with formatted patterns for task prompt
+</step>
+
 <step name="execute_story" subagent="dev-team">
   DETERMINE: Agent type from story
 
@@ -872,9 +992,19 @@ This phase repeats for each story in the backlog.
 
   **Story Details:**
   [Read story file from agent-os/specs/{SELECTED_SPEC}/stories/story-XXX-[slug].md]
+  (Exclude 'Relevante Skills' section - patterns already extracted below)
 
   **DoD Criteria:**
   [DoD checklist - this is completion criteria]
+
+  {SKILL_PATTERNS}
+  <!-- Patterns extracted from skills in previous step -->
+  <!-- Contains focused Quick Reference content (50-100 lines total) -->
+  <!-- Replaces loading full skills (600+ lines each) -->
+
+  **Project Context:**
+  - Tech Stack: agent-os/product/tech-stack.md (key info only)
+  - Architecture: Follow patterns defined above
 
   **File Organization (CRITICAL):**
   ❌ NO files in project root
