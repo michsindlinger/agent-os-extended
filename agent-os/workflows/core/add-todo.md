@@ -2,7 +2,7 @@
 description: Add quick task to backlog with lightweight PO + Architect refinement
 globs:
 alwaysApply: false
-version: 1.0
+version: 1.1
 encoding: UTF-8
 ---
 
@@ -196,6 +196,163 @@ Add a lightweight task to the backlog without full spec creation. Uses same stor
 
 </step>
 
+<step number="4.5" name="story_size_validation">
+
+### Step 4.5: Story Size Validation
+
+Validate that the task complies with size guidelines for single-session execution.
+
+<validation_process>
+  READ: The story file from agent-os/backlog/user-story-[...].md
+
+  <extract_metrics>
+    ANALYZE: WO (Where) field
+      COUNT: Number of file paths mentioned
+      EXTRACT: File paths list
+
+    ANALYZE: Geschätzte Komplexität field
+      EXTRACT: Complexity rating (XS/S/M/L/XL)
+
+    ANALYZE: WAS (What) field
+      ESTIMATE: Lines of code based on components mentioned
+      HEURISTIC:
+        - Each new file/component ~100-150 lines
+        - Each modified file ~50-100 lines
+        - Tests ~50-100 lines per test file
+  </extract_metrics>
+
+  <check_thresholds>
+    CHECK: Number of files
+      IF files > 5:
+        FLAG: Task as "Too Large - File Count"
+        SEVERITY: High
+
+    CHECK: Complexity rating
+      IF complexity in [M, L, XL]:
+        FLAG: Task as "Too Complex for /add-todo"
+        SEVERITY: High
+
+    CHECK: Estimated LOC
+      IF estimated_loc > 400:
+        FLAG: Task as "Too Large - Code Volume"
+        SEVERITY: High
+      ELSE IF estimated_loc > 300:
+        FLAG: Task as "Watch - Approaching Limit"
+        SEVERITY: Low
+
+    CHECK: Cross-layer detection
+      IF WO contains backend AND frontend paths:
+        FLAG: Task as "Multi-Layer"
+        SEVERITY: Medium
+        SUGGEST: "Consider /create-spec for multi-layer tasks"
+  </check_thresholds>
+</validation_process>
+
+<decision_tree>
+  IF no flags raised OR only low severity:
+    LOG: "✅ Task passes size validation - appropriate for /add-todo"
+    PROCEED: To Step 5 (Update Story Index)
+
+  ELSE (task flagged with Medium/High severity):
+    GENERATE: Validation Report
+
+    <validation_report_format>
+      ⚠️ Task Size Validation - Issues Detected
+
+      **Task:** [Story Title]
+      **File:** [Story file path]
+
+      **Metrics:**
+      - Files: [count] (max recommended: 5) [✅/❌]
+      - Complexity: [rating] (max recommended: S) [✅/❌]
+      - Est. LOC: ~[count] (max recommended: 400) [✅/❌]
+      - Cross-layer: [Yes/No] [✅/⚠️]
+
+      **Issue:** [Description of what exceeds guidelines]
+
+      **Why this matters:**
+      - /add-todo is designed for quick, small tasks
+      - Larger tasks benefit from full specification process
+      - Full specs provide better planning, dependencies, and integration stories
+
+      **Recommendation:** Use /create-spec instead for:
+      - Better requirements clarification
+      - Proper story splitting
+      - Dependency mapping
+      - Integration story generation
+    </validation_report_format>
+
+    PRESENT: Validation Report to user
+
+    ASK user via AskUserQuestion:
+    "This task exceeds /add-todo size guidelines. How would you like to proceed?
+
+    Options:
+    1. Switch to /create-spec (Recommended)
+       → Full specification with proper planning
+       → Story splitting if needed
+       → Better context efficiency
+
+    2. Edit task to reduce scope
+       → Modify the story file manually
+       → Re-run validation after edits
+
+    3. Proceed anyway
+       → Accept higher context usage
+       → Risk mid-execution context compaction
+       → Continue with current task"
+
+    WAIT for user choice
+
+    <user_choice_handling>
+      IF choice = "Switch to /create-spec":
+        INFORM: "Switching to /create-spec workflow.
+                 The task description will be used as starting point."
+
+        DELETE: The backlog story file (optional cleanup)
+
+        INVOKE: /create-spec with task description
+        STOP: This workflow
+
+      ELSE IF choice = "Edit task to reduce scope":
+        INFORM: "Please edit the story file: agent-os/backlog/[story-file].md"
+        INFORM: "Reduce the scope by:
+                 - Fewer files in WO section
+                 - Smaller complexity rating
+                 - Narrower focus on core functionality"
+        PAUSE: Wait for user to edit
+        ASK: "Ready to re-validate? (yes/no)"
+        IF yes:
+          REPEAT: Step 4.5 (this validation step)
+        ELSE:
+          PROCEED: To Step 5 with warning flag
+
+      ELSE IF choice = "Proceed anyway":
+        WARN: "⚠️ Proceeding with oversized task
+               - Expect higher token costs
+               - Mid-execution compaction possible
+               - Consider breaking into smaller tasks next time"
+        LOG: Validation bypassed by user
+        PROCEED: To Step 5
+    </user_choice_handling>
+</decision_tree>
+
+<instructions>
+  ACTION: Validate task against size guidelines
+  CHECK: File count, complexity, estimated LOC, cross-layer detection
+  THRESHOLD: Max 5 files, max S complexity, max 400 LOC
+  REPORT: Issues found with specific recommendations
+  OFFER: Three options (switch to create-spec, edit, proceed)
+  ENFORCE: Validation before adding to backlog
+</instructions>
+
+**Output:**
+- Validation report (if issues found)
+- User decision on how to proceed
+- Task either validated, edited, or escalated to /create-spec
+
+</step>
+
 <step number="5" name="update_story_index">
 
 ### Step 5: Update Backlog Story Index
@@ -220,6 +377,8 @@ Add a lightweight task to the backlog without full spec creation. Uses same stor
 <step number="6" name="completion_summary">
 
 ### Step 6: Task Added Confirmation
+
+⚠️ **Note:** Only reached if task passed size validation (Step 4.5)
 
 <summary_template>
   ✅ Task added to backlog!
@@ -256,6 +415,7 @@ Add a lightweight task to the backlog without full spec creation. Uses same stor
   - [ ] Fachliche content complete (brief)
   - [ ] Technical refinement complete
   - [ ] All DoR checkboxes marked [x]
+  - [ ] **Story size validation passed (Step 4.5)**
   - [ ] Story-index.md updated
   - [ ] Ready for /execute-tasks backlog
 </verify>
