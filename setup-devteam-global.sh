@@ -2,7 +2,7 @@
 
 # Agent OS DevTeam System - Global Installation
 # Installs standards and templates to ~/.agent-os/ as fallback for all projects
-# Version: 2.3 - Added YAML frontmatter support
+# Version: 2.4 - Added skill-index template for DevTeam v2.0
 
 set -e
 
@@ -205,8 +205,8 @@ download_file "$REPO_URL/agent-os/templates/skills/generic-skill-template.md" "$
 echo "→ Base skill template (1)..."
 download_file "$REPO_URL/agent-os/templates/skills/skill/SKILL.md" "$GLOBAL_DIR/templates/skills/skill/SKILL.md"
 
-# Documentation templates (13)
-echo "→ Documentation templates (13)..."
+# Documentation templates (14)
+echo "→ Documentation templates (14)..."
 download_file "$REPO_URL/agent-os/templates/docs/spec-template.md" "$GLOBAL_DIR/templates/docs/spec-template.md"
 download_file "$REPO_URL/agent-os/templates/docs/spec-lite-template.md" "$GLOBAL_DIR/templates/docs/spec-lite-template.md"
 download_file "$REPO_URL/agent-os/templates/docs/user-stories-template.md" "$GLOBAL_DIR/templates/docs/user-stories-template.md"
@@ -220,6 +220,7 @@ download_file "$REPO_URL/agent-os/templates/docs/handover-doc-template.md" "$GLO
 download_file "$REPO_URL/agent-os/templates/docs/changelog-entry-template.md" "$GLOBAL_DIR/templates/docs/changelog-entry-template.md"
 download_file "$REPO_URL/agent-os/templates/docs/dod-template.md" "$GLOBAL_DIR/templates/docs/dod-template.md"
 download_file "$REPO_URL/agent-os/templates/docs/dor-template.md" "$GLOBAL_DIR/templates/docs/dor-template.md"
+download_file "$REPO_URL/agent-os/templates/docs/skill-index-template.md" "$GLOBAL_DIR/templates/docs/skill-index-template.md"
 
 echo ""
 echo "✅ Global installation complete!"
@@ -253,7 +254,7 @@ echo "    │   ├── platform/ (4)"
 echo "    │   ├── orchestration/ (1)"
 echo "    │   ├── skill/ (1)"
 echo "    │   └── generic-skill-template.md (1)"
-echo "    └── docs/ (13) ← +3 backlog templates"
+echo "    └── docs/ (14) ← includes skill-index-template"
 echo ""
 echo "📚 Hybrid Lookup System:"
 echo ""

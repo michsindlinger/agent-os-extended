@@ -2,7 +2,7 @@
 
 # Agent OS Extended - Claude Code Setup
 # Installs Claude Code specific commands and agents for DevTeam workflow
-# Version: 2.2
+# Version: 2.3 - Updated for DevTeam v2.0 (skill-index pattern)
 
 set -e
 
@@ -191,7 +191,7 @@ echo ""
 echo "2. /build-development-team"
 echo "   → Creates dev-team__architect, dev-team__po, dev-team__documenter"
 echo "   → Choose additional agents (backend, frontend, devops, qa)"
-echo "   → Generates tech-stack-specific skills per agent"
+echo "   → Generates skills to agent-os/skills/ with skill-index.md"
 echo "   → Creates dod.md and dor.md"
 echo ""
 echo "3. /start-brainstorming (optional)"
