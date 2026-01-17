@@ -2,7 +2,7 @@
 description: Add bug to backlog with hypothesis-driven root-cause analysis
 globs:
 alwaysApply: false
-version: 2.0
+version: 2.1
 encoding: UTF-8
 ---
 
@@ -443,6 +443,172 @@ Gather structured bug information from user.
 
 </step>
 
+<step number="5.5" name="bug_size_validation">
+
+### Step 5.5: Bug Size Validation
+
+Validate that the bug fix complies with size guidelines for single-session execution.
+
+<validation_process>
+  READ: The bug file from agent-os/backlog/bug-[...].md
+
+  <extract_metrics>
+    ANALYZE: WO (Where) field
+      COUNT: Number of file paths mentioned
+      EXTRACT: File paths list
+
+    ANALYZE: Geschätzte Komplexität field
+      EXTRACT: Complexity rating (XS/S/M/L/XL)
+
+    ANALYZE: Root Cause section
+      ASSESS: Is this a localized bug or systemic issue?
+      CHECK: Number of "Betroffene Dateien"
+
+    ANALYZE: WAS (What) field
+      ESTIMATE: Lines of code for fix
+      HEURISTIC:
+        - Simple fix (1-2 files) ~50-100 lines
+        - Medium fix (3-4 files) ~150-250 lines
+        - Complex fix (5+ files) ~300+ lines
+  </extract_metrics>
+
+  <check_thresholds>
+    CHECK: Number of affected files
+      IF files > 5:
+        FLAG: Bug as "Too Large - Affects Too Many Files"
+        SEVERITY: High
+
+    CHECK: Complexity rating
+      IF complexity in [L, XL]:
+        FLAG: Bug as "Too Complex for /add-bug"
+        SEVERITY: High
+      ELSE IF complexity = M:
+        FLAG: Bug as "Borderline Complexity"
+        SEVERITY: Medium
+
+    CHECK: Estimated LOC
+      IF estimated_loc > 400:
+        FLAG: Bug as "Too Large - Code Volume"
+        SEVERITY: High
+      ELSE IF estimated_loc > 250:
+        FLAG: Bug as "Watch - Approaching Limit"
+        SEVERITY: Low
+
+    CHECK: Systemic issue detection
+      IF Root Cause mentions "architectural", "design flaw", or "multiple components":
+        FLAG: Bug as "Systemic Issue"
+        SEVERITY: High
+        SUGGEST: "Consider /create-spec for architectural fixes"
+  </check_thresholds>
+</validation_process>
+
+<decision_tree>
+  IF no flags raised OR only low severity:
+    LOG: "✅ Bug passes size validation - appropriate for /add-bug"
+    PROCEED: To Step 6 (Update Story Index)
+
+  ELSE (bug flagged with Medium/High severity):
+    GENERATE: Validation Report
+
+    <validation_report_format>
+      ⚠️ Bug Size Validation - Issues Detected
+
+      **Bug:** 🐛 [Bug Title]
+      **File:** [Bug file path]
+      **Root Cause:** [Brief RC description]
+
+      **Metrics:**
+      - Affected Files: [count] (max recommended: 5) [✅/❌]
+      - Complexity: [rating] (max recommended: S, tolerated: M) [✅/⚠️/❌]
+      - Est. LOC for Fix: ~[count] (max recommended: 400) [✅/❌]
+      - Systemic Issue: [Yes/No] [✅/❌]
+
+      **Issue:** [Description of what exceeds guidelines]
+
+      **Why this matters:**
+      - /add-bug is designed for localized, contained bug fixes
+      - Systemic issues need proper planning to avoid introducing new bugs
+      - Complex fixes benefit from story splitting and integration testing
+
+      **Recommendation:** Use /create-spec instead for:
+      - Proper architectural analysis
+      - Story splitting for safer implementation
+      - Integration story to validate complete fix
+      - Better dependency mapping
+    </validation_report_format>
+
+    PRESENT: Validation Report to user
+
+    ASK user via AskUserQuestion:
+    "This bug fix exceeds /add-bug size guidelines. How would you like to proceed?
+
+    Options:
+    1. Switch to /create-spec (Recommended)
+       → Full specification with proper planning
+       → Story splitting for safer implementation
+       → Integration story for validation
+
+    2. Edit bug to reduce scope
+       → Focus on most critical part of the fix
+       → Create follow-up bugs for remaining issues
+       → Re-run validation after edits
+
+    3. Proceed anyway
+       → Accept higher context usage
+       → Risk mid-execution context compaction
+       → Continue with current bug fix"
+
+    WAIT for user choice
+
+    <user_choice_handling>
+      IF choice = "Switch to /create-spec":
+        INFORM: "Switching to /create-spec workflow.
+                 The bug analysis and Root Cause will be preserved as context."
+
+        PRESERVE: Root-Cause-Analyse for create-spec input
+
+        INVOKE: /create-spec with bug description and RCA
+        STOP: This workflow
+
+      ELSE IF choice = "Edit bug to reduce scope":
+        INFORM: "Please edit the bug file: agent-os/backlog/[bug-file].md"
+        INFORM: "Reduce the scope by:
+                 - Focus on the most critical affected file
+                 - Create separate bugs for other affected areas
+                 - Reduce WO section to essential files only"
+        PAUSE: Wait for user to edit
+        ASK: "Ready to re-validate? (yes/no)"
+        IF yes:
+          REPEAT: Step 5.5 (this validation step)
+        ELSE:
+          PROCEED: To Step 6 with warning flag
+
+      ELSE IF choice = "Proceed anyway":
+        WARN: "⚠️ Proceeding with oversized bug fix
+               - Expect higher token costs
+               - Mid-execution compaction possible
+               - Consider splitting into multiple bugs next time"
+        LOG: Validation bypassed by user
+        PROCEED: To Step 6
+    </user_choice_handling>
+</decision_tree>
+
+<instructions>
+  ACTION: Validate bug against size guidelines
+  CHECK: Affected files, complexity, estimated LOC, systemic issue detection
+  THRESHOLD: Max 5 files, max M complexity (S preferred), max 400 LOC
+  REPORT: Issues found with specific recommendations
+  OFFER: Three options (switch to create-spec, edit scope, proceed)
+  ENFORCE: Validation before adding to backlog
+</instructions>
+
+**Output:**
+- Validation report (if issues found)
+- User decision on how to proceed
+- Bug either validated, edited, or escalated to /create-spec
+
+</step>
+
 <step number="6" name="update_story_index">
 
 ### Step 6: Update Backlog Story Index
@@ -468,6 +634,8 @@ Gather structured bug information from user.
 <step number="7" name="completion_summary">
 
 ### Step 7: Bug Added Confirmation
+
+⚠️ **Note:** Only reached if bug passed size validation (Step 5.5)
 
 <summary_template>
   ✅ Bug added to backlog with Root-Cause-Analyse!
@@ -514,6 +682,7 @@ Gather structured bug information from user.
   - [ ] Bug story file created with correct naming
   - [ ] Technical refinement complete
   - [ ] All DoR checkboxes marked [x]
+  - [ ] **Bug size validation passed (Step 5.5)**
   - [ ] Story-index.md updated
   - [ ] Ready for /execute-tasks backlog
 </verify>
