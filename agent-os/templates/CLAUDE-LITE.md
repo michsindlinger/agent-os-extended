@@ -108,4 +108,4 @@ DELEGATE to context-fetcher:
 
 ---
 
-**Context Efficiency Note:** This CLAUDE.md uses ~500 tokens instead of ~20,000+ by avoiding auto-loaded @ references. Documents are loaded on-demand via context-fetcher or automatically when skills are invoked.
+**Context Efficiency Note:** This CLAUDE.md uses ~500 tokens instead of ~20,000+ by avoiding auto-loaded @ references. Documents are loaded on-demand via context-fetcher. Skills are extracted by Orchestrator during task execution (see `agent-os/team/skill-index.md`).
