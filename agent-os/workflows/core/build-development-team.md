@@ -2,14 +2,20 @@
 description: Build Development Team with specialized Agents and Skills
 globs:
 alwaysApply: false
-version: 1.0
+version: 2.0
 encoding: UTF-8
 installation: global
 ---
 
 # Build Development Team Workflow
 
-Set up a development team of specialized AI agents based on the project's tech stack. Creates agent configurations, assigns relevant skills, and establishes quality standards (Definition of Done/Ready).
+Set up a development team of specialized AI agents based on the project's tech stack. Creates agent configurations, generates project-specific skills (for Orchestrator extraction), and establishes quality standards (Definition of Done/Ready).
+
+**v2.0 Changes:**
+- Skills are generated in `agent-os/skills/` (not `.claude/skills/`)
+- Skills are NOT assigned to agents (no `skills:` in YAML frontmatter)
+- Skill-Index is generated for Architect/Orchestrator lookup
+- Orchestrator extracts relevant patterns on-demand during execution
 
 <pre_flight_check>
   EXECUTE: @agent-os/workflows/meta/pre-flight.md
@@ -53,20 +59,19 @@ Create the core team agents that are required for ALL projects: Architect, PO, a
 **1. dev-team__architect**
 - Load template: ~/.agent-os/templates/agents/dev-team/architect-template.md
 - Role: Software architect, design decisions, pattern enforcement
-- Skills: pattern-enforcement, api-designing, security-guidance, data-modeling, dependency-checking
 - Output: .claude/agents/dev-team/architect.md
 
 **2. dev-team__po**
 - Load template: ~/.agent-os/templates/agents/dev-team/po-template.md
 - Role: Product owner, requirements, user stories, acceptance
-- Skills: backlog-organization, requirements-engineering, acceptance-testing, data-analysis
 - Output: .claude/agents/dev-team/po.md
 
 **3. dev-team__documenter**
 - Load template: ~/.agent-os/templates/agents/dev-team/documenter-template.md
 - Role: Documentation specialist, changelog, API docs, user guides
-- Skills: changelog-generation, api-documentation, user-guide-writing, code-documentation
 - Output: .claude/agents/dev-team/documenter.md
+
+**NOTE:** Skills are NOT assigned to agents. Skills are generated separately in `agent-os/skills/` for Orchestrator extraction.
 
 **NOTE:** These 3 agents are ALWAYS created. User does not choose - they are mandatory for the DevTeam workflow.
 
@@ -152,274 +157,137 @@ How many [AGENT_TYPE] agents do you want?
 
 Create agent configurations for each selected agent.
 
-**Backend Developer Agent:**
-```markdown
-# Backend Developer Agent
+**Agent Creation Process:**
 
-## Role
-Backend development specialist for API and service implementation.
+For each selected agent:
+1. Load template from `~/.agent-os/templates/agents/dev-team/[agent]-template.md`
+2. Fill placeholders: [PROJECT_NAME], [TIMESTAMP]
+3. Write to `.claude/agents/dev-team/[agent].md`
 
-## Skills
-- logic-implementer
-- persistence-adapter
-- integration-adapter
-- test-engineer
+**NOTE:** Agents are created WITHOUT skills assignment. The `## Skill-Context` section in templates explains that:
+- Architect selects relevant skills per story (from skill-index.md)
+- Orchestrator extracts patterns and provides them in task prompts
 
-## Tech Stack Skills (Auto-loaded based on tech-stack.md)
-[IF Java/Spring]: java-core-patterns, spring-boot-conventions, jpa-best-practices
-[IF Node/Express]: node-patterns, express-conventions
-[IF Python/Django]: python-patterns, django-conventions
-
-## Global Skills
-- git-master
-- security-best-practices
-- testing-best-practices
-```
-
-**Frontend Developer Agent:**
-```markdown
-# Frontend Developer Agent
-
-## Role
-Frontend development specialist for UI and user experience.
-
-## Skills
-- ui-component-architect
-- state-manager
-- api-bridge-builder
-- interaction-designer
-
-## Tech Stack Skills (Auto-loaded)
-[IF React]: react-component-patterns, react-hooks-best-practices, typescript-react-patterns
-[IF Angular]: angular-component-patterns, angular-services-patterns, rxjs-best-practices
-[IF Vue]: vue-component-patterns, vue-composition-api
-
-## Global Skills
-- git-master
-- security-best-practices
-- testing-best-practices
-```
-
-**DevOps Specialist Agent:**
-```markdown
-# DevOps Specialist Agent
-
-## Role
-Infrastructure and deployment automation specialist.
-
-## Skills
-- infrastructure-provisioner
-- pipeline-engineer
-- observability-expert
-- security-hardener
-
-## Global Skills
-- git-master
-- security-best-practices
-```
-
-**QA Specialist Agent:**
-```markdown
-# QA Specialist Agent
-
-## Role
-Quality assurance and testing specialist.
-
-## Skills
-- test-engineer
-- testing-best-practices
-
-## Responsibilities
-- Test strategy definition
-- Test execution and analysis
-- Quality gate enforcement
-- Auto-fix coordination
-```
-
-**PO Agent:**
-```markdown
-# PO Agent
-
-## Role
-Product ownership and requirements management.
-
-## Skills
-- backlog-strategist
-- requirements-engineer
-- acceptance-tester
-- data-analyst
-
-## Responsibilities
-- User story creation
-- Backlog prioritization
-- Acceptance testing
-- Success metrics tracking
-```
-
-**Output:** `.claude/agents/[agent-name].md` for each selected agent
+**Output:** `.claude/agents/dev-team/[agent-name].md` for each selected agent
 
 </step>
 
 <step number="6" subagent="file-creator" name="generate_skills">
 
-### Step 6: Generate Tech-Stack-Specific Skills with Frontmatter
+### Step 6: Generate Tech-Stack-Specific Skills (for Orchestrator Extraction)
 
-Use file-creator agent to generate skills for each created agent from skill templates, ensuring proper YAML frontmatter is generated for each skill.
+Generate project-specific skills in `agent-os/skills/`. These skills are NOT loaded by sub-agents, but read on-demand by the Orchestrator during task execution.
+
+**Output Directory:** `agent-os/skills/` (flat structure, no subfolders)
 
 <skill_generation_process>
-  FOR EACH created agent:
+  CREATE directory: agent-os/skills/ (if not exists)
 
-    **Step 6.1: Load Globs Mapping**
-    READ: @agent-os/workflows/skill/utils/globs-mapping.md
-    EXTRACT: Framework-specific globs for each skill type
-    STORE: In globs_mapping variable
+  FOR EACH created agent, generate skills:
 
     **dev-team__architect (5 skills):**
     Load templates from ~/.agent-os/templates/skills/dev-team/architect/:
-    1. pattern-enforcement → Generate frontmatter + content → .claude/skills/[PROJECT]-architect-pattern-enforcement/SKILL.md
-    2. api-designing → Generate frontmatter + content → .claude/skills/[PROJECT]-architect-api-designing/SKILL.md
-    3. security-guidance → Generate frontmatter + content → .claude/skills/[PROJECT]-architect-security-guidance/SKILL.md
-    4. data-modeling → Generate frontmatter + content → .claude/skills/[PROJECT]-architect-data-modeling/SKILL.md
-    5. dependency-checking → Generate frontmatter + content → .claude/skills/[PROJECT]-architect-dependency-checking/SKILL.md
+    1. pattern-enforcement → agent-os/skills/architect-pattern-enforcement.md
+    2. api-designing → agent-os/skills/architect-api-designing.md
+    3. security-guidance → agent-os/skills/architect-security-guidance.md
+    4. data-modeling → agent-os/skills/architect-data-modeling.md
+    5. dependency-checking → agent-os/skills/architect-dependency-checking.md
 
     **dev-team__backend-developer (4 skills):**
     Load templates from ~/.agent-os/templates/skills/dev-team/backend/:
-    1. logic-implementing → Generate frontmatter + content → .claude/skills/[PROJECT]-backend-logic-implementing/SKILL.md
-    2. persistence-adapter → Generate frontmatter + content → .claude/skills/[PROJECT]-backend-persistence-adapter/SKILL.md
-    3. integration-adapter → Generate frontmatter + content → .claude/skills/[PROJECT]-backend-integration-adapter/SKILL.md
-    4. test-engineering → Generate frontmatter + content → .claude/skills/[PROJECT]-backend-test-engineering/SKILL.md
+    1. logic-implementing → agent-os/skills/backend-logic-implementing.md
+    2. persistence-adapter → agent-os/skills/backend-persistence-adapter.md
+    3. integration-adapter → agent-os/skills/backend-integration-adapter.md
+    4. test-engineering → agent-os/skills/backend-test-engineering.md
 
     **dev-team__frontend-developer (4 skills):**
     Load templates from ~/.agent-os/templates/skills/dev-team/frontend/:
-    1. ui-component-architecture → Generate frontmatter + content → .claude/skills/[PROJECT]-frontend-ui-component-architecture/SKILL.md
-    2. state-management → Generate frontmatter + content → .claude/skills/[PROJECT]-frontend-state-management/SKILL.md
-    3. api-bridge-building → Generate frontmatter + content → .claude/skills/[PROJECT]-frontend-api-bridge-building/SKILL.md
-    4. interaction-designing → Generate frontmatter + content → .claude/skills/[PROJECT]-frontend-interaction-designing/SKILL.md
+    1. ui-component-architecture → agent-os/skills/frontend-ui-component-architecture.md
+    2. state-management → agent-os/skills/frontend-state-management.md
+    3. api-bridge-building → agent-os/skills/frontend-api-bridge-building.md
+    4. interaction-designing → agent-os/skills/frontend-interaction-designing.md
 
     **dev-team__devops-specialist (4 skills):**
     Load templates from ~/.agent-os/templates/skills/dev-team/devops/:
-    1. infrastructure-provisioning → Generate frontmatter + content → .claude/skills/[PROJECT]-devops-infrastructure-provisioning/SKILL.md
-    2. pipeline-engineering → Generate frontmatter + content → .claude/skills/[PROJECT]-devops-pipeline-engineering/SKILL.md
-    3. observability → Generate frontmatter + content → .claude/skills/[PROJECT]-devops-observability/SKILL.md
-    4. security-hardening → Generate frontmatter + content → .claude/skills/[PROJECT]-devops-security-hardening/SKILL.md
+    1. infrastructure-provisioning → agent-os/skills/devops-infrastructure-provisioning.md
+    2. pipeline-engineering → agent-os/skills/devops-pipeline-engineering.md
+    3. observability → agent-os/skills/devops-observability.md
+    4. security-hardening → agent-os/skills/devops-security-hardening.md
 
     **dev-team__qa-specialist (4 skills):**
     Load templates from ~/.agent-os/templates/skills/dev-team/qa/:
-    1. test-strategy → Generate frontmatter + content → .claude/skills/[PROJECT]-qa-test-strategy/SKILL.md
-    2. test-automation → Generate frontmatter + content → .claude/skills/[PROJECT]-qa-test-automation/SKILL.md
-    3. quality-gates → Generate frontmatter + content → .claude/skills/[PROJECT]-qa-quality-gates/SKILL.md
-    4. test-analysis → Generate frontmatter + content → .claude/skills/[PROJECT]-qa-test-analysis/SKILL.md
+    1. test-strategy → agent-os/skills/qa-test-strategy.md
+    2. test-automation → agent-os/skills/qa-test-automation.md
+    3. quality-gates → agent-os/skills/qa-quality-gates.md
+    4. test-analysis → agent-os/skills/qa-test-analysis.md
 
     **dev-team__po (4 skills):**
     Load templates from ~/.agent-os/templates/skills/dev-team/po/:
-    1. backlog-organization → Generate frontmatter + content → .claude/skills/[PROJECT]-po-backlog-organization/SKILL.md
-    2. requirements-engineering → Generate frontmatter + content → .claude/skills/[PROJECT]-po-requirements-engineering/SKILL.md
-    3. acceptance-testing → Generate frontmatter + content → .claude/skills/[PROJECT]-po-acceptance-testing/SKILL.md
-    4. data-analysis → Generate frontmatter + content → .claude/skills/[PROJECT]-po-data-analysis/SKILL.md
+    1. backlog-organization → agent-os/skills/po-backlog-organization.md
+    2. requirements-engineering → agent-os/skills/po-requirements-engineering.md
+    3. acceptance-testing → agent-os/skills/po-acceptance-testing.md
+    4. data-analysis → agent-os/skills/po-data-analysis.md
 
     **dev-team__documenter (4 skills):**
     Load templates from ~/.agent-os/templates/skills/dev-team/documenter/:
-    1. changelog-generation → Generate frontmatter + content → .claude/skills/[PROJECT]-documenter-changelog-generation/SKILL.md
-    2. api-documentation → Generate frontmatter + content → .claude/skills/[PROJECT]-documenter-api-documentation/SKILL.md
-    3. user-guide-writing → Generate frontmatter + content → .claude/skills/[PROJECT]-documenter-user-guide-writing/SKILL.md
-    4. code-documentation → Generate frontmatter + content → .claude/skills/[PROJECT]-documenter-code-documentation/SKILL.md
+    1. changelog-generation → agent-os/skills/documenter-changelog-generation.md
+    2. api-documentation → agent-os/skills/documenter-api-documentation.md
+    3. user-guide-writing → agent-os/skills/documenter-user-guide-writing.md
+    4. code-documentation → agent-os/skills/documenter-code-documentation.md
 </skill_generation_process>
-
-<frontmatter_generation>
-  FOR EACH skill being generated:
-    **Step 6.2: Generate YAML Frontmatter**
-
-    1. DETERMINE skill components:
-       - project_name: Extract from tech-stack.md or directory name
-       - agent_role: architect, backend, frontend, devops, qa, po, documenter
-       - skill_name: pattern-enforcement, logic-implementing, etc.
-       - framework: From tech-stack.md (spring-boot, react, rails, etc.)
-
-    2. GENERATE frontmatter fields:
-
-       ```yaml
-       skill_full_name = "{project_name}-{agent_role}-{skill_name}"
-       skill_description = "{agent_role} {skill_name} skill for {project_name}. Use when: (1) [trigger_1], (2) [trigger_2], (3) [trigger_3]"
-       current_date = YYYY-MM-DD (today)
-       framework_version = from tech-stack.md
-       ```
-
-    3. LOOKUP globs from globs-mapping.md:
-       - Use framework + skill_type as key
-       - Fallback to generic patterns if framework not found
-       - For DevOps/PO/Documenter/Architect: Use technology-agnostic globs
-
-    4. BUILD complete frontmatter:
-
-       ```yaml
-       ---
-       name: {skill_full_name}
-       description: "{skill_description}"
-       version: 1.0
-       framework: {framework}
-       created: {current_date}
-       encoding: UTF-8
-       globs:
-         - "{glob_pattern_1}"
-         - "{glob_pattern_2}"
-         - "{glob_pattern_3}"
-       always_apply: false
-       ---
-       ```
-
-    5. SPECIAL CASES:
-       - If no globs available (e.g., generic skills): Omit `globs` field entirely
-       - If skill should always be active: Set `always_apply: true`
-       - If skill is technology-agnostic: Omit `framework` field
-</frontmatter_generation>
 
 <skill_content_assembly>
   FOR EACH skill:
-    **Step 6.3: Assemble Complete Skill File**
-
     1. LOAD skill template (hybrid lookup: project → global)
     2. READ tech-stack.md for framework information
-    3. GENERATE YAML frontmatter (using process above)
-    4. CUSTOMIZE template content:
-       - FILL [TECH_STACK_SPECIFIC] sections with actual patterns
+    3. CUSTOMIZE template content:
+       - FILL [TECH_STACK_SPECIFIC] sections with actual patterns for detected framework
        - FILL [SKILL_NAME] placeholder
-       - FILL [SKILL_DESCRIPTION] placeholder
        - FILL [CURRENT_DATE] with today's date
-       - FILL [GLOB_LIST] with actual globs (if applicable)
        - FILL [FRAMEWORK] with detected framework
-       - FILL [MCP_TOOLS] placeholder (ask user or use recommendations)
-    5. COMBINE: frontmatter + customized template content
-    6. CREATE directory: .claude/skills/[skill_full_name]/
-    7. WRITE to .claude/skills/[skill_full_name]/SKILL.md
+    4. ENSURE skill has "## Quick Reference" section at top (for Orchestrator extraction)
+    5. WRITE to agent-os/skills/[role]-[skill-name].md
 
     **Final file structure:**
     ```markdown
-    ---
-    name: my-project-backend-logic-implementing
-    description: "Backend logic implementation for my-project. Use when: (1) Implementing services, (2) Business logic, (3) Domain operations"
-    version: 1.0
-    framework: spring-boot
-    created: 2026-01-14
-    encoding: UTF-8
-    globs:
-      - "src/**/*Service.java"
-      - "src/**/service/**/*.java"
-    ---
-
     # Backend Logic Implementing
 
-    > Project: my-project
-    > Framework: Spring Boot
-    > Generated: 2026-01-14
+    > Project: [PROJECT_NAME]
+    > Framework: Ruby on Rails
+    > Generated: 2026-01-17
 
+    ## Quick Reference
+    <!-- This section is extracted by Orchestrator for task prompts -->
+
+    **When to use:** Service Objects, Business Logic, Domain Operations
+
+    **Key Patterns:**
+    1. Service Object: One class per use case, `call` method as entry point
+    2. Validation: Fail fast at start of `call` method
+    3. Error Handling: Custom exceptions for business errors
+
+    **Example:**
+    ```ruby
+    class Users::Register
+      def call(params)
+        validate!(params)
+        user = User.create!(params)
+        Result.success(user: user)
+      end
+    end
+    ```
+
+    ---
+
+    ## Detailed Patterns
     [... rest of skill content ...]
     ```
 </skill_content_assembly>
 
 <template_lookup>
   For all skill templates:
-  1. TRY: agent-os/templates/skills/dev-team/[role]/[skill]-template.md
-  2. FALLBACK: ~/.agent-os/templates/skills/dev-team/[role]/[skill]-template.md
+  1. TRY: agent-os/templates/skills/dev-team/[role]/[skill]/SKILL.md
+  2. FALLBACK: ~/.agent-os/templates/skills/dev-team/[role]/[skill]/SKILL.md
 
   For base skill template (if specific not found):
   1. TRY: agent-os/templates/skills/skill/SKILL.md
@@ -428,19 +296,17 @@ Use file-creator agent to generate skills for each created agent from skill temp
 
 <verification>
   AFTER generating all skills:
-    1. VERIFY each skill file has valid YAML frontmatter
-    2. VERIFY required fields: name, description
-    3. VERIFY globs are properly formatted (if present)
-    4. VERIFY no unresolved placeholders remain
-    5. REPORT: Number of skills generated, list of skill names
+    1. VERIFY each skill file exists in agent-os/skills/
+    2. VERIFY each skill has "## Quick Reference" section
+    3. VERIFY no unresolved placeholders remain
+    4. REPORT: Number of skills generated, list of skill names
 </verification>
 
 **Output:**
-- Created skills in `.claude/skills/[skill-name]/SKILL.md` (Anthropic folder format)
-- Each skill has complete YAML frontmatter with name, description, globs
-- Each skill is tech-stack-aware
-- Skills auto-activate based on file patterns (globs)
-- Skills are directly in `.claude/skills/` (no nested folders - Claude Code limitation)
+- Skills created in `agent-os/skills/[role]-[skill-name].md`
+- Each skill is tech-stack-aware (framework-specific patterns)
+- Each skill has "## Quick Reference" section for Orchestrator extraction
+- Skills are NOT loaded by sub-agents (no globs, no auto-activation)
 
 </step>
 
@@ -502,44 +368,29 @@ ALWAYS use tech-architect agent to analyze tech-stack.md for specialized technol
   3. For EACH category found, determine custom skills needed:
 
      **Blockchain/Crypto found:**
-     - → blockchain-integration.md (ethers.js, web3.js patterns)
-     - → wallet-management.md (key storage, signing)
-     - → dex-integration.md (Uniswap, PancakeSwap)
-     - → crypto-security-testing.md (for QA)
+     - → custom-blockchain-integration.md
+     - → custom-wallet-management.md
+     - → custom-dex-integration.md
+     - → custom-crypto-security-testing.md
 
      **Electron/Desktop found:**
-     - → electron-testing.md (IPC, main/renderer, E2E with Playwright for Electron)
-     - → native-module-integration.md (keytar, sqlite, native bindings)
+     - → custom-electron-testing.md
+     - → custom-native-module-integration.md
 
      **ML/AI found:**
-     - → model-training.md
-     - → ml-pipeline.md
+     - → custom-model-training.md
+     - → custom-ml-pipeline.md
 
   4. ALWAYS ask user (even if nothing detected):
      'I analyzed your tech stack ([DETECTED_TECH]).
 
      Recommended Custom Skills:
-     [IF detected, list with MCP recommendations:]
-
-     Example for Electron + Blockchain:
-     - electron-testing (QA) → MCP: playwright, electron-test-utils
-     - blockchain-integration (Backend) → MCP: none needed
-     - wallet-management (Backend) → MCP: none needed
-     - crypto-security-testing (QA) → MCP: security-scanner
-
-     MCP Servers to install for these skills:
-     - playwright (for E2E testing)
-     - electron-test-utils (for Electron testing)
+     [IF detected, list recommendations]
 
      Create these custom skills? (YES/NO)
 
      If NO or no specialized tech detected:
      Standard skills are sufficient.'
-     'I detected specialized technologies in your tech stack:
-     - [Technology 1]: [Purpose]
-     - [Technology 2]: [Purpose]
-
-     Create custom skills for these? (YES/NO)'
 
   5. If YES, for each custom skill:
      - Load generic-skill-template.md (hybrid lookup: project → global)
@@ -551,30 +402,12 @@ ALWAYS use tech-architect agent to analyze tech-stack.md for specialized technol
        * Testing patterns
        * Security considerations
        * Performance tips
-     - Fill [MCP_TOOLS] with SPECIFIC recommendations:
-       Examples:
-       * electron-testing → playwright, chrome-devtools
-       * blockchain-integration → (no MCP needed, use ethers.js directly)
-       * crypto-security-testing → security-scanner, vulnerability-db
-     - Add installation instructions for MCP tools
+     - Add "## Quick Reference" section at top (for Orchestrator extraction)
      - Create quality checklist specific to technology
-     - CREATE directory: .claude/skills/[PROJECT]-[agent]-[custom-skill]/
-     - WRITE to .claude/skills/[PROJECT]-[agent]-[custom-skill]/SKILL.md
+     - WRITE to agent-os/skills/custom-[skill-name].md
 
-  6. Present MCP Installation Guide to user:
-     'Custom skills created!
-
-     MCP Servers recommended for your custom skills:
-     - playwright (E2E testing for Electron)
-       Install: https://github.com/microsoft/playwright
-     - security-scanner (Crypto security testing)
-       Install: [URL]
-
-     Would you like installation instructions? (yes/no)'
-
-  7. Return:
+  6. Return:
      - List of created custom skills
-     - List of recommended MCP servers with install links
      - Brief description what each skill does"
 
   WAIT for tech-architect completion
@@ -591,26 +424,22 @@ ALWAYS use tech-architect agent to analyze tech-stack.md for specialized technol
 **Examples of Custom Skills:**
 
 **For Crypto Trading Bot (Electron Desktop):**
-- electron-testing.md (QA) → Electron E2E, IPC testing, native modules
-  MCP: playwright, electron-test-utils
-- blockchain-integration.md (Backend) → ethers.js, web3.js, Solana patterns
-  MCP: none needed
-- wallet-management.md (Backend) → Key storage, signing, security
-  MCP: none needed
-- crypto-security-testing.md (QA) → Encryption, keychain, vulnerability testing
-  MCP: security-scanner
+- agent-os/skills/custom-electron-testing.md
+- agent-os/skills/custom-blockchain-integration.md
+- agent-os/skills/custom-wallet-management.md
+- agent-os/skills/custom-crypto-security-testing.md
 
 **For ML Application:**
-- model-training.md (TensorFlow/PyTorch patterns)
-- data-pipeline.md (ETL, preprocessing)
+- agent-os/skills/custom-model-training.md
+- agent-os/skills/custom-data-pipeline.md
 
 **For IoT Platform:**
-- device-communication.md (MQTT, CoAP)
-- sensor-data-processing.md
+- agent-os/skills/custom-device-communication.md
+- agent-os/skills/custom-sensor-data-processing.md
 
 **Output:**
-- Custom skills in `.claude/skills/[PROJECT]-[agent]-[custom-skill]/SKILL.md`
-- Added to skill list for assignment in Step 7
+- Custom skills in `agent-os/skills/custom-[skill-name].md`
+- Each skill has "## Quick Reference" section for Orchestrator extraction
 
 </step>
 
@@ -618,15 +447,14 @@ ALWAYS use tech-architect agent to analyze tech-stack.md for specialized technol
 
 ### Step 6.6: Create Design System Skill for Frontend (If Applicable)
 
-If design-system.md exists, create a skill for frontend developers to use it.
+If design-system.md exists, create a skill for frontend developers.
 
 <conditional_logic>
   IF agent-os/product/design-system.md EXISTS:
 
     USE file-creator to create design-system skill:
 
-    CREATE directory: .claude/skills/[PROJECT]-frontend-design-system/
-    CREATE: .claude/skills/[PROJECT]-frontend-design-system/SKILL.md
+    WRITE to: agent-os/skills/frontend-design-system.md
 
     Content:
     ```markdown
@@ -634,37 +462,36 @@ If design-system.md exists, create a skill for frontend developers to use it.
 
     > Project: [PROJECT_NAME]
     > Source: agent-os/product/design-system.md
+    > Generated: [CURRENT_DATE]
 
-    ## Purpose
-    Ensures frontend implementation follows the project's design system.
+    ## Quick Reference
+    <!-- This section is extracted by Orchestrator for task prompts -->
 
-    ## When to Activate
-    - Implementing UI components
-    - Styling pages and layouts
-    - Creating new visual elements
+    **When to use:** UI components, styling, visual elements
 
-    ## Design System Reference
+    **Key Patterns:**
+    1. Use defined color palette (no random colors)
+    2. Follow typography scale (no arbitrary font sizes)
+    3. Use spacing scale (no magic numbers)
+    4. Reuse defined components
 
-    **ALWAYS consult:** agent-os/product/design-system.md
+    **Reference:** agent-os/product/design-system.md
 
-    ## Colors
+    ---
+
+    ## Detailed Patterns
+
+    ### Colors
     [Extract from design-system.md]
 
-    ## Typography
+    ### Typography
     [Extract from design-system.md]
 
-    ## Spacing
+    ### Spacing
     [Extract from design-system.md]
 
-    ## Components
+    ### Components
     [Extract component catalog from design-system.md]
-
-    ## Implementation Rules
-    - Use defined color palette (no random colors)
-    - Follow typography scale (no arbitrary font sizes)
-    - Use spacing scale (no magic numbers)
-    - Reuse defined components
-    - Match component states (hover, active, disabled)
 
     ## Quality Checklist
     - [ ] Uses colors from design-system.md
@@ -674,12 +501,11 @@ If design-system.md exists, create a skill for frontend developers to use it.
     - [ ] Accessibility maintained (contrast ratios)
     ```
 
-    ADD this skill to frontend-developer's skills list
-    UPDATE frontend-developer.md YAML frontmatter
-
   ELSE:
     NOTE: "No design-system.md found, skipping design system skill"
 </conditional_logic>
+
+**Output:** `agent-os/skills/frontend-design-system.md` (if design-system.md exists)
 
 </step>
 
@@ -687,15 +513,14 @@ If design-system.md exists, create a skill for frontend developers to use it.
 
 ### Step 6.7: Create UX Patterns Skill for Frontend (If Applicable)
 
-If ux-patterns.md exists, create a skill for frontend developers to follow UX patterns.
+If ux-patterns.md exists, create a skill for frontend developers.
 
 <conditional_logic>
   IF agent-os/product/ux-patterns.md EXISTS:
 
     USE file-creator to create ux-patterns skill:
 
-    CREATE directory: .claude/skills/[PROJECT]-frontend-ux-patterns/
-    CREATE: .claude/skills/[PROJECT]-frontend-ux-patterns/SKILL.md
+    WRITE to: agent-os/skills/frontend-ux-patterns.md
 
     Content:
     ```markdown
@@ -703,47 +528,42 @@ If ux-patterns.md exists, create a skill for frontend developers to follow UX pa
 
     > Project: [PROJECT_NAME]
     > Source: agent-os/product/ux-patterns.md
+    > Generated: [CURRENT_DATE]
 
-    ## Purpose
-    Ensures frontend implementation follows the project's UX patterns for navigation, user flows, interactions, and accessibility.
+    ## Quick Reference
+    <!-- This section is extracted by Orchestrator for task prompts -->
 
-    ## When to Activate
-    - Implementing user interfaces
-    - Creating user flows and navigation
-    - Implementing forms and interactions
-    - Handling loading, success, and error states
-    - Implementing mobile/responsive layouts
+    **When to use:** User interfaces, navigation, forms, interactions, loading/error states
 
-    ## UX Patterns Reference
+    **Key Patterns:**
+    1. Follow defined navigation pattern consistently
+    2. Provide clear feedback for all states (loading, success, error, empty)
+    3. Ensure keyboard navigation works
+    4. Meet accessibility requirements (WCAG level)
 
-    **ALWAYS consult:** agent-os/product/ux-patterns.md
+    **Reference:** agent-os/product/ux-patterns.md
 
-    ## Navigation Patterns
+    ---
+
+    ## Detailed Patterns
+
+    ### Navigation Patterns
     [Extract navigation type and structure from ux-patterns.md]
 
-    ## User Flow Patterns
+    ### User Flow Patterns
     [Extract key user flows from ux-patterns.md]
 
-    ## Interaction Patterns
+    ### Interaction Patterns
     [Extract button, form, and interaction patterns from ux-patterns.md]
 
-    ## Feedback Patterns
+    ### Feedback Patterns
     [Extract loading, success, error, and empty state patterns from ux-patterns.md]
 
-    ## Mobile Patterns (if applicable)
+    ### Mobile Patterns (if applicable)
     [Extract mobile-specific patterns from ux-patterns.md]
 
-    ## Accessibility Requirements
+    ### Accessibility Requirements
     [Extract accessibility patterns and WCAG level from ux-patterns.md]
-
-    ## Implementation Rules
-    - Follow defined navigation pattern consistently
-    - Implement all user flows as specified
-    - Use consistent interaction patterns (buttons, forms)
-    - Provide clear feedback for all states (loading, success, error, empty)
-    - Ensure keyboard navigation works
-    - Meet accessibility requirements (WCAG level)
-    - Implement mobile patterns if applicable
 
     ## Quality Checklist
     - [ ] Navigation follows defined pattern
@@ -759,79 +579,150 @@ If ux-patterns.md exists, create a skill for frontend developers to follow UX pa
     - [ ] Responsive on all screen sizes
     ```
 
-    ADD this skill to frontend-developer's skills list
-    UPDATE frontend-developer.md YAML frontmatter
-
   ELSE:
     NOTE: "No ux-patterns.md found, skipping UX patterns skill"
 </conditional_logic>
 
+**Output:** `agent-os/skills/frontend-ux-patterns.md` (if ux-patterns.md exists)
+
 </step>
 
-<step number="7" subagent="file-creator" name="assign_skills_to_agents">
+<step number="7" subagent="file-creator" name="generate_skill_index">
 
-### Step 7: Assign Skills to Agents
+### Step 7: Generate Skill-Index for Orchestrator/Architect
 
-Use file-creator agent to update each agent with their generated skills in BOTH YAML frontmatter and markdown body.
+Create a skill-index.md file that serves as a lookup table for the Architect (during technical refinement) and Orchestrator (during task execution).
 
-<assignment_process>
-  FOR EACH created agent file in .claude/agents/dev-team/:
+<skill_index_generation>
+  CREATE: agent-os/team/skill-index.md
 
-    1. READ agent file
+  CONTENT:
+  ```markdown
+  # Skill Index
 
-    2. COLLECT generated skills for this agent from .claude/skills/:
-       Example for backend-developer:
-       - [PROJECT]-backend-logic-implementing
-       - [PROJECT]-backend-persistence-adapter
-       - [PROJECT]-backend-integration-adapter
-       - [PROJECT]-backend-test-engineering
-       (+ any custom skills)
-       Note: Each skill is in its own folder with SKILL.md file
+  > Project: [PROJECT_NAME]
+  > Generated: [CURRENT_DATE]
+  > Purpose: Lookup table for Architect and Orchestrator skill selection
 
-    3. UPDATE YAML frontmatter:
-       FIND: `skills: [SKILLS_LIST]`
-       REPLACE with actual skill list in YAML array format:
-       ```yaml
-       skills:
-         - [PROJECT]-backend-logic-implementing
-         - [PROJECT]-backend-persistence-adapter
-         - [PROJECT]-backend-integration-adapter
-         - [PROJECT]-backend-test-engineering
-       ```
+  ## How to Use
 
-    4. UPDATE Markdown body:
-       FIND: `[SKILLS_LIST]` placeholder in "## Available Skills" section
-       REPLACE with:
-       ```markdown
-       **Core Skills:**
-       - [PROJECT]-backend-logic-implementing
-       - [PROJECT]-backend-persistence-adapter
-       - [PROJECT]-backend-integration-adapter
-       - [PROJECT]-backend-test-engineering
+  **For Architect (Technical Refinement):**
+  1. Review story requirements
+  2. Find matching skills by trigger keywords
+  3. Add skill paths to story's "Skills" section
 
-       **Skill Loading:**
-       Skills are loaded dynamically from .claude/skills/ when needed.
-       Each skill is in folder format: .claude/skills/[skill-name]/SKILL.md
-       ```
+  **For Orchestrator (Task Execution):**
+  1. Read skill paths from story
+  2. Load only "## Quick Reference" section from each skill
+  3. Include patterns in task prompt for sub-agent
 
-    5. SAVE updated agent file
-</assignment_process>
+  ---
 
-<critical>
-  BOTH locations must be updated:
-  1. YAML frontmatter `skills:` field (for Claude Code to load skills)
-  2. Markdown body `## Available Skills` section (for documentation)
+  ## Skill Catalog
 
-  If only markdown is updated, Claude Code won't load the skills!
-</critical>
+  ### Backend Skills
+
+  | Skill | Path | Trigger Keywords |
+  |-------|------|------------------|
+  | Logic Implementing | agent-os/skills/backend-logic-implementing.md | service objects, business logic, use cases |
+  | Persistence Adapter | agent-os/skills/backend-persistence-adapter.md | database, models, queries, migrations |
+  | Integration Adapter | agent-os/skills/backend-integration-adapter.md | external APIs, HTTP clients, webhooks |
+  | Test Engineering | agent-os/skills/backend-test-engineering.md | unit tests, integration tests, fixtures |
+
+  ### Frontend Skills
+
+  | Skill | Path | Trigger Keywords |
+  |-------|------|------------------|
+  | UI Component Architecture | agent-os/skills/frontend-ui-component-architecture.md | components, props, composition |
+  | State Management | agent-os/skills/frontend-state-management.md | state, context, stores, reducers |
+  | API Bridge Building | agent-os/skills/frontend-api-bridge-building.md | API calls, data fetching, caching |
+  | Interaction Designing | agent-os/skills/frontend-interaction-designing.md | forms, validation, user input |
+
+  ### Architect Skills
+
+  | Skill | Path | Trigger Keywords |
+  |-------|------|------------------|
+  | Pattern Enforcement | agent-os/skills/architect-pattern-enforcement.md | architecture review, pattern compliance |
+  | API Designing | agent-os/skills/architect-api-designing.md | API design, endpoints, contracts |
+  | Security Guidance | agent-os/skills/architect-security-guidance.md | security review, authentication, authorization |
+  | Data Modeling | agent-os/skills/architect-data-modeling.md | data models, schemas, relationships |
+  | Dependency Checking | agent-os/skills/architect-dependency-checking.md | dependencies, versions, conflicts |
+
+  ### DevOps Skills
+
+  | Skill | Path | Trigger Keywords |
+  |-------|------|------------------|
+  | Infrastructure Provisioning | agent-os/skills/devops-infrastructure-provisioning.md | infrastructure, servers, cloud |
+  | Pipeline Engineering | agent-os/skills/devops-pipeline-engineering.md | CI/CD, pipelines, deployment |
+  | Observability | agent-os/skills/devops-observability.md | logging, monitoring, alerts |
+  | Security Hardening | agent-os/skills/devops-security-hardening.md | security, hardening, compliance |
+
+  ### QA Skills
+
+  | Skill | Path | Trigger Keywords |
+  |-------|------|------------------|
+  | Test Strategy | agent-os/skills/qa-test-strategy.md | test planning, coverage, strategy |
+  | Test Automation | agent-os/skills/qa-test-automation.md | automated tests, E2E, frameworks |
+  | Quality Gates | agent-os/skills/qa-quality-gates.md | quality checks, gates, thresholds |
+  | Test Analysis | agent-os/skills/qa-test-analysis.md | test results, failures, analysis |
+
+  ### PO Skills
+
+  | Skill | Path | Trigger Keywords |
+  |-------|------|------------------|
+  | Backlog Organization | agent-os/skills/po-backlog-organization.md | backlog, prioritization, grooming |
+  | Requirements Engineering | agent-os/skills/po-requirements-engineering.md | requirements, user stories, acceptance |
+  | Acceptance Testing | agent-os/skills/po-acceptance-testing.md | acceptance tests, validation, sign-off |
+  | Data Analysis | agent-os/skills/po-data-analysis.md | analytics, metrics, data |
+
+  ### Documenter Skills
+
+  | Skill | Path | Trigger Keywords |
+  |-------|------|------------------|
+  | Changelog Generation | agent-os/skills/documenter-changelog-generation.md | changelog, release notes, versions |
+  | API Documentation | agent-os/skills/documenter-api-documentation.md | API docs, endpoints, OpenAPI |
+  | User Guide Writing | agent-os/skills/documenter-user-guide-writing.md | user guides, tutorials, how-to |
+  | Code Documentation | agent-os/skills/documenter-code-documentation.md | code comments, docstrings, README |
+
+  ### Custom Skills (Project-Specific)
+
+  [Auto-populated from Step 6.5 if custom skills were generated]
+
+  | Skill | Path | Trigger Keywords |
+  |-------|------|------------------|
+  | [custom-skill-1] | agent-os/skills/custom-[name].md | [keywords] |
+
+  ### Design/UX Skills (If Applicable)
+
+  [Auto-populated from Steps 6.6/6.7 if design-system.md or ux-patterns.md exist]
+
+  | Skill | Path | Trigger Keywords |
+  |-------|------|------------------|
+  | Design System | agent-os/skills/frontend-design-system.md | colors, typography, spacing, components |
+  | UX Patterns | agent-os/skills/frontend-ux-patterns.md | navigation, user flows, interactions, states |
+  ```
+</skill_index_generation>
+
+<dynamic_content>
+  ONLY include skill sections for agents that were created:
+  - IF no backend-developer → OMIT "### Backend Skills" section
+  - IF no frontend-developer → OMIT "### Frontend Skills" section
+  - IF no devops-specialist → OMIT "### DevOps Skills" section
+  - IF no qa-specialist → OMIT "### QA Skills" section
+  - IF no custom skills → OMIT "### Custom Skills" section
+  - IF no design-system.md → OMIT Design System row
+  - IF no ux-patterns.md → OMIT UX Patterns row
+</dynamic_content>
 
 <verification>
-  After assignment, each agent file should have:
-  - ✅ YAML frontmatter with skills array
-  - ✅ Markdown body with skills list
-  - ✅ All [SKILLS_LIST] placeholders replaced
-  - ✅ Skills reference actual generated folders in .claude/skills/[skill-name]/
+  AFTER generating skill-index.md:
+    1. VERIFY file exists at agent-os/team/skill-index.md
+    2. VERIFY all generated skills are listed
+    3. VERIFY paths match actual skill file locations
+    4. REPORT: "Skill-Index created with [N] skills catalogued"
 </verification>
+
+**Output:** `agent-os/team/skill-index.md`
 
 </step>
 
@@ -928,71 +819,43 @@ Adjust any criteria?
 
 </step>
 
-<step number="10" name="symlink_skills">
+<step number="10" name="summary">
 
-### Step 10: Set Up Skill Symlinks
-
-Create symlinks for relevant skills in .claude/skills/.
-
-**Process:**
-1. Identify all skills needed by selected agents
-2. Check if skills exist in agent-os/skills/
-3. Create symlinks in .claude/skills/
-
-**Skills to Link:**
-```
-Base Skills (always):
-- security-best-practices
-- git-workflow-patterns (→ git-master)
-- testing-best-practices
-
-Tech-Specific (based on stack):
-[IF Java]: java-core-patterns, spring-boot-conventions, jpa-best-practices
-[IF React]: react-component-patterns, react-hooks-best-practices, typescript-react-patterns
-[IF Angular]: angular-component-patterns, angular-services-patterns, rxjs-best-practices
-
-Role-Specific (based on agents):
-[IF Architecture Agent]: architect-* skills
-[IF DevOps Agent]: devops-patterns, infrastructure-*, pipeline-*, etc.
-[IF PO Agent]: product-strategy-patterns, business-analysis-*, etc.
-```
-
-**Output:** Symlinks in `.claude/skills/`
-
-</step>
-
-<step number="11" name="summary">
-
-### Step 11: Team Summary
+### Step 10: Team Summary
 
 Present team configuration summary.
 
 **Summary:**
 ```
-Development Team Ready!
+Development Team Ready! (v2.0)
 
 Team Composition:
 ✅ Architecture Agent (required)
+✅ PO Agent (required)
+✅ Documenter Agent (required)
 [✅ Backend Developer Agent x [N]] (if selected)
 [✅ Frontend Developer Agent x [N]] (if selected)
 [✅ DevOps Specialist Agent] (if selected)
 [✅ QA Specialist Agent] (if selected)
-[✅ PO Agent] (if selected)
 
-Agent Configurations: .claude/agents/
-Skills Linked: .claude/skills/
+Agent Configurations: .claude/agents/dev-team/
+
+Skills Generated: agent-os/skills/
+Skill Index: agent-os/team/skill-index.md
 
 Quality Standards:
 ✅ Definition of Done: agent-os/team/dod.md
 ✅ Definition of Ready: agent-os/team/dor.md
 
-How to Use:
-1. Agents are automatically available via Task tool
-2. Skills auto-activate based on file types and tasks
-3. DoD/DoR are referenced during feature development
+How Skills Work (v2.0):
+1. Architect reads skill-index.md during technical refinement
+2. Architect selects relevant skills for each story
+3. Orchestrator extracts "Quick Reference" section from selected skills
+4. Orchestrator includes patterns in task prompts for sub-agents
+5. Sub-agents receive only relevant patterns, not full skills
 
 Next Steps:
-1. Review agent configurations
+1. Review agent configurations in .claude/agents/dev-team/
 2. Run /create-spec to start first feature
 3. Agents will be involved automatically during development
 ```
@@ -1003,14 +866,15 @@ Next Steps:
 
 ## Agent Overview
 
-| Agent | Required | Skills Count | Purpose |
-|-------|----------|--------------|---------|
-| Architecture Agent | Yes | 5 | Design & patterns |
-| Backend Developer | Optional | 4+ | API & services |
-| Frontend Developer | Optional | 4+ | UI & interactions |
-| DevOps Specialist | Optional | 4 | CI/CD & infra |
-| QA Specialist | Optional | 2 | Testing & quality |
-| PO Agent | Optional | 4 | Requirements & acceptance |
+| Agent | Required | Purpose |
+|-------|----------|---------|
+| Architect | Yes | Design & patterns |
+| PO | Yes | Requirements & acceptance |
+| Documenter | Yes | Documentation & changelog |
+| Backend Developer | Optional | API & services |
+| Frontend Developer | Optional | UI & interactions |
+| DevOps Specialist | Optional | CI/CD & infra |
+| QA Specialist | Optional | Testing & quality |
 
 ## Multiple Instances
 
@@ -1024,13 +888,32 @@ This enables parallel development of different features.
 
 | File | Location | Description |
 |------|----------|-------------|
-| Agent configs | `.claude/agents/` | Agent definitions |
-| Skill symlinks | `.claude/skills/` | Linked skills |
-| Definition of Done | `agent-os/product/` | Quality standards |
-| Definition of Ready | `agent-os/product/` | Story readiness |
+| Agent configs | `.claude/agents/dev-team/` | Agent definitions (no skills assigned) |
+| Skills | `agent-os/skills/` | Project-specific skill patterns |
+| Skill Index | `agent-os/team/skill-index.md` | Skill lookup table for Architect/Orchestrator |
+| Definition of Done | `agent-os/team/dod.md` | Quality standards |
+| Definition of Ready | `agent-os/team/dor.md` | Story readiness |
+
+## Skill Loading Architecture (v2.0)
+
+**Key Change:** Skills are NOT loaded by sub-agents at startup.
+
+**Flow:**
+1. `build-development-team` generates skills in `agent-os/skills/`
+2. `build-development-team` generates `skill-index.md` as lookup table
+3. During `/create-spec`, Architect reads `skill-index.md` and selects relevant skills per story
+4. During `/execute-tasks`, Orchestrator reads only "Quick Reference" section from selected skills
+5. Orchestrator includes extracted patterns in task prompts for sub-agents
+6. Sub-agents receive ~50-100 lines of relevant patterns instead of ~2700 lines of all skills
+
+**Benefits:**
+- Reduced context usage (~95% reduction)
+- Faster sub-agent startup
+- More focused task prompts
+- Project-specific patterns preserved
 
 ## Execution Summary
 
 **Duration:** 10-15 minutes
 **User Interactions:** 2-3 decision points
-**Output:** 2-7 agent files + 2 quality documents + skill symlinks
+**Output:** 3-7 agent files + skills + skill-index + 2 quality documents
