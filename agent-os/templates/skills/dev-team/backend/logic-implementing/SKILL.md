@@ -4,6 +4,67 @@
 > **Domain:** Business Logic & Domain Models
 > **Created:** [CURRENT_DATE]
 
+## Quick Reference
+
+<!-- This section is extracted by Orchestrator for task prompts (~50-100 lines) -->
+
+**When to use:** Service Objects, Business Logic, Domain Models, Use Cases, Validation
+
+**Key Patterns:**
+
+1. **Service Object Pattern**
+   - One class per use case
+   - `call` method as entry point
+   - Dependency injection for repositories
+   - Return Result/Either object (Success/Failure)
+
+2. **Validation Pattern**
+   - Validate at start of `call` method
+   - Fail fast with clear error messages
+   - Use custom ValidationError exceptions
+
+3. **Error Handling**
+   - Custom exceptions for business errors
+   - Wrap in transaction for rollback
+   - Never expose internal errors to caller
+
+4. **Domain Model Rules**
+   - Keep business logic in models/services, not controllers
+   - Use Value Objects for concepts (Money, Email, etc.)
+   - Publish Domain Events for side effects
+
+**Quick Example (Rails):**
+```ruby
+class Users::Register
+  def initialize(user_repo: UserRepository.new)
+    @user_repo = user_repo
+  end
+
+  def call(params)
+    validate!(params)
+    user = @user_repo.create(params)
+    Result.success(user: user)
+  rescue ValidationError => e
+    Result.failure(errors: e.messages)
+  end
+
+  private
+
+  def validate!(params)
+    raise ValidationError, 'Email required' if params[:email].blank?
+    raise ValidationError, 'Email taken' if @user_repo.exists?(email: params[:email])
+  end
+end
+```
+
+**Anti-Patterns to Avoid:**
+- Fat controllers with business logic
+- Direct DB queries in service objects (use repositories)
+- God services doing too many things
+- Anemic models (data without behavior)
+
+---
+
 ## Purpose
 
 Implement core business logic, domain models, and service orchestration for backend systems. Focus on clean architecture, SOLID principles, and maintainable business rules.

@@ -4,6 +4,77 @@
 > **Domain:** Data Access & ORM Management
 > **Created:** [CURRENT_DATE]
 
+## Quick Reference
+
+<!-- This section is extracted by Orchestrator for task prompts (~50-100 lines) -->
+
+**When to use:** Database Queries, Models, Migrations, Repositories, ORM
+
+**Key Patterns:**
+
+1. **Repository Pattern**
+   - One repository per aggregate root
+   - Abstract DB access from business logic
+   - Return domain objects, not raw records
+   - Encapsulate complex queries
+
+2. **Query Optimization**
+   - Always use eager loading (includes/preload)
+   - Never query in loops (N+1 problem)
+   - Add indexes for frequent WHERE/ORDER columns
+   - Use select() to fetch only needed columns
+
+3. **Migration Best Practices**
+   - One migration per logical change
+   - Always provide rollback (down method)
+   - Never modify data in migrations
+   - Add indexes in same migration as columns
+
+4. **Transaction Rules**
+   - Wrap multi-table operations in transaction
+   - Use pessimistic locking for race conditions
+   - Keep transactions short
+   - Handle rollback gracefully
+
+**Quick Example (Rails):**
+```ruby
+class UserRepository
+  def find_by_email(email)
+    User.find_by(email: email)
+  end
+
+  def find_with_profile(id)
+    User.includes(:profile).find(id)
+  end
+
+  def create(attrs)
+    User.create!(attrs)
+  end
+
+  def active_users
+    User.where(status: :active)
+        .includes(:profile)
+        .order(created_at: :desc)
+  end
+end
+
+# Migration example
+class AddStatusIndexToUsers < ActiveRecord::Migration[7.0]
+  def change
+    add_index :users, :status
+    add_index :users, [:status, :created_at]
+  end
+end
+```
+
+**Anti-Patterns to Avoid:**
+- Queries in views/controllers (use repositories)
+- N+1 queries (always eager load associations)
+- Fat models with query logic (extract to repositories)
+- Migrations that modify data (use rake tasks)
+
+---
+
 ## Purpose
 
 Handle all database operations, query optimization, schema management, and ORM usage. Focus on efficient data access, query performance, and data integrity.
