@@ -2,7 +2,7 @@
 
 # Agent OS Extended - DevTeam System Installation
 # Installs core Agent OS structure for DevTeam workflow
-# Version: 2.1
+# Version: 2.2 - Updated for DevTeam v2.0 (skill-index pattern)
 
 set -e
 
@@ -252,7 +252,7 @@ echo ""
 echo "4. Build your DevTeam:"
 echo "   /build-development-team"
 echo "   → Creates dev-team agents from templates"
-echo "   → Generates tech-stack-specific skills"
+echo "   → Generates skills to agent-os/skills/ with skill-index.md"
 echo "   → Creates dod.md and dor.md"
 echo ""
 echo "5. Brainstorm ideas (optional):"
