@@ -2,7 +2,7 @@
 description: Create Feature Specification with DevTeam (PO + Architect)
 globs:
 alwaysApply: false
-version: 2.3
+version: 2.4
 encoding: UTF-8
 ---
 
@@ -11,6 +11,11 @@ encoding: UTF-8
 ## Overview
 
 Create detailed feature specifications using DevTeam collaboration: PO gathers fachliche requirements, Architect adds technical refinement.
+
+**v2.4 Changes:**
+- Architect now selects relevant skills from skill-index.md for each story
+- Story template includes "Relevante Skills" section
+- Skills are used by Orchestrator during /execute-tasks for pattern extraction
 
 <pre_flight_check>
   EXECUTE: agent-os/workflows/meta/pre-flight.md
@@ -355,6 +360,10 @@ Use dev-team__architect agent to add technical refinement to fachliche user stor
   Each story now has its OWN file in the stories/ directory.
   You must edit EACH story file individually to add technical refinement.
 
+  ⚠️ **NEW: Skill Selection (v2.0)**
+  For each story, you must select relevant skills from skill-index.md.
+  These skills will be used by the Orchestrator during execution.
+
   Context:
   - Spec: agent-os/specs/[YYYY-MM-DD-spec-name]/spec.md
   - Story Index: agent-os/specs/[YYYY-MM-DD-spec-name]/story-index.md
@@ -364,6 +373,7 @@ Use dev-team__architect agent to add technical refinement to fachliche user stor
   - Architecture Structure: agent-os/product/architecture-structure.md (folder structure)
   - DoD: agent-os/team/dod.md (if exists, otherwise use standard DoD)
   - DoR: agent-os/team/dor.md (if exists, otherwise use standard DoR)
+  - **Skill Index: agent-os/team/skill-index.md (for skill selection)**
 
   Available DevTeam Agents (for WER field):
   - List agents from .claude/agents/dev-team/
@@ -372,6 +382,11 @@ Use dev-team__architect agent to add technical refinement to fachliche user stor
   - Use agent names as they appear in .claude/agents/dev-team/ folder
 
   Tasks:
+  0. LOAD skill-index.md:
+     READ: agent-os/team/skill-index.md
+     UNDERSTAND: Available skills, their paths, and trigger keywords
+     NOTE: You will select relevant skills for each story based on this index
+
   1. LIST all story files: ls agent-os/specs/[spec-name]/stories/
 
   2. FOR EACH story file in stories/ directory:
@@ -426,6 +441,22 @@ Use dev-team__architect agent to add technical refinement to fachliche user stor
 
         **Geschätzte Komplexität:** [XS/S/M/L/XL]
 
+        **Relevante Skills:** (NEW - select from skill-index.md)
+        ANALYZE: Story content (WAS, user story, WER)
+        MATCH: Against skill-index.md trigger keywords
+        SELECT: 1-3 most relevant skills
+
+        | Skill | Pfad | Grund |
+        |-------|------|-------|
+        | [skill-name] | agent-os/skills/[skill].md | [Why this skill is relevant] |
+
+        Example selections:
+        - Backend service story → backend-logic-implementing, backend-test-engineering
+        - Frontend component story → frontend-ui-component-architecture, frontend-state-management
+        - API integration story → backend-integration-adapter, frontend-api-bridge-building
+        - Database story → backend-persistence-adapter
+        - DevOps story → devops-pipeline-engineering, devops-infrastructure-provisioning
+
         **Completion Check:**
         ```bash
         # Auto-Verify Commands - all must exit with 0
@@ -438,7 +469,7 @@ Use dev-team__architect agent to add technical refinement to fachliche user stor
         2. Alle *_PASS commands exit 0
         3. Git diff zeigt nur erwartete Änderungen
 
-     d. UPDATE the story file with filled technical sections
+     d. UPDATE the story file with filled technical sections (including Relevante Skills)
 
      e. UPDATE story-index.md:
         - Mark story status as "Ready" if DoR is complete
@@ -531,12 +562,14 @@ Use dev-team__architect agent to add technical refinement to fachliche user stor
   - **MUST mark ALL DoR checkboxes as [x] complete** when story is ready
   - Define clear DoD per story
   - Map ALL dependencies
+  - **MUST select relevant skills from skill-index.md for each story** (NEW v2.4)
   - Add Completion Check section with bash verify commands
   - Keep stories small (automated validation in Step 3.5)
   - **DoR validation will run in Step 3.4 - all checkboxes must be [x]**
   - Update story-index.md after refining each story
   - **Create Integration Story for multi-story specs (Backend + Frontend)**
   - Reference: agent-os/docs/story-sizing-guidelines.md
+  - Reference: agent-os/team/skill-index.md (for skill selection)
 
   ARCHITECTURE GUIDANCE RULES:
   - WIE = Architectural constraints and patterns ONLY
@@ -555,7 +588,7 @@ Use dev-team__architect agent to add technical refinement to fachliche user stor
 </delegation>
 
 **Output:**
-- `agent-os/specs/[spec-name]/stories/*.md` (COMPLETE with technical refinement)
+- `agent-os/specs/[spec-name]/stories/*.md` (COMPLETE with technical refinement + skill selection)
 - `agent-os/specs/[spec-name]/story-index.md` (updated with dependencies and status)
 - `agent-os/specs/[spec-name]/sub-specs/cross-cutting-decisions.md` (optional)
 
@@ -980,6 +1013,7 @@ Present completed specification to user.
   - [ ] Each story file has fachlich + technical content
   - [ ] All stories have DoR/DoD
   - [ ] **All DoR checkboxes are marked [x] complete**
+  - [ ] **Each story has "Relevante Skills" section filled (v2.4)**
   - [ ] Dependencies identified in story-index.md
   - [ ] Cross-cutting decisions (if applicable)
   - [ ] **DoR validation passed (Step 3.4)**
