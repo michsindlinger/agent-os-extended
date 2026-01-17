@@ -5,6 +5,78 @@
 > Version: 1.0.0
 > Created: 2026-01-09
 
+## Quick Reference
+
+<!-- This section is extracted by Orchestrator for task prompts (~50-100 lines) -->
+
+**When to use:** UI Components, Props Design, Component Composition, Layout
+
+**Key Patterns:**
+
+1. **Component Structure**
+   - One component per file
+   - Props interface at top
+   - Hooks grouped together
+   - Event handlers as separate functions
+   - Return JSX at end
+
+2. **Composition over Inheritance**
+   - Use children prop for flexibility
+   - Compound components for related UI
+   - Render props for logic sharing
+   - Container/Presentational separation
+
+3. **Props Design**
+   - Explicit prop types (TypeScript interfaces)
+   - Sensible defaults for optional props
+   - Destructure in function signature
+   - Spread remaining props to root element
+
+4. **Performance Rules**
+   - Memoize expensive calculations (useMemo)
+   - Memoize callbacks passed to children (useCallback)
+   - Use React.memo for pure presentational components
+   - Lazy load heavy components
+
+**Quick Example (React):**
+```tsx
+interface ButtonProps {
+  variant?: 'primary' | 'secondary';
+  size?: 'sm' | 'md' | 'lg';
+  isLoading?: boolean;
+  children: React.ReactNode;
+  onClick?: () => void;
+}
+
+export function Button({
+  variant = 'primary',
+  size = 'md',
+  isLoading = false,
+  children,
+  onClick,
+  ...props
+}: ButtonProps) {
+  return (
+    <button
+      className={`btn btn-${variant} btn-${size}`}
+      disabled={isLoading}
+      onClick={onClick}
+      {...props}
+    >
+      {isLoading ? <Spinner /> : children}
+    </button>
+  );
+}
+```
+
+**Anti-Patterns to Avoid:**
+- Prop drilling (use Context or state management)
+- Giant components (split into smaller pieces)
+- Inline styles (use CSS classes or styled-components)
+- Business logic in components (extract to hooks/services)
+
+---
+
 ## Purpose
 
 Design and implement scalable, reusable UI component architectures using modern composition patterns, component hierarchies, and design system principles.
