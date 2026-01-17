@@ -51,7 +51,7 @@ Use the date-checker subagent to establish session timestamp and create unique s
 
 Use the file-creator subagent to create the brainstorming session file in the designated directory.
 
-<file_location>.agent-os/brainstorming/[SESSION_ID]/session.md</file_location>
+<file_location>agent-os/brainstorming/[SESSION_ID]/session.md</file_location>
 
 <initial_template>
   # Brainstorming Session: [TOPIC]

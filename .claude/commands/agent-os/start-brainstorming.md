@@ -8,6 +8,6 @@ Start an interactive brainstorming session to explore and refine feature ideas o
 - Capture all thoughts and discussions in a structured format
 - Prepare foundation for transfer to formal spec or bug report
 
-**Output:** Brainstorming session file in .agent-os/brainstorming/
+**Output:** Brainstorming session file in agent-os/brainstorming/
 
 Refer to the instructions located in @agent-os/workflows/core/start-brainstorming.md
