@@ -2,7 +2,7 @@
 
 # Agent OS Extended - Claude Code Setup
 # Installs Claude Code specific commands and agents for DevTeam workflow
-# Version: 2.3 - Updated for DevTeam v2.0 (skill-index pattern)
+# Version: 2.4 - Phase-based execute-tasks for 80% context reduction
 
 set -e
 
@@ -155,7 +155,7 @@ echo "  Quick Tasks:"
 echo "    /add-todo                 → Add lightweight task to backlog"
 echo "                                 (PO + Architect refinement, same story template)"
 echo ""
-echo "  Execution:"
+echo "  Execution (Phase-based - 80% less context!):"
 echo "    /execute-tasks            → Execute specs or backlog via DevTeam"
 echo "    /execute-tasks backlog    → Execute quick tasks from backlog"
 echo "    /execute-tasks [spec]     → Execute specific specification"
