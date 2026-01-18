@@ -2,7 +2,7 @@
 
 # Agent OS Extended - DevTeam System Installation
 # Installs core Agent OS structure for DevTeam workflow
-# Version: 2.2 - Updated for DevTeam v2.0 (skill-index pattern)
+# Version: 2.3 - Phase-based execute-tasks for 80% context reduction
 
 set -e
 
@@ -42,7 +42,7 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-echo "🤖 Agent OS DevTeam System v2.1 - Project Installation"
+echo "🤖 Agent OS DevTeam System v2.3 - Project Installation"
 echo "Installing core structure in current project..."
 echo ""
 
@@ -132,8 +132,21 @@ download_file "$REPO_URL/agent-os/workflows/core/add-bug.md" "agent-os/workflows
 download_file "$REPO_URL/agent-os/workflows/core/create-bug.md" "agent-os/workflows/core/create-bug.md" "workflows"
 download_file "$REPO_URL/agent-os/workflows/core/execute-bug.md" "agent-os/workflows/core/execute-bug.md" "workflows"
 
-# Task execution
-download_file "$REPO_URL/agent-os/workflows/core/execute-tasks.md" "agent-os/workflows/core/execute-tasks.md" "workflows"
+# Task execution (Phase-based architecture v3.0)
+mkdir -p agent-os/workflows/core/execute-tasks
+mkdir -p agent-os/workflows/core/execute-tasks/shared
+download_file "$REPO_URL/agent-os/workflows/core/execute-tasks/entry-point.md" "agent-os/workflows/core/execute-tasks/entry-point.md" "workflows"
+download_file "$REPO_URL/agent-os/workflows/core/execute-tasks/spec-phase-1.md" "agent-os/workflows/core/execute-tasks/spec-phase-1.md" "workflows"
+download_file "$REPO_URL/agent-os/workflows/core/execute-tasks/spec-phase-2.md" "agent-os/workflows/core/execute-tasks/spec-phase-2.md" "workflows"
+download_file "$REPO_URL/agent-os/workflows/core/execute-tasks/spec-phase-3.md" "agent-os/workflows/core/execute-tasks/spec-phase-3.md" "workflows"
+download_file "$REPO_URL/agent-os/workflows/core/execute-tasks/spec-phase-4-5.md" "agent-os/workflows/core/execute-tasks/spec-phase-4-5.md" "workflows"
+download_file "$REPO_URL/agent-os/workflows/core/execute-tasks/spec-phase-5.md" "agent-os/workflows/core/execute-tasks/spec-phase-5.md" "workflows"
+download_file "$REPO_URL/agent-os/workflows/core/execute-tasks/backlog-phase-1.md" "agent-os/workflows/core/execute-tasks/backlog-phase-1.md" "workflows"
+download_file "$REPO_URL/agent-os/workflows/core/execute-tasks/backlog-phase-2.md" "agent-os/workflows/core/execute-tasks/backlog-phase-2.md" "workflows"
+download_file "$REPO_URL/agent-os/workflows/core/execute-tasks/backlog-phase-3.md" "agent-os/workflows/core/execute-tasks/backlog-phase-3.md" "workflows"
+download_file "$REPO_URL/agent-os/workflows/core/execute-tasks/shared/resume-context.md" "agent-os/workflows/core/execute-tasks/shared/resume-context.md" "workflows"
+download_file "$REPO_URL/agent-os/workflows/core/execute-tasks/shared/error-handling.md" "agent-os/workflows/core/execute-tasks/shared/error-handling.md" "workflows"
+download_file "$REPO_URL/agent-os/workflows/core/execute-tasks/shared/skill-extraction.md" "agent-os/workflows/core/execute-tasks/shared/skill-extraction.md" "workflows"
 
 # Backlog / Quick tasks
 download_file "$REPO_URL/agent-os/workflows/core/add-todo.md" "agent-os/workflows/core/add-todo.md" "workflows"
@@ -208,14 +221,15 @@ fi
 
 echo ""
 echo "═══════════════════════════════════════════"
-echo "✅ Agent OS DevTeam System v2.1 Installed!"
+echo "✅ Agent OS DevTeam System v2.3 Installed!"
 echo "═══════════════════════════════════════════"
 echo ""
 echo "📁 Installed Structure:"
 echo ""
 echo "  agent-os/"
 echo "    ├── standards/              (2 core files)"
-echo "    ├── workflows/core/         (19 core workflows)"
+echo "    ├── workflows/core/         (18 core workflows)"
+echo "    │   └── execute-tasks/      (12 phase files - 80% less context)"
 echo "    ├── workflows/meta/         (1 meta workflow)"
 echo "    └── config.yml              (minimal configuration)"
 echo ""
@@ -223,9 +237,9 @@ echo "  CLAUDE.md                     (project instructions template)"
 echo ""
 echo "📊 Statistics:"
 echo "  • Standards: 2 files"
-echo "  • Workflows: 20 files (19 core + 1 meta)"
+echo "  • Workflows: 31 files (18 core + 12 execute-tasks phases + 1 meta)"
 echo "  • Config: 1 file"
-echo "  • Total: 23 files + CLAUDE.md"
+echo "  • Total: 34 files + CLAUDE.md"
 echo ""
 echo "📚 Templates (53 files) installed globally:"
 echo "  Templates are loaded from ~/.agent-os/templates/"
