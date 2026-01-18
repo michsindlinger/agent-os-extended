@@ -1,11 +1,12 @@
 ---
-description: Skill Pattern Extraction - shared across phases
-version: 3.0
+description: Skill Path Extraction - shared across phases
+version: 4.0
 ---
 
-# Skill Pattern Extraction
+# Skill Path Extraction
 
-Extract only "Quick Reference" sections from skills to minimize context usage.
+Extract skill file paths from stories and pass them to sub-agents.
+Sub-agents load the complete skill files themselves (not the orchestrator).
 
 ## Process
 
@@ -18,17 +19,16 @@ Extract only "Quick Reference" sections from skills to minimize context usage.
    - Match story type to skill category
    - Select 1-2 default skills
 
-3. **Extract Quick Reference**
-   - For each skill, find "## Quick Reference" section
-   - Extract content (typically 50-100 lines)
-   - Skip full skill content (often 600+ lines)
+3. **Extract Paths Only**
+   - Collect skill file paths
+   - Do NOT read skill contents
+   - Sub-agent will load complete skills
 
 4. **Format for Task Prompt**
    ```markdown
-   ### Patterns & Guidelines (from skills)
-
-   #### [Skill Name]
-   [Quick Reference content]
+   **Required Skills (load these files):**
+   - [skill-path-1]
+   - [skill-path-2]
    ```
 
 ## Example
@@ -38,23 +38,24 @@ Extract only "Quick Reference" sections from skills to minimize context usage.
 | Skill | Pfad | Grund |
 |-------|------|-------|
 | Logic Implementing | agent-os/skills/backend-logic-implementing.md | Service Object |
+| Test Automation | agent-os/skills/qa-test-automation.md | Unit tests |
 ```
 
-**Extracted (15 lines instead of 600+):**
+**Extracted (paths only):**
 ```markdown
-## Quick Reference
-**When to use:** Service Objects, Business Logic
-
-**Key Patterns:**
-1. Service Object: One class per use case
-2. Validation: Fail fast at start
-3. Error Handling: Custom exceptions
+**Required Skills (load these files):**
+- agent-os/skills/backend-logic-implementing.md
+- agent-os/skills/qa-test-automation.md
 ```
 
-## Token Savings
+## Architectural Change (v4.0)
 
-| Approach | Tokens |
-|----------|--------|
-| Full skill file | ~2000-3000 |
-| Quick Reference only | ~200-400 |
-| **Savings** | **85-90%** |
+| Version | Approach | Who loads skills? |
+|---------|----------|-------------------|
+| v3.0 | Orchestrator extracts Quick Reference | Orchestrator |
+| v4.0 | Orchestrator passes paths only | **Sub-Agent** |
+
+**Benefits:**
+- Sub-agents get complete skill context (patterns, examples, edge cases)
+- Orchestrator saves context (doesn't load skill contents)
+- More accurate implementation following all skill guidelines

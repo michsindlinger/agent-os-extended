@@ -1,6 +1,6 @@
 ---
 description: Backlog Phase 2 - Execute one backlog story
-version: 3.0
+version: 4.0
 ---
 
 # Backlog Phase 2: Execute Story
@@ -34,29 +34,35 @@ Execute ONE backlog story. Simpler than spec execution (no git worktree, no inte
     - ADD Change Log entry
 </step>
 
-<step name="extract_skill_patterns_backlog">
-  ### Skill Pattern Extraction for Backlog
+<step name="extract_skill_paths_backlog">
+  ### Skill Path Extraction for Backlog (v4.0)
+
+  REFERENCE: agent-os/workflows/core/execute-tasks/shared/skill-extraction.md
 
   1. READ: Story file (agent-os/backlog/{STORY_FILE})
 
   2. FIND: "### Relevante Skills" section
-     IF found: EXTRACT skill paths from table
+     IF found: EXTRACT skill paths from table (Pfad column)
 
-  3. IF NOT found:
-     FALLBACK: Use skill-index.md
-     READ: agent-os/team/skill-index.md (if exists)
-     MATCH: Story type to skill category
-     SELECT: 1-2 default skills
+     FALLBACK: Use agent-os/team/skill-index.md (if exists)
+     MATCH: story.type to default skills
 
-     IF skill-index.md NOT found:
+     IF NO skills found:
        SKIP: Skill extraction (backlog tasks often simpler)
-       SET: SKILL_PATTERNS = ""
+       SET: SKILL_PATHS = ""
 
-  4. FOR EACH skill (if any):
-     READ: Skill file
-     EXTRACT: "## Quick Reference" section (or first 100 lines)
+  3. COLLECT: Skill file paths only
+     DO NOT: Read skill contents
+     (Sub-agent will load complete skills)
 
-  OUTPUT: SKILL_PATTERNS variable (may be empty)
+  4. FORMAT (if skills found):
+     ```
+     **Required Skills (load these files):**
+     - [skill-path-1]
+     - [skill-path-2]
+     ```
+
+  OUTPUT: SKILL_PATHS variable (may be empty)
 </step>
 
 <step name="execute_story" subagent="dev-team">
@@ -77,9 +83,11 @@ Execute ONE backlog story. Simpler than spec execution (no git worktree, no inte
   **DoD Criteria:**
   [DoD checklist from story file]
 
-  {SKILL_PATTERNS}
+  {SKILL_PATHS}
 
-  **IMPORTANT:**
+  **INSTRUCTIONS:**
+  - Load each skill file listed above completely (if any)
+  - Follow patterns and guidelines from the skills
   - Quick task, keep it focused
   - No extensive refactoring
   - Commit when done"

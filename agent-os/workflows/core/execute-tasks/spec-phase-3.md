@@ -1,6 +1,6 @@
 ---
 description: Spec Phase 3 - Execute one user story completely
-version: 3.0
+version: 4.0
 ---
 
 # Spec Phase 3: Execute Story
@@ -44,34 +44,32 @@ This phase repeats for each story in the backlog.
     - ADD Change Log entry
 </step>
 
-<step name="extract_skill_patterns">
-  ### Skill Pattern Extraction
+<step name="extract_skill_paths">
+  ### Skill Path Extraction (v4.0)
+
+  REFERENCE: agent-os/workflows/core/execute-tasks/shared/skill-extraction.md
 
   1. READ: Story file (agent-os/specs/{SELECTED_SPEC}/stories/story-XXX-[slug].md)
 
   2. FIND: "### Relevante Skills" section
-     EXTRACT: Table rows with skill paths
+     EXTRACT: Skill paths from table (Pfad column)
 
-  3. IF NOT found:
-     FALLBACK: Use skill-index.md
-     READ: agent-os/team/skill-index.md
-     MATCH: Story type to skill category
-     SELECT: 1-2 default skills
+     IF NOT found:
+       FALLBACK: Use agent-os/team/skill-index.md
+       MATCH: story.type to default skills
 
-  4. FOR EACH skill:
-     READ: Skill file
-     FIND: "## Quick Reference" section
-     EXTRACT: Content (50-100 lines)
+  3. COLLECT: Skill file paths only
+     DO NOT: Read skill contents
+     (Sub-agent will load complete skills)
 
-  5. FORMAT:
+  4. FORMAT:
      ```
-     ### Patterns & Guidelines (from skills)
-
-     #### [Skill Name]
-     [Quick Reference content]
+     **Required Skills (load these files):**
+     - [skill-path-1]
+     - [skill-path-2]
      ```
 
-  OUTPUT: SKILL_PATTERNS variable
+  OUTPUT: SKILL_PATHS variable (list of file paths)
 </step>
 
 <step name="execute_story" subagent="dev-team">
@@ -93,7 +91,12 @@ This phase repeats for each story in the backlog.
   **DoD Criteria:**
   [DoD checklist]
 
-  {SKILL_PATTERNS}
+  {SKILL_PATHS}
+
+  **INSTRUCTIONS:**
+  - Load each skill file listed above completely
+  - Follow ALL patterns, examples, and guidelines from the skills
+  - The skills contain your implementation framework
 
   **File Organization (CRITICAL):**
   - NO files in project root
