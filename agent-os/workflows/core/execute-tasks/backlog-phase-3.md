@@ -1,6 +1,6 @@
 ---
 description: Backlog Phase 3 - Daily Summary
-version: 3.2
+version: 3.3
 ---
 
 # Backlog Phase 3: Daily Summary
@@ -14,28 +14,13 @@ Summarize today's work and update story-index.
 
 ## Actions
 
-<step name="verify_stories_marked_done">
-  FALLBACK: Verify all completed stories have Status: Done in their files
-  (Primary update happens in Phase 2, this is a safety check)
-
-  FOR EACH completed story from kanban Done column:
-    READ: Story file (agent-os/backlog/{story-file}.md)
-    CHECK: Status field
-
-    IF Status != "Done":
-      UPDATE: Status field to "Done"
-      WRITE: Updated story file
-      LOG: "Fixed missing status update for {story-file}"
-
-  NOTE: This catches any stories that weren't properly marked in Phase 2
-</step>
-
 <step name="update_story_index">
   READ: agent-os/backlog/story-index.md
 
-  FOR EACH completed story:
+  FOR EACH completed story (from kanban Done column):
     UPDATE: Status = "Done"
     UPDATE: Completed date
+    NOTE: Story files are already in agent-os/backlog/done/ (moved in Phase 2)
 
   UPDATE: Totals
     - Completed: +N
@@ -44,18 +29,6 @@ Summarize today's work and update story-index.
   ADD: Today's kanban to Execution History table
 
   WRITE: Updated story-index.md
-</step>
-
-<step name="archive_completed_stories">
-  OPTIONAL: Move completed story files to archive
-
-  FOR EACH completed story from kanban Done column:
-    ```bash
-    mkdir -p agent-os/backlog/archive/{TODAY}
-    mv agent-os/backlog/{STORY_FILENAME} agent-os/backlog/archive/{TODAY}/
-    ```
-
-  NOTE: Only move stories that were completed today, not all stories in the directory
 </step>
 
 ## Phase Completion
