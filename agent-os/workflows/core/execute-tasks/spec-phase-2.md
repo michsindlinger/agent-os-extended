@@ -20,6 +20,26 @@ Create git worktree for parallel spec execution.
   VALIDATE: Phase 1 is complete
 </step>
 
+<step name="ask_worktree_preference">
+  ASK via AskUserQuestion:
+  "Möchtest du einen Git Worktree für diese Spec erstellen?"
+
+  **Options:**
+  1. "Ja, Worktree erstellen" - Ermöglicht paralleles Arbeiten in separatem Verzeichnis
+  2. "Nein, im Hauptverzeichnis arbeiten" - Arbeitet direkt im aktuellen Branch
+
+  IF user chooses "Nein":
+    SET: USE_WORKTREE = false
+    SET: WORKTREE_PATH = ""
+    SET: GIT_BRANCH = current branch
+    SKIP: Steps check_dev_server and git_worktree_creation
+    GOTO: Phase Completion (No Worktree)
+
+  ELSE:
+    SET: USE_WORKTREE = true
+    CONTINUE: With next steps
+</step>
+
 <step name="check_dev_server">
   RUN: lsof -i :3000 2>/dev/null | head -5
 
@@ -63,12 +83,45 @@ Create git worktree for parallel spec execution.
 
 ## Phase Completion
 
-<phase_complete>
+<phase_complete_no_worktree condition="USE_WORKTREE = false">
+  UPDATE: kanban-board.md
+    - Current Phase: 2-complete
+    - Next Phase: 3 - Execute Story
+    - Worktree Path: (none)
+    - Git Branch: [current branch]
+    - Use Worktree: false
+    - Last Action: Skipped worktree creation (user preference)
+    - Next Action: Execute first story
+    - Add Change Log entry
+
+  OUTPUT to user:
+  ---
+  ## Phase 2 Complete: Worktree Setup Skipped
+
+  **Working Directory:** Current project directory
+  **Branch:** [current-branch]
+  **Status:** Ready for story execution (no worktree)
+
+  **Next Phase:** Execute First Story
+
+  ---
+  **To continue, run:**
+  ```
+  /clear
+  /execute-tasks
+  ```
+  ---
+
+  STOP: Do not proceed to Phase 3
+</phase_complete_no_worktree>
+
+<phase_complete_with_worktree condition="USE_WORKTREE = true">
   UPDATE: kanban-board.md
     - Current Phase: 2-complete
     - Next Phase: 3 - Execute Story
     - Worktree Path: [captured value]
     - Git Branch: [captured value]
+    - Use Worktree: true
     - Last Action: Git worktree created
     - Next Action: Execute first story
     - Add Change Log entry
@@ -92,4 +145,4 @@ Create git worktree for parallel spec execution.
   ---
 
   STOP: Do not proceed to Phase 3
-</phase_complete>
+</phase_complete_with_worktree>

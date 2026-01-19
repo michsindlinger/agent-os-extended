@@ -42,25 +42,33 @@ Create pull request and provide final summary.
   RUN: afplay /System/Library/Sounds/Glass.aiff
 </step>
 
-<step name="worktree_cleanup" subagent="git-workflow">
-  USE: git-workflow subagent
+<step name="worktree_cleanup" subagent="git-workflow" condition="USE_WORKTREE = true">
+  CHECK: Resume Context for "Use Worktree" value
 
-  PROMPT: "Clean up git worktree: {SELECTED_SPEC}
+  IF "Use Worktree" = false OR WORKTREE_PATH = "(none)" OR WORKTREE_PATH empty:
+    SKIP: This step
+    LOG: "No worktree cleanup needed (none was created)"
+    UPDATE: kanban-board.md - Last Action: Skipped worktree cleanup (none created)
 
-  Read Resume Context for WORKTREE_PATH and GIT_BRANCH.
+  ELSE:
+    USE: git-workflow subagent
 
-  Cleanup:
-  1. Verify PR was created
-  2. Remove worktree: git worktree remove [WORKTREE_PATH]
-  3. Verify: git worktree list
+    PROMPT: "Clean up git worktree: {SELECTED_SPEC}
 
-  Edge Cases:
-  - PR not created: Skip cleanup, warn
-  - Uncommitted changes: Warn, don't remove
-  - Path doesn't exist: Continue"
+    Read Resume Context for WORKTREE_PATH and GIT_BRANCH.
 
-  WAIT: For completion
-  UPDATE: kanban-board.md - Last Action: Worktree cleaned up
+    Cleanup:
+    1. Verify PR was created
+    2. Remove worktree: git worktree remove [WORKTREE_PATH]
+    3. Verify: git worktree list
+
+    Edge Cases:
+    - PR not created: Skip cleanup, warn
+    - Uncommitted changes: Warn, don't remove
+    - Path doesn't exist: Continue"
+
+    WAIT: For completion
+    UPDATE: kanban-board.md - Last Action: Worktree cleaned up
 </step>
 
 ## Phase Completion
