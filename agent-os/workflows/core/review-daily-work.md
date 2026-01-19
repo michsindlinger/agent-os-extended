@@ -251,7 +251,7 @@ Present each completed item for review and collect feedback.
       - [ ] [CHANGE_1]
       - [ ] [CHANGE_2]
 
-      **Next Steps**: Re-run execute-daily-plan to address feedback
+      **Next Steps**: Re-run /execute-tasks to address feedback
     </review_section>
   </update_work_item_file>
 
@@ -349,11 +349,11 @@ Set up for the next execution cycle if items need work.
            - [REQUIRED_CHANGE_2]
 
         ### Next Steps:
-        1. Run `execute-daily-plan` to address feedback
+        1. Run `/execute-tasks` to address feedback
         2. The command will skip approved items automatically
         3. After completion, run `review-daily-work` again
 
-        Ready to start next iteration? Run: execute-daily-plan
+        Ready to start next iteration? Run: /execute-tasks
         "
       </iteration_instructions>
     </create_iteration_plan>

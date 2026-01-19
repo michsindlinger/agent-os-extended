@@ -833,7 +833,7 @@ Present the created or updated plan for final review.
     2. [ITEM_2] - [STATUS] - [REASON]
 
     ### Next Steps:
-    - Continue with `execute-daily-plan` to work on all items
+    - Continue with `/execute-tasks` to work on all items
     - Items already in progress will be prioritized
     - Use `review-daily-work` after completion for feedback
 
@@ -858,12 +858,12 @@ Present the created or updated plan for final review.
     ### Next Steps:
     - Review the detailed plans in the created files
     - Make any final adjustments if needed
-    - Run `execute-daily-plan` to start working
+    - Run `/execute-tasks` to start working
     - Use `review-daily-work` after completion for feedback
 
   END IF
 
-  Ready to [continue/start] execution with `execute-daily-plan`?
+  Ready to [continue/start] execution with `/execute-tasks`?
 </confirmation_message>
 
 </step>

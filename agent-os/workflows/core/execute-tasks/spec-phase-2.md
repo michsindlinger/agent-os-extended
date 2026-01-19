@@ -1,6 +1,6 @@
 ---
 description: Spec Phase 2 - Git Worktree Setup for parallel execution
-version: 3.0
+version: 3.1
 ---
 
 # Spec Phase 2: Git Worktree Setup
@@ -53,6 +53,9 @@ Create git worktree for parallel spec execution.
 
   PROMPT: "Create git worktree for parallel spec execution: {SELECTED_SPEC}
 
+  **WORKING_DIR:** {PROJECT_ROOT}
+  (Use this as the git repository root - do NOT operate in nested repos)
+
   Rules:
   1. Extract worktree name from spec folder (remove YYYY-MM-DD- prefix)
      - Example: 2026-01-13-multi-delete-projects → multi-delete-projects
@@ -61,14 +64,14 @@ Create git worktree for parallel spec execution.
      - If 'bugfix' in name: use 'bugfix/' prefix
      - Example: bugfix-login-error → branch: bugfix/login-error
 
-  3. Create git worktree:
+  3. Create git worktree (use -C for correct repo):
      ```bash
      WORKTREE_BASE='agent-os/worktrees'
      mkdir -p '$WORKTREE_BASE'
-     git worktree add '$WORKTREE_BASE/$WORKTREE_NAME' -b '$BRANCH_NAME'
+     git -C '$PROJECT_ROOT' worktree add '$WORKTREE_BASE/$WORKTREE_NAME' -b '$BRANCH_NAME'
      ```
 
-  4. Verify: git worktree list
+  4. Verify: git -C '$PROJECT_ROOT' worktree list
 
   5. Return: WORKTREE_PATH and GIT_BRANCH
 

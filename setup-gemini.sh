@@ -85,7 +85,6 @@ tool_files=(
     "validate-base-setup"
     "extend-setup"
     "create-daily-plan"
-    "execute-daily-plan"
     "review-daily-work"
     "estimate-spec"
     "validate-estimation"
@@ -119,7 +118,7 @@ Use the tools in `.gemini/tools/` to execute Agent OS Extended workflows:
 - **Project Setup**: init-base-setup, validate-base-setup, extend-setup
 - **Documentation**: retroactive-doc, update-changelog
 - **Task Execution**: execute-tasks
-- **Daily Work Management**: create-daily-plan, execute-daily-plan, review-daily-work
+- **Daily Work Management**: create-daily-plan, review-daily-work
 - **Estimation**: estimate-spec, validate-estimation
 - **Instagram Marketing**: create-instagram-account, create-content-plan
 - **Positioning**: develop-positioning
@@ -161,7 +160,7 @@ Use the tools in `.gemini/tools/` to execute Agent OS Extended workflows:
 - **Project Setup**: init-base-setup, validate-base-setup, extend-setup
 - **Documentation**: retroactive-doc, update-changelog
 - **Task Execution**: execute-tasks
-- **Daily Work Management**: create-daily-plan, execute-daily-plan, review-daily-work
+- **Daily Work Management**: create-daily-plan, review-daily-work
 - **Estimation**: estimate-spec, validate-estimation
 - **Instagram Marketing**: create-instagram-account, create-content-plan
 - **Positioning**: develop-positioning

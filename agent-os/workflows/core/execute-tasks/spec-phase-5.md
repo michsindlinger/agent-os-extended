@@ -1,6 +1,6 @@
 ---
 description: Spec Phase 5 - Finalize with PR creation
-version: 3.0
+version: 3.1
 ---
 
 # Spec Phase 5: Finalize
@@ -24,6 +24,9 @@ Create pull request and provide final summary.
 <step name="create_pr" subagent="git-workflow">
   USE: git-workflow subagent
   "Create PR for spec: {SELECTED_SPEC}
+
+  **WORKING_DIR:** {PROJECT_ROOT} (or {WORKTREE_PATH} if USE_WORKTREE = true)
+  (Use this as the git repository root - do NOT operate in nested repos)
 
   - Commit any remaining changes (kanban-board.md)
   - Push all commits
@@ -55,12 +58,15 @@ Create pull request and provide final summary.
 
     PROMPT: "Clean up git worktree: {SELECTED_SPEC}
 
+    **WORKING_DIR:** {PROJECT_ROOT}
+    (Use this as the git repository root - do NOT operate in nested repos)
+
     Read Resume Context for WORKTREE_PATH and GIT_BRANCH.
 
     Cleanup:
     1. Verify PR was created
-    2. Remove worktree: git worktree remove [WORKTREE_PATH]
-    3. Verify: git worktree list
+    2. Remove worktree: git -C '$PROJECT_ROOT' worktree remove [WORKTREE_PATH]
+    3. Verify: git -C '$PROJECT_ROOT' worktree list
 
     Edge Cases:
     - PR not created: Skip cleanup, warn

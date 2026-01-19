@@ -1,6 +1,6 @@
 ---
 description: Backlog Phase 1 - Initialize Daily Kanban
-version: 3.0
+version: 3.1
 ---
 
 # Backlog Phase 1: Initialize Daily Kanban
@@ -20,13 +20,20 @@ Create today's Kanban Board for backlog execution.
 </step>
 
 <step name="collect_ready_stories">
-  LIST: All ready stories in backlog
+  LIST: All story files in backlog
   ```bash
   ls agent-os/backlog/user-story-*.md agent-os/backlog/bug-*.md 2>/dev/null
   ```
 
   FOR EACH story file:
     READ: Story file
+
+    CHECK: Status field in frontmatter
+      EXTRACT: Status value (Ready/In Progress/Done)
+      IF Status = "Done": SKIP story (already completed)
+      IF Status = "In Progress": SKIP story (being worked on)
+      IF Status != "Ready": SKIP story (not ready for execution)
+
     CHECK: DoR status (all [x] checked?)
     IF DoR complete: ADD to ready_stories list
     ELSE: ADD to blocked_stories list
