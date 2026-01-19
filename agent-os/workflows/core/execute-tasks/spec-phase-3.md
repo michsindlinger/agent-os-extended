@@ -1,6 +1,6 @@
 ---
 description: Spec Phase 3 - Execute one user story completely
-version: 4.1
+version: 4.2
 ---
 
 # Spec Phase 3: Execute Story
@@ -42,6 +42,11 @@ This phase repeats for each story in the backlog.
     - UPDATE Board Status: In Progress +1, Backlog -1
     - SET Resume Context: Current Story = [story-id]
     - ADD Change Log entry
+
+  UPDATE: Story file (agent-os/specs/{SELECTED_SPEC}/stories/{STORY_FILE})
+    - FIND: Line containing "Status: Ready"
+    - REPLACE WITH: "Status: In Progress"
+    - NOTE: This marks the story as being worked on
 </step>
 
 <step name="extract_skill_paths">
@@ -141,6 +146,13 @@ This phase repeats for each story in the backlog.
   IF rejected: DELEGATE_BACK, REPEAT
 </step>
 
+<step name="mark_story_done">
+  UPDATE: Story file (agent-os/specs/{SELECTED_SPEC}/stories/{STORY_FILE})
+    - FIND: Line containing "Status: In Progress" or "Status: Ready"
+    - REPLACE WITH: "Status: Done"
+    - NOTE: This marks the story as completed
+</step>
+
 <step name="story_commit" subagent="git-workflow">
   UPDATE: kanban-board.md
     - MOVE: Story to "Done"
@@ -153,6 +165,7 @@ This phase repeats for each story in the backlog.
   (Use this as the git repository root - do NOT operate in nested repos)
 
   - Message: feat/fix: [story-id] [Story Title]
+  - Stage all changes (including the story file with Status: Done)
   - Push to remote"
 </step>
 

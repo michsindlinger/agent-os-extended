@@ -1,6 +1,6 @@
 ---
 description: Backlog Phase 3 - Daily Summary
-version: 3.1
+version: 3.2
 ---
 
 # Backlog Phase 3: Daily Summary
@@ -14,17 +14,20 @@ Summarize today's work and update story-index.
 
 ## Actions
 
-<step name="mark_stories_done_in_files">
+<step name="verify_stories_marked_done">
+  FALLBACK: Verify all completed stories have Status: Done in their files
+  (Primary update happens in Phase 2, this is a safety check)
+
   FOR EACH completed story from kanban Done column:
     READ: Story file (agent-os/backlog/{story-file}.md)
+    CHECK: Status field
 
-    UPDATE: Status field in frontmatter
-      FIND: Line containing "Status: Ready" or "Status: In Progress"
-      REPLACE WITH: "Status: Done"
+    IF Status != "Done":
+      UPDATE: Status field to "Done"
+      WRITE: Updated story file
+      LOG: "Fixed missing status update for {story-file}"
 
-    WRITE: Updated story file
-
-  NOTE: This prevents stories from being picked up again in future kanbans
+  NOTE: This catches any stories that weren't properly marked in Phase 2
 </step>
 
 <step name="update_story_index">
