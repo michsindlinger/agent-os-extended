@@ -1,6 +1,6 @@
 ---
 description: Backlog Phase 2 - Execute one backlog story
-version: 4.0
+version: 4.1
 ---
 
 # Backlog Phase 2: Execute Story
@@ -111,6 +111,10 @@ Execute ONE backlog story. Simpler than spec execution (no git worktree, no inte
 
   USE: git-workflow subagent
   "Commit backlog story {STORY_ID}:
+
+  **WORKING_DIR:** {PROJECT_ROOT}
+  (Use this as the git repository root - do NOT operate in nested repos)
+
   - Message: fix/feat: {STORY_ID} [Story Title]
   - Stage only relevant files
   - Push to current branch"

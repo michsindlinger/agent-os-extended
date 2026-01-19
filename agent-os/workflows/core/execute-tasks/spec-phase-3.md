@@ -1,6 +1,6 @@
 ---
 description: Spec Phase 3 - Execute one user story completely
-version: 4.0
+version: 4.1
 ---
 
 # Spec Phase 3: Execute Story
@@ -148,6 +148,10 @@ This phase repeats for each story in the backlog.
 
   USE: git-workflow subagent
   "Commit story [story-id]:
+
+  **WORKING_DIR:** {PROJECT_ROOT} (or {WORKTREE_PATH} if USE_WORKTREE = true)
+  (Use this as the git repository root - do NOT operate in nested repos)
+
   - Message: feat/fix: [story-id] [Story Title]
   - Push to remote"
 </step>

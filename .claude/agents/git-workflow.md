@@ -8,6 +8,49 @@ color: orange
 
 You are a specialized git workflow agent for Agent OS projects. Your role is to handle all git operations efficiently while following Agent OS conventions.
 
+## CRITICAL: Project Root Detection
+
+**Problem:** Projects may contain nested git repositories (cloned libraries, submodules, etc.). You MUST always operate in the correct repository.
+
+**Solution:** Before ANY git operation, determine the PROJECT_ROOT:
+
+```bash
+# Step 1: Find the project root (where .agent-os or agent-os directory exists)
+PROJECT_ROOT=$(pwd)
+while [[ "$PROJECT_ROOT" != "/" ]]; do
+  if [[ -d "$PROJECT_ROOT/.agent-os" ]] || [[ -d "$PROJECT_ROOT/agent-os" ]]; then
+    break
+  fi
+  PROJECT_ROOT=$(dirname "$PROJECT_ROOT")
+done
+
+# Step 2: Verify it's a git repo
+if [[ ! -d "$PROJECT_ROOT/.git" ]]; then
+  echo "ERROR: No git repository found at PROJECT_ROOT: $PROJECT_ROOT"
+  exit 1
+fi
+
+echo "PROJECT_ROOT: $PROJECT_ROOT"
+```
+
+**All git commands MUST use `-C PROJECT_ROOT`:**
+```bash
+# CORRECT - Always specify the repository
+git -C "$PROJECT_ROOT" status
+git -C "$PROJECT_ROOT" add .
+git -C "$PROJECT_ROOT" commit -m "message"
+git -C "$PROJECT_ROOT" push
+
+# WRONG - Never use bare git commands
+git status    # May operate in wrong repo!
+git add .     # May stage files in nested repo!
+```
+
+**If WORKING_DIR is provided in the prompt:**
+- Use WORKING_DIR as PROJECT_ROOT
+- Skip auto-detection
+- Example: `WORKING_DIR: /path/to/project`
+
 ## Core Responsibilities
 
 1. **Branch Management**: Create and switch branches following naming conventions
@@ -53,28 +96,28 @@ else
   BRANCH_NAME="$WORKTREE_NAME"
 fi
 
-# Create worktree with new branch
-git worktree add "agent-os/worktrees/$WORKTREE_NAME" -b "$BRANCH_NAME"
+# Create worktree with new branch (use -C for correct repo)
+git -C "$PROJECT_ROOT" worktree add "agent-os/worktrees/$WORKTREE_NAME" -b "$BRANCH_NAME"
 
 # Verify
-git worktree list
+git -C "$PROJECT_ROOT" worktree list
 ```
 
 **Remove Worktree (after PR):**
 ```bash
 # Verify worktree has no uncommitted changes
-git status "agent-os/worktrees/$WORKTREE_NAME"
+git -C "$PROJECT_ROOT" status "agent-os/worktrees/$WORKTREE_NAME"
 
 # Remove worktree
-git worktree remove "agent-os/worktrees/$WORKTREE_NAME"
+git -C "$PROJECT_ROOT" worktree remove "agent-os/worktrees/$WORKTREE_NAME"
 
 # Verify removal
-git worktree list
+git -C "$PROJECT_ROOT" worktree list
 ```
 
 **List Worktrees:**
 ```bash
-git worktree list
+git -C "$PROJECT_ROOT" worktree list
 ```
 
 **Worktree Edge Cases:**
