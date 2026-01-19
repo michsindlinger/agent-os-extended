@@ -1,6 +1,6 @@
 ---
 description: Backlog Phase 2 - Execute one backlog story
-version: 4.2
+version: 4.3
 ---
 
 # Backlog Phase 2: Execute Story
@@ -32,11 +32,6 @@ Execute ONE backlog story. Simpler than spec execution (no git worktree, no inte
     - UPDATE Board Status
     - SET Resume Context: Current Story = [story-id]
     - ADD Change Log entry
-
-  UPDATE: Story file (agent-os/backlog/{STORY_FILE})
-    - FIND: Line containing "Status: Ready"
-    - REPLACE WITH: "Status: In Progress"
-    - NOTE: This marks the story as being worked on
 </step>
 
 <step name="extract_skill_paths_backlog">
@@ -108,11 +103,14 @@ Execute ONE backlog story. Simpler than spec execution (no git worktree, no inte
   ELSE: DELEGATE_BACK with feedback
 </step>
 
-<step name="mark_story_done">
-  UPDATE: Story file (agent-os/backlog/{STORY_FILE})
-    - FIND: Line containing "Status: In Progress" or "Status: Ready"
-    - REPLACE WITH: "Status: Done"
-    - NOTE: This prevents the story from being picked up in future kanbans
+<step name="move_story_to_done">
+  MOVE: Story file to done/ folder
+  ```bash
+  mkdir -p agent-os/backlog/done
+  mv agent-os/backlog/{STORY_FILE} agent-os/backlog/done/
+  ```
+  NOTE: This prevents the story from being picked up in future kanbans
+        (Phase 1 only lists files in agent-os/backlog/, not in done/)
 </step>
 
 <step name="story_commit" subagent="git-workflow">
@@ -128,7 +126,7 @@ Execute ONE backlog story. Simpler than spec execution (no git worktree, no inte
   (Use this as the git repository root - do NOT operate in nested repos)
 
   - Message: fix/feat: {STORY_ID} [Story Title]
-  - Stage only relevant files (including the story file with Status: Done)
+  - Stage all changes (including the moved story file in done/)
   - Push to current branch"
 </step>
 
