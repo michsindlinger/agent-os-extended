@@ -2,7 +2,7 @@
 description: Add bug to backlog with hypothesis-driven root-cause analysis
 globs:
 alwaysApply: false
-version: 2.1
+version: 2.2
 encoding: UTF-8
 ---
 
@@ -224,6 +224,71 @@ Gather structured bug information from user.
 
 </step>
 
+<step number="3.5" name="fix_impact_layer_analysis">
+
+### Step 3.5: Fix-Impact Layer Analysis (NEU)
+
+⚠️ **PFLICHT:** Basierend auf RCA analysieren, welche Layer vom Fix betroffen sind.
+
+<mandatory_actions>
+  1. EXTRACT from RCA (Step 3):
+     - Root Cause (confirmed hypothesis)
+     - Betroffene Dateien (from analysis)
+     - Fix-Ansatz (proposed fix)
+
+  2. ANALYZE fix impact across layers:
+     ```
+     Fix-Impact Layer Checklist:
+     - [ ] Frontend (UI behavior, components, state)
+     - [ ] Backend (API response, services, logic)
+     - [ ] Database (data integrity, queries)
+     - [ ] Integration (connections between layers)
+     - [ ] Tests (affected test files)
+     ```
+
+  3. FOR EACH potentially affected layer:
+     ASSESS:
+     - Direct impact: Layer where bug originates
+     - Indirect impact: Layers that depend on the fix
+     - Test coverage: Tests that verify the fix
+
+  4. IDENTIFY Integration Points:
+     IF bug fix affects data flow between layers:
+       DOCUMENT: Connection points that need verification
+       Example: "Backend API response change → Frontend must handle new field"
+
+  5. DETERMINE Fix Scope:
+     - IF only 1 layer affected: "[Layer]-only fix"
+     - IF 2+ layers affected: "Full-stack fix"
+       ⚠️ WARNING: "Full-stack bug fix - ensure all layers are updated"
+
+  6. GENERATE Fix-Impact Summary:
+     ```
+     Fix Type: [Backend-only / Frontend-only / Full-stack]
+     Affected Layers:
+       - [Layer 1]: [Direct/Indirect] - [Impact description]
+       - [Layer 2]: [Direct/Indirect] - [Impact description]
+     Critical Integration Points:
+       - [Point 1]: [Source] → [Target] - [Needs verification]
+     Required Tests:
+       - [Test scope per layer]
+     ```
+
+  7. PASS Fix-Impact Summary to:
+     - Step 4 (Bug Story File creation)
+     - Step 5 (Architect Refinement)
+</mandatory_actions>
+
+<output>
+  Fix-Impact Summary:
+  - Fix Type (scope)
+  - Affected Layers with direct/indirect impact
+  - Critical Integration Points
+  - Required test coverage per layer
+</output>
+
+</step>
+
 <step number="4" name="create_bug_story">
 
 ### Step 4: Create Bug Story File
@@ -346,6 +411,23 @@ Gather structured bug information from user.
 
        ---
 
+       ### Betroffene Layer & Komponenten (Fix-Impact)
+
+       > **PFLICHT:** Basierend auf Fix-Impact Analysis (Step 3.5)
+
+       **Fix Type:** [Backend-only / Frontend-only / Full-stack]
+
+       **Betroffene Komponenten:**
+
+       | Layer | Komponenten | Impact | Änderung |
+       |-------|-------------|--------|----------|
+       | [Layer] | [components] | Direct/Indirect | [Fix description] |
+
+       **Kritische Integration Points:**
+       - [Point]: [Source] → [Target] - [Verification needed]
+
+       ---
+
        ### Technical Details
 
        **WAS:** [What needs to be fixed - based on Root Cause]
@@ -354,7 +436,7 @@ Gather structured bug information from user.
        - [Fix approach based on RCA]
        - [Constraints to respect]
 
-       **WO:** [Files to modify - from RCA]
+       **WO:** [Files to modify - MUST cover ALL layers from Fix-Impact Analysis!]
 
        **WER:** [Agent based on bug type]
 
@@ -400,8 +482,16 @@ Gather structured bug information from user.
 
   Bug File: agent-os/backlog/bug-[YYYY-MM-DD]-[INDEX]-[slug].md
 
+  **Fix-Impact Summary (aus Step 3.5):**
+  [FIX_IMPACT_SUMMARY]
+  - Fix Type: [TYPE]
+  - Affected Layers: [LAYERS with direct/indirect impact]
+  - Critical Integration Points: [POINTS]
+  - Required Tests: [TEST_COVERAGE]
+
   Context:
   - Root Cause bereits identifiziert (in Bug Story)
+  - Fix-Impact Analysis abgeschlossen (Step 3.5)
   - Tech Stack: agent-os/product/tech-stack.md
   - Architecture: agent-os/product/architecture-decision.md (if exists)
   - Definition of Ready: agent-os/team/dor.md (if exists)
@@ -409,19 +499,32 @@ Gather structured bug information from user.
 
   Tasks:
   1. READ the bug story file (especially Root Cause section)
+  1.5. REVIEW Fix-Impact Summary - ensure ALL layers are addressed
   2. LOAD project quality definitions:
      - DoR from agent-os/team/dor.md (if exists)
      - DoD from agent-os/team/dod.md (if exists)
-  3. BASED ON the identified Root Cause:
+  3. BASED ON the identified Root Cause AND Fix-Impact Summary:
+
+     **Betroffene Layer & Komponenten ausfüllen (NEU - PFLICHT):**
+     Based on Fix-Impact Summary, fill out:
+     - Fix Type: [Backend-only / Frontend-only / Full-stack]
+     - Betroffene Komponenten Table with Direct/Indirect impact
+     - Kritische Integration Points (if Full-stack fix)
+
+     ⚠️ WICHTIG: If Fix Type = "Full-stack":
+       - ENSURE WO section covers ALL affected layers
+       - DOCUMENT integration points that need verification
+       - Consider if fix should be split into multiple bugs (one per layer)
 
      **DoR vervollständigen:**
      - Apply relevant DoR criteria from project dor.md
      - Mark technical preparation items as [x]
+     - Mark Full-Stack Konsistenz items as [x] (NEW)
 
      **Technical Details ausfüllen:**
      - WAS: What needs to be fixed (based on Root Cause)
      - WIE: Fix approach (architecture guidance only, NO code)
-     - WO: Files to modify (from RCA, verify paths)
+     - WO: Files to modify (MUST cover ALL layers from Fix-Impact Analysis!)
      - WER: Which agent (based on bug type)
      - Geschätzte Komplexität: XS/S/M (bugs should be small)
 
@@ -499,6 +602,26 @@ Validate that the bug fix complies with size guidelines for single-session execu
         FLAG: Bug as "Systemic Issue"
         SEVERITY: High
         SUGGEST: "Consider /create-spec for architectural fixes"
+
+    CHECK: Full-Stack Fix Coverage (Enhanced)
+      EXTRACT: "Betroffene Layer & Komponenten" section
+      IF Fix Type = "Full-stack":
+        CHECK: WO section covers ALL layers from "Betroffene Komponenten" table
+        IF missing_layers detected:
+          FLAG: Bug as "Incomplete Full-Stack Fix"
+          SEVERITY: Critical
+          LIST: "Missing file paths for layers: [missing_layers]"
+          WARN: "Bug fix does not cover all affected layers - risk of partial fix!"
+          SUGGEST: "Add ALL layer files to WO section OR split into multiple bugs"
+
+        CHECK: Integration Points coverage
+        IF Critical Integration Points defined:
+          VERIFY: Each integration point has source AND target in WO
+          IF missing_connections:
+            FLAG: Bug as "Missing Integration Coverage"
+            SEVERITY: High
+            LIST: "Integration points not fully covered: [points]"
+            WARN: "Fix may break integration between layers"
   </check_thresholds>
 </validation_process>
 

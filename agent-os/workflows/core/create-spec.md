@@ -2,7 +2,7 @@
 description: Create Feature Specification with DevTeam (PO + Architect)
 globs:
 alwaysApply: false
-version: 2.4
+version: 2.5
 encoding: UTF-8
 ---
 
@@ -11,6 +11,14 @@ encoding: UTF-8
 ## Overview
 
 Create detailed feature specifications using DevTeam collaboration: PO gathers fachliche requirements, Architect adds technical refinement.
+
+**v2.5 Changes:**
+- **NEW: Pre-Refinement Layer Analysis** - Systematic identification of all affected layers before technical refinement
+- **NEW: "Betroffene Layer & Komponenten" section** in story template for Full-Stack consistency
+- **NEW: Integration Type** classification (Backend-only / Frontend-only / Full-stack)
+- **NEW: Critical Integration Points** documentation for cross-layer dependencies
+- **ENHANCED: Cross-Layer Detection** in Step 3.5 validates layer coverage in WO section
+- **ENHANCED: DoR checkboxes** now include Full-Stack consistency checks
 
 **v2.4 Changes:**
 - Architect now selects relevant skills from skill-index.md for each story
@@ -393,10 +401,45 @@ Use dev-team__architect agent to add technical refinement to fachliche user stor
 
      a. READ the story file to understand fachliche requirements
 
-     b. FIND the '## Technisches Refinement (vom Architect)' section
+     b. **PRE-REFINEMENT LAYER ANALYSIS (NEU - PFLICHT):**
+        BEFORE filling technical sections, analyze affected layers:
+
+        i. EXTRACT from story:
+           - User Story (wer, was, warum)
+           - Akzeptanzkriterien (fachlich)
+           - Story Type (Frontend/Backend/DevOps/Test)
+
+        ii. ANALYZE affected layers:
+           ```
+           Layer Analysis Checklist:
+           - [ ] Frontend (UI, Components, JavaScript/TypeScript)
+           - [ ] Backend (API, Services, Controller, Logic)
+           - [ ] Database (Schema, Queries, Migrations)
+           - [ ] External APIs (Integrations, Third-Party)
+           - [ ] DevOps (Build, Deploy, Config, Environment)
+           - [ ] Security (Auth, Permissions, Validation)
+           ```
+
+        iii. FOR EACH affected layer:
+           Document:
+           - WHY affected (impact description)
+           - WHAT touch points (specific components/files)
+           - HOW connected to other layers (integration points)
+
+        iv. DETERMINE Integration Type:
+           - IF only 1 layer affected: "[Layer]-only"
+           - IF 2+ layers affected: "Full-stack"
+
+        v. IF Integration Type = "Full-stack":
+           FLAG: Story for additional validation
+           DOCUMENT: All critical integration points
+           ENSURE: WO section will cover ALL layers
+           CONSIDER: If story should be split by layer
+
+     c. FIND the '## Technisches Refinement (vom Architect)' section
         (This section should already exist but be EMPTY/incomplete)
 
-     c. FILL IN the following sections:
+     d. FILL IN the following sections:
 
         **DoR (Definition of Ready):**
         - Mark ALL checkboxes as [x] complete when done
@@ -406,6 +449,11 @@ Use dev-team__architect agent to add technical refinement to fachliche user stor
         - Affected components known
         - Required MCP Tools documented (if applicable)
         - Story is appropriately sized (max 5 files, 400 LOC)
+        - **Full-Stack Konsistenz (NEU):**
+          - [x] Alle betroffenen Layer identifiziert
+          - [x] Integration Type bestimmt
+          - [x] Kritische Integration Points dokumentiert (wenn Full-stack)
+          - [x] WO deckt ALLE Layer ab (wenn Full-stack)
 
         **DoD (Definition of Done):**
         - Define completion criteria (all start unchecked [ ])
@@ -418,6 +466,34 @@ Use dev-team__architect agent to add technical refinement to fachliche user stor
         - Documentation updated
         - No linting errors
         - Completion Check commands successful
+
+        **Betroffene Layer & Komponenten (NEU - PFLICHT):**
+
+        Based on Pre-Refinement Layer Analysis, fill out:
+
+        - **Integration Type:** [Backend-only / Frontend-only / Full-stack]
+
+        - **Betroffene Komponenten Table:**
+          | Layer | Komponenten | Änderung |
+          |-------|-------------|----------|
+          | Frontend | [components/files] | [what changes] |
+          | Backend | [services/controllers] | [what changes] |
+          | Database | [tables/schema] | [what changes] |
+          | DevOps | [config/pipeline] | [what changes] |
+
+        - **Kritische Integration Points (if Full-stack):**
+          - [Source] → [Target] (e.g., "Backend API Response → Frontend UserProfile")
+          - [Source] → [Target] (e.g., "Database Schema Change → Backend Query Update")
+
+        - **Handover-Dokumente (if Multi-Layer):**
+          - API Contracts: [Define or reference]
+          - Data Structures: [Define or reference]
+          - Shared Types: [Define or reference]
+
+        ⚠️ **WICHTIG:** If Integration Type = "Full-stack":
+           - WO section MUST cover ALL affected layers
+           - EVERY Integration Point must have source AND target in WO
+           - Consider splitting story if >5 files across multiple layers
 
         **Technical Details:**
 
@@ -433,6 +509,8 @@ Use dev-team__architect agent to add technical refinement to fachliche user stor
         The implementing agent decides HOW to write the code - you only set guardrails.
 
         **WO:** [Which files/folders to modify or create - paths only, no content]
+        ⚠️ MUST cover ALL layers from "Betroffene Komponenten" table!
+        ⚠️ MUST include BOTH source AND target files for each Integration Point!
 
         **WER:** [Which agent - check .claude/agents/dev-team/ for available agents]
         Examples: dev-team__backend-developer, dev-team__frontend-developer
@@ -570,6 +648,19 @@ Use dev-team__architect agent to add technical refinement to fachliche user stor
   - **Create Integration Story for multi-story specs (Backend + Frontend)**
   - Reference: agent-os/docs/story-sizing-guidelines.md
   - Reference: agent-os/team/skill-index.md (for skill selection)
+
+  FULL-STACK KONSISTENZ (NEU v2.5):
+  - **MUST fill "Betroffene Layer & Komponenten" section for EVERY story**
+  - **MUST identify Integration Type** (Backend-only/Frontend-only/Full-stack)
+  - **For Full-stack stories:**
+    - WO section MUST cover files from ALL affected layers
+    - Integration Points MUST have source AND target files in WO
+    - Consider splitting into separate stories per layer if >5 files
+    - ALWAYS create Integration Story to verify cross-layer connection
+  - **Validation in Step 3.5 will check:**
+    - All layers from "Betroffene Komponenten" are covered in WO
+    - All Integration Points have complete file coverage
+    - Stories with incomplete coverage will be flagged as CRITICAL
 
   ARCHITECTURE GUIDANCE RULES:
   - WIE = Architectural constraints and patterns ONLY
@@ -778,11 +869,39 @@ Validate that all stories comply with size guidelines to prevent mid-execution c
           FLAG: Story as "Watch - Approaching Limit"
           SEVERITY: Low
 
-      CHECK: Cross-layer detection
-        IF WO contains backend AND frontend paths:
-          FLAG: Story as "Multi-Layer"
-          SEVERITY: Medium
-          SUGGEST: "Split by layer (backend/frontend)"
+      CHECK: Cross-layer detection (Enhanced)
+        EXTRACT: "Betroffene Layer & Komponenten" section
+        IF Integration Type = "Full-stack":
+          CHECK: WO section covers ALL layers from "Betroffene Komponenten" table
+          IF missing_layers detected:
+            FLAG: Story as "Incomplete Full-Stack Coverage"
+            SEVERITY: Critical
+            LIST: "Missing file paths for layers: [missing_layers]"
+            SUGGEST: "Add ALL layer files to WO section"
+            WARN: "Incomplete layer coverage will cause integration issues!"
+
+          CHECK: Integration Points validation
+          IF Critical Integration Points defined:
+            VERIFY: Each integration point has:
+              - Source file in WO
+              - Target file in WO
+            IF missing connection files:
+              FLAG: Story as "Missing Integration Files"
+              SEVERITY: High
+              LIST: "Integration points missing file coverage: [points]"
+              SUGGEST: "Add missing source/target files for integration points"
+
+          CHECK: Story splitting recommendation
+          IF files > 5 AND layers > 2:
+            FLAG: Story as "Consider Splitting"
+            SEVERITY: Medium
+            SUGGEST: "Split by layer (one story per layer with integration story)"
+
+        ELSE (Legacy check for stories without Layer section):
+          IF WO contains backend AND frontend paths:
+            FLAG: Story as "Multi-Layer (Legacy Detection)"
+            SEVERITY: Medium
+            SUGGEST: "Fill Betroffene Layer section, then split by layer"
     </check_thresholds>
 
     <record_issues>
