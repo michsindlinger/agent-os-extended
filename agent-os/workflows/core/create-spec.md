@@ -312,9 +312,12 @@ Before generating user stories, create a summary document for user approval.
        * List of story files
        * Blocked Stories section (initially empty)
 
-  Templates (hybrid lookup):
-  - TRY: agent-os/templates/docs/[template].md
-  - FALLBACK: ~/.agent-os/templates/docs/[template].md
+  Templates (hybrid lookup - MUST TRY BOTH):
+  FOR EACH template needed (story-template.md, story-index-template.md, etc.):
+    1. TRY READ: agent-os/templates/docs/[template].md
+    2. IF file not found or error:
+       READ: ~/.agent-os/templates/docs/[template].md
+    3. IF still not found: Error - run setup-devteam-global.sh
 
   STORY SIZING:
   - Keep stories small (max 5 files, max 400 LOC)
