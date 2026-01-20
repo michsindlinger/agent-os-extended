@@ -82,6 +82,12 @@ claude mcp list | grep -q "[TOOL_NAME]"
 - [x] Erforderliche MCP Tools dokumentiert (falls zutreffend)
 - [x] Story ist angemessen geschätzt (max 5 Dateien, 400 LOC)
 
+#### Full-Stack Konsistenz (NEU)
+- [x] **Alle betroffenen Layer identifiziert** (Frontend/Backend/Database/DevOps)
+- [x] **Integration Type bestimmt** (Backend-only/Frontend-only/Full-stack)
+- [x] **Kritische Integration Points dokumentiert** (wenn Full-stack)
+- [x] **Handover-Dokumente definiert** (bei Multi-Layer: API Contracts, Data Structures)
+
 **Story ist READY wenn alle Checkboxen angehakt sind.**
 
 ---
@@ -105,6 +111,32 @@ claude mcp list | grep -q "[TOOL_NAME]"
 - [ ] Completion Check Commands alle erfolgreich (exit 0)
 
 **Story ist DONE wenn alle Checkboxen angehakt sind.**
+
+---
+
+### Betroffene Layer & Komponenten
+
+> **PFLICHT:** Der Architect MUSS alle betroffenen Layer identifizieren für Full-Stack Konsistenz
+
+**Integration Type:** [Backend-only / Frontend-only / Full-stack]
+
+**Betroffene Komponenten:**
+
+| Layer | Komponenten | Änderung |
+|-------|-------------|----------|
+| Frontend | [Komponenten/Dateien] | [Was wird geändert/erstellt] |
+| Backend | [Services/Controller] | [Was wird geändert/erstellt] |
+| Database | [Tabellen/Schema] | [Was wird geändert/erstellt] |
+| DevOps | [Config/Pipeline] | [Was wird geändert/erstellt] |
+
+**Kritische Integration Points:**
+- [Integration 1]: [Quelle] → [Ziel] (z.B. "Backend API Response → Frontend UserProfile Component")
+- [Integration 2]: [Quelle] → [Ziel] (z.B. "Database Schema → Backend Query")
+
+**Handover-Dokumente (bei Multi-Layer):**
+- API Contracts: [Link oder inline definieren]
+- Data Structures: [Link oder inline definieren]
+- Shared Types: [Link oder inline definieren]
 
 ---
 

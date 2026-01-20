@@ -2,7 +2,7 @@
 description: Add quick task to backlog with lightweight PO + Architect refinement
 globs:
 alwaysApply: false
-version: 1.1
+version: 1.2
 encoding: UTF-8
 ---
 
@@ -132,6 +132,62 @@ Add a lightweight task to the backlog without full spec creation. Uses same stor
 
 </step>
 
+<step number="3.5" name="pre_refinement_layer_analysis">
+
+### Step 3.5: Pre-Refinement Layer Analysis (NEU)
+
+⚠️ **PFLICHT:** Vor dem Architect-Refinement systematisch alle betroffenen Layer identifizieren.
+
+<mandatory_actions>
+  1. EXTRACT from Story (Step 3):
+     - User Story (wer, was, warum)
+     - Fachliche Akzeptanzkriterien
+     - Story Type (Frontend/Backend/DevOps/Test)
+
+  2. ANALYZE affected layers:
+     ```
+     Layer Analysis Checklist:
+     - [ ] Frontend (UI, Components, JavaScript/TypeScript)
+     - [ ] Backend (API, Services, Controller, Logic)
+     - [ ] Database (Schema, Queries, Migrations)
+     - [ ] External APIs (Integrations, Third-Party)
+     - [ ] DevOps (Build, Deploy, Config, Environment)
+     - [ ] Security (Auth, Permissions, Validation)
+     ```
+
+  3. FOR EACH affected layer:
+     Document:
+     - WHY affected (impact description)
+     - WHAT touch points (specific components/files)
+     - HOW connected (integration dependencies)
+
+  4. DETERMINE Integration Type:
+     - IF only 1 layer affected: "[Layer]-only"
+     - IF 2+ layers affected: "Full-stack" or "Multi-layer"
+
+  5. GENERATE Layer Summary:
+     ```
+     Integration Type: [Backend-only / Frontend-only / Full-stack / Multi-layer]
+     Affected Layers: [List with brief description]
+     Critical Integration Points: [List connections between layers]
+     ```
+
+  6. IF Integration Type = "Full-stack" OR "Multi-layer":
+     FLAG: For additional validation in Step 4.5
+     ADD to story notes: "Full-Stack task - ensure all layers are addressed"
+
+  7. PASS Layer Summary to Architect in Step 4
+</mandatory_actions>
+
+<output>
+  Layer Summary for Architect:
+  - Integration Type
+  - Affected Layers (with touch points)
+  - Critical Integration Points (if multi-layer)
+</output>
+
+</step>
+
 <step number="4" subagent="dev-team__architect" name="architect_refinement">
 
 ### Step 4: Architect Phase - Technical Refinement
@@ -143,6 +199,12 @@ Add a lightweight task to the backlog without full spec creation. Uses same stor
   "Add technical refinement to backlog story.
 
   Story File: agent-os/backlog/user-story-[YYYY-MM-DD]-[INDEX]-[slug].md
+
+  **Pre-Refinement Layer Analysis (aus Step 3.5):**
+  [LAYER_SUMMARY]
+  - Integration Type: [TYPE]
+  - Affected Layers: [LAYERS]
+  - Critical Integration Points: [POINTS]
 
   Context:
   - Tech Stack: agent-os/product/tech-stack.md
@@ -157,7 +219,8 @@ Add a lightweight task to the backlog without full spec creation. Uses same stor
   Tasks:
   1. READ the story file
   2. ANALYZE the fachliche requirements
-  3. FILL technical sections:
+  3. ANALYZE the Pre-Refinement Layer Analysis
+  4. FILL technical sections:
 
      **DoR (Definition of Ready):**
      - Load project DoR from agent-os/team/dor.md (if exists)
@@ -169,10 +232,24 @@ Add a lightweight task to the backlog without full spec creation. Uses same stor
      - Apply relevant DoD criteria to this story
      - Define completion criteria (start unchecked [ ])
 
+     **Betroffene Layer & Komponenten (NEU - PFLICHT):**
+     Based on Pre-Refinement Layer Analysis, fill out:
+     - Integration Type: [Backend-only / Frontend-only / Full-stack]
+     - Betroffene Komponenten Table:
+       | Layer | Komponenten | Änderung |
+       | Frontend | [components] | [what changes] |
+       | Backend | [services] | [what changes] |
+       | Database | [tables] | [what changes] |
+       | DevOps | [config] | [what changes] |
+     - Kritische Integration Points (if Full-stack):
+       [Source] → [Target] (e.g., "Backend API → Frontend Component")
+     - Handover-Dokumente (if Multi-Layer):
+       - API Contracts, Data Structures, Shared Types
+
      **Technical Details:**
      - WAS: Components to create/modify (brief)
      - WIE: Architecture guidance only (NO code)
-     - WO: File paths to modify
+     - WO: File paths to modify (MUST cover ALL layers from Layer Analysis!)
      - WER: Which agent (e.g., dev-team__frontend-developer)
      - Abhängigkeiten: None (backlog stories are independent)
      - Geschätzte Komplexität: XS or S (if larger, suggest create-spec)
@@ -240,11 +317,29 @@ Validate that the task complies with size guidelines for single-session executio
         FLAG: Task as "Watch - Approaching Limit"
         SEVERITY: Low
 
-    CHECK: Cross-layer detection
-      IF WO contains backend AND frontend paths:
-        FLAG: Task as "Multi-Layer"
-        SEVERITY: Medium
-        SUGGEST: "Consider /create-spec for multi-layer tasks"
+    CHECK: Cross-layer detection (Enhanced)
+      EXTRACT: "Betroffene Layer & Komponenten" section
+      IF Integration Type = "Full-stack" OR "Multi-layer":
+        CHECK: WO section covers ALL layers from "Betroffene Komponenten" table
+        IF missing_layers detected:
+          FLAG: Task as "Incomplete Full-Stack Coverage"
+          SEVERITY: High
+          LIST: "Missing file paths for layers: [missing_layers]"
+          SUGGEST: "Add file paths for ALL affected layers to WO section"
+        ELSE:
+          FLAG: Task as "Full-Stack (Complete)"
+          SEVERITY: Medium
+          SUGGEST: "Multi-layer task - ensure ALL layers are implemented together"
+
+      CHECK: Integration Points validation
+        IF Critical Integration Points defined:
+          VERIFY: Each integration point has:
+            - Source file in WO
+            - Target file in WO
+          IF missing connection files:
+            FLAG: Task as "Missing Integration Files"
+            SEVERITY: High
+            LIST: "Integration points missing file coverage: [points]"
   </check_thresholds>
 </validation_process>
 
