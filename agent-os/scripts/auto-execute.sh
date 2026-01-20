@@ -5,11 +5,14 @@
 # until all stories are complete.
 #
 # Usage:
-#   ./auto-execute.sh [spec-name] [-v|--verbose]
+#   ./auto-execute.sh [spec-name] [-v|--verbose] [-P|--provider NAME] [-a|--anthropic] [-g|--glm]
 #
 # Example:
 #   ./auto-execute.sh 2026-01-13-multi-delete-projects
 #   ./auto-execute.sh -v  # Verbose mode with debug output
+#   ./auto-execute.sh --anthropic 2026-01-13-feature  # Use Anthropic API
+#   ./auto-execute.sh -a -m opus 2026-01-13-feature   # Anthropic with Opus model
+#   ./auto-execute.sh --glm 2026-01-13-feature        # Use GLM (default)
 #
 
 set -e
@@ -30,6 +33,7 @@ DELAY_BETWEEN_PHASES=2  # Seconds to wait between phases
 MAX_RETRIES=3
 VERBOSE=false
 MODEL="opus"  # Default model (can override with --model)
+PROVIDER="glm"  # Default provider: "glm" or "anthropic"
 
 # Logging
 log_info() { echo -e "${BLUE}[INFO]${NC} $1"; }
@@ -191,17 +195,28 @@ run_phase() {
     log_debug "Log file: $log_file"
 
     while [[ $retry -lt $MAX_RETRIES ]]; do
-        local cmd="claude -p \"/agent-os:execute-tasks $spec\" --dangerously-skip-permissions --model $MODEL"
+        local cmd=""
+        if [[ "$PROVIDER" == "anthropic" ]]; then
+            cmd="claude-anthropic-simple -p \"/agent-os:execute-tasks $spec\" --model $MODEL"
+        else
+            cmd="claude --dangerously-skip-permissions -p \"/agent-os:execute-tasks $spec\" --model $MODEL"
+        fi
+        log_debug "Provider: $PROVIDER"
         log_debug "Command: $cmd"
         log_debug "Attempt: $((retry + 1))/$MAX_RETRIES"
 
         echo -e "${CYAN}--- Claude Output Start ---${NC}"
 
         # Run Claude Code with execute-tasks
-        claude -p "/agent-os:execute-tasks $spec" \
-            --dangerously-skip-permissions \
-            --model "$MODEL" \
-            2>&1 | tee "$log_file"
+        if [[ "$PROVIDER" == "anthropic" ]]; then
+            claude-anthropic-simple -p "/agent-os:execute-tasks $spec" \
+                --model "$MODEL" \
+                2>&1 | tee "$log_file"
+        else
+            claude --dangerously-skip-permissions -p "/agent-os:execute-tasks $spec" \
+                --model "$MODEL" \
+                2>&1 | tee "$log_file"
+        fi
 
         local exit_code=${PIPESTATUS[0]}
 
@@ -262,14 +277,38 @@ parse_args() {
                 MODEL="$2"
                 shift 2
                 ;;
+            -P|--provider)
+                PROVIDER="$2"
+                if [[ "$PROVIDER" != "anthropic" && "$PROVIDER" != "glm" ]]; then
+                    echo "Error: Provider must be 'anthropic' or 'glm'"
+                    exit 1
+                fi
+                shift 2
+                ;;
+            -a|--anthropic)
+                PROVIDER="anthropic"
+                shift
+                ;;
+            -g|--glm)
+                PROVIDER="glm"
+                shift
+                ;;
             -h|--help)
-                echo "Usage: $0 [spec-name] [-v|--verbose] [-m|--model MODEL]"
+                echo "Usage: $0 [spec-name] [-v|--verbose] [-m|--model MODEL] [-P|--provider PROVIDER]"
                 echo ""
                 echo "Options:"
-                echo "  -v, --verbose       Enable debug output"
-                echo "  -m, --model MODEL   Set Claude model (default: opus)"
-                echo "                      Options: opus, sonnet, haiku"
-                echo "  -h, --help          Show this help"
+                echo "  -v, --verbose         Enable debug output"
+                echo "  -m, --model MODEL     Set Claude model (default: opus)"
+                echo "                        Options: opus, sonnet, haiku"
+                echo "  -P, --provider NAME   Set provider (default: glm)"
+                echo "                        Options: anthropic, glm"
+                echo "  -a, --anthropic       Shortcut for --provider anthropic"
+                echo "  -g, --glm             Shortcut for --provider glm"
+                echo "  -h, --help            Show this help"
+                echo ""
+                echo "Providers:"
+                echo "  anthropic  Uses 'claude-anthropic-simple' command"
+                echo "  glm        Uses 'claude --dangerously-skip-permissions' command"
                 echo ""
                 echo "Examples:"
                 echo "  $0 2026-01-13-feature-name"
@@ -277,6 +316,9 @@ parse_args() {
                 echo "  $0 2026-01-13-feature-name --verbose"
                 echo "  $0 2026-01-13-feature-name --model sonnet"
                 echo "  $0 -m haiku -v"
+                echo "  $0 --anthropic 2026-01-13-feature-name"
+                echo "  $0 -a -m opus 2026-01-13-feature-name"
+                echo "  $0 --provider glm 2026-01-13-feature-name"
                 exit 0
                 ;;
             *)
@@ -294,6 +336,7 @@ main() {
     local spec_name="$1"
 
     log_info "=== Automated Story Execution ==="
+    log_info "Provider: $PROVIDER"
     log_info "Model: $MODEL"
     log_info "Verbose mode: $VERBOSE"
     log_info "Starting automated execution..."
