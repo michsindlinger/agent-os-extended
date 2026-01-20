@@ -41,10 +41,13 @@ Add a lightweight task to the backlog without full spec creation. Uses same stor
      <template_lookup>
        PATH: backlog-story-index-template.md
 
-       LOOKUP STRATEGY (Hybrid):
-         1. TRY: agent-os/templates/docs/backlog-story-index-template.md
-         2. IF NOT FOUND: ~/.agent-os/templates/docs/backlog-story-index-template.md
-         3. IF STILL NOT FOUND: Error - run setup-devteam-global.sh
+       LOOKUP STRATEGY (MUST TRY BOTH):
+         1. READ: agent-os/templates/docs/backlog-story-index-template.md
+         2. IF file not found OR read error:
+            READ: ~/.agent-os/templates/docs/backlog-story-index-template.md
+         3. IF both fail: Error - run setup-devteam-global.sh
+
+       ⚠️ WICHTIG: Bei "Error reading file" IMMER den Fallback-Pfad versuchen!
      </template_lookup>
 
   3. USE: date-checker to get current date (YYYY-MM-DD)
@@ -105,10 +108,13 @@ Add a lightweight task to the backlog without full spec creation. Uses same stor
      <template_lookup>
        PATH: story-template.md
 
-       LOOKUP STRATEGY (Hybrid):
-         1. TRY: agent-os/templates/docs/story-template.md
-         2. IF NOT FOUND: ~/.agent-os/templates/docs/story-template.md
-         3. IF STILL NOT FOUND: Error - run setup-devteam-global.sh
+       LOOKUP STRATEGY (MUST TRY BOTH):
+         1. READ: agent-os/templates/docs/story-template.md
+         2. IF file not found OR read error:
+            READ: ~/.agent-os/templates/docs/story-template.md
+         3. IF both fail: Error - run setup-devteam-global.sh
+
+       ⚠️ WICHTIG: Bei "Error reading file" IMMER den Fallback-Pfad versuchen!
      </template_lookup>
 
   3. FILL fachliche content (PO perspective):

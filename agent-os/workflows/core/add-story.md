@@ -142,14 +142,15 @@ Gather fachliche requirements for the new story. Keep it focused since spec cont
   2. USE: story-template.md (hybrid lookup)
 
      <template_lookup>
-       PATH: agent-os/templates/docs/story-template.md
+       PATH: story-template.md
 
-       LOOKUP STRATEGY (Hybrid):
-         1. TRY: Read from project (agent-os/templates/docs/story-template.md)
-         2. IF NOT FOUND: Read from global (~/.agent-os/templates/docs/story-template.md)
-         3. IF STILL NOT FOUND: Error - story template not installed
+       LOOKUP STRATEGY (MUST TRY BOTH):
+         1. READ: agent-os/templates/docs/story-template.md
+         2. IF file not found OR read error:
+            READ: ~/.agent-os/templates/docs/story-template.md
+         3. IF both fail: Error - run setup-devteam-global.sh
 
-       NOTE: Global templates preferred for consistency.
+       ⚠️ WICHTIG: Bei "Error reading file" IMMER den Fallback-Pfad versuchen!
      </template_lookup>
 
   3. FILL fachliche content (PO perspective):
