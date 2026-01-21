@@ -80,12 +80,15 @@ Create pull request and provide final summary.
 ## Phase Completion
 
 <phase_complete>
-  UPDATE: kanban-board.md
-    - Current Phase: complete
-    - Next Phase: None
-    - Last Action: PR created
-    - Next Action: None
-    - Add Change Log: Spec execution complete
+  UPDATE: kanban-board.md (MAINTAIN TABLE FORMAT - see shared/resume-context.md)
+    Resume Context table fields:
+    | **Current Phase** | complete |
+    | **Next Phase** | None |
+    | **Current Story** | None |
+    | **Last Action** | PR created - [PR URL] |
+    | **Next Action** | Review and merge PR |
+
+    Add Change Log entry: Spec execution complete - PR created
 
   OUTPUT to user:
   ---

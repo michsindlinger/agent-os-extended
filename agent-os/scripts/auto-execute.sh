@@ -135,8 +135,15 @@ get_current_phase() {
         return 0
     fi
 
-    # Extract Current Phase from Resume Context
-    local phase=$(grep -A1 "Current Phase" "$kanban_file" | tail -1 | sed 's/.*| *\([^|]*\) *|.*/\1/' | xargs)
+    local phase=""
+
+    # Format 1: Key-value style "**Current Phase:** value"
+    phase=$(grep "\*\*Current Phase:\*\*" "$kanban_file" 2>/dev/null | head -1 | sed 's/.*\*\*Current Phase:\*\*[[:space:]]*//' | xargs)
+
+    # Format 2: Table style "| **Current Phase** | value |"
+    if [[ -z "$phase" ]]; then
+        phase=$(grep "\*\*Current Phase\*\*" "$kanban_file" 2>/dev/null | head -1 | sed 's/.*|[[:space:]]*\([^|]*\)[[:space:]]*|[[:space:]]*$/\1/' | xargs)
+    fi
 
     if [[ -z "$phase" ]]; then
         echo "unknown"
@@ -155,25 +162,29 @@ get_story_counts() {
         return 0
     fi
 
-    # Parse from Board Status section (template structure)
-    # Format: | **Completed** | 2 |
-    local completed=$(grep "\*\*Completed\*\*" "$kanban_file" 2>/dev/null | sed 's/.*\*\*Completed\*\*[[:space:]]*|[[:space:]]*\([0-9]*\).*/\1/' | xargs)
-    local total=$(grep "\*\*Total Stories\*\*" "$kanban_file" 2>/dev/null | sed 's/.*\*\*Total Stories\*\*[[:space:]]*|[[:space:]]*\([0-9]*\).*/\1/' | xargs)
+    local total=""
+    local completed=""
 
-    # Fallback: Try old format (header style)
-    if [[ -z "$total" || "$total" == "0" ]]; then
-        total=$(grep -E "\*\*Total Stories\*\*.*[0-9]+" "$kanban_file" 2>/dev/null | grep -oE "[0-9]+" | head -1)
+    # Format 1: Simple table "| Total Stories | 5 |" (without bold)
+    total=$(grep -E "^\|[[:space:]]*Total Stories[[:space:]]*\|" "$kanban_file" 2>/dev/null | head -1 | grep -oE "[0-9]+" | head -1)
+    completed=$(grep -E "^\|[[:space:]]*Completed[[:space:]]*\|" "$kanban_file" 2>/dev/null | head -1 | grep -oE "[0-9]+" | head -1)
+
+    # Format 2: Bold table "| **Total Stories** | 5 |"
+    if [[ -z "$total" ]]; then
+        total=$(grep "\*\*Total Stories\*\*" "$kanban_file" 2>/dev/null | head -1 | grep -oE "[0-9]+" | head -1)
     fi
-    if [[ -z "$completed" || "$completed" == "-" ]]; then
-        completed=$(grep -E "\*\*Completed\*\*.*[0-9]+" "$kanban_file" 2>/dev/null | grep -oE "[0-9]+" | head -1)
+    if [[ -z "$completed" ]]; then
+        completed=$(grep "\*\*Completed\*\*" "$kanban_file" 2>/dev/null | head -1 | grep -oE "[0-9]+" | head -1)
     fi
 
-    # Fallback: count checkbox format (legacy)
+    # Fallback: count stories in Done section(s)
     if [[ -z "$total" || "$total" == "0" ]]; then
-        total=$(grep -E "^\- \[[ x]\] \*\*Story" "$kanban_file" 2>/dev/null | wc -l | xargs)
+        # Count all story rows (lines with | STORY-ID | pattern)
+        total=$(grep -E "^\|[[:space:]]*[A-Za-z]+-[A-Za-z0-9-]+" "$kanban_file" 2>/dev/null | wc -l | xargs)
     fi
     if [[ -z "$completed" || "$completed" == "0" ]]; then
-        completed=$(grep -E "^\- \[x\] \*\*Story" "$kanban_file" 2>/dev/null | wc -l | xargs)
+        # Count stories under ### Done sections
+        completed=$(sed -n '/^### Done/,/^###/p' "$kanban_file" 2>/dev/null | grep -E "^\|[[:space:]]*[A-Za-z]+-[A-Za-z0-9-]+" | wc -l | xargs)
     fi
 
     # Ensure we have numbers
@@ -263,9 +274,9 @@ run_phase() {
     return 1
 }
 
-# Parse arguments
+# Parse arguments (sets global variables directly)
 parse_args() {
-    local spec=""
+    SPEC_ARG=""
 
     while [[ $# -gt 0 ]]; do
         case $1 in
@@ -322,13 +333,11 @@ parse_args() {
                 exit 0
                 ;;
             *)
-                spec="$1"
+                SPEC_ARG="$1"
                 shift
                 ;;
         esac
     done
-
-    echo "$spec"
 }
 
 # Main execution loop
@@ -389,10 +398,26 @@ main() {
         last_phase="$phase"
         last_counts="$counts"
 
-        # Check if complete (multiple completion indicators)
-        if [[ "$phase" == "complete" || "$phase" == "None" || "$phase" == "none" || "$phase" == "4-complete" ]]; then
+        # Check if complete (case-insensitive, multiple completion indicators)
+        local phase_lower=$(echo "$phase" | tr '[:upper:]' '[:lower:]')
+        if [[ "$phase_lower" == "complete" || "$phase_lower" == "completed" || "$phase_lower" == "none" || "$phase_lower" == "4-complete" || "$phase_lower" == "done" ]]; then
             log_success "=========================================="
             log_success "=== All phases complete! ==="
+            log_success "=========================================="
+            log_success "Spec execution finished successfully."
+
+            # Play completion sound
+            afplay /System/Library/Sounds/Glass.aiff 2>/dev/null || true
+
+            exit 0
+        fi
+
+        # Fallback: Check if all stories are done (completed == total and total > 0)
+        local completed_count=$(echo "$counts" | cut -d'/' -f1)
+        local total_count=$(echo "$counts" | cut -d'/' -f2)
+        if [[ "$total_count" -gt 0 && "$completed_count" == "$total_count" ]]; then
+            log_success "=========================================="
+            log_success "=== All stories complete ($counts)! ==="
             log_success "=========================================="
             log_success "Spec execution finished successfully."
 
@@ -429,5 +454,5 @@ cleanup() {
 trap cleanup SIGINT SIGTERM
 
 # Parse arguments and run
-SPEC_ARG=$(parse_args "$@")
+parse_args "$@"
 main "$SPEC_ARG"

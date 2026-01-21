@@ -40,4 +40,47 @@ UPDATE kanban-board.md at:
 - Before any STOP point
 - After any state change (story movement, status change)
 
-CRITICAL: Always maintain the template structure exactly.
+**CRITICAL: Always maintain the template structure exactly.**
+
+## Required Format
+
+**Resume Context MUST be a TABLE (for auto-execute.sh parsing):**
+
+```markdown
+## Resume Context
+
+> **CRITICAL**: This section is used for phase recovery after /clear or conversation compaction.
+> **NEVER** change the field names or format.
+
+| Field | Value |
+|-------|-------|
+| **Current Phase** | 1-complete |
+| **Next Phase** | 2 - Git Worktree |
+| **Spec Folder** | agent-os/specs/SPEC-NAME |
+| **Worktree Path** | (pending) |
+| **Git Branch** | (pending) |
+| **Current Story** | None |
+| **Last Action** | Kanban board created |
+| **Next Action** | Setup git worktree |
+```
+
+**Board Status MUST be a TABLE:**
+
+```markdown
+## Board Status
+
+| Metric | Value |
+|--------|-------|
+| **Total Stories** | 4 |
+| **Completed** | 0 |
+| **In Progress** | 0 |
+| **In Review** | 0 |
+| **Testing** | 0 |
+| **Backlog** | 4 |
+| **Blocked** | 0 |
+```
+
+**DO NOT use key-value format like:**
+```markdown
+**Current Phase:** complete  ← WRONG!
+```

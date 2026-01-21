@@ -37,10 +37,12 @@ This phase repeats for each story in the backlog.
 </step>
 
 <step name="update_kanban_in_progress">
-  UPDATE: kanban-board.md
-    - MOVE: Selected story from Backlog to "In Progress"
-    - UPDATE Board Status: In Progress +1, Backlog -1
-    - SET Resume Context: Current Story = [story-id]
+  UPDATE: kanban-board.md (MAINTAIN TABLE FORMAT - see shared/resume-context.md)
+    - MOVE: Selected story from Backlog to "In Progress" section
+    - UPDATE Board Status table: In Progress +1, Backlog -1
+    - UPDATE Resume Context table:
+      | **Current Story** | [story-id] |
+      | **Last Action** | Started [story-id] execution |
     - ADD Change Log entry
 
   UPDATE: Story file (agent-os/specs/{SELECTED_SPEC}/stories/{STORY_FILE})
@@ -175,10 +177,13 @@ This phase repeats for each story in the backlog.
   CHECK: Remaining stories in Backlog
 
   IF backlog NOT empty:
-    UPDATE: kanban-board.md
-      - Current Phase: story-complete
-      - Next Phase: 3 - Execute Story (next)
-      - Current Story: None
+    UPDATE: kanban-board.md (MAINTAIN TABLE FORMAT - see shared/resume-context.md)
+      Resume Context table fields:
+      | **Current Phase** | story-complete |
+      | **Next Phase** | 3 - Execute Story |
+      | **Current Story** | None |
+      | **Last Action** | Completed [story-id] - passed all QA checks |
+      | **Next Action** | Execute next story |
 
     OUTPUT to user:
     ---
@@ -200,9 +205,13 @@ This phase repeats for each story in the backlog.
     STOP: Do not proceed to next story
 
   ELSE (backlog empty):
-    UPDATE: kanban-board.md
-      - Current Phase: all-stories-done
-      - Next Phase: 4.5 - Integration Validation
+    UPDATE: kanban-board.md (MAINTAIN TABLE FORMAT - see shared/resume-context.md)
+      Resume Context table fields:
+      | **Current Phase** | all-stories-done |
+      | **Next Phase** | 4.5 - Integration Validation |
+      | **Current Story** | None |
+      | **Last Action** | Completed final story |
+      | **Next Action** | Run integration validation |
 
     OUTPUT to user:
     ---
