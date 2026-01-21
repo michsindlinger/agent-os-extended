@@ -89,11 +89,13 @@ Prevents "stories done but system doesn't work" problem.
 ## Phase Completion
 
 <phase_complete>
-  UPDATE: kanban-board.md
-    - Current Phase: 5-ready
-    - Next Phase: 5 - Finalize
-    - Last Action: Integration validation passed
-    - Integration Status: PASSED
+  UPDATE: kanban-board.md (MAINTAIN TABLE FORMAT - see shared/resume-context.md)
+    Resume Context table fields:
+    | **Current Phase** | 5-ready |
+    | **Next Phase** | 5 - Finalize |
+    | **Current Story** | None |
+    | **Last Action** | Integration validation: PASSED |
+    | **Next Action** | Create pull request |
 
   OUTPUT to user:
   ---

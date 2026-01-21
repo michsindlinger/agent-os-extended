@@ -87,15 +87,17 @@ Create git worktree for parallel spec execution.
 ## Phase Completion
 
 <phase_complete_no_worktree condition="USE_WORKTREE = false">
-  UPDATE: kanban-board.md
-    - Current Phase: 2-complete
-    - Next Phase: 3 - Execute Story
-    - Worktree Path: (none)
-    - Git Branch: [current branch]
-    - Use Worktree: false
-    - Last Action: Skipped worktree creation (user preference)
-    - Next Action: Execute first story
-    - Add Change Log entry
+  UPDATE: kanban-board.md (MAINTAIN TABLE FORMAT - see shared/resume-context.md)
+    Resume Context table fields:
+    | **Current Phase** | 2-complete |
+    | **Next Phase** | 3 - Execute Story |
+    | **Worktree Path** | (none) |
+    | **Git Branch** | [current branch] |
+    | **Current Story** | None |
+    | **Last Action** | Skipped worktree, switched to main branch |
+    | **Next Action** | Execute first story |
+
+    Add Change Log entry
 
   OUTPUT to user:
   ---
@@ -119,15 +121,17 @@ Create git worktree for parallel spec execution.
 </phase_complete_no_worktree>
 
 <phase_complete_with_worktree condition="USE_WORKTREE = true">
-  UPDATE: kanban-board.md
-    - Current Phase: 2-complete
-    - Next Phase: 3 - Execute Story
-    - Worktree Path: [captured value]
-    - Git Branch: [captured value]
-    - Use Worktree: true
-    - Last Action: Git worktree created
-    - Next Action: Execute first story
-    - Add Change Log entry
+  UPDATE: kanban-board.md (MAINTAIN TABLE FORMAT - see shared/resume-context.md)
+    Resume Context table fields:
+    | **Current Phase** | 2-complete |
+    | **Next Phase** | 3 - Execute Story |
+    | **Worktree Path** | [captured value] |
+    | **Git Branch** | [captured value] |
+    | **Current Story** | None |
+    | **Last Action** | Git worktree created |
+    | **Next Action** | Execute first story |
+
+    Add Change Log entry
 
   OUTPUT to user:
   ---

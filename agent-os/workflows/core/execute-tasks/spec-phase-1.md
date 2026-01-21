@@ -39,33 +39,53 @@ Select specification and create Kanban Board. One-time setup phase.
   Output: agent-os/specs/{SELECTED_SPEC}/kanban-board.md
   Template: agent-os/templates/docs/kanban-board-template.md
 
-  CRITICAL STEPS:
-  1. LIST all story files in agent-os/specs/{SELECTED_SPEC}/stories/
-  2. FOR EACH story file:
+  **CRITICAL: TEMPLATE COMPLIANCE**
+  You MUST use the EXACT format from the template. Do NOT invent your own format.
+  - READ the template file FIRST
+  - COPY the structure EXACTLY
+  - Only replace {{PLACEHOLDER}} variables with actual values
+
+  STEPS:
+  1. READ the template: agent-os/templates/docs/kanban-board-template.md
+  2. LIST all story files in agent-os/specs/{SELECTED_SPEC}/stories/
+  3. FOR EACH story file:
      - READ the story file
      - VALIDATE DoR:
        * CHECK: All DoR checkboxes are marked [x]
-       * IF any [ ] unchecked: STORY_STATUS = BLOCKED
-       * IF all [x]: STORY_STATUS = Ready
+       * IF any [ ] unchecked: STORY_STATUS = ⚠️ Blocked
+       * IF all [x]: STORY_STATUS = ✅ Ready
      - EXTRACT: Story ID, Title, Type, Dependencies, Points
 
-  3. CREATE kanban board with:
-     - All valid stories in Backlog
-     - Blocked stories marked with status
+  4. CREATE kanban board by COPYING template structure and replacing:
+     - {{SPEC_NAME}} → Spec folder name
+     - {{TOTAL_STORIES}} → Count from story files
+     - {{COMPLETED_COUNT}} → 0
+     - {{IN_PROGRESS_COUNT}} → 0
+     - {{IN_REVIEW_COUNT}} → 0
+     - {{TESTING_COUNT}} → 0
+     - {{BACKLOG_COUNT}} → Count of READY stories
+     - {{BLOCKED_COUNT}} → Count of BLOCKED stories
+     - {{CURRENT_PHASE}} → 1-complete
+     - {{NEXT_PHASE}} → 2 - Git Worktree
+     - {{SPEC_FOLDER}} → Spec folder name
+     - {{WORKTREE_PATH}} → (pending)
+     - {{GIT_BRANCH}} → (pending)
+     - {{CURRENT_STORY}} → None
+     - {{LAST_ACTION}} → Kanban board created
+     - {{NEXT_ACTION}} → Setup git worktree
+     - {{BACKLOG_STORIES}} → Story table rows
+     - {{BLOCKED_STORIES}} → Blocked story table rows (if any)
+     - Other sections → Empty or 'None'
 
-  Template Variables to Replace:
-  - {{SPEC_NAME}} → Spec folder name
-  - {{TOTAL_STORIES}} → Count from story files
-  - {{COMPLETED_COUNT}} → 0
-  - {{IN_PROGRESS_COUNT}} → 0
-  - {{BACKLOG_COUNT}} → Count of READY stories
-  - {{BLOCKED_COUNT}} → Count of BLOCKED stories
-  - {{CURRENT_PHASE}} → 1-complete
-  - {{NEXT_PHASE}} → 2 - Git Worktree
-
-  Story Table Format:
-  | Story ID | Title | Type | Dependencies | DoR Status | Points |
-  |----------|-------|------|--------------|------------|--------|"
+  **IMPORTANT: Resume Context Format**
+  The Resume Context MUST be a TABLE, not key-value pairs:
+  ```markdown
+  | Field | Value |
+  |-------|-------|
+  | **Current Phase** | 1-complete |
+  | **Next Phase** | 2 - Git Worktree |
+  ```
+  NOT: **Current Phase:** 1-complete"
 
   WAIT: For file-creator completion
 </step>
