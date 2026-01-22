@@ -14,7 +14,7 @@ Set up project-specific skills for the main agent based on tech stack. The main 
 ## What's New in v3.0
 
 - **No Sub-Agents**: Skills are for the main agent, not separate agents
-- **Standard Skill Path**: Skills in `.claude/skills/[name]/Skill.md` (Claude Code standard)
+- **Standard Skill Path**: Skills in `.claude/skills/[name]/SKILL.md` (Claude Code standard)
 - **One Skill per Technology**: Consolidated skills with sub-documents
 - **Self-Learning**: Each skill has `dos-and-donts.md` for project learnings
 - **Domain Skills**: Optional business domain documentation
@@ -157,8 +157,8 @@ These skills are ALWAYS created for every project.
 <skill_creation>
   **1. Quality Gates Skill (alwaysApply: true)**
 
-  LOAD template: agent-os/templates/skills/quality-gates/Skill.md
-  (Fallback: ~/.agent-os/templates/skills/quality-gates/Skill.md)
+  LOAD template: agent-os/templates/skills/quality-gates/SKILL.md
+  (Fallback: ~/.agent-os/templates/skills/quality-gates/SKILL.md)
 
   REPLACE placeholders:
   - [PROJECT_NAME] → from tech-stack.md or folder name
@@ -167,24 +167,24 @@ These skills are ALWAYS created for every project.
   - [LINT_COMMAND] → from tech-stack.md linting section
 
   CREATE directory: .claude/skills/quality-gates/
-  WRITE to: .claude/skills/quality-gates/Skill.md
+  WRITE to: .claude/skills/quality-gates/SKILL.md
 
   **2. PO Requirements Skill (for story creation)**
 
-  LOAD template: agent-os/templates/skills/po-requirements/Skill.md
-  (Fallback: ~/.agent-os/templates/skills/po-requirements/Skill.md)
+  LOAD template: agent-os/templates/skills/po-requirements/SKILL.md
+  (Fallback: ~/.agent-os/templates/skills/po-requirements/SKILL.md)
 
   REPLACE placeholders:
   - [PROJECT_NAME] → from tech-stack.md or folder name
   - [DATE] → current date
 
   CREATE directory: .claude/skills/po-requirements/
-  WRITE to: .claude/skills/po-requirements/Skill.md
+  WRITE to: .claude/skills/po-requirements/SKILL.md
 
   **3. Architect Refinement Skill (for story creation)**
 
-  LOAD template: agent-os/templates/skills/architect-refinement/Skill.md
-  (Fallback: ~/.agent-os/templates/skills/architect-refinement/Skill.md)
+  LOAD template: agent-os/templates/skills/architect-refinement/SKILL.md
+  (Fallback: ~/.agent-os/templates/skills/architect-refinement/SKILL.md)
 
   REPLACE placeholders:
   - [PROJECT_NAME] → from tech-stack.md or folder name
@@ -194,7 +194,7 @@ These skills are ALWAYS created for every project.
   - [NAMING_CONVENTIONS] → from context.structure
 
   CREATE directory: .claude/skills/architect-refinement/
-  WRITE to: .claude/skills/architect-refinement/Skill.md
+  WRITE to: .claude/skills/architect-refinement/SKILL.md
 
   OUTPUT: "Universal skills created: quality-gates, po-requirements, architect-refinement"
 </skill_creation>
@@ -212,7 +212,7 @@ These skills are ALWAYS created for every project.
     SET: FRAMEWORK_NAME = angular | react | vue
 
     LOAD templates from:
-    - agent-os/templates/skills/frontend/[FRAMEWORK_NAME]/Skill.md
+    - agent-os/templates/skills/frontend/[FRAMEWORK_NAME]/SKILL.md
     - agent-os/templates/skills/frontend/[FRAMEWORK_NAME]/components.md
     - agent-os/templates/skills/frontend/[FRAMEWORK_NAME]/state-management.md
     - agent-os/templates/skills/frontend/[FRAMEWORK_NAME]/api-integration.md
@@ -276,7 +276,7 @@ These skills are ALWAYS created for every project.
     SET: FRAMEWORK_NAME = rails | nestjs | spring
 
     LOAD templates from:
-    - agent-os/templates/skills/backend/[FRAMEWORK_NAME]/Skill.md
+    - agent-os/templates/skills/backend/[FRAMEWORK_NAME]/SKILL.md
     - agent-os/templates/skills/backend/[FRAMEWORK_NAME]/services.md
     - agent-os/templates/skills/backend/[FRAMEWORK_NAME]/models.md
     - agent-os/templates/skills/backend/[FRAMEWORK_NAME]/api-design.md
@@ -329,7 +329,7 @@ These skills are ALWAYS created for every project.
   IF DevOps tools detected (Docker, GitHub Actions, etc.):
 
     LOAD templates from:
-    - agent-os/templates/skills/devops/docker-github/Skill.md
+    - agent-os/templates/skills/devops/docker-github/SKILL.md
     - agent-os/templates/skills/devops/docker-github/docker.md
     - agent-os/templates/skills/devops/docker-github/ci-cd.md
     - agent-os/templates/skills/devops/docker-github/dos-and-donts.md
@@ -391,7 +391,7 @@ These skills are ALWAYS created for every project.
 ### Step 9: Create Domain Skill (If Requested)
 
 <skill_creation>
-  LOAD template: agent-os/templates/skills/domain/Skill.md
+  LOAD template: agent-os/templates/skills/domain/SKILL.md
 
   REPLACE placeholders:
   - [PROJECT_NAME] → from tech-stack.md or folder name
@@ -399,7 +399,7 @@ These skills are ALWAYS created for every project.
   - [BUSINESS_CONTEXT_DESCRIPTION] → "To be filled during development"
 
   CREATE directory: .claude/skills/domain-[PROJECT_SLUG]/
-  WRITE to: .claude/skills/domain-[PROJECT_SLUG]/Skill.md
+  WRITE to: .claude/skills/domain-[PROJECT_SLUG]/SKILL.md
 
   ASK via AskUserQuestion:
   question: "What are the main business areas in this project?"
@@ -411,7 +411,7 @@ These skills are ALWAYS created for every project.
       LOAD template: agent-os/templates/skills/domain/process.md
       REPLACE [PROCESS_NAME] with area name
       WRITE to: .claude/skills/domain-[PROJECT_SLUG]/[area-slug].md
-      UPDATE: Domain Areas table in Skill.md
+      UPDATE: Domain Areas table in SKILL.md
 </skill_creation>
 
 </step>
@@ -479,7 +479,7 @@ Use tech-architect agent to analyze tech-stack.md and existing code for speciali
      a) Research best practices (use WebSearch for [technology] best practices 2026)
      b) Create custom skill in .claude/skills/custom-[technology]/
      c) Follow same structure as standard skills:
-        - Skill.md (index with Quick Reference)
+        - SKILL.md (index with Quick Reference)
         - [aspect-1].md (detailed patterns)
         - [aspect-2].md
         - dos-and-donts.md (empty initially)
@@ -503,7 +503,7 @@ Use tech-architect agent to analyze tech-stack.md and existing code for speciali
 
   **If Electron detected:**
   Create: .claude/skills/custom-electron/
-  ├── Skill.md (globs: ['**/*.js' in main/renderer processes])
+  ├── SKILL.md (globs: ['**/*.js' in main/renderer processes])
   ├── ipc-patterns.md
   ├── native-modules.md
   ├── testing.md
@@ -511,7 +511,7 @@ Use tech-architect agent to analyze tech-stack.md and existing code for speciali
 
   **If Blockchain detected:**
   Create: .claude/skills/custom-blockchain/
-  ├── Skill.md (globs: ['src/contracts/**/*', 'src/web3/**/*'])
+  ├── SKILL.md (globs: ['src/contracts/**/*', 'src/web3/**/*'])
   ├── wallet-integration.md
   ├── contract-interaction.md
   ├── security.md
@@ -664,28 +664,28 @@ Use tech-architect agent to analyze tech-stack.md and existing code for speciali
 ```
 .claude/skills/
 ├── quality-gates/           # Always active
-│   └── Skill.md
+│   └── SKILL.md
 ├── frontend-[framework]/    # Auto-loads for frontend files
-│   ├── Skill.md             # Index + Quick Reference
+│   ├── SKILL.md             # Index + Quick Reference
 │   ├── components.md
 │   ├── state-management.md
 │   ├── api-integration.md
 │   ├── forms-validation.md
 │   └── dos-and-donts.md     # Self-learning
 ├── backend-[framework]/     # Auto-loads for backend files
-│   ├── Skill.md
+│   ├── SKILL.md
 │   ├── services.md
 │   ├── models.md
 │   ├── api-design.md
 │   ├── testing.md
 │   └── dos-and-donts.md
 ├── devops-docker-github/    # Auto-loads for DevOps files
-│   ├── Skill.md
+│   ├── SKILL.md
 │   ├── docker.md
 │   ├── ci-cd.md
 │   └── dos-and-donts.md
 └── domain-[project]/        # Business knowledge
-    ├── Skill.md             # Index of domain areas
+    ├── SKILL.md             # Index of domain areas
     └── [process].md         # Individual processes
 ```
 

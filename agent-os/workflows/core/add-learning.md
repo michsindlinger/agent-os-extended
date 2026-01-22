@@ -141,7 +141,7 @@ This is useful when you discover something valuable after development that shoul
 
     LIST: Domain process documents
     ```bash
-    ls .claude/skills/domain-*/*.md | grep -v Skill.md
+    ls .claude/skills/domain-*/*.md | grep -v SKILL.md
     ```
 
     ASK: "Which domain area does this relate to?"

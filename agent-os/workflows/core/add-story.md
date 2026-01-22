@@ -180,7 +180,7 @@ Gather fachliche requirements for the new story. Keep it focused since spec cont
 Main agent does technical refinement guided by architect-refinement skill.
 
 <refinement_process>
-  LOAD skill: .claude/skills/architect-refinement/Skill.md
+  LOAD skill: .claude/skills/architect-refinement/SKILL.md
   (This skill provides guidance for technical refinement)
 
   **Story Context:**

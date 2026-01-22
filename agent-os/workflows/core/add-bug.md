@@ -744,7 +744,7 @@ Der Benutzer kennt oft das System besser und hat möglicherweise bereits untersu
 Main agent does technical refinement guided by architect-refinement skill.
 
 <refinement_process>
-  LOAD skill: .claude/skills/architect-refinement/Skill.md
+  LOAD skill: .claude/skills/architect-refinement/SKILL.md
   (This skill provides guidance for technical refinement)
 
   **Bug Context:**
