@@ -1,15 +1,25 @@
 ---
-description: Spec Phase 3 - Execute one user story completely
-version: 4.2
+description: Spec Phase 3 - Execute one user story (Direct Execution v3.0)
+version: 3.0
 ---
 
-# Spec Phase 3: Execute Story
+# Spec Phase 3: Execute Story (Direct Execution)
+
+## What's New in v3.0
+
+- **No Sub-Agent Delegation**: Main agent implements story directly
+- **Skills Load Automatically**: Via glob patterns in .claude/skills/
+- **Self-Review**: DoD checklist instead of separate review agents
+- **Self-Learning**: Updates dos-and-donts.md when learning
+- **Domain Updates**: Keeps domain documentation current
 
 ## Purpose
-Execute ONE user story completely, including quality gates.
-This phase repeats for each story in the backlog.
+
+Execute ONE user story completely. The main agent implements directly,
+maintaining full context throughout the story.
 
 ## Entry Condition
+
 - kanban-board.md exists
 - Resume Context shows: Phase 2-complete OR story-complete
 - Stories remain in Backlog
@@ -48,126 +58,218 @@ This phase repeats for each story in the backlog.
   UPDATE: Story file (agent-os/specs/{SELECTED_SPEC}/stories/{STORY_FILE})
     - FIND: Line containing "Status: Ready"
     - REPLACE WITH: "Status: In Progress"
-    - NOTE: This marks the story as being worked on
 </step>
 
-<step name="extract_skill_paths">
-  ### Skill Path Extraction (v4.0)
+<step name="load_story">
+  ### Load Story Details
 
-  REFERENCE: agent-os/workflows/core/execute-tasks/shared/skill-extraction.md
+  READ: Story file from agent-os/specs/{SELECTED_SPEC}/stories/story-XXX-[slug].md
 
-  1. READ: Story file (agent-os/specs/{SELECTED_SPEC}/stories/story-XXX-[slug].md)
+  EXTRACT:
+  - Story ID and Title
+  - Feature description (Gherkin)
+  - Acceptance Criteria (Gherkin scenarios)
+  - Technical Details (WAS, WIE, WO)
+  - DoD Checklist
+  - Domain reference (if specified)
 
-  2. FIND: "### Relevante Skills" section
-     EXTRACT: Skill paths from table (Pfad column)
-
-     IF NOT found:
-       FALLBACK: Use agent-os/team/skill-index.md
-       MATCH: story.type to default skills
-
-  3. COLLECT: Skill file paths only
-     DO NOT: Read skill contents
-     (Sub-agent will load complete skills)
-
-  4. FORMAT:
-     ```
-     **Required Skills (load these files):**
-     - [skill-path-1]
-     - [skill-path-2]
-     ```
-
-  OUTPUT: SKILL_PATHS variable (list of file paths)
+  NOTE: Skills are NOT extracted here - they load automatically when you
+  edit files matching their glob patterns.
 </step>
 
-<step name="execute_story" subagent="dev-team">
-  DETERMINE: Agent type from story
+<step name="implement">
+  ### Direct Implementation (v3.0)
 
-  | story.type | Agent |
-  |------------|-------|
-  | Backend | dev-team__backend-developer-* |
-  | Frontend | dev-team__frontend-developer-* |
-  | DevOps | dev-team__dev-ops-specialist |
-  | Test | dev-team__qa-specialist |
+  **The main agent implements the story directly.**
 
-  DELEGATE via Task tool:
-  "Execute User Story: [Story Title]
+  <implementation_process>
+    1. READ: Technical requirements from story (WAS, WIE, WO sections)
 
-  **Story Details:**
-  [Story file content - exclude 'Relevante Skills' section]
+    2. UNDERSTAND: Architecture guidance from story
+       - Which patterns to apply
+       - Which constraints to follow
+       - Which files to create/modify
 
-  **DoD Criteria:**
-  [DoD checklist]
+    3. IMPLEMENT: The feature
+       - Create/modify files as specified in WO section
+       - Follow architecture patterns from WIE section
+       - Skills load automatically when you edit matching files
 
-  {SKILL_PATHS}
+    4. RUN: Tests as you implement
+       - Unit tests for new code
+       - Ensure existing tests pass
 
-  **INSTRUCTIONS:**
-  - Load each skill file listed above completely
-  - Follow ALL patterns, examples, and guidelines from the skills
-  - The skills contain your implementation framework
+    5. VERIFY: Each acceptance criterion
+       - Work through each Gherkin scenario
+       - Ensure all are satisfied
 
-  **File Organization (CRITICAL):**
-  - NO files in project root
-  - Reports: agent-os/specs/{SELECTED_SPEC}/implementation-reports/
-  "
+    **Skills Auto-Loading:**
+    When you edit files, relevant skills activate automatically:
+    - `src/app/**/*.ts` → frontend skill loads
+    - `app/**/*.rb` → backend skill loads
+    - `Dockerfile` → devops skill loads
 
-  WAIT: For agent completion
+    **File Organization (CRITICAL):**
+    - NO files in project root
+    - Implementation code: As specified in WO section
+    - Reports: agent-os/specs/{SELECTED_SPEC}/implementation-reports/
+  </implementation_process>
+
+  OUTPUT: Implementation complete, ready for self-review
 </step>
 
-<step name="architect_review" subagent="dev-team__architect">
-  UPDATE: kanban-board.md
-    - MOVE: Story to "In Review"
-    - UPDATE Board Status
+<step name="self_review">
+  ### Self-Review with DoD Checklist (v3.0)
 
-  DELEGATE: dev-team__architect
-  "Review code for Story [story-id].
-  Context: Story file + git changes
-  Review: Architecture, patterns, security, code quality."
+  Replaces separate Architect/UX/QA review agents.
 
-  IF rejected: DELEGATE_BACK with feedback, REPEAT
+  <review_process>
+    1. READ: DoD checklist from story file
+
+    2. VERIFY each item:
+
+       **Implementation:**
+       - [ ] Code implemented and follows style guide
+       - [ ] Architecture patterns followed (WIE section)
+       - [ ] Security/performance requirements met
+
+       **Quality:**
+       - [ ] All acceptance criteria satisfied
+       - [ ] Unit tests written and passing
+       - [ ] Integration tests written and passing
+       - [ ] Linter passes (run lint command)
+
+       **Documentation:**
+       - [ ] Code is self-documenting or has necessary comments
+       - [ ] No debug code left in
+
+    3. RUN: Verification commands from story
+       ```bash
+       # Run commands from Completion Check section
+       [VERIFY_COMMAND_1]
+       [VERIFY_COMMAND_2]
+       ```
+
+    4. FIX: Any issues found before proceeding
+
+    IF all checks pass:
+      PROCEED to self_learning_check
+    ELSE:
+      FIX issues and re-verify
+  </review_process>
 </step>
 
-<step name="ux_review" condition="story.type includes Frontend" subagent="ux-designer">
-  DELEGATE: ux-designer
-  "UX Review for Story [story-id].
-  Review: UX patterns, accessibility, mobile responsiveness."
+<step name="self_learning_check">
+  ### Self-Learning Check (v3.0)
 
-  IF rejected: DELEGATE_BACK, REPEAT
+  Update dos-and-donts.md if you learned something during implementation.
+
+  <learning_detection>
+    REFLECT: On the implementation process
+
+    DID any of these occur?
+    - Initial approach didn't work
+    - Had to refactor/retry
+    - Discovered unexpected behavior
+    - Found a better pattern than first tried
+    - Encountered framework quirk
+
+    IF YES:
+      1. IDENTIFY: The learning
+         - What was the context?
+         - What didn't work?
+         - What worked?
+
+      2. DETERMINE: Category
+         - Technical → dos-and-donts.md in relevant tech skill
+         - Domain → domain skill process document
+
+      3. LOCATE: Target file
+         - Frontend: .claude/skills/frontend-[framework]/dos-and-donts.md
+         - Backend: .claude/skills/backend-[framework]/dos-and-donts.md
+         - DevOps: .claude/skills/devops-[stack]/dos-and-donts.md
+
+      4. APPEND: Learning entry
+         ```markdown
+         ### [DATE] - [Short Title]
+         **Context:** [What you were trying to do]
+         **Issue:** [What didn't work]
+         **Solution:** [What worked]
+         ```
+
+      5. ADD to appropriate section:
+         - Dos ✅ (positive pattern discovered)
+         - Don'ts ❌ (anti-pattern discovered)
+         - Gotchas ⚠️ (unexpected behavior)
+
+    IF NO learning:
+      SKIP: No update needed
+  </learning_detection>
 </step>
 
-<step name="qa_testing" subagent="dev-team__qa-specialist">
-  UPDATE: kanban-board.md
-    - MOVE: Story to "Testing"
-    - UPDATE Board Status
+<step name="domain_update_check">
+  ### Domain Update Check (v3.0)
 
-  DELEGATE: dev-team__qa-specialist
-  "Test Story [story-id]:
-  - Run all tests
-  - Verify DoD criteria
-  - Perform acceptance testing"
+  Keep domain documentation current when business logic changes.
 
-  IF rejected: DELEGATE_BACK, REPEAT
+  <domain_check>
+    ANALYZE: Did this story change business logic?
+
+    CHECK: Story has Domain field?
+    - IF yes: Domain area is specified
+    - IF no: Check if changes affect business processes
+
+    IF business logic changed:
+      1. LOCATE: Domain skill
+         .claude/skills/domain-[project]/
+
+      2. FIND: Relevant process document
+         .claude/skills/domain-[project]/[process].md
+
+      3. CHECK: Is description still accurate?
+         - Does the process flow still match?
+         - Are business rules still correct?
+         - Is related code section up to date?
+
+      4. IF outdated:
+         UPDATE: The process document
+         - Correct any inaccurate descriptions
+         - Update process flow if changed
+         - Update Related Code section
+
+      5. LOG: "Domain doc updated: [process].md"
+
+    IF no domain skill exists:
+      SKIP: No domain documentation to update
+
+    IF no business logic changed:
+      SKIP: No domain update needed
+  </domain_check>
 </step>
 
 <step name="mark_story_done">
   UPDATE: Story file (agent-os/specs/{SELECTED_SPEC}/stories/{STORY_FILE})
-    - FIND: Line containing "Status: In Progress" or "Status: Ready"
+    - FIND: Line containing "Status: In Progress"
     - REPLACE WITH: "Status: Done"
-    - NOTE: This marks the story as completed
+    - CHECK: All DoD items marked as [x]
 </step>
 
 <step name="story_commit" subagent="git-workflow">
   UPDATE: kanban-board.md
     - MOVE: Story to "Done"
-    - UPDATE Board Status: Testing -1, Completed +1
+    - UPDATE Board Status: In Progress -1, Completed +1
 
   USE: git-workflow subagent
   "Commit story [story-id]:
 
   **WORKING_DIR:** {PROJECT_ROOT} (or {WORKTREE_PATH} if USE_WORKTREE = true)
-  (Use this as the git repository root - do NOT operate in nested repos)
 
   - Message: feat/fix: [story-id] [Story Title]
-  - Stage all changes (including the story file with Status: Done)
+  - Stage all changes including:
+    - Implementation files
+    - Story file with Status: Done
+    - Any dos-and-donts.md updates
+    - Any domain doc updates
   - Push to remote"
 </step>
 
@@ -177,12 +279,12 @@ This phase repeats for each story in the backlog.
   CHECK: Remaining stories in Backlog
 
   IF backlog NOT empty:
-    UPDATE: kanban-board.md (MAINTAIN TABLE FORMAT - see shared/resume-context.md)
+    UPDATE: kanban-board.md (MAINTAIN TABLE FORMAT)
       Resume Context table fields:
       | **Current Phase** | story-complete |
       | **Next Phase** | 3 - Execute Story |
       | **Current Story** | None |
-      | **Last Action** | Completed [story-id] - passed all QA checks |
+      | **Last Action** | Completed [story-id] - self-review passed |
       | **Next Action** | Execute next story |
 
     OUTPUT to user:
@@ -191,6 +293,9 @@ This phase repeats for each story in the backlog.
 
     **Progress:** [X] of [TOTAL] stories
     **Remaining:** [Y] stories
+
+    **Self-Learning:** [Updated/No updates]
+    **Domain Docs:** [Updated/No updates]
 
     **Next:** Execute next story
 
@@ -205,7 +310,7 @@ This phase repeats for each story in the backlog.
     STOP: Do not proceed to next story
 
   ELSE (backlog empty):
-    UPDATE: kanban-board.md (MAINTAIN TABLE FORMAT - see shared/resume-context.md)
+    UPDATE: kanban-board.md (MAINTAIN TABLE FORMAT)
       Resume Context table fields:
       | **Current Phase** | all-stories-done |
       | **Next Phase** | 4.5 - Integration Validation |
@@ -231,3 +336,24 @@ This phase repeats for each story in the backlog.
 
     STOP: Do not proceed to Phase 4.5
 </phase_complete>
+
+---
+
+## Quick Reference: v3.0 Changes
+
+| v2.x (Sub-Agents) | v3.0 (Direct Execution) |
+|-------------------|-------------------------|
+| extract_skill_paths | Skills auto-load via globs |
+| DELEGATE to dev-team__* | Main agent implements |
+| architect_review agent | Self-review with DoD |
+| ux_review agent | Self-review with DoD |
+| qa_testing agent | Self-review with DoD |
+| - | self_learning_check (NEW) |
+| - | domain_update_check (NEW) |
+
+**Benefits:**
+- Full context throughout story
+- No "lost in translation" between agents
+- Better integration (agent sees all changes)
+- Self-learning improves over time
+- Domain docs stay current

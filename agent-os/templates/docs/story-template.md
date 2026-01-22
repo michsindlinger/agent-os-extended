@@ -215,26 +215,12 @@ Der implementierende Agent entscheidet WIE er den Code schreibt - du setzt nur G
 
 **WO:** [Welche Dateien/Ordner zu modifizieren oder erstellen sind - nur Pfade, kein Inhalt]
 
-**WER:** [Welcher Agent - siehe .claude/agents/dev-team/ für verfügbare Agents]
-Beispiele: dev-team__backend-developer, dev-team__frontend-developer
+**Domain:** [Optional - Fachlicher Bereich aus .claude/skills/domain-[projekt]/]
+Beispiele: user-registration, order-processing, payment-flow
 
 **Abhängigkeiten:** [Story IDs von denen diese Story abhängt, oder "None"]
 
 **Geschätzte Komplexität:** [XS/S/M/L/XL]
-
----
-
-### Relevante Skills
-
-> Vom Architect ausgewählt basierend auf skill-index.md
-> Diese Skills werden vom Orchestrator gelesen und Patterns extrahiert
-
-| Skill | Pfad | Grund |
-|-------|------|-------|
-| [SKILL_NAME_1] | agent-os/skills/[skill-path].md | [Warum relevant für diese Story] |
-| [SKILL_NAME_2] | agent-os/skills/[skill-path].md | [Warum relevant für diese Story] |
-
-**Skill-Referenz:** agent-os/team/skill-index.md
 
 ---
 
@@ -267,6 +253,7 @@ Beispiele: dev-team__backend-developer, dev-team__frontend-developer
 - `[STORY_TYPE]`: Backend, Frontend, DevOps, Test
 - `[EFFORT_ESTIMATE]`: Story points (max S/3 SP for automation)
 - `[DEPENDENCIES]`: Other story IDs or "None"
+- `[DOMAIN_AREA]`: Optional domain area from .claude/skills/domain-[project]/
 - `[FEATURE_NAME]`: Kurze Feature-Bezeichnung
 - `[USER_ROLE]`: The persona using this feature
 - `[ACTION]`: What the user wants to do
