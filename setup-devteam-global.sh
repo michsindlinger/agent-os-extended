@@ -2,7 +2,7 @@
 
 # Agent OS DevTeam System - Global Installation
 # Installs standards and templates to ~/.agent-os/ as fallback for all projects
-# Version: 2.4 - Added skill-index template for DevTeam v2.0
+# Version: 2.5 - Fixed skill template paths (SKILL.md in subdirectories)
 
 set -e
 
@@ -14,7 +14,7 @@ echo "========================================="
 echo ""
 echo "This installs to ~/.agent-os/:"
 echo "  • Global coding standards (fallback)"
-echo "  • All DevTeam templates (54 files)"
+echo "  • All DevTeam templates (~80 files)"
 echo ""
 
 # Download helper function
@@ -53,13 +53,43 @@ mkdir -p "$GLOBAL_DIR/templates/product"
 mkdir -p "$GLOBAL_DIR/templates/platform"
 mkdir -p "$GLOBAL_DIR/templates/agents/dev-team"
 mkdir -p "$GLOBAL_DIR/agents"
-mkdir -p "$GLOBAL_DIR/templates/skills/dev-team/architect"
-mkdir -p "$GLOBAL_DIR/templates/skills/dev-team/backend"
-mkdir -p "$GLOBAL_DIR/templates/skills/dev-team/frontend"
-mkdir -p "$GLOBAL_DIR/templates/skills/dev-team/devops"
-mkdir -p "$GLOBAL_DIR/templates/skills/dev-team/qa"
-mkdir -p "$GLOBAL_DIR/templates/skills/dev-team/po"
-mkdir -p "$GLOBAL_DIR/templates/skills/dev-team/documenter"
+# Architect skill directories
+mkdir -p "$GLOBAL_DIR/templates/skills/dev-team/architect/pattern-enforcement"
+mkdir -p "$GLOBAL_DIR/templates/skills/dev-team/architect/api-designing"
+mkdir -p "$GLOBAL_DIR/templates/skills/dev-team/architect/security-guidance"
+mkdir -p "$GLOBAL_DIR/templates/skills/dev-team/architect/data-modeling"
+mkdir -p "$GLOBAL_DIR/templates/skills/dev-team/architect/dependency-checking"
+# Backend skill directories
+mkdir -p "$GLOBAL_DIR/templates/skills/dev-team/backend/logic-implementing"
+mkdir -p "$GLOBAL_DIR/templates/skills/dev-team/backend/persistence-adapter"
+mkdir -p "$GLOBAL_DIR/templates/skills/dev-team/backend/integration-adapter"
+mkdir -p "$GLOBAL_DIR/templates/skills/dev-team/backend/test-engineering"
+# Frontend skill directories
+mkdir -p "$GLOBAL_DIR/templates/skills/dev-team/frontend/ui-component-architecture"
+mkdir -p "$GLOBAL_DIR/templates/skills/dev-team/frontend/state-management"
+mkdir -p "$GLOBAL_DIR/templates/skills/dev-team/frontend/api-bridge-building"
+mkdir -p "$GLOBAL_DIR/templates/skills/dev-team/frontend/interaction-designing"
+# DevOps skill directories
+mkdir -p "$GLOBAL_DIR/templates/skills/dev-team/devops/pipeline-engineering"
+mkdir -p "$GLOBAL_DIR/templates/skills/dev-team/devops/infrastructure-provisioning"
+mkdir -p "$GLOBAL_DIR/templates/skills/dev-team/devops/observability-management"
+mkdir -p "$GLOBAL_DIR/templates/skills/dev-team/devops/security-hardening"
+# QA skill directories
+mkdir -p "$GLOBAL_DIR/templates/skills/dev-team/qa/test-strategy"
+mkdir -p "$GLOBAL_DIR/templates/skills/dev-team/qa/test-automation"
+mkdir -p "$GLOBAL_DIR/templates/skills/dev-team/qa/quality-metrics"
+mkdir -p "$GLOBAL_DIR/templates/skills/dev-team/qa/regression-testing"
+# PO skill directories
+mkdir -p "$GLOBAL_DIR/templates/skills/dev-team/po/backlog-organization"
+mkdir -p "$GLOBAL_DIR/templates/skills/dev-team/po/requirements-engineering"
+mkdir -p "$GLOBAL_DIR/templates/skills/dev-team/po/acceptance-testing"
+mkdir -p "$GLOBAL_DIR/templates/skills/dev-team/po/data-analysis"
+# Documenter skill directories
+mkdir -p "$GLOBAL_DIR/templates/skills/dev-team/documenter/changelog-generation"
+mkdir -p "$GLOBAL_DIR/templates/skills/dev-team/documenter/api-documentation"
+mkdir -p "$GLOBAL_DIR/templates/skills/dev-team/documenter/user-guide-writing"
+mkdir -p "$GLOBAL_DIR/templates/skills/dev-team/documenter/code-documentation"
+# Other skill directories
 mkdir -p "$GLOBAL_DIR/templates/skills/orchestration"
 mkdir -p "$GLOBAL_DIR/templates/skills/platform"
 mkdir -p "$GLOBAL_DIR/templates/skills/skill"
@@ -84,11 +114,11 @@ download_file "$REPO_URL/agent-os/standards/tech-stack.md" \
   "$GLOBAL_DIR/standards/tech-stack.md" "tech-stack template"
 
 # ═══════════════════════════════════════════════════════════
-# TEMPLATES (58 files)
+# TEMPLATES (~80 files including skill SKILL.md files)
 # ═══════════════════════════════════════════════════════════
 
 echo ""
-echo "═══ Installing Templates (58 files) ═══"
+echo "═══ Installing Templates (~80 files) ═══"
 
 # CLAUDE templates (2)
 echo "→ CLAUDE templates (2)..."
@@ -136,74 +166,93 @@ download_file "$REPO_URL/agent-os/templates/agents/dev-team/qa-specialist-templa
 download_file "$REPO_URL/agent-os/templates/agents/dev-team/po-template.md" "$GLOBAL_DIR/templates/agents/dev-team/po-template.md"
 download_file "$REPO_URL/agent-os/templates/agents/dev-team/documenter-template.md" "$GLOBAL_DIR/templates/agents/dev-team/documenter-template.md"
 
-# Architect skills (5)
+# Architect skills (5) - NEW STRUCTURE: each skill in own directory with SKILL.md
 echo "→ Architect skill templates (5)..."
-download_file "$REPO_URL/agent-os/templates/skills/dev-team/architect/pattern-enforcement-template.md" "$GLOBAL_DIR/templates/skills/dev-team/architect/pattern-enforcement-template.md"
-download_file "$REPO_URL/agent-os/templates/skills/dev-team/architect/api-designing-template.md" "$GLOBAL_DIR/templates/skills/dev-team/architect/api-designing-template.md"
-download_file "$REPO_URL/agent-os/templates/skills/dev-team/architect/security-guidance-template.md" "$GLOBAL_DIR/templates/skills/dev-team/architect/security-guidance-template.md"
-download_file "$REPO_URL/agent-os/templates/skills/dev-team/architect/data-modeling-template.md" "$GLOBAL_DIR/templates/skills/dev-team/architect/data-modeling-template.md"
-download_file "$REPO_URL/agent-os/templates/skills/dev-team/architect/dependency-checking-template.md" "$GLOBAL_DIR/templates/skills/dev-team/architect/dependency-checking-template.md"
+download_file "$REPO_URL/agent-os/templates/skills/dev-team/architect/pattern-enforcement/SKILL.md" "$GLOBAL_DIR/templates/skills/dev-team/architect/pattern-enforcement/SKILL.md"
+download_file "$REPO_URL/agent-os/templates/skills/dev-team/architect/api-designing/SKILL.md" "$GLOBAL_DIR/templates/skills/dev-team/architect/api-designing/SKILL.md"
+download_file "$REPO_URL/agent-os/templates/skills/dev-team/architect/security-guidance/SKILL.md" "$GLOBAL_DIR/templates/skills/dev-team/architect/security-guidance/SKILL.md"
+download_file "$REPO_URL/agent-os/templates/skills/dev-team/architect/data-modeling/SKILL.md" "$GLOBAL_DIR/templates/skills/dev-team/architect/data-modeling/SKILL.md"
+download_file "$REPO_URL/agent-os/templates/skills/dev-team/architect/dependency-checking/SKILL.md" "$GLOBAL_DIR/templates/skills/dev-team/architect/dependency-checking/SKILL.md"
 
 # Backend skills (4)
 echo "→ Backend skill templates (4)..."
-download_file "$REPO_URL/agent-os/templates/skills/dev-team/backend/logic-implementing-template.md" "$GLOBAL_DIR/templates/skills/dev-team/backend/logic-implementing-template.md"
-download_file "$REPO_URL/agent-os/templates/skills/dev-team/backend/persistence-adapter-template.md" "$GLOBAL_DIR/templates/skills/dev-team/backend/persistence-adapter-template.md"
-download_file "$REPO_URL/agent-os/templates/skills/dev-team/backend/integration-adapter-template.md" "$GLOBAL_DIR/templates/skills/dev-team/backend/integration-adapter-template.md"
-download_file "$REPO_URL/agent-os/templates/skills/dev-team/backend/test-engineering-template.md" "$GLOBAL_DIR/templates/skills/dev-team/backend/test-engineering-template.md"
+download_file "$REPO_URL/agent-os/templates/skills/dev-team/backend/logic-implementing/SKILL.md" "$GLOBAL_DIR/templates/skills/dev-team/backend/logic-implementing/SKILL.md"
+download_file "$REPO_URL/agent-os/templates/skills/dev-team/backend/persistence-adapter/SKILL.md" "$GLOBAL_DIR/templates/skills/dev-team/backend/persistence-adapter/SKILL.md"
+download_file "$REPO_URL/agent-os/templates/skills/dev-team/backend/integration-adapter/SKILL.md" "$GLOBAL_DIR/templates/skills/dev-team/backend/integration-adapter/SKILL.md"
+download_file "$REPO_URL/agent-os/templates/skills/dev-team/backend/test-engineering/SKILL.md" "$GLOBAL_DIR/templates/skills/dev-team/backend/test-engineering/SKILL.md"
 
 # Frontend skills (4)
 echo "→ Frontend skill templates (4)..."
-download_file "$REPO_URL/agent-os/templates/skills/dev-team/frontend/ui-component-architecture-template.md" "$GLOBAL_DIR/templates/skills/dev-team/frontend/ui-component-architecture-template.md"
-download_file "$REPO_URL/agent-os/templates/skills/dev-team/frontend/state-management-template.md" "$GLOBAL_DIR/templates/skills/dev-team/frontend/state-management-template.md"
-download_file "$REPO_URL/agent-os/templates/skills/dev-team/frontend/api-bridge-building-template.md" "$GLOBAL_DIR/templates/skills/dev-team/frontend/api-bridge-building-template.md"
-download_file "$REPO_URL/agent-os/templates/skills/dev-team/frontend/interaction-designing-template.md" "$GLOBAL_DIR/templates/skills/dev-team/frontend/interaction-designing-template.md"
+download_file "$REPO_URL/agent-os/templates/skills/dev-team/frontend/ui-component-architecture/SKILL.md" "$GLOBAL_DIR/templates/skills/dev-team/frontend/ui-component-architecture/SKILL.md"
+download_file "$REPO_URL/agent-os/templates/skills/dev-team/frontend/state-management/SKILL.md" "$GLOBAL_DIR/templates/skills/dev-team/frontend/state-management/SKILL.md"
+download_file "$REPO_URL/agent-os/templates/skills/dev-team/frontend/api-bridge-building/SKILL.md" "$GLOBAL_DIR/templates/skills/dev-team/frontend/api-bridge-building/SKILL.md"
+download_file "$REPO_URL/agent-os/templates/skills/dev-team/frontend/interaction-designing/SKILL.md" "$GLOBAL_DIR/templates/skills/dev-team/frontend/interaction-designing/SKILL.md"
 
 # DevOps skills (4)
 echo "→ DevOps skill templates (4)..."
-download_file "$REPO_URL/agent-os/templates/skills/dev-team/devops/pipeline-engineering-template.md" "$GLOBAL_DIR/templates/skills/dev-team/devops/pipeline-engineering-template.md"
-download_file "$REPO_URL/agent-os/templates/skills/dev-team/devops/infrastructure-provisioning-template.md" "$GLOBAL_DIR/templates/skills/dev-team/devops/infrastructure-provisioning-template.md"
-download_file "$REPO_URL/agent-os/templates/skills/dev-team/devops/observability-management-template.md" "$GLOBAL_DIR/templates/skills/dev-team/devops/observability-management-template.md"
-download_file "$REPO_URL/agent-os/templates/skills/dev-team/devops/security-hardening-template.md" "$GLOBAL_DIR/templates/skills/dev-team/devops/security-hardening-template.md"
+download_file "$REPO_URL/agent-os/templates/skills/dev-team/devops/pipeline-engineering/SKILL.md" "$GLOBAL_DIR/templates/skills/dev-team/devops/pipeline-engineering/SKILL.md"
+download_file "$REPO_URL/agent-os/templates/skills/dev-team/devops/infrastructure-provisioning/SKILL.md" "$GLOBAL_DIR/templates/skills/dev-team/devops/infrastructure-provisioning/SKILL.md"
+download_file "$REPO_URL/agent-os/templates/skills/dev-team/devops/observability-management/SKILL.md" "$GLOBAL_DIR/templates/skills/dev-team/devops/observability-management/SKILL.md"
+download_file "$REPO_URL/agent-os/templates/skills/dev-team/devops/security-hardening/SKILL.md" "$GLOBAL_DIR/templates/skills/dev-team/devops/security-hardening/SKILL.md"
 
 # QA skills (4)
 echo "→ QA skill templates (4)..."
-download_file "$REPO_URL/agent-os/templates/skills/dev-team/qa/test-strategy-template.md" "$GLOBAL_DIR/templates/skills/dev-team/qa/test-strategy-template.md"
-download_file "$REPO_URL/agent-os/templates/skills/dev-team/qa/test-automation-template.md" "$GLOBAL_DIR/templates/skills/dev-team/qa/test-automation-template.md"
-download_file "$REPO_URL/agent-os/templates/skills/dev-team/qa/quality-metrics-template.md" "$GLOBAL_DIR/templates/skills/dev-team/qa/quality-metrics-template.md"
-download_file "$REPO_URL/agent-os/templates/skills/dev-team/qa/regression-testing-template.md" "$GLOBAL_DIR/templates/skills/dev-team/qa/regression-testing-template.md"
+download_file "$REPO_URL/agent-os/templates/skills/dev-team/qa/test-strategy/SKILL.md" "$GLOBAL_DIR/templates/skills/dev-team/qa/test-strategy/SKILL.md"
+download_file "$REPO_URL/agent-os/templates/skills/dev-team/qa/test-automation/SKILL.md" "$GLOBAL_DIR/templates/skills/dev-team/qa/test-automation/SKILL.md"
+download_file "$REPO_URL/agent-os/templates/skills/dev-team/qa/quality-metrics/SKILL.md" "$GLOBAL_DIR/templates/skills/dev-team/qa/quality-metrics/SKILL.md"
+download_file "$REPO_URL/agent-os/templates/skills/dev-team/qa/regression-testing/SKILL.md" "$GLOBAL_DIR/templates/skills/dev-team/qa/regression-testing/SKILL.md"
 
 # PO skills (4)
 echo "→ PO skill templates (4)..."
-download_file "$REPO_URL/agent-os/templates/skills/dev-team/po/backlog-organization-template.md" "$GLOBAL_DIR/templates/skills/dev-team/po/backlog-organization-template.md"
-download_file "$REPO_URL/agent-os/templates/skills/dev-team/po/requirements-engineering-template.md" "$GLOBAL_DIR/templates/skills/dev-team/po/requirements-engineering-template.md"
-download_file "$REPO_URL/agent-os/templates/skills/dev-team/po/acceptance-testing-template.md" "$GLOBAL_DIR/templates/skills/dev-team/po/acceptance-testing-template.md"
-download_file "$REPO_URL/agent-os/templates/skills/dev-team/po/data-analysis-template.md" "$GLOBAL_DIR/templates/skills/dev-team/po/data-analysis-template.md"
+download_file "$REPO_URL/agent-os/templates/skills/dev-team/po/backlog-organization/SKILL.md" "$GLOBAL_DIR/templates/skills/dev-team/po/backlog-organization/SKILL.md"
+download_file "$REPO_URL/agent-os/templates/skills/dev-team/po/requirements-engineering/SKILL.md" "$GLOBAL_DIR/templates/skills/dev-team/po/requirements-engineering/SKILL.md"
+download_file "$REPO_URL/agent-os/templates/skills/dev-team/po/acceptance-testing/SKILL.md" "$GLOBAL_DIR/templates/skills/dev-team/po/acceptance-testing/SKILL.md"
+download_file "$REPO_URL/agent-os/templates/skills/dev-team/po/data-analysis/SKILL.md" "$GLOBAL_DIR/templates/skills/dev-team/po/data-analysis/SKILL.md"
 
 # Documenter skills (4)
 echo "→ Documenter skill templates (4)..."
-download_file "$REPO_URL/agent-os/templates/skills/dev-team/documenter/changelog-generation-template.md" "$GLOBAL_DIR/templates/skills/dev-team/documenter/changelog-generation-template.md"
-download_file "$REPO_URL/agent-os/templates/skills/dev-team/documenter/api-documentation-template.md" "$GLOBAL_DIR/templates/skills/dev-team/documenter/api-documentation-template.md"
-download_file "$REPO_URL/agent-os/templates/skills/dev-team/documenter/user-guide-writing-template.md" "$GLOBAL_DIR/templates/skills/dev-team/documenter/user-guide-writing-template.md"
-download_file "$REPO_URL/agent-os/templates/skills/dev-team/documenter/code-documentation-template.md" "$GLOBAL_DIR/templates/skills/dev-team/documenter/code-documentation-template.md"
+download_file "$REPO_URL/agent-os/templates/skills/dev-team/documenter/changelog-generation/SKILL.md" "$GLOBAL_DIR/templates/skills/dev-team/documenter/changelog-generation/SKILL.md"
+download_file "$REPO_URL/agent-os/templates/skills/dev-team/documenter/api-documentation/SKILL.md" "$GLOBAL_DIR/templates/skills/dev-team/documenter/api-documentation/SKILL.md"
+download_file "$REPO_URL/agent-os/templates/skills/dev-team/documenter/user-guide-writing/SKILL.md" "$GLOBAL_DIR/templates/skills/dev-team/documenter/user-guide-writing/SKILL.md"
+download_file "$REPO_URL/agent-os/templates/skills/dev-team/documenter/code-documentation/SKILL.md" "$GLOBAL_DIR/templates/skills/dev-team/documenter/code-documentation/SKILL.md"
 
-# Platform skills (4)
+# Platform skills (4) - NEW STRUCTURE: each skill in own directory with SKILL.md
 echo "→ Platform skill templates (4)..."
-download_file "$REPO_URL/agent-os/templates/skills/platform/system-integration-patterns-template.md" "$GLOBAL_DIR/templates/skills/platform/system-integration-patterns-template.md"
-download_file "$REPO_URL/agent-os/templates/skills/platform/dependency-management-template.md" "$GLOBAL_DIR/templates/skills/platform/dependency-management-template.md"
-download_file "$REPO_URL/agent-os/templates/skills/platform/modular-architecture-template.md" "$GLOBAL_DIR/templates/skills/platform/modular-architecture-template.md"
-download_file "$REPO_URL/agent-os/templates/skills/platform/platform-scalability-template.md" "$GLOBAL_DIR/templates/skills/platform/platform-scalability-template.md"
+mkdir -p "$GLOBAL_DIR/templates/skills/platform/system-integration-patterns"
+mkdir -p "$GLOBAL_DIR/templates/skills/platform/dependency-management"
+mkdir -p "$GLOBAL_DIR/templates/skills/platform/modular-architecture"
+mkdir -p "$GLOBAL_DIR/templates/skills/platform/platform-scalability"
+download_file "$REPO_URL/agent-os/templates/skills/platform/system-integration-patterns/SKILL.md" "$GLOBAL_DIR/templates/skills/platform/system-integration-patterns/SKILL.md"
+download_file "$REPO_URL/agent-os/templates/skills/platform/dependency-management/SKILL.md" "$GLOBAL_DIR/templates/skills/platform/dependency-management/SKILL.md"
+download_file "$REPO_URL/agent-os/templates/skills/platform/modular-architecture/SKILL.md" "$GLOBAL_DIR/templates/skills/platform/modular-architecture/SKILL.md"
+download_file "$REPO_URL/agent-os/templates/skills/platform/platform-scalability/SKILL.md" "$GLOBAL_DIR/templates/skills/platform/platform-scalability/SKILL.md"
 
 # Orchestration skill (1)
 echo "→ Orchestration skill template (1)..."
-download_file "$REPO_URL/agent-os/templates/skills/orchestration/orchestration-template.md" "$GLOBAL_DIR/templates/skills/orchestration/orchestration-template.md"
+mkdir -p "$GLOBAL_DIR/templates/skills/orchestration/orchestration"
+download_file "$REPO_URL/agent-os/templates/skills/orchestration/orchestration/SKILL.md" "$GLOBAL_DIR/templates/skills/orchestration/orchestration/SKILL.md"
 
 # Generic skill template (1)
 echo "→ Generic skill template (1)..."
-download_file "$REPO_URL/agent-os/templates/skills/generic-skill-template.md" "$GLOBAL_DIR/templates/skills/generic-skill-template.md"
+mkdir -p "$GLOBAL_DIR/templates/skills/generic-skill"
+download_file "$REPO_URL/agent-os/templates/skills/generic-skill/SKILL.md" "$GLOBAL_DIR/templates/skills/generic-skill/SKILL.md"
 
-# Base skill template (1) - NEW with YAML frontmatter
+# Base skill template (1) - YAML frontmatter template
 echo "→ Base skill template (1)..."
 download_file "$REPO_URL/agent-os/templates/skills/skill/SKILL.md" "$GLOBAL_DIR/templates/skills/skill/SKILL.md"
+
+# Additional root-level skills (4)
+echo "→ Additional skill templates (4)..."
+mkdir -p "$GLOBAL_DIR/templates/skills/api-implementation-patterns"
+mkdir -p "$GLOBAL_DIR/templates/skills/component-architecture"
+mkdir -p "$GLOBAL_DIR/templates/skills/deployment-automation"
+mkdir -p "$GLOBAL_DIR/templates/skills/file-organization-patterns"
+mkdir -p "$GLOBAL_DIR/templates/skills/testing-strategies"
+download_file "$REPO_URL/agent-os/templates/skills/api-implementation-patterns/SKILL.md" "$GLOBAL_DIR/templates/skills/api-implementation-patterns/SKILL.md"
+download_file "$REPO_URL/agent-os/templates/skills/component-architecture/SKILL.md" "$GLOBAL_DIR/templates/skills/component-architecture/SKILL.md"
+download_file "$REPO_URL/agent-os/templates/skills/deployment-automation/SKILL.md" "$GLOBAL_DIR/templates/skills/deployment-automation/SKILL.md"
+download_file "$REPO_URL/agent-os/templates/skills/file-organization-patterns/SKILL.md" "$GLOBAL_DIR/templates/skills/file-organization-patterns/SKILL.md"
+download_file "$REPO_URL/agent-os/templates/skills/testing-strategies/SKILL.md" "$GLOBAL_DIR/templates/skills/testing-strategies/SKILL.md"
 
 # Documentation templates (14)
 echo "→ Documentation templates (14)..."
@@ -235,25 +284,26 @@ echo ""
 echo "  agents/ (1 file)"
 echo "    └── platform-architect.md"
 echo ""
-echo "  templates/ (75 files)"
+echo "  templates/ (~80 files)"
 echo "    ├── CLAUDE-LITE.md (for single products)"
 echo "    ├── CLAUDE-PLATFORM.md (for platforms)"
 echo "    ├── product/ (10)"
 echo "    ├── platform/ (7)"
 echo "    ├── agents/dev-team/ (7)"
-echo "    ├── skills/ (35 total)"
-echo "    │   ├── dev-team/ (29)"
-echo "    │   │   ├── architect/ (5)"
-echo "    │   │   ├── backend/ (4)"
-echo "    │   │   ├── frontend/ (4)"
-echo "    │   │   ├── devops/ (4)"
-echo "    │   │   ├── qa/ (4)"
-echo "    │   │   ├── po/ (4)"
-echo "    │   │   └── documenter/ (4)"
-echo "    │   ├── platform/ (4)"
+echo "    ├── skills/ (40 total) - NEW STRUCTURE: SKILL.md in subdirectories"
+echo "    │   ├── dev-team/ (29 skills)"
+echo "    │   │   ├── architect/ (5): api-designing, data-modeling, ..."
+echo "    │   │   ├── backend/ (4): logic-implementing, persistence-adapter, ..."
+echo "    │   │   ├── frontend/ (4): ui-component-architecture, state-management, ..."
+echo "    │   │   ├── devops/ (4): pipeline-engineering, infrastructure-provisioning, ..."
+echo "    │   │   ├── qa/ (4): test-strategy, test-automation, ..."
+echo "    │   │   ├── po/ (4): backlog-organization, requirements-engineering, ..."
+echo "    │   │   └── documenter/ (4): changelog-generation, api-documentation, ..."
+echo "    │   ├── platform/ (4): system-integration-patterns, dependency-management, ..."
 echo "    │   ├── orchestration/ (1)"
-echo "    │   ├── skill/ (1)"
-echo "    │   └── generic-skill-template.md (1)"
+echo "    │   ├── skill/ (1) - base template"
+echo "    │   ├── generic-skill/ (1)"
+echo "    │   └── root-level/ (5): api-implementation-patterns, component-architecture, ..."
 echo "    └── docs/ (14) ← includes skill-index-template"
 echo ""
 echo "📚 Hybrid Lookup System:"
