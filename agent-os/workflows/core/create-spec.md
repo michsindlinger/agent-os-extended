@@ -2,7 +2,7 @@
 description: Create Feature Specification with DevTeam (PO + Architect)
 globs:
 alwaysApply: false
-version: 2.5
+version: 2.6
 encoding: UTF-8
 ---
 
@@ -12,13 +12,19 @@ encoding: UTF-8
 
 Create detailed feature specifications using DevTeam collaboration: PO gathers fachliche requirements, Architect adds technical refinement.
 
+**v2.6 Changes:**
+- **NEW: Gherkin-Style User Stories** - PO schreibt Akzeptanzkriterien im Given-When-Then Format
+- **NEW: Best Practices für Gherkin** - Ein Verhalten pro Szenario, konkrete Werte, Nutzer-Perspektive
+- **ENHANCED: Story Template** - Trennung zwischen fachlichen Gherkin-Szenarien und technischer Verifikation
+- **ENHANCED: Acceptance Criteria** - Fachlich (Gherkin) + Technisch (FILE_EXISTS, etc.) getrennt
+
 **v2.5 Changes:**
-- **NEW: Pre-Refinement Layer Analysis** - Systematic identification of all affected layers before technical refinement
-- **NEW: "Betroffene Layer & Komponenten" section** in story template for Full-Stack consistency
-- **NEW: Integration Type** classification (Backend-only / Frontend-only / Full-stack)
-- **NEW: Critical Integration Points** documentation for cross-layer dependencies
-- **ENHANCED: Cross-Layer Detection** in Step 3.5 validates layer coverage in WO section
-- **ENHANCED: DoR checkboxes** now include Full-Stack consistency checks
+- Pre-Refinement Layer Analysis - Systematic identification of all affected layers before technical refinement
+- "Betroffene Layer & Komponenten" section in story template for Full-Stack consistency
+- Integration Type classification (Backend-only / Frontend-only / Full-stack)
+- Critical Integration Points documentation for cross-layer dependencies
+- Cross-Layer Detection in Step 3.5 validates layer coverage in WO section
+- DoR checkboxes now include Full-Stack consistency checks
 
 **v2.4 Changes:**
 - Architect now selects relevant skills from skill-index.md for each story
@@ -292,15 +298,68 @@ Before generating user stories, create a summary document for user approval.
      - Create file: stories/story-###-[slug].md
        where [slug] = title lowercase with hyphens
      - Use template: agent-os/templates/docs/story-template.md
-     - Fill with FACHLICHE content:
-       * Story title
-       * Als [User] möchte ich [Aktion], damit [Nutzen]
-       * Fachliche acceptance criteria (user-facing, 3-5 items)
+     - Fill with FACHLICHE content im **GHERKIN-STYLE**:
+
+       **Feature-Block (Pflicht):**
+       ```gherkin
+       Feature: [Feature-Name]
+         Als [User-Rolle]
+         möchte ich [Aktion],
+         damit [Nutzen/Wert].
+       ```
+
+       **Akzeptanzkriterien als Gherkin-Szenarien (Pflicht):**
+       - Schreibe 2-5 Szenarien im Given-When-Then Format
+       - Ein Verhalten pro Szenario (fokussiert & testbar)
+       - Verwende konkrete Werte ("100€" nicht "einen Betrag")
+       - Schreibe aus Nutzer-Perspektive (keine technischen Details)
+       - Beschreibe WAS passiert, nicht WIE
+       - Max. 2-3 "And"-Schritte pro Abschnitt
+       - Inkludiere mindestens 1 Edge-Case/Fehlerszenario
+
+       **Gherkin-Beispiel:**
+       ```gherkin
+       Scenario: Erfolgreicher Login mit gültigen Zugangsdaten
+         Given ich bin auf der Login-Seite
+         And ich bin ein registrierter Benutzer mit Email "max@example.com"
+         When ich meine Zugangsdaten eingebe
+         And ich die Anmeldung bestätige
+         Then sehe ich mein persönliches Dashboard
+         And ich bin für 24 Stunden eingeloggt
+
+       Scenario: Login schlägt fehl bei falschem Passwort
+         Given ich bin auf der Login-Seite
+         When ich ein falsches Passwort eingebe
+         Then sehe ich eine Fehlermeldung "Ungültige Zugangsdaten"
+         And ich kann es erneut versuchen
+       ```
+
+       **Anti-Patterns (VERMEIDEN):**
+       - ❌ "Given ich navigiere zu /login.html" (technisch)
+       - ❌ "When ich auf den Button mit id='submit' klicke" (Implementation)
+       - ❌ Mehrere unabhängige Tests in einem Szenario
+       - ❌ Vage Beschreibungen ohne konkrete Werte
+
+       **Scenario Outline für Variationen:**
+       ```gherkin
+       Scenario Outline: Validierung von Eingabefeldern
+         Given ich bin im Registrierungsformular
+         When ich <feld> mit "<wert>" ausfülle
+         Then sehe ich <ergebnis>
+
+         Examples:
+           | feld     | wert           | ergebnis                    |
+           | Email    | ungültig       | "Bitte gültige Email"       |
+           | Email    | test@valid.com | keine Fehlermeldung         |
+           | Passwort | 123            | "Mindestens 8 Zeichen"      |
+       ```
+
        * Business value explanation
        * Required MCP Tools (if applicable)
      - Leave technical sections EMPTY (Architect fills in Step 3):
        * DoR/DoD checkboxes (unchecked)
        * WAS/WIE/WO/WER fields
+       * Technische Verifikation (FILE_EXISTS, etc.)
        * Completion Check commands
 
   7. CREATE story-index.md (load template with hybrid lookup):
@@ -324,19 +383,32 @@ Before generating user stories, create a summary document for user approval.
   - Automated validation occurs in Step 3.5
   - Full guidelines: agent-os/docs/story-sizing-guidelines.md
 
-  ACCEPTANCE CRITERIA FORMAT (for automated verification):
+  ACCEPTANCE CRITERIA FORMAT:
+
+  **Fachliche Kriterien (PO schreibt - Gherkin-Style):**
+  - Schreibe Akzeptanzkriterien als Gherkin-Szenarien (Given-When-Then)
+  - Ein Verhalten pro Szenario
+  - Konkrete Werte, Nutzer-Perspektive, deklarativ
+  - Min. 2 Szenarien, inkl. mindestens 1 Edge-Case
+
+  **Technische Verifikation (Architect ergänzt später):**
   - Use prefix format: FILE_EXISTS:, CONTAINS:, LINT_PASS:, TEST_PASS:
   - Each criterion must be verifiable via bash command
   - Include exact file paths
   - For browser tests: MCP_PLAYWRIGHT: prefix
   - Avoid MANUAL: criteria when possible
-  - Reference: agent-os/templates/docs/story-template.md
+
+  Reference: agent-os/templates/docs/story-template.md
 
   IMPORTANT:
   - Write ONLY fachliche (business) content
-  - NO technical details (WAS/WIE/WO/WER)
+  - **USE GHERKIN-STYLE for all acceptance criteria (Given-When-Then)**
+  - **Nutzer-Perspektive, keine technischen Details in Szenarien**
+  - **Konkrete Werte, ein Verhalten pro Szenario**
+  - NO technical details (WAS/WIE/WO/WER) - Architect adds this
   - NO DoR/DoD (Architect adds this in Step 3)
   - NO dependencies (Architect adds this in Step 3)
+  - NO technical verification (FILE_EXISTS, etc.) - Architect adds this
   - Focus on WHAT user needs, not HOW to implement
   - Stories must be small enough for single Claude Code session
   - Each story gets its OWN file for better context efficiency

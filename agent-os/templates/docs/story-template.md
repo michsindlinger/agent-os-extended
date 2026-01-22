@@ -12,15 +12,75 @@
 
 ---
 
-## User Story
+## Feature
 
-Als [USER_ROLE]
-möchte ich [ACTION],
-damit [BENEFIT].
+```gherkin
+Feature: [FEATURE_NAME]
+  Als [USER_ROLE]
+  möchte ich [ACTION],
+  damit [BENEFIT].
+```
 
 ---
 
-## Akzeptanzkriterien (Prüfbar)
+## Akzeptanzkriterien (Gherkin-Szenarien)
+
+> **Gherkin Best Practices:**
+> - Ein Verhalten pro Szenario (fokussiert & testbar)
+> - Konkrete Werte statt Platzhalter ("100€" nicht "einen Betrag")
+> - Nutzer-Perspektive, keine technischen Details
+> - Deklarativ: WAS passiert, nicht WIE
+> - Max. 2-3 "And"-Schritte pro Abschnitt
+
+### Szenario 1: [SCENARIO_TITLE]
+
+```gherkin
+Scenario: [SCENARIO_TITLE]
+  Given [PRECONDITION/CONTEXT]
+  When [USER_ACTION]
+  Then [EXPECTED_OUTCOME]
+```
+
+### Szenario 2: [SCENARIO_TITLE]
+
+```gherkin
+Scenario: [SCENARIO_TITLE]
+  Given [PRECONDITION/CONTEXT]
+  And [ADDITIONAL_CONTEXT]
+  When [USER_ACTION]
+  Then [EXPECTED_OUTCOME]
+  And [ADDITIONAL_OUTCOME]
+```
+
+### Szenario Outline (für Variationen)
+
+```gherkin
+Scenario Outline: [SCENARIO_TITLE]
+  Given [PRECONDITION mit <variable>]
+  When [ACTION mit <variable>]
+  Then [OUTCOME mit <expected>]
+
+  Examples:
+    | variable | expected |
+    | [value1] | [result1] |
+    | [value2] | [result2] |
+```
+
+### Edge Cases & Fehlerszenarien
+
+```gherkin
+Scenario: [ERROR_SCENARIO_TITLE]
+  Given [ERROR_PRECONDITION]
+  When [ACTION_THAT_CAUSES_ERROR]
+  Then [EXPECTED_ERROR_HANDLING]
+```
+
+---
+
+## Technische Verifikation (Automated Checks)
+
+> **Hinweis:** Diese technischen Prüfungen werden automatisch ausgeführt.
+> Sie ergänzen die fachlichen Gherkin-Szenarien mit maschinell prüfbaren Kriterien.
 
 ### Datei-Prüfungen
 
@@ -207,11 +267,24 @@ Beispiele: dev-team__backend-developer, dev-team__frontend-developer
 - `[STORY_TYPE]`: Backend, Frontend, DevOps, Test
 - `[EFFORT_ESTIMATE]`: Story points (max S/3 SP for automation)
 - `[DEPENDENCIES]`: Other story IDs or "None"
+- `[FEATURE_NAME]`: Kurze Feature-Bezeichnung
 - `[USER_ROLE]`: The persona using this feature
 - `[ACTION]`: What the user wants to do
 - `[BENEFIT]`: Why this matters to the user
 
-**Acceptance Criteria Prefixes:**
+**Gherkin Scenario Placeholders:**
+- `[SCENARIO_TITLE]`: Kurzer, beschreibender Szenario-Name
+- `[PRECONDITION/CONTEXT]`: Ausgangssituation (Given)
+- `[ADDITIONAL_CONTEXT]`: Weitere Vorbedingungen (And nach Given)
+- `[USER_ACTION]`: Nutzeraktion (When)
+- `[EXPECTED_OUTCOME]`: Erwartetes Ergebnis (Then)
+- `[ADDITIONAL_OUTCOME]`: Weitere Ergebnisse (And nach Then)
+- `[ERROR_SCENARIO_TITLE]`: Fehlerszenario-Name
+- `[ERROR_PRECONDITION]`: Fehler-Ausgangssituation
+- `[ACTION_THAT_CAUSES_ERROR]`: Aktion die Fehler verursacht
+- `[EXPECTED_ERROR_HANDLING]`: Erwartete Fehlerbehandlung
+
+**Technical Verification Prefixes:**
 - `FILE_EXISTS:` - Verify file exists at path
 - `FILE_NOT_EXISTS:` - Verify file does NOT exist
 - `CONTAINS:` - Verify file contains text/pattern
@@ -231,11 +304,47 @@ Beispiele: dev-team__backend-developer, dev-team__frontend-developer
 - Max complexity: S (Small, 1-3 SP)
 - Single concern per story
 
-**Acceptance Criteria:**
+**Gherkin Best Practices (WICHTIG für PO):**
+- **Ein Verhalten pro Szenario**: Jedes Szenario testet genau ein Outcome
+- **Konkrete Werte**: "100€" statt "einen Betrag", "Max Mustermann" statt "ein Benutzer"
+- **Nutzer-Perspektive**: Beschreibe aus Sicht des Anwenders, nicht technisch
+- **Deklarativ**: Beschreibe WAS passiert, nicht WIE (keine UI-Details wie "klicke Button")
+- **Max 2-3 Ands**: Pro Given/When/Then-Abschnitt maximal 2-3 "And"-Zeilen
+- **Background für Wiederholungen**: Gemeinsame Vorbedingungen in Background auslagern
+- **Scenario Outline für Variationen**: Bei gleicher Logik mit verschiedenen Werten
+
+**Gherkin Anti-Patterns (VERMEIDEN):**
+- ❌ Technische Details: "Given ich navigiere zu /login.html"
+- ❌ Mehrere Verhaltens-Tests in einem Szenario
+- ❌ Vage Beschreibungen: "Given ich habe ein Konto"
+- ❌ Zu viele Steps (>10 pro Szenario)
+- ❌ Implementation Details im When-Step
+
+**Gherkin Good Examples:**
+```gherkin
+# ✅ GUT: Konkret, nutzerorientiert, ein Verhalten
+Scenario: Erfolgreiche Abhebung bei ausreichendem Guthaben
+  Given mein Kontostand beträgt 100€
+  When ich 20€ abhebe
+  Then sollte mein Kontostand 80€ betragen
+  And ich erhalte eine Transaktionsbestätigung
+
+# ❌ SCHLECHT: Technisch, vage, multiple Tests
+Scenario: Login und Abhebung
+  Given ich bin auf der URL /bank/login
+  When ich username und password eingebe
+  And ich auf den Submit-Button klicke
+  Then werde ich zur Dashboard-Seite weitergeleitet
+  And ich sehe mein Konto
+  And ich kann Geld abheben
+```
+
+**Technical Verification:**
 - MUST use prefix format (FILE_EXISTS, CONTAINS, etc.)
 - MUST be verifiable via bash commands
 - MUST include exact file paths
 - Avoid MANUAL criteria when possible
+- Technical checks COMPLEMENT Gherkin scenarios (they don't replace them)
 
 **DoR (Definition of Ready):**
 - Architect marks items as done [x] during refinement

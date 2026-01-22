@@ -2,7 +2,7 @@
 description: Add quick task to backlog with lightweight PO + Architect refinement
 globs:
 alwaysApply: false
-version: 1.2
+version: 1.3
 encoding: UTF-8
 ---
 
@@ -117,17 +117,68 @@ Add a lightweight task to the backlog without full spec creation. Uses same stor
        ⚠️ WICHTIG: Bei "Error reading file" IMMER den Fallback-Pfad versuchen!
      </template_lookup>
 
-  3. FILL fachliche content (PO perspective):
-     - Story Title
-     - Als [User] möchte ich [Aktion], damit [Nutzen]
-     - Fachliche acceptance criteria (2-4 items, keep brief)
+  3. FILL fachliche content im **GHERKIN-STYLE** (PO perspective):
+
+     **Feature-Block:**
+     ```gherkin
+     Feature: [Feature-Name]
+       Als [User-Rolle]
+       möchte ich [Aktion],
+       damit [Nutzen].
+     ```
+
+     **Akzeptanzkriterien als Gherkin-Szenarien (2-3 für Todos):**
+     ```gherkin
+     Scenario: [Hauptszenario - Happy Path]
+       Given [Ausgangssituation]
+       When [Nutzeraktion]
+       Then [Erwartetes Ergebnis]
+
+     Scenario: [Edge-Case oder Fehlerfall]
+       Given [Fehler-Ausgangssituation]
+       When [Aktion]
+       Then [Erwartete Fehlerbehandlung]
+     ```
+
+     **Gherkin Best Practices (auch für kleine Todos):**
+     - Ein Verhalten pro Szenario
+     - Konkrete Werte ("Laden-Animation" nicht "eine Animation")
+     - Nutzer-Perspektive, keine technischen Details
+     - Kurz und prägnant (2-3 Szenarien reichen für Todos)
+
+     **Beispiel für Todo "Loading State in Modal":**
+     ```gherkin
+     Feature: Loading State im Modal
+       Als Benutzer
+       möchte ich einen Ladezustand sehen wenn Daten geladen werden,
+       damit ich weiß dass die Anwendung arbeitet.
+
+     Scenario: Ladezustand wird angezeigt während Daten laden
+       Given ich öffne das Modal
+       When die Daten noch geladen werden
+       Then sehe ich eine Lade-Animation
+       And die Interaktions-Buttons sind deaktiviert
+
+     Scenario: Ladezustand verschwindet nach erfolgreichem Laden
+       Given das Modal zeigt den Ladezustand
+       When die Daten erfolgreich geladen wurden
+       Then verschwindet die Lade-Animation
+       And ich sehe die geladenen Daten
+     ```
+
      - Priority: Low/Medium/High
      - Type: Frontend/Backend/DevOps/Test
 
-  4. LEAVE technical sections EMPTY:
+  4. LEAVE technical sections EMPTY (Architect fills in Step 4):
      - DoR/DoD checkboxes (unchecked)
      - WAS/WIE/WO/WER fields
+     - Technische Verifikation (FILE_EXISTS, LINT_PASS, etc.)
      - Completion Check commands
+
+  **WICHTIG für Gherkin:**
+  - Keine technischen Details in Gherkin-Szenarien
+  - Keine UI-Implementierung ("klicke Button mit id=xyz")
+  - Fokus auf Nutzer-Erlebnis, nicht Code
 
   5. WRITE: Story file to agent-os/backlog/
 </mandatory_actions>
