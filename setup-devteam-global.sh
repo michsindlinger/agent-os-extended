@@ -134,21 +134,21 @@ download_file "$REPO_URL/.agent-os/agents/platform-architect.md" "$GLOBAL_DIR/ag
 # DevTeam v3.0: Universal Skills (always created)
 # Quality Gates (1 file)
 echo "→ Quality Gates skill (1 file)..."
-download_file "$REPO_URL/agent-os/templates/skills/quality-gates/Skill.md" "$GLOBAL_DIR/templates/skills/quality-gates/Skill.md"
+download_file "$REPO_URL/agent-os/templates/skills/quality-gates/SKILL.md" "$GLOBAL_DIR/templates/skills/quality-gates/SKILL.md"
 
 # PO Requirements (1 file) - for story creation
 echo "→ PO Requirements skill (1 file)..."
-download_file "$REPO_URL/agent-os/templates/skills/po-requirements/Skill.md" "$GLOBAL_DIR/templates/skills/po-requirements/Skill.md"
+download_file "$REPO_URL/agent-os/templates/skills/po-requirements/SKILL.md" "$GLOBAL_DIR/templates/skills/po-requirements/SKILL.md"
 
 # Architect Refinement (1 file) - for technical refinement
 echo "→ Architect Refinement skill (1 file)..."
-download_file "$REPO_URL/agent-os/templates/skills/architect-refinement/Skill.md" "$GLOBAL_DIR/templates/skills/architect-refinement/Skill.md"
+download_file "$REPO_URL/agent-os/templates/skills/architect-refinement/SKILL.md" "$GLOBAL_DIR/templates/skills/architect-refinement/SKILL.md"
 
 # DevTeam v3.0: Technology Skills
 
 # Frontend Angular (6 files)
 echo "→ Frontend Angular skill (6 files)..."
-download_file "$REPO_URL/agent-os/templates/skills/frontend/angular/Skill.md" "$GLOBAL_DIR/templates/skills/frontend/angular/Skill.md"
+download_file "$REPO_URL/agent-os/templates/skills/frontend/angular/SKILL.md" "$GLOBAL_DIR/templates/skills/frontend/angular/SKILL.md"
 download_file "$REPO_URL/agent-os/templates/skills/frontend/angular/components.md" "$GLOBAL_DIR/templates/skills/frontend/angular/components.md"
 download_file "$REPO_URL/agent-os/templates/skills/frontend/angular/state-management.md" "$GLOBAL_DIR/templates/skills/frontend/angular/state-management.md"
 download_file "$REPO_URL/agent-os/templates/skills/frontend/angular/api-integration.md" "$GLOBAL_DIR/templates/skills/frontend/angular/api-integration.md"
@@ -157,7 +157,7 @@ download_file "$REPO_URL/agent-os/templates/skills/frontend/angular/dos-and-dont
 
 # Frontend React (6 files)
 echo "→ Frontend React skill (6 files)..."
-download_file "$REPO_URL/agent-os/templates/skills/frontend/react/Skill.md" "$GLOBAL_DIR/templates/skills/frontend/react/Skill.md"
+download_file "$REPO_URL/agent-os/templates/skills/frontend/react/SKILL.md" "$GLOBAL_DIR/templates/skills/frontend/react/SKILL.md"
 download_file "$REPO_URL/agent-os/templates/skills/frontend/react/components.md" "$GLOBAL_DIR/templates/skills/frontend/react/components.md"
 download_file "$REPO_URL/agent-os/templates/skills/frontend/react/state-management.md" "$GLOBAL_DIR/templates/skills/frontend/react/state-management.md"
 download_file "$REPO_URL/agent-os/templates/skills/frontend/react/api-integration.md" "$GLOBAL_DIR/templates/skills/frontend/react/api-integration.md"
@@ -166,7 +166,7 @@ download_file "$REPO_URL/agent-os/templates/skills/frontend/react/dos-and-donts.
 
 # Frontend Vue (6 files)
 echo "→ Frontend Vue skill (6 files)..."
-download_file "$REPO_URL/agent-os/templates/skills/frontend/vue/Skill.md" "$GLOBAL_DIR/templates/skills/frontend/vue/Skill.md"
+download_file "$REPO_URL/agent-os/templates/skills/frontend/vue/SKILL.md" "$GLOBAL_DIR/templates/skills/frontend/vue/SKILL.md"
 download_file "$REPO_URL/agent-os/templates/skills/frontend/vue/components.md" "$GLOBAL_DIR/templates/skills/frontend/vue/components.md"
 download_file "$REPO_URL/agent-os/templates/skills/frontend/vue/state-management.md" "$GLOBAL_DIR/templates/skills/frontend/vue/state-management.md"
 download_file "$REPO_URL/agent-os/templates/skills/frontend/vue/api-integration.md" "$GLOBAL_DIR/templates/skills/frontend/vue/api-integration.md"
@@ -175,7 +175,7 @@ download_file "$REPO_URL/agent-os/templates/skills/frontend/vue/dos-and-donts.md
 
 # Backend Rails (6 files)
 echo "→ Backend Rails skill (6 files)..."
-download_file "$REPO_URL/agent-os/templates/skills/backend/rails/Skill.md" "$GLOBAL_DIR/templates/skills/backend/rails/Skill.md"
+download_file "$REPO_URL/agent-os/templates/skills/backend/rails/SKILL.md" "$GLOBAL_DIR/templates/skills/backend/rails/SKILL.md"
 download_file "$REPO_URL/agent-os/templates/skills/backend/rails/services.md" "$GLOBAL_DIR/templates/skills/backend/rails/services.md"
 download_file "$REPO_URL/agent-os/templates/skills/backend/rails/models.md" "$GLOBAL_DIR/templates/skills/backend/rails/models.md"
 download_file "$REPO_URL/agent-os/templates/skills/backend/rails/api-design.md" "$GLOBAL_DIR/templates/skills/backend/rails/api-design.md"
@@ -184,7 +184,7 @@ download_file "$REPO_URL/agent-os/templates/skills/backend/rails/dos-and-donts.m
 
 # Backend NestJS (6 files)
 echo "→ Backend NestJS skill (6 files)..."
-download_file "$REPO_URL/agent-os/templates/skills/backend/nestjs/Skill.md" "$GLOBAL_DIR/templates/skills/backend/nestjs/Skill.md"
+download_file "$REPO_URL/agent-os/templates/skills/backend/nestjs/SKILL.md" "$GLOBAL_DIR/templates/skills/backend/nestjs/SKILL.md"
 download_file "$REPO_URL/agent-os/templates/skills/backend/nestjs/services.md" "$GLOBAL_DIR/templates/skills/backend/nestjs/services.md"
 download_file "$REPO_URL/agent-os/templates/skills/backend/nestjs/models.md" "$GLOBAL_DIR/templates/skills/backend/nestjs/models.md"
 download_file "$REPO_URL/agent-os/templates/skills/backend/nestjs/api-design.md" "$GLOBAL_DIR/templates/skills/backend/nestjs/api-design.md"
@@ -193,7 +193,7 @@ download_file "$REPO_URL/agent-os/templates/skills/backend/nestjs/dos-and-donts.
 
 # Backend Spring (6 files)
 echo "→ Backend Spring skill (6 files)..."
-download_file "$REPO_URL/agent-os/templates/skills/backend/spring/Skill.md" "$GLOBAL_DIR/templates/skills/backend/spring/Skill.md"
+download_file "$REPO_URL/agent-os/templates/skills/backend/spring/SKILL.md" "$GLOBAL_DIR/templates/skills/backend/spring/SKILL.md"
 download_file "$REPO_URL/agent-os/templates/skills/backend/spring/services.md" "$GLOBAL_DIR/templates/skills/backend/spring/services.md"
 download_file "$REPO_URL/agent-os/templates/skills/backend/spring/models.md" "$GLOBAL_DIR/templates/skills/backend/spring/models.md"
 download_file "$REPO_URL/agent-os/templates/skills/backend/spring/api-design.md" "$GLOBAL_DIR/templates/skills/backend/spring/api-design.md"
@@ -202,14 +202,14 @@ download_file "$REPO_URL/agent-os/templates/skills/backend/spring/dos-and-donts.
 
 # DevOps Docker/GitHub (4 files)
 echo "→ DevOps Docker/GitHub skill (4 files)..."
-download_file "$REPO_URL/agent-os/templates/skills/devops/docker-github/Skill.md" "$GLOBAL_DIR/templates/skills/devops/docker-github/Skill.md"
+download_file "$REPO_URL/agent-os/templates/skills/devops/docker-github/SKILL.md" "$GLOBAL_DIR/templates/skills/devops/docker-github/SKILL.md"
 download_file "$REPO_URL/agent-os/templates/skills/devops/docker-github/docker.md" "$GLOBAL_DIR/templates/skills/devops/docker-github/docker.md"
 download_file "$REPO_URL/agent-os/templates/skills/devops/docker-github/ci-cd.md" "$GLOBAL_DIR/templates/skills/devops/docker-github/ci-cd.md"
 download_file "$REPO_URL/agent-os/templates/skills/devops/docker-github/dos-and-donts.md" "$GLOBAL_DIR/templates/skills/devops/docker-github/dos-and-donts.md"
 
 # Domain skill templates (2 files)
 echo "→ Domain skill templates (2 files)..."
-download_file "$REPO_URL/agent-os/templates/skills/domain/Skill.md" "$GLOBAL_DIR/templates/skills/domain/Skill.md"
+download_file "$REPO_URL/agent-os/templates/skills/domain/SKILL.md" "$GLOBAL_DIR/templates/skills/domain/SKILL.md"
 download_file "$REPO_URL/agent-os/templates/skills/domain/process.md" "$GLOBAL_DIR/templates/skills/domain/process.md"
 
 # Custom skill templates (3 files) - for specialized technologies
@@ -293,16 +293,16 @@ echo "    ├── platform/ (7)"
 echo "    ├── skills/ (v3.0 - NEW STRUCTURE)"
 echo "    │   ├── Universal (3): quality-gates, po-requirements, architect-refinement"
 echo "    │   ├── frontend/"
-echo "    │   │   ├── angular/ (6): Skill.md, components.md, state-management.md, ..."
-echo "    │   │   ├── react/ (6): Skill.md, components.md, state-management.md, ..."
-echo "    │   │   └── vue/ (6): Skill.md, components.md, state-management.md, ..."
+echo "    │   │   ├── angular/ (6): SKILL.md, components.md, state-management.md, ..."
+echo "    │   │   ├── react/ (6): SKILL.md, components.md, state-management.md, ..."
+echo "    │   │   └── vue/ (6): SKILL.md, components.md, state-management.md, ..."
 echo "    │   ├── backend/"
-echo "    │   │   ├── rails/ (6): Skill.md, services.md, models.md, ..."
-echo "    │   │   ├── nestjs/ (6): Skill.md, services.md, models.md, ..."
-echo "    │   │   └── spring/ (6): Skill.md, services.md, models.md, ..."
+echo "    │   │   ├── rails/ (6): SKILL.md, services.md, models.md, ..."
+echo "    │   │   ├── nestjs/ (6): SKILL.md, services.md, models.md, ..."
+echo "    │   │   └── spring/ (6): SKILL.md, services.md, models.md, ..."
 echo "    │   ├── devops/"
-echo "    │   │   └── docker-github/ (4): Skill.md, docker.md, ci-cd.md, ..."
-echo "    │   ├── domain/ (2): Skill.md, process.md"
+echo "    │   │   └── docker-github/ (4): SKILL.md, docker.md, ci-cd.md, ..."
+echo "    │   ├── domain/ (2): SKILL.md, process.md"
 echo "    │   ├── custom-skill-templates/ (3): For specialized technologies"
 echo "    │   ├── platform/ (4): system-integration-patterns, ..."
 echo "    │   ├── orchestration/ (1)"

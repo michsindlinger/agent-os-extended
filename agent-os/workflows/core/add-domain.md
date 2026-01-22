@@ -46,15 +46,15 @@ Add or update a business domain area in the domain skill. Creates self-updating 
 
     CREATE directory: .claude/skills/domain-[project-slug]/
 
-    LOAD template: agent-os/templates/skills/domain/Skill.md
-    (Fallback: ~/.agent-os/templates/skills/domain/Skill.md)
+    LOAD template: agent-os/templates/skills/domain/SKILL.md
+    (Fallback: ~/.agent-os/templates/skills/domain/SKILL.md)
 
     REPLACE placeholders:
     - [PROJECT_NAME] → detected project name
     - [DATE] → current date
     - [BUSINESS_CONTEXT_DESCRIPTION] → "To be filled during development"
 
-    WRITE: .claude/skills/domain-[project-slug]/Skill.md
+    WRITE: .claude/skills/domain-[project-slug]/SKILL.md
 
     OUTPUT: "Domain skill created: .claude/skills/domain-[project-slug]/"
 
@@ -145,7 +145,7 @@ Add or update a business domain area in the domain skill. Creates self-updating 
 ### Step 4: Update Domain Skill Index
 
 <index_update>
-  READ: .claude/skills/domain-[project-slug]/Skill.md
+  READ: .claude/skills/domain-[project-slug]/SKILL.md
 
   LOCATE: "## Domain Areas" section
 
@@ -156,7 +156,7 @@ Add or update a business domain area in the domain skill. Creates self-updating 
   | [DOMAIN_NAME] | [domain-slug].md | [Brief description] | Active |
   ```
 
-  WRITE: Updated Skill.md
+  WRITE: Updated SKILL.md
 
   NOTE: Table format must be maintained for parsing
 </index_update>
@@ -190,7 +190,7 @@ Add or update a business domain area in the domain skill. Creates self-updating 
 
   ### Index Updated
 
-  Domain Areas table in Skill.md has been updated.
+  Domain Areas table in SKILL.md has been updated.
 
   ---
 
@@ -226,7 +226,7 @@ Add or update a business domain area in the domain skill. Creates self-updating 
 
 ```
 .claude/skills/domain-[project]/
-├── Skill.md                    # Index of all domain areas
+├── SKILL.md                    # Index of all domain areas
 ├── user-registration.md        # Created by /add-domain
 ├── order-processing.md         # Created by /add-domain
 └── payment-flow.md             # Created by /add-domain
