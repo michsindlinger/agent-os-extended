@@ -35,28 +35,52 @@ Set up project-specific skills for the main agent based on tech stack. The main 
 
 <process_flow>
 
-<step number="1" name="analyze_tech_stack">
+<step number="1" name="detect_project_type">
 
-### Step 1: Analyze Tech Stack
+### Step 1: Detect Project Type and Analyze Tech Stack
 
-Load and analyze tech-stack.md to determine required skills.
+Determine if this is a Product or Platform project, then load tech stack.
 
-<conditional_logic>
-  IF agent-os/product/tech-stack.md exists:
-    READ: tech-stack.md
-    ANALYZE: Technologies in use
+<project_type_detection>
+  CHECK: Which type of project is this?
+
+  ```bash
+  # Check for product project
+  test -f agent-os/product/tech-stack.md
+  PRODUCT_EXISTS=$?
+
+  # Check for platform project
+  test -f agent-os/platform/tech-stack.md
+  PLATFORM_EXISTS=$?
+  ```
+
+  IF PRODUCT_EXISTS (exit code 0):
+    SET: PROJECT_TYPE = "product"
+    SET: BASE_PATH = "agent-os/product"
+    READ: agent-os/product/tech-stack.md
     PROCEED to step 2
+
+  ELSE IF PLATFORM_EXISTS (exit code 0):
+    SET: PROJECT_TYPE = "platform"
+    SET: BASE_PATH = "agent-os/platform"
+    READ: agent-os/platform/tech-stack.md
+    PROCEED to step 2
+
   ELSE:
-    INFORM user: "No tech-stack.md found. Please run /plan-product or /analyze-product first."
+    ERROR: "No tech-stack.md found in agent-os/product/ or agent-os/platform/"
+    INFORM user: "Please run /plan-product or /plan-platform first."
     EXIT workflow
-</conditional_logic>
+</project_type_detection>
 
 **Detection Rules:**
 - Angular/React/Vue → Frontend Skill
 - Rails/NestJS/Spring → Backend Skill
 - Docker/GitHub Actions → DevOps Skill
 
-**Store detected technologies for later steps.**
+**Store:**
+- PROJECT_TYPE (product | platform)
+- BASE_PATH (agent-os/product | agent-os/platform)
+- Detected technologies for later steps
 
 </step>
 
@@ -65,13 +89,14 @@ Load and analyze tech-stack.md to determine required skills.
 ### Step 2: Load Project Context Documents
 
 Read all relevant project documents for skill customization.
+Uses BASE_PATH from Step 1 (agent-os/product/ or agent-os/platform/).
 
 <context_loading>
   CREATE: Empty context object
 
   **Required Documents:**
 
-  1. READ: agent-os/product/tech-stack.md
+  1. READ: {BASE_PATH}/tech-stack.md
      EXTRACT:
      - Framework versions
      - Libraries and dependencies
@@ -79,7 +104,7 @@ Read all relevant project documents for skill customization.
      - Build tools
      STORE in: context.techStack
 
-  2. READ: agent-os/product/architecture-decision.md (if exists)
+  2. READ: {BASE_PATH}/architecture-decision.md (if exists)
      EXTRACT:
      - Service layer patterns
      - API design patterns
@@ -88,7 +113,7 @@ Read all relevant project documents for skill customization.
      STORE in: context.architecture
      IF NOT exists: SET context.architecture = "Not defined"
 
-  3. READ: agent-os/product/architecture-structure.md (if exists)
+  3. READ: {BASE_PATH}/architecture-structure.md (if exists)
      EXTRACT:
      - Project folder structure
      - Naming conventions
@@ -98,7 +123,7 @@ Read all relevant project documents for skill customization.
 
   **Frontend-Specific Documents:**
 
-  4. READ: agent-os/product/design-system.md (if exists)
+  4. READ: {BASE_PATH}/design-system.md (if exists)
      EXTRACT:
      - Colors and color tokens
      - Typography scale
@@ -107,7 +132,7 @@ Read all relevant project documents for skill customization.
      STORE in: context.designSystem
      IF NOT exists: SET context.designSystem = "Not defined"
 
-  5. READ: agent-os/product/ux-patterns.md (if exists)
+  5. READ: {BASE_PATH}/ux-patterns.md (if exists)
      EXTRACT:
      - Navigation patterns
      - User flow patterns
@@ -115,6 +140,9 @@ Read all relevant project documents for skill customization.
      - Accessibility requirements
      STORE in: context.uxPatterns
      IF NOT exists: SET context.uxPatterns = "Not defined"
+
+  **Note:** BASE_PATH is either "agent-os/product" or "agent-os/platform"
+  depending on project type detected in Step 1.
 </context_loading>
 
 **Output:** Populated context object for skill customization
@@ -543,6 +571,9 @@ Use tech-architect agent to analyze tech-stack.md and existing code for speciali
   OUTPUT:
   "
   ## Development Team v3.0 Ready!
+
+  **Project Type:** [PROJECT_TYPE] (Product or Platform)
+  **Context Source:** {BASE_PATH}/
 
   ### Skills Created
 
