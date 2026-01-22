@@ -2,7 +2,7 @@
 description: Add bug to backlog with hypothesis-driven root-cause analysis
 globs:
 alwaysApply: false
-version: 2.2
+version: 2.4
 encoding: UTF-8
 ---
 
@@ -17,6 +17,21 @@ Add a bug to the backlog with structured root-cause analysis. Uses hypothesis-dr
 - 3 Hypothesen mit Wahrscheinlichkeiten
 - Zuständiger Agent prüft jede Hypothese
 - Dokumentierter Analyseprozess
+- **NEU: User Hypothesis Dialog** - Benutzer-Wissen VOR der RCA abfragen
+
+**v2.4 Changes:**
+- **NEW: User Hypothesis Dialog (Step 2.5)** - Interaktiver Dialog VOR der RCA
+  - Benutzer kann eigene Vermutungen teilen
+  - Bereits untersuchte Bereiche dokumentieren
+  - Ausgeschlossene Ursachen markieren
+  - Gemeinsame Diskussion möglich
+- **ENHANCED: RCA berücksichtigt User-Input** - User-Hypothesen werden priorisiert
+- **NEW: Quelle-Spalte in Hypothesen-Tabelle** - Zeigt ob Hypothese von User oder Agent
+
+**v2.3 Changes:**
+- Gherkin-Style Bug-Fix Stories - Akzeptanzkriterien als Given-When-Then Szenarien
+- Bug-spezifische Szenarien - Korrektes Verhalten, Regression-Schutz, Edge-Cases
+- Trennung zwischen fachlichen Gherkin-Szenarien und technischer Verifikation
 
 <pre_flight_check>
   EXECUTE: agent-os/workflows/meta/pre-flight.md
@@ -108,6 +123,150 @@ Gather structured bug information from user.
 
 </step>
 
+<step number="2.5" name="user_hypothesis_dialog">
+
+### Step 2.5: User Hypothesis Dialog
+
+⚠️ **QUALITÄTSBOOSTER:** Benutzer-Wissen VOR der automatischen RCA abfragen.
+Der Benutzer kennt oft das System besser und hat möglicherweise bereits untersucht.
+
+<mandatory_actions>
+  1. ASK user via AskUserQuestion:
+
+     ```
+     Question: "Haben Sie bereits eigene Vermutungen zur Ursache des Bugs?"
+
+     Options:
+     1. Ja, ich habe Vermutungen
+        → Ich habe eine Idee, wo der Fehler liegen könnte
+
+     2. Ich habe bereits selbst gesucht
+        → Ich habe schon untersucht und kann Erkenntnisse teilen
+
+     3. Nein, keine Ahnung
+        → Ich habe keine Vermutung, Agent soll analysieren
+
+     4. Ich möchte diskutieren
+        → Lass uns gemeinsam überlegen
+     ```
+
+  2. BASED ON user choice:
+
+     **IF "Ja, ich habe Vermutungen":**
+
+     ASK follow-up questions (iterativ):
+
+     a) "In welchem Bereich vermuten Sie den Fehler?"
+        - Frontend (UI, Komponenten, State)
+        - Backend (API, Services, Logik)
+        - Datenbank (Queries, Schema)
+        - Integration (Zusammenspiel)
+        - Konfiguration (Environment, Settings)
+
+     b) "Welche Dateien oder Komponenten haben Sie im Verdacht?"
+        - Konkrete Dateinamen/Pfade
+        - Komponenten-Namen
+        - Funktionen/Methoden
+
+     c) "Was könnte die Ursache sein?"
+        - Freie Beschreibung der Vermutung
+        - Warum vermuten Sie das?
+
+     DOCUMENT:
+     ```
+     User-Hypothese:
+     - Vermuteter Bereich: [BEREICH]
+     - Verdächtige Dateien: [DATEIEN]
+     - Vermutete Ursache: [BESCHREIBUNG]
+     - Begründung: [WARUM]
+     ```
+
+     **IF "Ich habe bereits selbst gesucht":**
+
+     ASK follow-up questions:
+
+     a) "Welche Stellen haben Sie bereits untersucht?"
+        - Dateien die geprüft wurden
+        - Logs die analysiert wurden
+        - Tests die durchgeführt wurden
+
+     b) "Was haben Sie dabei festgestellt?"
+        - Auffälligkeiten
+        - Fehlermeldungen
+        - Unerwartetes Verhalten
+
+     c) "Was können wir definitiv ausschließen?"
+        - Bereiche die NICHT die Ursache sind
+        - Komponenten die korrekt funktionieren
+
+     DOCUMENT:
+     ```
+     User-Recherche:
+     - Bereits untersucht: [STELLEN]
+     - Erkenntnisse: [FESTSTELLUNGEN]
+     - Ausgeschlossen: [BEREICHE]
+     ```
+
+     **IF "Nein, keine Ahnung":**
+
+     ACKNOWLEDGE: "Kein Problem, der Agent wird systematisch analysieren."
+     PROCEED: Direkt zu Step 3 ohne User-Hypothesen
+
+     **IF "Ich möchte diskutieren":**
+
+     ENGAGE in dialog:
+
+     a) "Was wissen wir über das Problem?"
+        - Zusammenfassung aus Step 2
+
+     b) "Wo könnte man anfangen zu suchen?"
+        - Gemeinsam Ideen sammeln
+
+     c) "Gibt es ähnliche Probleme in der Vergangenheit?"
+        - Bekannte Patterns
+        - Wiederkehrende Issues
+
+     d) "Was würden Sie als erstes prüfen?"
+        - Priorisierung der Untersuchung
+
+     DOCUMENT: Alle Diskussions-Ergebnisse
+
+  3. COMPILE User-Input für Step 3:
+
+     <user_input_summary>
+       ## User-Input zur Bug-Analyse
+
+       **Hat der User Vermutungen:** Ja/Nein
+
+       **User-Hypothesen:**
+       [Falls vorhanden - Vermutungen des Users]
+
+       **Bereits untersucht:**
+       [Falls vorhanden - was der User schon geprüft hat]
+
+       **Ausgeschlossene Bereiche:**
+       [Falls vorhanden - was definitiv NICHT die Ursache ist]
+
+       **Diskussions-Erkenntnisse:**
+       [Falls diskutiert - gemeinsame Überlegungen]
+
+       **Priorisierte Untersuchungs-Bereiche:**
+       [Falls vorhanden - wo zuerst suchen]
+     </user_input_summary>
+
+  4. PASS user_input_summary to Step 3
+</mandatory_actions>
+
+<instructions>
+  ACTION: Benutzer-Wissen vor RCA abfragen
+  FORMAT: AskUserQuestion mit Follow-up Dialog
+  DOCUMENT: Alle User-Inputs strukturiert
+  VALUE: Verbessert RCA-Qualität signifikant
+  SKIP: Nur wenn User "Keine Ahnung" wählt
+</instructions>
+
+</step>
+
 <step number="3" name="hypothesis_driven_rca">
 
 ### Step 3: Hypothesis-Driven Root-Cause-Analyse
@@ -148,25 +307,53 @@ Gather structured bug information from user.
 
   ---
 
+  ## User-Input aus Vorgespräch (Step 2.5)
+
+  ⚠️ **WICHTIG:** Der Benutzer hat folgende Informationen geteilt.
+  Diese MÜSSEN in deine Hypothesen einfließen!
+
+  [USER_INPUT_SUMMARY from Step 2.5]
+
+  **Anweisungen zur Nutzung des User-Inputs:**
+
+  - **User-Hypothesen:** Wenn der User eine Vermutung hat, mache diese zur
+    Hypothese #1 oder #2 (hohe Priorität). Der User kennt das System!
+
+  - **Bereits untersucht:** Bereiche die der User schon geprüft hat, können
+    mit niedrigerer Priorität behandelt werden (aber nicht ausschließen).
+
+  - **Ausgeschlossene Bereiche:** Diese kannst du als "unwahrscheinlich"
+    markieren, aber prüfe sie trotzdem wenn andere Hypothesen scheitern.
+
+  - **Verdächtige Dateien:** Beginne deine Analyse mit diesen Dateien!
+
+  ---
+
   ## Deine Aufgabe: Root-Cause-Analyse
 
   ### Phase 1: Hypothesen aufstellen
 
-  Basierend auf dem Symptom, stelle 3 wahrscheinliche Ursachen auf.
+  Basierend auf dem Symptom UND dem User-Input, stelle 3 wahrscheinliche Ursachen auf.
   Ordne jeder Hypothese eine Wahrscheinlichkeit zu (muss 100% ergeben).
 
+  ⚠️ **User-Hypothesen priorisieren:** Wenn der User eine Vermutung geteilt hat,
+  sollte diese als Hypothese #1 oder #2 erscheinen (es sei denn, sie ist
+  offensichtlich falsch).
+
   FORMAT:
-  | # | Hypothese | Wahrscheinlichkeit | Prüfmethode |
-  |---|-----------|-------------------|-------------|
-  | 1 | [Vermutung] | XX% | [Wie prüfen - konkret] |
-  | 2 | [Vermutung] | XX% | [Wie prüfen - konkret] |
-  | 3 | [Vermutung] | XX% | [Wie prüfen - konkret] |
+  | # | Hypothese | Wahrscheinlichkeit | Quelle | Prüfmethode |
+  |---|-----------|-------------------|--------|-------------|
+  | 1 | [Vermutung] | XX% | User/Agent | [Wie prüfen - konkret] |
+  | 2 | [Vermutung] | XX% | User/Agent | [Wie prüfen - konkret] |
+  | 3 | [Vermutung] | XX% | Agent | [Wie prüfen - konkret] |
 
   REGELN für Hypothesen:
+  - **User-Input hat Vorrang** - User kennt das System oft besser
   - Beginne mit der wahrscheinlichsten Ursache (höchster %)
   - Hypothesen müssen prüfbar sein
   - Prüfmethode muss konkret sein (Datei lesen, Log prüfen, Code analysieren)
   - Keine vagen Vermutungen ('irgendwo im Code')
+  - Markiere ob Hypothese vom User oder Agent stammt
 
   ### Phase 2: Hypothesen prüfen
 
@@ -333,15 +520,35 @@ Gather structured bug information from user.
 
        ---
 
+       ## User-Input (aus Step 2.5)
+
+       > Dokumentation des Benutzer-Wissens vor der RCA
+
+       **Hat User Vermutungen geteilt:** [Ja/Nein]
+
+       ### User-Hypothesen
+       [Falls vorhanden - Vermutungen des Users]
+       - Vermuteter Bereich: [BEREICH]
+       - Verdächtige Dateien: [DATEIEN]
+       - Vermutete Ursache: [BESCHREIBUNG]
+
+       ### Bereits vom User untersucht
+       [Falls vorhanden - was der User schon geprüft hat]
+
+       ### Ausgeschlossene Bereiche
+       [Falls vorhanden - was definitiv NICHT die Ursache ist]
+
+       ---
+
        ## Root-Cause-Analyse
 
        ### Hypothesen (vor Analyse)
 
-       | # | Hypothese | Wahrscheinlichkeit | Prüfmethode |
-       |---|-----------|-------------------|-------------|
-       | 1 | [H1] | XX% | [Method] |
-       | 2 | [H2] | XX% | [Method] |
-       | 3 | [H3] | XX% | [Method] |
+       | # | Hypothese | Wahrscheinlichkeit | Quelle | Prüfmethode |
+       |---|-----------|-------------------|--------|-------------|
+       | 1 | [H1] | XX% | User/Agent | [Method] |
+       | 2 | [H2] | XX% | User/Agent | [Method] |
+       | 3 | [H3] | XX% | Agent | [Method] |
 
        ### Prüfung
 
@@ -365,15 +572,72 @@ Gather structured bug information from user.
 
        ---
 
-       ## User Story (Fix)
+       ## Feature (Bug-Fix)
 
-       Als [USER_ROLE]
-       möchte ich dass [BUG] behoben wird,
-       damit [BENEFIT/EXPECTED_BEHAVIOR].
+       ```gherkin
+       Feature: [BUG_TITLE] beheben
+         Als [USER_ROLE]
+         möchte ich dass [BUG_DESCRIPTION] behoben wird,
+         damit [BENEFIT/EXPECTED_BEHAVIOR].
+       ```
 
        ---
 
-       ## Akzeptanzkriterien
+       ## Akzeptanzkriterien (Gherkin-Szenarien)
+
+       > **Bug-Fix Szenarien:** Beschreiben das KORREKTE Verhalten nach dem Fix
+
+       ### Szenario 1: Korrektes Verhalten (was vorher fehlschlug)
+
+       ```gherkin
+       Scenario: [ORIGINAL_BUG_SCENARIO] funktioniert korrekt
+         Given [AUSGANGSSITUATION die vorher zum Bug führte]
+         When [AKTION die vorher den Bug auslöste]
+         Then [KORREKTES_ERWARTETES_VERHALTEN]
+         And [KEINE_FEHLERMELDUNG_ODER_FALSCHES_VERHALTEN]
+       ```
+
+       ### Szenario 2: Regression-Schutz
+
+       ```gherkin
+       Scenario: Verwandte Funktionalität bleibt intakt
+         Given [SETUP für verwandte Funktion]
+         When [VERWANDTE_AKTION]
+         Then [ERWARTETES_VERHALTEN bleibt unverändert]
+       ```
+
+       ### Edge-Case nach Fix
+
+       ```gherkin
+       Scenario: Edge-Case wird korrekt behandelt
+         Given [EDGE_CASE_SITUATION]
+         When [EDGE_CASE_AKTION]
+         Then [KORREKTE_EDGE_CASE_BEHANDLUNG]
+       ```
+
+       **Beispiel für Bug "Login nach Passwort-Reset fehlschlägt":**
+       ```gherkin
+       Scenario: Login nach Passwort-Reset funktioniert
+         Given ich habe mein Passwort auf "NeuesPasswort123" zurückgesetzt
+         And ich habe die Bestätigungs-Email erhalten
+         When ich mich mit meiner Email und "NeuesPasswort123" anmelde
+         Then bin ich erfolgreich eingeloggt
+         And ich sehe mein Dashboard
+
+       Scenario: Normaler Login bleibt funktionsfähig
+         Given ich bin ein Benutzer ohne Passwort-Reset
+         When ich mich mit meinen ursprünglichen Zugangsdaten anmelde
+         Then bin ich erfolgreich eingeloggt
+
+       Scenario: Falsches neues Passwort wird abgelehnt
+         Given ich habe mein Passwort zurückgesetzt
+         When ich mich mit dem alten Passwort anmelde
+         Then sehe ich "Ungültige Zugangsdaten"
+       ```
+
+       ---
+
+       ## Technische Verifikation
 
        - [ ] BUG_FIXED: [Description of fix verification]
        - [ ] TEST_PASS: Regression test added and passing
@@ -803,7 +1067,9 @@ Validate that the bug fix complies with size guidelines for single-session execu
   - [ ] Backlog directory exists
   - [ ] Bug description gathered (symptom, repro, expected/actual)
   - [ ] Bug type determined (Frontend/Backend/DevOps)
-  - [ ] Hypothesis-Driven RCA completed
+  - [ ] **User Hypothesis Dialog completed (Step 2.5)**
+  - [ ] **User-Input dokumentiert (falls vorhanden)**
+  - [ ] Hypothesis-Driven RCA completed (mit User-Input)
   - [ ] Root Cause identified and documented
   - [ ] Bug story file created with correct naming
   - [ ] Technical refinement complete
