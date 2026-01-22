@@ -148,13 +148,15 @@ mkdir -p .claude/skills
 
 </step>
 
-<step number="4" name="create_quality_gates_skill">
+<step number="4" name="create_universal_skills">
 
-### Step 4: Create Quality Gates Skill (Always)
+### Step 4: Create Universal Skills (Always)
 
-This skill is ALWAYS created and has `alwaysApply: true`.
+These skills are ALWAYS created for every project.
 
 <skill_creation>
+  **1. Quality Gates Skill (alwaysApply: true)**
+
   LOAD template: agent-os/templates/skills/quality-gates/Skill.md
   (Fallback: ~/.agent-os/templates/skills/quality-gates/Skill.md)
 
@@ -166,6 +168,35 @@ This skill is ALWAYS created and has `alwaysApply: true`.
 
   CREATE directory: .claude/skills/quality-gates/
   WRITE to: .claude/skills/quality-gates/Skill.md
+
+  **2. PO Requirements Skill (for story creation)**
+
+  LOAD template: agent-os/templates/skills/po-requirements/Skill.md
+  (Fallback: ~/.agent-os/templates/skills/po-requirements/Skill.md)
+
+  REPLACE placeholders:
+  - [PROJECT_NAME] → from tech-stack.md or folder name
+  - [DATE] → current date
+
+  CREATE directory: .claude/skills/po-requirements/
+  WRITE to: .claude/skills/po-requirements/Skill.md
+
+  **3. Architect Refinement Skill (for story creation)**
+
+  LOAD template: agent-os/templates/skills/architect-refinement/Skill.md
+  (Fallback: ~/.agent-os/templates/skills/architect-refinement/Skill.md)
+
+  REPLACE placeholders:
+  - [PROJECT_NAME] → from tech-stack.md or folder name
+  - [DATE] → current date
+  - [ARCHITECTURE_PATTERNS] → from context.architecture
+  - [PROJECT_STRUCTURE] → from context.structure
+  - [NAMING_CONVENTIONS] → from context.structure
+
+  CREATE directory: .claude/skills/architect-refinement/
+  WRITE to: .claude/skills/architect-refinement/Skill.md
+
+  OUTPUT: "Universal skills created: quality-gates, po-requirements, architect-refinement"
 </skill_creation>
 
 </step>
@@ -564,14 +595,25 @@ Use tech-architect agent to analyze tech-stack.md and existing code for speciali
 
   ### Skills Created
 
+  **Universal Skills (always created):**
+  | Skill | Path | Purpose |
+  |-------|------|---------|
+  | Quality Gates | .claude/skills/quality-gates/ | Always active for all code |
+  | PO Requirements | .claude/skills/po-requirements/ | Story creation guidance |
+  | Architect Refinement | .claude/skills/architect-refinement/ | Technical refinement guidance |
+
+  **Technology Skills (auto-load based on files):**
   | Skill | Path | Auto-Loads For |
   |-------|------|----------------|
-  | Quality Gates | .claude/skills/quality-gates/ | Always active |
   [| Frontend [FRAMEWORK] | .claude/skills/frontend-[name]/ | src/app/**/* |]
   [| Backend [FRAMEWORK] | .claude/skills/backend-[name]/ | app/**/*.rb |]
   [| DevOps | .claude/skills/devops-docker-github/ | Dockerfile, .github/** |]
-  [| Domain | .claude/skills/domain-[project]/ | src/**/* |]
-  [| Custom [TECHNOLOGY] | .claude/skills/custom-[tech]/ | [tech-specific patterns] |]
+
+  **Optional Skills:**
+  | Skill | Path | Purpose |
+  |-------|------|---------|
+  [| Domain | .claude/skills/domain-[project]/ | Business knowledge (if created) |]
+  [| Custom [TECH] | .claude/skills/custom-[tech]/ | Specialized technology (if detected) |]
 
   ### Quality Standards
 

@@ -737,79 +737,65 @@ Der Benutzer kennt oft das System besser und hat möglicherweise bereits untersu
 
 </step>
 
-<step number="5" subagent="dev-team__architect" name="architect_refinement">
+<step number="5" name="architect_refinement">
 
-### Step 5: Architect Phase - Technical Refinement
+### Step 5: Architect Phase - Technical Refinement (v3.0)
 
-<delegation>
-  DELEGATE to dev-team__architect via Task tool:
+Main agent does technical refinement guided by architect-refinement skill.
 
-  PROMPT:
-  "Add technical refinement to bug story.
+<refinement_process>
+  LOAD skill: .claude/skills/architect-refinement/Skill.md
+  (This skill provides guidance for technical refinement)
 
-  Bug File: agent-os/backlog/bug-[YYYY-MM-DD]-[INDEX]-[slug].md
-
-  **Fix-Impact Summary (aus Step 3.5):**
-  [FIX_IMPACT_SUMMARY]
-  - Fix Type: [TYPE]
-  - Affected Layers: [LAYERS with direct/indirect impact]
-  - Critical Integration Points: [POINTS]
-  - Required Tests: [TEST_COVERAGE]
-
-  Context:
-  - Root Cause bereits identifiziert (in Bug Story)
-  - Fix-Impact Analysis abgeschlossen (Step 3.5)
+  **Bug Context:**
+  - Bug File: agent-os/backlog/bug-[YYYY-MM-DD]-[INDEX]-[slug].md
+  - Fix-Impact Summary (from Step 3.5): [FIX_IMPACT_SUMMARY]
+  - Root Cause: Already identified in bug story
   - Tech Stack: agent-os/product/tech-stack.md
-  - Architecture: agent-os/product/architecture-decision.md (if exists)
-  - Definition of Ready: agent-os/team/dor.md (if exists)
-  - Definition of Done: agent-os/team/dod.md (if exists)
+  - Architecture: Try both locations:
+    1. agent-os/product/architecture-decision.md
+    2. agent-os/product/architecture/platform-architecture.md
+  - DoR/DoD: agent-os/team/dor.md and dod.md (if exist)
 
-  Tasks:
-  1. READ the bug story file (especially Root Cause section)
-  1.5. REVIEW Fix-Impact Summary - ensure ALL layers are addressed
-  2. LOAD project quality definitions:
-     - DoR from agent-os/team/dor.md (if exists)
-     - DoD from agent-os/team/dod.md (if exists)
-  3. BASED ON the identified Root Cause AND Fix-Impact Summary:
+  **Tasks (guided by architect-refinement skill):**
+  1. READ the bug story file (Root Cause section)
+  2. REVIEW Fix-Impact Summary - ensure ALL layers addressed
+  3. LOAD project quality definitions
+  4. FILL technical sections:
 
-     **Betroffene Layer & Komponenten ausfüllen (NEU - PFLICHT):**
-     Based on Fix-Impact Summary, fill out:
+     **Betroffene Layer & Komponenten (PFLICHT):**
+     Based on Fix-Impact Summary:
      - Fix Type: [Backend-only / Frontend-only / Full-stack]
      - Betroffene Komponenten Table with Direct/Indirect impact
      - Kritische Integration Points (if Full-stack fix)
 
-     ⚠️ WICHTIG: If Fix Type = "Full-stack":
-       - ENSURE WO section covers ALL affected layers
-       - DOCUMENT integration points that need verification
-       - Consider if fix should be split into multiple bugs (one per layer)
-
      **DoR vervollständigen:**
-     - Apply relevant DoR criteria from project dor.md
-     - Mark technical preparation items as [x]
-     - Mark Full-Stack Konsistenz items as [x] (NEW)
+     - Apply relevant DoR criteria
+     - Mark ALL checkboxes as [x] when complete
 
-     **Technical Details ausfüllen:**
-     - WAS: What needs to be fixed (based on Root Cause)
-     - WIE: Fix approach (architecture guidance only, NO code)
-     - WO: Files to modify (MUST cover ALL layers from Fix-Impact Analysis!)
-     - WER: Which agent (based on bug type)
-     - Geschätzte Komplexität: XS/S/M (bugs should be small)
+     **DoD:**
+     - Define completion criteria (unchecked [ ])
+
+     **Technical Details:**
+     - WAS: What needs to be fixed
+     - WIE: Fix approach (patterns, constraints)
+     - WO: Files to modify (ALL layers!)
+     - Domain: Optional domain area reference
+     - Abhängigkeiten: None
+     - Geschätzte Komplexität: XS/S/M
 
      **Completion Check:**
-     - Add specific bash commands to verify fix
+     - Add bash verify commands
 
-  3. IF bug seems too complex (>3 files, requires architectural changes):
-     WARN: 'This bug may require a full spec. Consider /create-spec instead.'
-     ASK: 'Proceed as bug or create spec?'
+  5. VALIDATE: Bug not too complex for backlog
 
-  IMPORTANT:
-  - Root Cause is already identified - don't re-analyze
-  - Focus on HOW to fix, not WHAT is wrong
-  - Keep it lightweight - this is a bug fix, not a feature
-  - Mark ALL DoR checkboxes as [x] when complete"
-
-  WAIT for dev-team__architect completion
-</delegation>
+  **IMPORTANT (v3.0):**
+  - NO "WER" field (main agent implements directly)
+  - Skills auto-load during implementation
+  - Follow architect-refinement skill guidance
+  - Keep lightweight
+  - Mark ALL DoR checkboxes as [x] when ready
+</refinement_process>
 
 </step>
 

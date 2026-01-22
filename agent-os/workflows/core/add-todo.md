@@ -245,35 +245,27 @@ Add a lightweight task to the backlog without full spec creation. Uses same stor
 
 </step>
 
-<step number="4" subagent="dev-team__architect" name="architect_refinement">
+<step number="4" name="architect_refinement">
 
-### Step 4: Architect Phase - Technical Refinement
+### Step 4: Architect Phase - Technical Refinement (v3.0)
 
-<delegation>
-  DELEGATE to dev-team__architect via Task tool:
+Main agent does technical refinement guided by architect-refinement skill.
 
-  PROMPT:
-  "Add technical refinement to backlog story.
+<refinement_process>
+  LOAD skill: .claude/skills/architect-refinement/Skill.md
+  (This skill provides guidance for technical refinement)
 
-  Story File: agent-os/backlog/user-story-[YYYY-MM-DD]-[INDEX]-[slug].md
-
-  **Pre-Refinement Layer Analysis (aus Step 3.5):**
-  [LAYER_SUMMARY]
-  - Integration Type: [TYPE]
-  - Affected Layers: [LAYERS]
-  - Critical Integration Points: [POINTS]
-
-  Context:
+  **Story Context:**
+  - Story File: agent-os/backlog/user-story-[YYYY-MM-DD]-[INDEX]-[slug].md
+  - Pre-Refinement Layer Analysis (from Step 3.5): [LAYER_SUMMARY]
   - Tech Stack: agent-os/product/tech-stack.md
-  - Architecture: agent-os/product/architecture-decision.md (if exists)
+  - Architecture: Try both locations:
+    1. agent-os/product/architecture-decision.md
+    2. agent-os/product/architecture/platform-architecture.md
   - Architecture Structure: agent-os/product/architecture-structure.md (if exists)
-  - Definition of Ready: agent-os/team/dor.md (if exists)
-  - Definition of Done: agent-os/team/dod.md (if exists)
+  - DoR/DoD: agent-os/team/dor.md and dod.md (if exist)
 
-  Available DevTeam Agents:
-  - List agents from .claude/agents/dev-team/
-
-  Tasks:
+  **Tasks (guided by architect-refinement skill):**
   1. READ the story file
   2. ANALYZE the fachliche requirements
   3. ANALYZE the Pre-Refinement Layer Analysis
@@ -289,44 +281,34 @@ Add a lightweight task to the backlog without full spec creation. Uses same stor
      - Apply relevant DoD criteria to this story
      - Define completion criteria (start unchecked [ ])
 
-     **Betroffene Layer & Komponenten (NEU - PFLICHT):**
-     Based on Pre-Refinement Layer Analysis, fill out:
+     **Betroffene Layer & Komponenten (PFLICHT):**
+     Based on Pre-Refinement Layer Analysis:
      - Integration Type: [Backend-only / Frontend-only / Full-stack]
-     - Betroffene Komponenten Table:
-       | Layer | Komponenten | Änderung |
-       | Frontend | [components] | [what changes] |
-       | Backend | [services] | [what changes] |
-       | Database | [tables] | [what changes] |
-       | DevOps | [config] | [what changes] |
-     - Kritische Integration Points (if Full-stack):
-       [Source] → [Target] (e.g., "Backend API → Frontend Component")
-     - Handover-Dokumente (if Multi-Layer):
-       - API Contracts, Data Structures, Shared Types
+     - Betroffene Komponenten Table (fill from analysis)
+     - Kritische Integration Points (if Full-stack)
+     - Handover-Dokumente (if Multi-Layer)
 
      **Technical Details:**
-     - WAS: Components to create/modify (brief)
-     - WIE: Architecture guidance only (NO code)
-     - WO: File paths to modify (MUST cover ALL layers from Layer Analysis!)
-     - WER: Which agent (e.g., dev-team__frontend-developer)
+     - WAS: Components to create/modify (no code)
+     - WIE: Architecture guidance (patterns, constraints)
+     - WO: File paths (MUST cover ALL layers!)
+     - Domain: Optional domain area reference
      - Abhängigkeiten: None (backlog stories are independent)
-     - Geschätzte Komplexität: XS or S (if larger, suggest create-spec)
+     - Geschätzte Komplexität: XS or S
 
      **Completion Check:**
      - Add bash verify commands
 
-  4. IF story seems too large (>5 files, >400 LOC):
-     WARN: 'This task may be too complex for /add-todo. Consider /create-spec instead.'
-     ASK: 'Proceed anyway or switch to /create-spec?'
+  5. VALIDATE story size:
+     - If >5 files or >400 LOC: Consider /create-spec instead
 
-  IMPORTANT:
-  - Keep it lightweight - this is a quick task
-  - Add ONLY technical sections
-  - Do NOT modify fachliche descriptions
-  - Mark ALL DoR checkboxes as [x] complete
-  - Backlog stories should be XS or S complexity"
-
-  WAIT for dev-team__architect completion
-</delegation>
+  **IMPORTANT (v3.0):**
+  - NO "WER" field (main agent implements directly)
+  - Skills auto-load during implementation
+  - Follow architect-refinement skill guidance
+  - Keep lightweight (XS or S complexity)
+  - Mark ALL DoR checkboxes as [x] when ready
+</refinement_process>
 
 </step>
 

@@ -54,6 +54,8 @@ mkdir -p "$GLOBAL_DIR/templates/platform"
 mkdir -p "$GLOBAL_DIR/agents"
 # v3.0: New skill structure - one skill per technology
 mkdir -p "$GLOBAL_DIR/templates/skills/quality-gates"
+mkdir -p "$GLOBAL_DIR/templates/skills/po-requirements"
+mkdir -p "$GLOBAL_DIR/templates/skills/architect-refinement"
 mkdir -p "$GLOBAL_DIR/templates/skills/frontend/angular"
 mkdir -p "$GLOBAL_DIR/templates/skills/frontend/react"
 mkdir -p "$GLOBAL_DIR/templates/skills/frontend/vue"
@@ -129,10 +131,20 @@ download_file "$REPO_URL/agent-os/templates/platform/platform-blocker-analysis-t
 echo "→ Global agents (1)..."
 download_file "$REPO_URL/.agent-os/agents/platform-architect.md" "$GLOBAL_DIR/agents/platform-architect.md"
 
-# DevTeam v3.0: New Skill Templates (Quality Gates + Technology Skills)
+# DevTeam v3.0: Universal Skills (always created)
 # Quality Gates (1 file)
 echo "→ Quality Gates skill (1 file)..."
 download_file "$REPO_URL/agent-os/templates/skills/quality-gates/Skill.md" "$GLOBAL_DIR/templates/skills/quality-gates/Skill.md"
+
+# PO Requirements (1 file) - for story creation
+echo "→ PO Requirements skill (1 file)..."
+download_file "$REPO_URL/agent-os/templates/skills/po-requirements/Skill.md" "$GLOBAL_DIR/templates/skills/po-requirements/Skill.md"
+
+# Architect Refinement (1 file) - for technical refinement
+echo "→ Architect Refinement skill (1 file)..."
+download_file "$REPO_URL/agent-os/templates/skills/architect-refinement/Skill.md" "$GLOBAL_DIR/templates/skills/architect-refinement/Skill.md"
+
+# DevTeam v3.0: Technology Skills
 
 # Frontend Angular (6 files)
 echo "→ Frontend Angular skill (6 files)..."
@@ -279,7 +291,7 @@ echo "    ├── CLAUDE-PLATFORM.md (for platforms)"
 echo "    ├── product/ (10)"
 echo "    ├── platform/ (7)"
 echo "    ├── skills/ (v3.0 - NEW STRUCTURE)"
-echo "    │   ├── quality-gates/ (1): Skill.md"
+echo "    │   ├── Universal (3): quality-gates, po-requirements, architect-refinement"
 echo "    │   ├── frontend/"
 echo "    │   │   ├── angular/ (6): Skill.md, components.md, state-management.md, ..."
 echo "    │   │   ├── react/ (6): Skill.md, components.md, state-management.md, ..."
