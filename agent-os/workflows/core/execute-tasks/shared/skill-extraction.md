@@ -1,61 +1,54 @@
 ---
-description: Skill Path Extraction - shared across phases
-version: 4.0
+description: DEPRECATED in v3.0 - Skills now auto-load via globs
+version: 3.0
+deprecated: true
 ---
 
-# Skill Path Extraction
+# Skill Extraction (DEPRECATED)
 
-Extract skill file paths from stories and pass them to sub-agents.
-Sub-agents load the complete skill files themselves (not the orchestrator).
+## Status: DEPRECATED in v3.0
 
-## Process
+This file is no longer used. Skills now load automatically via glob patterns.
 
-1. **Read Story File**
-   - Find "### Relevante Skills" section
-   - Extract skill paths from table
+## Why Deprecated?
 
-2. **Fallback if Not Found**
-   - Read `agent-os/team/skill-index.md`
-   - Match story type to skill category
-   - Select 1-2 default skills
+In v3.0:
+- Skills are in `.claude/skills/[name]/Skill.md` (Claude Code standard)
+- Skills have `globs` in YAML frontmatter
+- Skills auto-load when editing matching files
+- No manual extraction needed
 
-3. **Extract Paths Only**
-   - Collect skill file paths
-   - Do NOT read skill contents
-   - Sub-agent will load complete skills
+## Migration
 
-4. **Format for Task Prompt**
-   ```markdown
-   **Required Skills (load these files):**
-   - [skill-path-1]
-   - [skill-path-2]
-   ```
-
-## Example
-
-**Story has:**
-```markdown
-| Skill | Pfad | Grund |
-|-------|------|-------|
-| Logic Implementing | agent-os/skills/backend-logic-implementing.md | Service Object |
-| Test Automation | agent-os/skills/qa-test-automation.md | Unit tests |
+**v2.x (Old):**
+```
+1. Orchestrator reads story
+2. Extracts skill paths from "Relevante Skills" section
+3. Reads skills and extracts "Quick Reference"
+4. Passes patterns to sub-agent
 ```
 
-**Extracted (paths only):**
-```markdown
-**Required Skills (load these files):**
-- agent-os/skills/backend-logic-implementing.md
-- agent-os/skills/qa-test-automation.md
+**v3.0 (New):**
+```
+1. Main agent reads story
+2. Main agent implements directly
+3. Skills auto-load when editing matching files
+4. No extraction needed
 ```
 
-## Architectural Change (v4.0)
+## Replacement
 
-| Version | Approach | Who loads skills? |
-|---------|----------|-------------------|
-| v3.0 | Orchestrator extracts Quick Reference | Orchestrator |
-| v4.0 | Orchestrator passes paths only | **Sub-Agent** |
+Stories no longer need "Relevante Skills" section.
+Instead, skills activate based on file patterns:
 
-**Benefits:**
-- Sub-agents get complete skill context (patterns, examples, edge cases)
-- Orchestrator saves context (doesn't load skill contents)
-- More accurate implementation following all skill guidelines
+```yaml
+# Example: frontend-angular/Skill.md
+---
+globs:
+  - "src/app/**/*.ts"
+  - "src/app/**/*.html"
+---
+```
+
+When the agent edits `src/app/components/user.component.ts`,
+the frontend-angular skill loads automatically.

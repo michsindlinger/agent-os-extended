@@ -1,14 +1,23 @@
 ---
-description: Backlog Phase 2 - Execute one backlog story
-version: 4.3
+description: Backlog Phase 2 - Execute one backlog story (Direct Execution v3.0)
+version: 3.0
 ---
 
-# Backlog Phase 2: Execute Story
+# Backlog Phase 2: Execute Story (Direct Execution)
+
+## What's New in v3.0
+
+- **No Sub-Agent Delegation**: Main agent implements story directly
+- **Skills Load Automatically**: Via glob patterns in .claude/skills/
+- **Self-Review**: DoD checklist instead of separate review
+- **Self-Learning**: Updates dos-and-donts.md when learning
 
 ## Purpose
+
 Execute ONE backlog story. Simpler than spec execution (no git worktree, no integration phase).
 
 ## Entry Condition
+
 - kanban-[TODAY].md exists
 - Resume Context shows: Phase 1-complete OR story-complete
 - Stories remain in Backlog
@@ -34,73 +43,91 @@ Execute ONE backlog story. Simpler than spec execution (no git worktree, no inte
     - ADD Change Log entry
 </step>
 
-<step name="extract_skill_paths_backlog">
-  ### Skill Path Extraction for Backlog (v4.0)
+<step name="load_story">
+  ### Load Story Details
 
-  REFERENCE: agent-os/workflows/core/execute-tasks/shared/skill-extraction.md
+  READ: Story file from agent-os/backlog/
 
-  1. READ: Story file (agent-os/backlog/{STORY_FILE})
+  EXTRACT:
+  - Story ID and Title
+  - Feature description
+  - Acceptance Criteria
+  - DoD Checklist
+  - Domain reference (if specified)
 
-  2. FIND: "### Relevante Skills" section
-     IF found: EXTRACT skill paths from table (Pfad column)
-
-     FALLBACK: Use agent-os/team/skill-index.md (if exists)
-     MATCH: story.type to default skills
-
-     IF NO skills found:
-       SKIP: Skill extraction (backlog tasks often simpler)
-       SET: SKILL_PATHS = ""
-
-  3. COLLECT: Skill file paths only
-     DO NOT: Read skill contents
-     (Sub-agent will load complete skills)
-
-  4. FORMAT (if skills found):
-     ```
-     **Required Skills (load these files):**
-     - [skill-path-1]
-     - [skill-path-2]
-     ```
-
-  OUTPUT: SKILL_PATHS variable (may be empty)
+  NOTE: Skills load automatically when you edit matching files.
 </step>
 
-<step name="execute_story" subagent="dev-team">
-  DETERMINE: Agent type from story.type
+<step name="implement">
+  ### Direct Implementation (v3.0)
 
-  | story.type | Agent |
-  |------------|-------|
-  | Backend | dev-team__backend-developer-* |
-  | Frontend | dev-team__frontend-developer-* |
-  | DevOps | dev-team__dev-ops-specialist |
-  | Test | dev-team__qa-specialist |
+  **The main agent implements the story directly.**
 
-  DELEGATE via Task tool:
-  "Execute Backlog Story: [Story Title]
+  <implementation_process>
+    1. UNDERSTAND: Story requirements
 
-  **Story File:** agent-os/backlog/{STORY_FILE}
+    2. IMPLEMENT: The task
+       - Create/modify files as needed
+       - Skills load automatically when editing matching files
+       - Keep it focused (backlog tasks are smaller)
 
-  **DoD Criteria:**
-  [DoD checklist from story file]
+    3. RUN: Tests
+       - Ensure tests pass
 
-  {SKILL_PATHS}
+    4. VERIFY: Acceptance criteria satisfied
 
-  **INSTRUCTIONS:**
-  - Load each skill file listed above completely (if any)
-  - Follow patterns and guidelines from the skills
-  - Quick task, keep it focused
-  - No extensive refactoring
-  - Commit when done"
-
-  WAIT: For agent completion
+    **This is a quick task:**
+    - No extensive refactoring
+    - Keep changes minimal
+    - Focus on the specific requirement
+  </implementation_process>
 </step>
 
-<step name="quick_review">
-  VERIFY: DoD criteria met
-  RUN: Completion Check commands from story
+<step name="self_review">
+  ### Self-Review with DoD Checklist
 
-  IF all pass: PROCEED to commit
-  ELSE: DELEGATE_BACK with feedback
+  <review_process>
+    1. READ: DoD checklist from story
+
+    2. VERIFY each item:
+       - [ ] Implementation complete
+       - [ ] Tests passing
+       - [ ] Linter passes
+       - [ ] Acceptance criteria met
+
+    3. RUN: Completion Check commands from story
+
+    IF all checks pass:
+      PROCEED to self_learning_check
+    ELSE:
+      FIX issues and re-verify
+  </review_process>
+</step>
+
+<step name="self_learning_check">
+  ### Self-Learning Check (v3.0)
+
+  <learning_detection>
+    REFLECT: Did you learn something during implementation?
+
+    IF YES:
+      1. IDENTIFY: The learning
+      2. LOCATE: Target dos-and-donts.md file
+         - Frontend: .claude/skills/frontend-[framework]/dos-and-donts.md
+         - Backend: .claude/skills/backend-[framework]/dos-and-donts.md
+         - DevOps: .claude/skills/devops-[stack]/dos-and-donts.md
+
+      3. APPEND: Learning entry
+         ```markdown
+         ### [DATE] - [Short Title]
+         **Context:** [What you were trying to do]
+         **Issue:** [What didn't work]
+         **Solution:** [What worked]
+         ```
+
+    IF NO learning:
+      SKIP: No update needed
+  </learning_detection>
 </step>
 
 <step name="move_story_to_done">
@@ -110,7 +137,6 @@ Execute ONE backlog story. Simpler than spec execution (no git worktree, no inte
   mv agent-os/backlog/{STORY_FILE} agent-os/backlog/done/
   ```
   NOTE: This prevents the story from being picked up in future kanbans
-        (Phase 1 only lists files in agent-os/backlog/, not in done/)
 </step>
 
 <step name="story_commit" subagent="git-workflow">
@@ -123,10 +149,12 @@ Execute ONE backlog story. Simpler than spec execution (no git worktree, no inte
   "Commit backlog story {STORY_ID}:
 
   **WORKING_DIR:** {PROJECT_ROOT}
-  (Use this as the git repository root - do NOT operate in nested repos)
 
   - Message: fix/feat: {STORY_ID} [Story Title]
-  - Stage all changes (including the moved story file in done/)
+  - Stage all changes including:
+    - Implementation files
+    - Moved story file in done/
+    - Any dos-and-donts.md updates
   - Push to current branch"
 </step>
 
@@ -146,6 +174,8 @@ Execute ONE backlog story. Simpler than spec execution (no git worktree, no inte
     ## Story Complete: {STORY_ID}
 
     **Progress:** {COMPLETED} of {TOTAL} stories today
+
+    **Self-Learning:** [Updated/No updates]
 
     **Next:** Execute next story
 
@@ -182,3 +212,19 @@ Execute ONE backlog story. Simpler than spec execution (no git worktree, no inte
 
     STOP: Do not proceed to Backlog Phase 3
 </phase_complete>
+
+---
+
+## Quick Reference: v3.0 Changes
+
+| v2.x (Sub-Agents) | v3.0 (Direct Execution) |
+|-------------------|-------------------------|
+| extract_skill_paths_backlog | Skills auto-load via globs |
+| DELEGATE to dev-team__* | Main agent implements |
+| quick_review (separate) | Self-review with DoD |
+| - | self_learning_check (NEW) |
+
+**Benefits:**
+- Full context for each task
+- Faster execution (no delegation overhead)
+- Self-learning improves backlog workflow too

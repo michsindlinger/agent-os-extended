@@ -8,6 +8,22 @@ encoding: UTF-8
 
 # Task Execution Entry Point
 
+## What's New in v3.0
+
+**Phase Files Updated:**
+- `spec-phase-3.md` → Direct Execution (no sub-agents)
+- `backlog-phase-2.md` → Direct Execution (no sub-agents)
+
+**Key Changes:**
+- Main agent implements stories directly
+- Skills auto-load via glob patterns
+- Self-review replaces separate review agents
+- Self-learning mechanism added
+
+---
+
+# Task Execution Entry Point
+
 ## Overview
 
 Lightweight router that detects current state and loads ONLY the relevant phase.
