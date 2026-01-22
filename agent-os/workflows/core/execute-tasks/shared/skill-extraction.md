@@ -13,7 +13,7 @@ This file is no longer used. Skills now load automatically via glob patterns.
 ## Why Deprecated?
 
 In v3.0:
-- Skills are in `.claude/skills/[name]/Skill.md` (Claude Code standard)
+- Skills are in `.claude/skills/[name]/SKILL.md` (Claude Code standard)
 - Skills have `globs` in YAML frontmatter
 - Skills auto-load when editing matching files
 - No manual extraction needed
