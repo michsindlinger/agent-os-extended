@@ -173,33 +173,31 @@ Gather fachliche requirements for the new story. Keep it focused since spec cont
 
 </step>
 
-<step number="4" subagent="dev-team__architect" name="architect_refinement">
+<step number="4" name="architect_refinement">
 
-### Step 4: Architect Phase - Technical Refinement
+### Step 4: Architect Phase - Technical Refinement (v3.0)
 
-<delegation>
-  DELEGATE to dev-team__architect via Task tool:
+Main agent does technical refinement guided by architect-refinement skill.
 
-  PROMPT:
-  "Add technical refinement to new story in existing spec.
+<refinement_process>
+  LOAD skill: .claude/skills/architect-refinement/Skill.md
+  (This skill provides guidance for technical refinement)
 
-  **New Story:** agent-os/specs/[SELECTED_SPEC]/stories/story-[NUMBER]-[slug].md
-
-  **Spec Context:**
+  **Story Context:**
+  - New Story: agent-os/specs/[SELECTED_SPEC]/stories/story-[NUMBER]-[slug].md
   - Spec: agent-os/specs/[SELECTED_SPEC]/spec.md
   - Existing Stories: agent-os/specs/[SELECTED_SPEC]/stories/
   - Tech Stack: agent-os/product/tech-stack.md
-  - Architecture: agent-os/product/architecture-decision.md (if exists)
-
-  **Available DevTeam Agents:**
-  - List agents from .claude/agents/dev-team/
+  - Architecture: Try both locations:
+    1. agent-os/product/architecture-decision.md
+    2. agent-os/product/architecture/platform-architecture.md
 
   **Tasks:**
   1. READ the new story file
   2. READ existing stories to understand context and patterns
   3. CHECK for consistency with existing stories
 
-  4. FILL technical sections:
+  4. FILL technical sections (guided by architect-refinement skill):
 
      **DoR (Definition of Ready):**
      - Mark ALL checkboxes as [x] when complete
@@ -210,10 +208,10 @@ Gather fachliche requirements for the new story. Keep it focused since spec cont
      - Align with spec's DoD patterns
 
      **Technical Details:**
-     - WAS: Components to create/modify
-     - WIE: Architecture guidance (follow existing patterns in spec)
-     - WO: File paths (consistent with spec structure)
-     - WER: Which agent
+     - WAS: Components to create/modify (no code)
+     - WIE: Architecture guidance (patterns, constraints)
+     - WO: File paths (consistent with spec)
+     - Domain: Optional domain area reference
      - Abhängigkeiten: Story IDs this depends on
      - Geschätzte Komplexität: XS/S/M
 
@@ -231,13 +229,12 @@ Gather fachliche requirements for the new story. Keep it focused since spec cont
      ASK: 'Proceed, split, or create new spec?'
 
   **IMPORTANT:**
+  - NO "WER" field in v3.0 (main agent implements directly)
+  - Follow patterns from architect-refinement skill
   - Follow patterns established in existing stories
-  - Maintain consistency with spec's architecture decisions
   - Keep story appropriately sized (max 5 files, 400 LOC)
-  - Mark ALL DoR checkboxes as [x] when complete"
-
-  WAIT for dev-team__architect completion
-</delegation>
+  - Mark ALL DoR checkboxes as [x] when ready
+</refinement_process>
 
 </step>
 
