@@ -157,6 +157,10 @@ download_file "$REPO_URL/agent-os/workflows/core/transfer-and-create-spec.md" "a
 download_file "$REPO_URL/agent-os/workflows/core/transfer-and-create-bug.md" "agent-os/workflows/core/transfer-and-create-bug.md" "workflows"
 download_file "$REPO_URL/agent-os/workflows/core/transfer-and-plan-product.md" "agent-os/workflows/core/transfer-and-plan-product.md" "workflows"
 
+# Profile optimization
+download_file "$REPO_URL/agent-os/workflows/core/optimize-profile.md" "agent-os/workflows/core/optimize-profile.md" "workflows"
+download_file "$REPO_URL/agent-os/workflows/core/optimize-profile-phase2.md" "agent-os/workflows/core/optimize-profile-phase2.md" "workflows"
+
 # Skill management
 download_file "$REPO_URL/agent-os/workflows/core/add-skill.md" "agent-os/workflows/core/add-skill.md" "workflows"
 download_file "$REPO_URL/agent-os/workflows/core/migrate-devteam-v2.md" "agent-os/workflows/core/migrate-devteam-v2.md" "workflows"
@@ -228,7 +232,7 @@ echo "📁 Installed Structure:"
 echo ""
 echo "  agent-os/"
 echo "    ├── standards/              (2 core files)"
-echo "    ├── workflows/core/         (18 core workflows)"
+echo "    ├── workflows/core/         (20 core workflows)"
 echo "    │   └── execute-tasks/      (12 phase files - 80% less context)"
 echo "    ├── workflows/meta/         (1 meta workflow)"
 echo "    └── config.yml              (minimal configuration)"
