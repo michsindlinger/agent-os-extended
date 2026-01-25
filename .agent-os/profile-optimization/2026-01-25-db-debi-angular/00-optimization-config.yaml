@@ -1,0 +1,38 @@
+# Optimierungs-Konfiguration für Profil-Matching
+# DB DeBI Angular-Migration
+
+version: "1.0"
+created: "2026-01-25"
+profile: "Aysun Bardi"
+project: "DB DeBI Angular-Migration"
+
+# Projekte, die NICHT angepasst werden dürfen
+protected_projects: []
+  # Keine geschützten Projekte - alle dürfen optimiert werden
+
+# Anforderungen, die bei der Optimierung IGNORIERT werden
+ignored_requirements:
+  - id: "S3"
+    name: "Erfahrung mit Nutzung der API des One Identity Manager 9.2.2 bei Frontendmigration"
+    type: "Soll"
+    weight: "25%"
+    reason: "Mitarbeiterin hat keine echte Erfahrung mit One Identity Manager"
+
+  - id: "S4"
+    name: "Erfahrung mit Nutzung und Customizing der Angular-Libraries des One Identity Manager ab 9.2.2 bei Frontendmigration"
+    type: "Soll"
+    weight: "15%"
+    reason: "Mitarbeiterin hat keine echte Erfahrung mit One Identity Manager Libraries"
+
+# Automatisch berechnet
+effective_scoring:
+  muss_count: 2
+  muss_excluded: 0
+  soll_total_weight: "60%"  # 100% - 25% (S3) - 15% (S4)
+  soll_excluded_weight: "40%"
+  soll_normalized:
+    S1: "41.7%"  # 25/60 * 100
+    S2: "41.7%"  # 25/60 * 100
+    S5: "16.6%"  # 10/60 * 100
+
+optimization_mode: "aggressive"
