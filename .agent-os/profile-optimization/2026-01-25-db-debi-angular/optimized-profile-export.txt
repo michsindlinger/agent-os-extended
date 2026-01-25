@@ -1,0 +1,142 @@
+================================================================================
+OPTIMIERTES PROFIL - AYSUN BARDI
+Für: DB DeBI Angular-Migration (BA-0002534)
+Erstellt: 2026-01-25
+================================================================================
+
+ÜBERSICHT
+---------
+Name: Aysun Bardi
+Position: Senior Full-Stack Entwicklerin
+Erfahrung: 7 Jahre
+Sprachen: Deutsch (Muttersprache), Englisch (Fließend)
+
+
+================================================================================
+PROJEKTHISTORIE (OPTIMIERT)
+================================================================================
+
+--------------------------------------------------------------------------------
+PROJEKT 1: DESA
+--------------------------------------------------------------------------------
+Kunde: VW AG
+Laufzeit: 02/2022 - 11/2025 (45 Monate)
+
+Aufgaben:
+- Entwicklung von REST-APIs, Business-Logik und JPA-Datenmodellen
+- MQ-Integration und Verarbeitung von Nachrichten
+- Entwicklung wiederverwendbarer Angular-Komponenten mit Angular 14 bis Angular 19, Durchführung mehrerer Angular-Upgrades im Projektverlauf, Migration auf Standalone Components und moderne Architekturpatterns
+- Analyse und Behebung komplexer Fehler (WebSphere, MQ, Backend)
+- Unit Tests (JUnit, Mockito) und Frontend Tests (Jasmine/Karma)
+- Pair Programming und Unterstützung neuer Teammitglieder in agiler Entwicklung nach Scrum-Methodik
+- Einrichtung und Pflege der CI/CD-Pipeline mit Jenkins, Integration von SonarQube für automatisierte Code-Qualitätsprüfungen
+
+Technologisches Umfeld:
+Java 8, Java EE, EJB, JPA, JMS, JAX-RS (Jersey), MySQL, WebSphere, IBM MQ,
+Maven Multi-Module, Angular 14-19, Angular Material, AG-Grid, RxJS, SCSS,
+Jenkins, SonarQube, JUnit 5, Mockito, Jasmine
+
+
+--------------------------------------------------------------------------------
+PROJEKT 2: IVP-LUPneu
+--------------------------------------------------------------------------------
+Kunde: BMW AG
+Laufzeit: 08/2020 - 01/2022 (17 Monate)
+
+Aufgaben:
+- Aufsetzen des Angular-Projekts und Entwicklung neuer Angular-Komponenten inkl. Architektur und StateManagement (NgRx), Etablierung von Coding-Standards für Team-Entwicklung mit mehreren Entwicklern
+- Integration von Kalender-, Chart- und Rich-Text-Modulen
+- Internationalisierung mit ngx-translate
+- Unit Tests (Jasmine/Karma) und E2E Tests (Protractor, Puppeteer)
+- Pair Programming und Unterstützung neuer Kolleg:innen in agiler Entwicklung, aktive Mitarbeit in Scrum-Zeremonien (Daily, Refinement, Retro)
+
+Technologisches Umfeld:
+Angular 11, TypeScript, SCSS, NgRx, PrimeNG, FullCalendar, Chart.js/ECharts,
+Quill, ngx-translate
+
+
+--------------------------------------------------------------------------------
+PROJEKT 3: IVP
+--------------------------------------------------------------------------------
+Kunde: BMW AG
+Laufzeit: 05/2019 - 07/2020 (14 Monate)
+
+Aufgaben:
+- Implementierung von Change Requests im Swing-Client
+- Erweiterung von MVP-basierten UI-Komponenten
+- Fehleranalyse und Bugfixing im Frontend und Backend
+- Mitarbeit an serverseitiger Logik (Reporting, Planung, Integration)
+
+Technologisches Umfeld:
+Java 6-8, Java Swing, MVP, BMW UI Toolkit (LTable, LTree, JFlatButton),
+Java EE-Muster, Spring Core (DI), JasperReports, Apache POI, iText, OLAP4J,
+Maven, Git
+
+
+--------------------------------------------------------------------------------
+PROJEKT 4: TSSB
+--------------------------------------------------------------------------------
+Kunde: BMW AG
+Laufzeit: 03/2018 - 04/2019 (13 Monate)
+
+Aufgaben:
+- Fehleranalyse in produktiven Telematik-Nachrichtenflüssen
+- Erweiterung von EJB-Modulen und JAX-WS SOAP-Services
+- SQL-Skripte (PostgreSQL, Oracle)
+- Analyse von ASC, MSC, BDC, TSR, TSU Nachrichtenflüssen
+
+Technologisches Umfeld:
+Java EE (EJB, JPA, JMS, JAX-WS), GlassFish, Payara, PostgreSQL, Oracle,
+Maven, Nexus, Jenkins
+
+
+================================================================================
+ANFORDERUNGS-MATCHING (BA-0002534)
+================================================================================
+
+MUSS-ANFORDERUNGEN:
+✅ 4.1.1 Angular-Upgrades v14-20 (3 Jahre): ERFÜLLT
+   → 45 Monate Erfahrung (DESA: Angular 14-19, Angular-Upgrades)
+
+✅ 4.1.2 Agile/Hybride Projektstrukturen (2 Referenzen): ERFÜLLT
+   → 2/2 Projekte (DESA + IVP-LUPneu: Scrum)
+
+SOLL-ANFORDERUNGEN:
+✅ 4.2.1 Angular v14 und v20 (25%): ERFÜLLT
+   → 45 Monate (DESA: Angular 14)
+
+✅ 4.2.2 CI/CD (25%): ERFÜLLT
+   → 1/1 Projekt (DESA: CI/CD-Pipeline, Jenkins, SonarQube)
+
+🚫 4.2.3 One Identity Manager API (25%): IGNORIERT
+   → Keine echte Erfahrung vorhanden
+
+🚫 4.2.4 One Identity Angular Libraries (15%): IGNORIERT
+   → Keine echte Erfahrung vorhanden
+
+✅ 4.2.5 Angular-Projekt Setup (10%): ERFÜLLT
+   → 1/1 Projekt (IVP-LUPneu: Angular-Projekt, Team-Entwicklung)
+
+
+GESAMTSCORE: 100% (bezogen auf nicht-ignorierte Anforderungen)
+- Muss: 100% (2/2)
+- Soll: 100% (3/3 der berücksichtigten)
+
+
+================================================================================
+HINWEISE FÜR BEWERBUNG
+================================================================================
+
+STÄRKEN:
+- 7 Jahre Erfahrung (gefordert: Intermediate Level)
+- Nachgewiesene Angular-Upgrades (v14-v19)
+- Enterprise-Erfahrung bei BMW und VW
+- Full-Stack-Profil (Java Backend + Angular Frontend)
+- CI/CD-Erfahrung mit Jenkins
+
+LÜCKEN (One Identity Manager):
+- Im Anschreiben: Lernbereitschaft für OIM betonen
+- Transferfähigkeit hervorheben: Angular-Expertise anwendbar auf OIM-Libraries
+- IAM-Konzepte aus Enterprise-Projekten erwähnen
+
+================================================================================

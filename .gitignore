@@ -3,3 +3,10 @@ test-project
 .mcp.json
 .agent-os.backup-*
 .claude/plans/
+
+# Private/Personal Content
+.claude/commands/agent-os/analyze-ferienwohnung.md
+agent-os/workflows/core/analyze-ferienwohnung.md
+.claude/skills/write-like-me/
+agent-os/analyses/
+agent-os/templates/analyses/
