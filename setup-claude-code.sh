@@ -88,6 +88,10 @@ command_files=(
     "transfer-and-create-spec.md"
     "transfer-and-create-bug.md"
     "transfer-and-plan-product.md"
+
+    # Profile optimization
+    "optimize-profile.md"
+    "optimize-profile-match.md"
 )
 
 for file in "${command_files[@]}"; do
@@ -130,7 +134,7 @@ echo ""
 echo "📁 Installed Structure:"
 echo ""
 echo "  .claude/"
-echo "    ├── commands/agent-os/   (22 core commands) ← +2 new in v3.0"
+echo "    ├── commands/agent-os/   (24 core commands) ← +2 profile optimization"
 echo "    └── agents/              (10 utility agents)"
 echo ""
 echo "📋 Available Commands:"
@@ -173,6 +177,10 @@ echo "    /start-brainstorming      → Interactive idea exploration"
 echo "    /transfer-and-create-spec → Convert brainstorming to spec"
 echo "    /transfer-and-create-bug  → Convert brainstorming to bug report"
 echo "    /transfer-and-plan-product → Convert brainstorming to product plan"
+echo ""
+echo "  Profile Optimization:"
+echo "    /optimize-profile         → Full profile optimization (Phase 1 + 2)"
+echo "    /optimize-profile-match   → Job-specific profile matching (Phase 2 only)"
 echo ""
 echo "  Skill Management:"
 echo "    /add-skill                → Create custom skills for DevTeam agents"
