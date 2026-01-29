@@ -271,6 +271,7 @@ download_file "$REPO_URL/agent-os/templates/docs/handover-doc-template.md" "$GLO
 download_file "$REPO_URL/agent-os/templates/docs/changelog-entry-template.md" "$GLOBAL_DIR/templates/docs/changelog-entry-template.md"
 download_file "$REPO_URL/agent-os/templates/docs/dod-template.md" "$GLOBAL_DIR/templates/docs/dod-template.md"
 download_file "$REPO_URL/agent-os/templates/docs/dor-template.md" "$GLOBAL_DIR/templates/docs/dor-template.md"
+download_file "$REPO_URL/agent-os/templates/docs/effort-estimation-template.md" "$GLOBAL_DIR/templates/docs/effort-estimation-template.md"
 
 echo ""
 echo "✅ Global installation complete!"
