@@ -1,9 +1,15 @@
 ---
-description: Spec Phase 3 - Execute one user story (Direct Execution v3.0)
-version: 3.0
+description: Spec Phase 3 - Execute one user story (Direct Execution v3.1)
+version: 3.1
 ---
 
 # Spec Phase 3: Execute Story (Direct Execution)
+
+## What's New in v3.1
+
+- **Integration Context**: Reads previous story context before implementation
+- **Context Update**: Updates integration-context.md after story completion
+- **Better Cross-Session Integration**: No more "orphaned" code after /clear
 
 ## What's New in v3.0
 
@@ -30,6 +36,29 @@ maintaining full context throughout the story.
   READ: agent-os/specs/{SELECTED_SPEC}/kanban-board.md
   EXTRACT: Resume Context
   IDENTIFY: Next eligible story from Backlog (respecting dependencies)
+</step>
+
+<step name="load_integration_context">
+  ### Load Integration Context (v3.1)
+
+  **CRITICAL: Read this BEFORE implementing to understand prior work.**
+
+  READ: agent-os/specs/{SELECTED_SPEC}/integration-context.md
+
+  IF file exists:
+    EXTRACT and UNDERSTAND:
+    - **Completed Stories**: What was already implemented
+    - **New Exports & APIs**: Functions, components, services to USE (not recreate)
+    - **Integration Notes**: How things connect together
+    - **File Change Summary**: Which files were modified
+
+    **USE THIS CONTEXT:**
+    - Import and use existing exports instead of creating duplicates
+    - Follow established patterns from prior stories
+    - Integrate with existing code, don't work in isolation
+
+  IF file doesn't exist:
+    NOTE: First story execution - no prior context needed
 </step>
 
 <step name="story_selection">
@@ -268,9 +297,50 @@ maintaining full context throughout the story.
   - Stage all changes including:
     - Implementation files
     - Story file with Status: Done
+    - integration-context.md updates
     - Any dos-and-donts.md updates
     - Any domain doc updates
   - Push to remote"
+</step>
+
+<step name="update_integration_context">
+  ### Update Integration Context (v3.1)
+
+  **CRITICAL: Update context for next story session.**
+
+  READ: agent-os/specs/{SELECTED_SPEC}/integration-context.md
+
+  UPDATE the file with information from THIS story:
+
+  1. **Completed Stories Table** - ADD new row:
+     | [STORY-ID] | [Brief 5-10 word summary] | [Key files/functions created] |
+
+  2. **New Exports & APIs** - ADD any new:
+
+     **Components** (if created):
+     - `path/to/Component.tsx` → `<ComponentName prop={value} />`
+
+     **Services** (if created):
+     - `path/to/service.ts` → `functionName(params)` - brief description
+
+     **Hooks / Utilities** (if created):
+     - `path/to/hook.ts` → `useHookName()` - what it returns
+
+     **Types / Interfaces** (if created):
+     - `path/to/types.ts` → `InterfaceName` - what it represents
+
+  3. **Integration Notes** - ADD if relevant:
+     - How this story's code connects to existing code
+     - Important patterns established
+     - Things the next story should know
+
+  4. **File Change Summary Table** - ADD rows for each file:
+     | [file path] | Created/Modified | [STORY-ID] |
+
+  **IMPORTANT:**
+  - Be concise but informative
+  - Focus on EXPORTS that other stories might use
+  - Include import paths so next session can use them directly
 </step>
 
 ## Phase Completion
@@ -339,6 +409,14 @@ maintaining full context throughout the story.
 
 ---
 
+## Quick Reference: v3.1 Changes
+
+| v3.0 | v3.1 |
+|------|------|
+| No cross-session context | load_integration_context (NEW) |
+| Context lost after /clear | update_integration_context (NEW) |
+| Stories executed in isolation | Stories build on each other |
+
 ## Quick Reference: v3.0 Changes
 
 | v2.x (Sub-Agents) | v3.0 (Direct Execution) |
@@ -351,7 +429,13 @@ maintaining full context throughout the story.
 | - | self_learning_check (NEW) |
 | - | domain_update_check (NEW) |
 
-**Benefits:**
+**Benefits v3.1:**
+- Cross-session context preservation
+- Proper integration between stories
+- No more "orphaned" functions after /clear
+- Existing exports are reused, not recreated
+
+**Benefits v3.0:**
 - Full context throughout story
 - No "lost in translation" between agents
 - Better integration (agent sees all changes)

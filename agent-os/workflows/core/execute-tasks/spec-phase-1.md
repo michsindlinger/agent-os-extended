@@ -1,9 +1,15 @@
 ---
 description: Spec Phase 1 - Initialize and create Kanban Board
-version: 3.0
+version: 3.1
 ---
 
 # Spec Phase 1: Initialize
+
+## What's New in v3.1
+
+**Integration Context:**
+- Creates `integration-context.md` for cross-story context preservation
+- Enables proper integration when stories execute in separate sessions
 
 ## Purpose
 Select specification and create Kanban Board. One-time setup phase.
@@ -90,6 +96,69 @@ Select specification and create Kanban Board. One-time setup phase.
   WAIT: For file-creator completion
 </step>
 
+<step name="create_integration_context" subagent="file-creator">
+  USE: file-creator subagent
+
+  PROMPT: "Create integration context file for spec execution.
+
+  Output: agent-os/specs/{SELECTED_SPEC}/integration-context.md
+
+  Content:
+  ```markdown
+  # Integration Context
+
+  > **Purpose:** Cross-story context preservation for multi-session execution.
+  > **Auto-updated** after each story completion.
+  > **READ THIS** before implementing the next story.
+
+  ---
+
+  ## Completed Stories
+
+  | Story | Summary | Key Changes |
+  |-------|---------|-------------|
+  | - | No stories completed yet | - |
+
+  ---
+
+  ## New Exports & APIs
+
+  ### Components
+  <!-- New UI components created -->
+  _None yet_
+
+  ### Services
+  <!-- New service classes/modules -->
+  _None yet_
+
+  ### Hooks / Utilities
+  <!-- New hooks, helpers, utilities -->
+  _None yet_
+
+  ### Types / Interfaces
+  <!-- New type definitions -->
+  _None yet_
+
+  ---
+
+  ## Integration Notes
+
+  <!-- Important integration information for subsequent stories -->
+  _None yet_
+
+  ---
+
+  ## File Change Summary
+
+  | File | Action | Story |
+  |------|--------|-------|
+  | - | No changes yet | - |
+  ```
+  "
+
+  WAIT: For file-creator completion
+</step>
+
 ## Phase Completion
 
 <phase_complete>
@@ -103,6 +172,7 @@ Select specification and create Kanban Board. One-time setup phase.
 
   **Created:**
   - Kanban Board: agent-os/specs/{SELECTED_SPEC}/kanban-board.md
+  - Integration Context: agent-os/specs/{SELECTED_SPEC}/integration-context.md
   - Stories loaded: [X] stories in Backlog
 
   **Next Phase:** Git Worktree Setup
