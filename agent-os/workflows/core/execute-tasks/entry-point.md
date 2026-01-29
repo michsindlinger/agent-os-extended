@@ -2,11 +2,18 @@
 description: Entry point for task execution - routes to appropriate phase
 globs:
 alwaysApply: false
-version: 3.0
+version: 3.1
 encoding: UTF-8
 ---
 
 # Task Execution Entry Point
+
+## What's New in v3.1
+
+**Kanban Auto-Sync:**
+- New stories added after kanban creation are now automatically detected
+- Entry point syncs new `user-story-*.md` and `bug-*.md` files to existing kanban
+- No more "forgotten" tasks when using `/add-bug` or `/add-todo` mid-session
 
 ## What's New in v3.0
 
@@ -108,6 +115,39 @@ This reduces context usage by ~70-80% compared to loading the full workflow.
   IF kanban exists:
     READ: agent-os/backlog/kanban-${TODAY}.md
     EXTRACT: "Current Phase" from Resume Context
+
+    <kanban_sync>
+      ## Auto-Sync: Check for New Stories (v3.1)
+
+      BEFORE loading phase, sync any new stories added after kanban creation:
+
+      1. LIST: All story files in backlog folder (excluding done/)
+         ```bash
+         ls agent-os/backlog/user-story-*.md agent-os/backlog/bug-*.md 2>/dev/null
+         ```
+
+      2. EXTRACT: Story IDs already in kanban
+         - Parse "## Backlog", "## In Progress", "## Done" sections
+         - Collect all Story IDs listed
+
+      3. COMPARE: Find new stories
+         FOR EACH file in backlog folder:
+           EXTRACT: Story ID from filename (e.g., "US-001" from "user-story-US-001-title.md")
+           IF Story ID NOT in kanban:
+             ADD to NEW_STORIES list
+
+      4. IF NEW_STORIES is not empty:
+         READ: Each new story file
+         EXTRACT: Title, Type, Priority, Points
+
+         UPDATE: kanban-${TODAY}.md
+           - ADD new stories to "## Backlog" table
+           - UPDATE "Board Status" totals
+           - ADD Change Log entry: "{TIMESTAMP} | Synced {N} new stories: {STORY_IDS}"
+
+         INFORM user:
+         "📥 **Kanban Sync:** Added {N} new stories to today's board: {STORY_IDS}"
+    </kanban_sync>
 
     | Current Phase | Load Phase File |
     |---------------|-----------------|
