@@ -2,7 +2,7 @@
 description: Create Feature Specification with DevTeam (PO + Architect)
 globs:
 alwaysApply: false
-version: 2.6
+version: 2.7
 encoding: UTF-8
 ---
 
@@ -11,6 +11,11 @@ encoding: UTF-8
 ## Overview
 
 Create detailed feature specifications using DevTeam collaboration: PO gathers fachliche requirements, Architect adds technical refinement.
+
+**v2.7 Changes:**
+- **NEW: Automatic Effort Estimation (Step 3.6)** - Dual estimation: Human-only + Human+AI Agent
+- **NEW: effort-estimation.md** - Per-Story und Gesamt-Schätzung im Spec-Ordner
+- **ENHANCED: Step 4 Summary** - Zeigt Aufwandsschätzung mit Zeitersparnis durch KI
 
 **v2.6 Changes:**
 - **NEW: Gherkin-Style User Stories** - PO schreibt Akzeptanzkriterien im Given-When-Then Format
@@ -1139,6 +1144,233 @@ Validate that all stories comply with size guidelines to prevent mid-execution c
 
 </step>
 
+<step number="3.6" name="effort_estimation">
+
+### Step 3.6: Effort Estimation (Dual: Human + AI-Adjusted)
+
+Generate effort estimation for all stories with dual perspective: Human-only and Human+AI Agent.
+
+<estimation_process>
+
+  **Purpose:**
+  Provide realistic effort estimates showing:
+  1. **Human Baseline** - Traditional estimate (developer without AI tools)
+  2. **AI-Adjusted** - Realistic estimate with AI agent support (Claude Code, Cursor, etc.)
+
+  <substep number="3.6.1" name="load_stories">
+
+  ### Step 3.6.1: Load Story Data
+
+  <mandatory_actions>
+    1. LIST all story files: ls agent-os/specs/[spec-name]/stories/
+
+    2. FOR EACH story file:
+       READ and EXTRACT:
+       - Story ID
+       - Story Title
+       - Geschätzte Komplexität (XS/S/M/L/XL)
+       - WAS section (scope of work)
+       - WO section (files affected)
+       - Story Type (from WER field: Backend/Frontend/DevOps/Test)
+
+    3. COLLECT data for estimation
+  </mandatory_actions>
+
+  </substep>
+
+  <substep number="3.6.2" name="estimate_per_story">
+
+  ### Step 3.6.2: Estimate Each Story
+
+  FOR EACH story:
+
+  **Step A: Complexity to Hours Mapping (Human Baseline)**
+
+  Convert "Geschätzte Komplexität" to human baseline hours:
+
+  | Komplexität | Human Hours | Description |
+  |-------------|-------------|-------------|
+  | XS | 2-4h | Triviale Änderung, 1-2 Dateien |
+  | S | 4-8h | Kleine Story, max 3 Dateien |
+  | M | 8-16h | Mittlere Story, 3-5 Dateien |
+  | L | 16-32h | Große Story (sollte gesplittet werden) |
+  | XL | 32-64h | Sehr große Story (MUSS gesplittet werden) |
+
+  USE median of range for calculation.
+
+  **Step B: Determine AI-Acceleration Category**
+
+  ANALYZE story content (WAS, WER, Type) and categorize:
+
+  **HIGH AI-Acceleration (Factor 0.20 = 80% reduction):**
+  - Boilerplate code, CRUD operations, API endpoints
+  - Database migrations, configuration files
+  - Documentation, test writing, type definitions
+  - Standard refactoring, utilities
+  → Typical for: Backend CRUD, simple Frontend components
+
+  **MEDIUM AI-Acceleration (Factor 0.40 = 60% reduction):**
+  - Business logic, algorithms, state management
+  - Complex form validation, API integration
+  - Standard bug fixes, performance optimization
+  → Typical for: Complex Backend logic, Frontend with state
+
+  **LOW AI-Acceleration (Factor 0.70 = 30% reduction):**
+  - New technology exploration, architecture decisions
+  - Complex bug investigation, poorly documented APIs
+  - Performance profiling, security analysis
+  → Typical for: Research stories, complex debugging
+
+  **NO AI-Acceleration (Factor 1.00 = no reduction):**
+  - Manual QA, user acceptance testing
+  - Design decisions, business clarification
+  - Code review (human oversight required)
+  → Typical for: Integration stories, QA stories
+
+  **Step C: Calculate AI-Adjusted Hours**
+
+  ```
+  ai_adjusted_hours = human_baseline_hours × ai_factor
+  ```
+
+  **Step D: Document Per-Story Estimate**
+
+  FOR EACH story, record:
+  - Story ID
+  - Title
+  - Komplexität
+  - Human Hours (baseline)
+  - AI Factor (category)
+  - AI-Adjusted Hours
+  - Time Saved (hours)
+
+  </substep>
+
+  <substep number="3.6.3" name="calculate_totals">
+
+  ### Step 3.6.3: Calculate Totals
+
+  AGGREGATE all stories:
+
+  ```
+  Total Human Hours = Σ(story human_baseline_hours)
+  Total AI-Adjusted Hours = Σ(story ai_adjusted_hours)
+  Total Hours Saved = Total Human Hours - Total AI-Adjusted Hours
+  Reduction Percentage = (Hours Saved / Human Hours) × 100%
+  ```
+
+  CONVERT to work days/weeks:
+  - 1 day = 8 hours
+  - 1 week = 40 hours (5 days)
+
+  CALCULATE breakdown by AI category:
+  - High AI-Acceleration: [N] stories, [X]h → [Y]h
+  - Medium AI-Acceleration: [N] stories, [X]h → [Y]h
+  - Low AI-Acceleration: [N] stories, [X]h → [Y]h
+  - No AI-Acceleration: [N] stories, [X]h (unchanged)
+
+  </substep>
+
+  <substep number="3.6.4" name="create_estimation_file">
+
+  ### Step 3.6.4: Create effort-estimation.md
+
+  CREATE file: agent-os/specs/[spec-name]/effort-estimation.md
+
+  <effort_estimation_template>
+    # Aufwandsschätzung: [SPEC_NAME]
+
+    **Erstellt:** [DATE]
+    **Spec:** [SPEC_NAME]
+    **Anzahl Stories:** [N]
+
+    ---
+
+    ## 📊 Zusammenfassung
+
+    | Metrik | Human-only | Human + KI Agent | Ersparnis |
+    |--------|------------|------------------|-----------|
+    | **Stunden** | [X]h | [Y]h | [Z]h ([%]%) |
+    | **Arbeitstage** | [X]d | [Y]d | [Z]d |
+    | **Arbeitswochen** | [X]w | [Y]w | [Z]w |
+
+    ### Was bedeutet das?
+
+    **Human-only:** So lange würde die Implementierung dauern, wenn ein Entwickler komplett manuell arbeitet (ohne KI-Unterstützung).
+
+    **Human + KI Agent:** So lange dauert es realistisch mit modernen KI-Werkzeugen (Claude Code, Cursor, GitHub Copilot, etc.). Der Entwickler bleibt verantwortlich für Architektur, Code-Review und Qualitätssicherung.
+
+    ---
+
+    ## 📋 Schätzung pro Story
+
+    | ID | Story | Komplexität | Human (h) | KI-Faktor | KI-Adjusted (h) | Ersparnis |
+    |----|-------|-------------|-----------|-----------|-----------------|-----------|
+    | [ID] | [Title] | [XS/S/M/L] | [X]h | [high/med/low/none] | [Y]h | [Z]h |
+    | [ID] | [Title] | [XS/S/M/L] | [X]h | [high/med/low/none] | [Y]h | [Z]h |
+    | ... | ... | ... | ... | ... | ... | ... |
+    | **TOTAL** | | | **[X]h** | | **[Y]h** | **[Z]h** |
+
+    ---
+
+    ## 🤖 KI-Beschleunigung nach Kategorie
+
+    | Kategorie | Stories | Human (h) | KI-Adjusted (h) | Reduktion |
+    |-----------|---------|-----------|-----------------|-----------|
+    | **High** (80% schneller) | [N] | [X]h | [Y]h | -80% |
+    | **Medium** (60% schneller) | [N] | [X]h | [Y]h | -60% |
+    | **Low** (30% schneller) | [N] | [X]h | [Y]h | -30% |
+    | **None** (keine Beschleunigung) | [N] | [X]h | [X]h | 0% |
+
+    ### Erklärung der Kategorien
+
+    - **High (Faktor 0.20):** Boilerplate, CRUD, Tests, Dokumentation - KI kann 5x schneller helfen
+    - **Medium (Faktor 0.40):** Business-Logik, State Management, API-Integration - KI hilft 2.5x schneller
+    - **Low (Faktor 0.70):** Neue Technologien, komplexe Bugs, Architektur - KI hilft 1.4x schneller
+    - **None (Faktor 1.00):** QA, Design-Entscheidungen, Code-Review - menschliches Urteil erforderlich
+
+    ---
+
+    ## ⚠️ Annahmen & Hinweise
+
+    - Schätzungen basieren auf der Komplexitätsbewertung des Architects
+    - KI-Faktoren setzen aktive Nutzung von AI-Tools voraus (Claude Code, Cursor, etc.)
+    - Qualitätssicherung und Code-Review bleiben unverändert wichtig
+    - Unvorhergesehene Probleme können Aufwand erhöhen (+20-30% Puffer empfohlen)
+
+    ---
+
+    ## 🎯 Empfehlung
+
+    **Geplanter Aufwand:** [AI-Adjusted Hours]h ([AI-Adjusted Days]d / [AI-Adjusted Weeks]w)
+    **Mit Puffer (+25%):** [Buffered Hours]h ([Buffered Days]d / [Buffered Weeks]w)
+
+    ---
+
+    *Erstellt mit Agent OS /create-spec v2.7*
+  </effort_estimation_template>
+
+  </substep>
+
+</estimation_process>
+
+<instructions>
+  ACTION: Generate dual effort estimation for all stories
+  CALCULATE: Human baseline + AI-adjusted hours for each story
+  AGGREGATE: Total hours, days, weeks with breakdown by AI category
+  CREATE: effort-estimation.md in spec folder
+  FORMAT: Clear tables with both perspectives
+  NOTE: Use complexity ratings from Architect (Step 3)
+</instructions>
+
+**Output:**
+- `agent-os/specs/[spec-name]/effort-estimation.md`
+- Dual estimation: Human-only AND Human+AI Agent
+- Per-story breakdown with AI factors
+- Total aggregation with time savings
+
+</step>
+
 <step number="4" name="spec_complete">
 
 ### Step 4: Spec Ready for Execution
@@ -1155,6 +1387,7 @@ Present completed specification to user.
   - spec.md - Full specification
   - spec-lite.md - Quick reference summary
   - story-index.md - Story overview and dependency mapping
+  - effort-estimation.md - Aufwandsschätzung (Human + AI)
   - stories/ - Individual story files (fachlich + technisch)
     * story-001-[slug].md, story-002-[slug].md, etc.
     * Fachliche descriptions (PO)
@@ -1168,13 +1401,24 @@ Present completed specification to user.
   - Total stories: [N]
   - Can run parallel: [N]
   - Sequential dependencies: [N]
-  - Total complexity: [Sum of story points]
+
+  **📊 Aufwandsschätzung:**
+
+  | Metrik | Human-only | Human + KI | Ersparnis |
+  |--------|------------|------------|-----------|
+  | Stunden | [X]h | [Y]h | [Z]h ([%]%) |
+  | Arbeitstage | [X]d | [Y]d | [Z]d |
+
+  💡 **Mit KI-Unterstützung** sparen Sie ca. **[%]%** der Entwicklungszeit!
+
+  Details: agent-os/specs/[spec-name]/effort-estimation.md
 
   **Next Steps:**
 
   1. Review specification:
      → agent-os/specs/[spec-name]/story-index.md (overview)
      → agent-os/specs/[spec-name]/stories/ (individual stories)
+     → agent-os/specs/[spec-name]/effort-estimation.md (Aufwand)
 
   2. When ready, execute:
      → /execute-tasks
@@ -1212,5 +1456,6 @@ Present completed specification to user.
   - [ ] Cross-cutting decisions (if applicable)
   - [ ] **DoR validation passed (Step 3.4)**
   - [ ] **Story size validation passed (Step 3.5)**
+  - [ ] **effort-estimation.md created with dual estimation (Step 3.6)** (v2.7)
   - [ ] Ready for /execute-tasks
 </verify>
