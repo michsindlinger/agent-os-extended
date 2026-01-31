@@ -1,6 +1,6 @@
 ---
 description: Resume Context Schema - shared across all phases
-version: 3.0
+version: 3.1
 ---
 
 # Resume Context Schema
@@ -14,8 +14,9 @@ The Resume Context in kanban-board.md enables phase recovery.
 | **Current Phase** | Phase identifier | 1-complete, 2-complete, story-complete, all-stories-done, 5-ready, complete |
 | **Next Phase** | What to execute next | 2 - Git Worktree, 3 - Execute Story, 4.5 - Integration Validation, 5 - Finalize, None |
 | **Spec Folder** | Full path | agent-os/specs/2026-01-13-feature-name |
-| **Worktree Path** | Git worktree path | agent-os/worktrees/feature-name or Pending |
-| **Git Branch** | Branch name | feature-name or Pending |
+| **Worktree Path** | Git worktree path | agent-os/worktrees/feature-name or (none) |
+| **Git Branch** | Branch name | feature-name or main |
+| **Git Strategy** | Git workflow strategy | worktree, branch, or (not set) |
 | **Current Story** | Story being worked on | STORY-001 or None |
 | **Last Action** | What just happened | Kanban board created |
 | **Next Action** | What needs to happen | Create git worktree |
@@ -59,6 +60,7 @@ UPDATE kanban-board.md at:
 | **Spec Folder** | agent-os/specs/SPEC-NAME |
 | **Worktree Path** | (pending) |
 | **Git Branch** | (pending) |
+| **Git Strategy** | worktree |
 | **Current Story** | None |
 | **Last Action** | Kanban board created |
 | **Next Action** | Setup git worktree |
