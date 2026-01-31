@@ -1,15 +1,23 @@
 ---
 description: Spec Phase 2 - Git Strategy Setup (Worktree or Branch)
-version: 3.2
+version: 3.3
 ---
 
 # Spec Phase 2: Git Strategy Setup
+
+## What's New in v3.3
+
+**External Worktree Location:**
+- Worktrees are now created OUTSIDE the project directory
+- Location: `../{project-name}-worktrees/{feature-name}`
+- No symlinks needed - full repo including `.claude/` and `agent-os/` is in worktree
+- Keeps main project directory clean
 
 ## What's New in v3.2
 
 **Git Strategy Routing:**
 - Phase-2 now routes based on Git Strategy (worktree vs branch)
-- Worktree strategy: Creates worktree + symlink to spec folder
+- Worktree strategy: Creates worktree in external directory
 - Branch strategy: Creates branch only, works in main directory
 - User receives clear instructions for worktree mode with correct Claude command
 
@@ -60,6 +68,9 @@ Setup git environment based on chosen strategy:
   ```bash
   # Example: 2026-01-31-my-feature → my-feature
   WORKTREE_NAME=$(echo "$SELECTED_SPEC" | sed 's/^[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}-//')
+
+  # Get project directory name for worktree base path
+  PROJECT_DIR=$(basename "$(pwd)")
   ```
 
   SET: BRANCH_NAME
@@ -88,7 +99,7 @@ Setup git environment based on chosen strategy:
 <step name="worktree_setup">
   ### Worktree Strategy Setup
 
-  **Goal:** Create isolated worktree with symlink to spec folder.
+  **Goal:** Create isolated worktree OUTSIDE project directory.
 
   <substep name="check_dev_server">
     RUN: lsof -i :3000 2>/dev/null | head -5
@@ -99,15 +110,16 @@ Setup git environment based on chosen strategy:
   </substep>
 
   <substep name="create_worktree">
-    ### Create Git Worktree
+    ### Create Git Worktree (External Location)
 
     ```bash
     # Variables
-    WORKTREE_BASE="agent-os/worktrees"
+    PROJECT_DIR=$(basename "$(pwd)")
+    WORKTREE_BASE="../${PROJECT_DIR}-worktrees"
     WORKTREE_PATH="${WORKTREE_BASE}/${WORKTREE_NAME}"
     BRANCH_NAME="feature/${WORKTREE_NAME}"  # or bugfix/ prefix
 
-    # Create base directory
+    # Create base directory (outside project)
     mkdir -p "${WORKTREE_BASE}"
 
     # Create worktree with new branch
@@ -117,37 +129,31 @@ Setup git environment based on chosen strategy:
     git worktree list
     ```
 
+    **Location Example:**
+    - Project: `/path/to/projekt-x/`
+    - Worktree: `/path/to/projekt-x-worktrees/my-feature/`
+
     Handle Edge Cases:
     - Worktree exists: Verify and use existing
     - Branch exists: Create worktree with existing branch using `git worktree add ${WORKTREE_PATH} ${BRANCH_NAME}` (without -b)
     - Uncommitted changes: Commit or stash first
   </substep>
 
-  <substep name="create_symlink">
-    ### Create Symlink to Spec Folder
+  <substep name="verify_worktree_contents">
+    ### Verify Worktree Contents
 
-    **Purpose:** Allow agent in worktree to access spec files at the same relative path.
+    **The worktree automatically includes ALL project files:**
+    - `.claude/` folder with agents and commands
+    - `agent-os/` folder with specs and workflows
+    - All source code and configuration
 
     ```bash
-    # Create directory structure in worktree
-    mkdir -p "${WORKTREE_PATH}/agent-os/specs"
-
-    # Calculate relative symlink path
-    # From: agent-os/worktrees/my-feature/agent-os/specs/2026-01-31-my-feature
-    # To:   agent-os/specs/2026-01-31-my-feature
-    # Relative: ../../../../agent-os/specs/2026-01-31-my-feature
-
-    SYMLINK_TARGET="../../../../agent-os/specs/${SELECTED_SPEC}"
-    SYMLINK_LOCATION="${WORKTREE_PATH}/agent-os/specs/${SELECTED_SPEC}"
-
-    # Create symlink
-    ln -s "${SYMLINK_TARGET}" "${SYMLINK_LOCATION}"
-
-    # Verify symlink
-    ls -la "${SYMLINK_LOCATION}"
+    # Verify key directories exist
+    ls -la "${WORKTREE_PATH}/.claude/"
+    ls -la "${WORKTREE_PATH}/agent-os/"
     ```
 
-    **Result:** Agent can access `agent-os/specs/{SELECTED_SPEC}/` from within worktree.
+    **No symlinks needed** - the worktree is a full working copy.
   </substep>
 
   <substep name="detect_claude_mode">
@@ -210,11 +216,11 @@ Setup git environment based on chosen strategy:
     Resume Context table fields:
     | **Current Phase** | 2-complete |
     | **Next Phase** | 3 - Execute Story |
-    | **Worktree Path** | agent-os/worktrees/{WORKTREE_NAME} |
+    | **Worktree Path** | ../{PROJECT_DIR}-worktrees/{WORKTREE_NAME} |
     | **Git Branch** | {BRANCH_NAME} |
     | **Git Strategy** | worktree |
     | **Current Story** | None |
-    | **Last Action** | Git worktree created with spec symlink |
+    | **Last Action** | Git worktree created (external location) |
     | **Next Action** | Switch to worktree and execute first story |
 
     Add Change Log entry
@@ -225,17 +231,16 @@ Setup git environment based on chosen strategy:
   ---
   ## Phase 2 Complete: Worktree Strategy
 
-  **Worktree:** agent-os/worktrees/{WORKTREE_NAME}
+  **Worktree:** ../{PROJECT_DIR}-worktrees/{WORKTREE_NAME}
   **Branch:** {BRANCH_NAME}
-  **Symlink:** Spec folder linked into worktree
   **Git Strategy:** worktree
 
   ### Next Steps
 
-  **You must switch to the worktree directory to continue:**
+  **Switch to the worktree directory to continue:**
 
   ```bash
-  cd agent-os/worktrees/{WORKTREE_NAME} && {CLAUDE_CMD}
+  cd ../{PROJECT_DIR}-worktrees/{WORKTREE_NAME} && {CLAUDE_CMD}
   ```
 
   Then run:
@@ -244,8 +249,8 @@ Setup git environment based on chosen strategy:
   ```
 
   ---
-  **Note:** Story execution MUST happen from within the worktree directory.
-  The entry point will verify you're in the correct working directory.
+  **Note:** The worktree contains the full project including `.claude/` and `agent-os/`.
+  Story execution MUST happen from within the worktree directory.
   ---
 
   STOP: Do not proceed to Phase 3 - user must switch directories
