@@ -1,14 +1,26 @@
 ---
-description: Spec Phase 2 - Git Worktree Setup for parallel execution
-version: 3.1
+description: Spec Phase 2 - Git Strategy Setup (Worktree or Branch)
+version: 3.2
 ---
 
-# Spec Phase 2: Git Worktree Setup
+# Spec Phase 2: Git Strategy Setup
+
+## What's New in v3.2
+
+**Git Strategy Routing:**
+- Phase-2 now routes based on Git Strategy (worktree vs branch)
+- Worktree strategy: Creates worktree + symlink to spec folder
+- Branch strategy: Creates branch only, works in main directory
+- User receives clear instructions for worktree mode with correct Claude command
 
 ## Purpose
-Create git worktree for parallel spec execution.
+
+Setup git environment based on chosen strategy:
+- **Worktree:** Isolated directory for parallel execution
+- **Branch:** Work directly in main directory
 
 ## Entry Condition
+
 - kanban-board.md exists
 - Resume Context shows: Phase 1-complete
 
@@ -18,94 +30,250 @@ Create git worktree for parallel spec execution.
   READ: agent-os/specs/{SELECTED_SPEC}/kanban-board.md
   EXTRACT: Resume Context section
   VALIDATE: Phase 1 is complete
+  EXTRACT: Git Strategy (if already set in Phase 1)
 </step>
 
-<step name="ask_worktree_preference">
-  ASK via AskUserQuestion:
-  "Möchtest du einen Git Worktree für diese Spec erstellen?"
+<step name="ask_git_strategy">
+  ### Ask Git Strategy (if not already set)
 
-  **Options:**
-  1. "Ja, Worktree erstellen" - Ermöglicht paralleles Arbeiten in separatem Verzeichnis
-  2. "Nein, im Hauptverzeichnis arbeiten" - Arbeitet direkt im aktuellen Branch
-
-  IF user chooses "Nein":
-    SET: USE_WORKTREE = false
-    SET: WORKTREE_PATH = ""
-    SET: GIT_BRANCH = current branch
-    SKIP: Steps check_dev_server and git_worktree_creation
-    GOTO: Phase Completion (No Worktree)
+  IF Git Strategy is already set in Resume Context:
+    USE: That value (worktree or branch)
+    SKIP: AskUserQuestion
 
   ELSE:
-    SET: USE_WORKTREE = true
-    CONTINUE: With next steps
+    ASK via AskUserQuestion:
+    "Welche Git-Strategie möchtest du für diese Spec verwenden?"
+
+    **Options:**
+    1. "Worktree (Recommended)" - Isoliertes Verzeichnis für paralleles Arbeiten. Spec wird per Symlink verlinkt.
+    2. "Branch" - Arbeitet direkt im Hauptverzeichnis auf einem Feature-Branch.
+
+    SET: GIT_STRATEGY based on user choice
 </step>
 
-<step name="check_dev_server">
-  RUN: lsof -i :3000 2>/dev/null | head -5
+<step name="extract_names">
+  ### Extract Worktree and Branch Names
 
-  IF server running:
-    ASK: "Dev server running on port 3000. Shut down? (yes/no)"
-    IF yes: Kill server
+  FROM: SELECTED_SPEC (e.g., "2026-01-31-my-feature")
+  EXTRACT: Worktree name by removing date prefix
+
+  ```bash
+  # Example: 2026-01-31-my-feature → my-feature
+  WORKTREE_NAME=$(echo "$SELECTED_SPEC" | sed 's/^[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}-//')
+  ```
+
+  SET: BRANCH_NAME
+  - IF "bugfix" in name: prefix with "bugfix/"
+  - ELSE: prefix with "feature/"
+  - Example: my-feature → feature/my-feature
+  - Example: bugfix-login-error → bugfix/login-error
 </step>
 
-<step name="git_worktree_creation" subagent="git-workflow">
-  USE: git-workflow subagent
+<git_strategy_routing>
+  ## Git Strategy Routing
 
-  PROMPT: "Create git worktree for parallel spec execution: {SELECTED_SPEC}
+  ROUTE based on GIT_STRATEGY:
 
-  **WORKING_DIR:** {PROJECT_ROOT}
-  (Use this as the git repository root - do NOT operate in nested repos)
+  IF GIT_STRATEGY = "worktree":
+    GOTO: worktree_setup
 
-  Rules:
-  1. Extract worktree name from spec folder (remove YYYY-MM-DD- prefix)
-     - Example: 2026-01-13-multi-delete-projects → multi-delete-projects
+  ELSE IF GIT_STRATEGY = "branch":
+    GOTO: branch_setup
+</git_strategy_routing>
 
-  2. Extract branch name (same as worktree name)
-     - If 'bugfix' in name: use 'bugfix/' prefix
-     - Example: bugfix-login-error → branch: bugfix/login-error
+---
 
-  3. Create git worktree (use -C for correct repo):
-     ```bash
-     WORKTREE_BASE='agent-os/worktrees'
-     mkdir -p '$WORKTREE_BASE'
-     git -C '$PROJECT_ROOT' worktree add '$WORKTREE_BASE/$WORKTREE_NAME' -b '$BRANCH_NAME'
-     ```
+## Worktree Strategy
 
-  4. Verify: git -C '$PROJECT_ROOT' worktree list
+<step name="worktree_setup">
+  ### Worktree Strategy Setup
 
-  5. Return: WORKTREE_PATH and GIT_BRANCH
+  **Goal:** Create isolated worktree with symlink to spec folder.
 
-  Handle Edge Cases:
-  - Worktree exists: Verify and use it
-  - Branch exists: Create worktree with existing branch
-  - Uncommitted changes: Commit or stash first"
+  <substep name="check_dev_server">
+    RUN: lsof -i :3000 2>/dev/null | head -5
 
-  WAIT: For git-workflow completion
-  CAPTURE: WORKTREE_PATH and GIT_BRANCH values
+    IF server running:
+      ASK: "Dev server running on port 3000. Shut down? (yes/no)"
+      IF yes: Kill server
+  </substep>
+
+  <substep name="create_worktree">
+    ### Create Git Worktree
+
+    ```bash
+    # Variables
+    WORKTREE_BASE="agent-os/worktrees"
+    WORKTREE_PATH="${WORKTREE_BASE}/${WORKTREE_NAME}"
+    BRANCH_NAME="feature/${WORKTREE_NAME}"  # or bugfix/ prefix
+
+    # Create base directory
+    mkdir -p "${WORKTREE_BASE}"
+
+    # Create worktree with new branch
+    git worktree add "${WORKTREE_PATH}" -b "${BRANCH_NAME}"
+
+    # Verify creation
+    git worktree list
+    ```
+
+    Handle Edge Cases:
+    - Worktree exists: Verify and use existing
+    - Branch exists: Create worktree with existing branch using `git worktree add ${WORKTREE_PATH} ${BRANCH_NAME}` (without -b)
+    - Uncommitted changes: Commit or stash first
+  </substep>
+
+  <substep name="create_symlink">
+    ### Create Symlink to Spec Folder
+
+    **Purpose:** Allow agent in worktree to access spec files at the same relative path.
+
+    ```bash
+    # Create directory structure in worktree
+    mkdir -p "${WORKTREE_PATH}/agent-os/specs"
+
+    # Calculate relative symlink path
+    # From: agent-os/worktrees/my-feature/agent-os/specs/2026-01-31-my-feature
+    # To:   agent-os/specs/2026-01-31-my-feature
+    # Relative: ../../../../agent-os/specs/2026-01-31-my-feature
+
+    SYMLINK_TARGET="../../../../agent-os/specs/${SELECTED_SPEC}"
+    SYMLINK_LOCATION="${WORKTREE_PATH}/agent-os/specs/${SELECTED_SPEC}"
+
+    # Create symlink
+    ln -s "${SYMLINK_TARGET}" "${SYMLINK_LOCATION}"
+
+    # Verify symlink
+    ls -la "${SYMLINK_LOCATION}"
+    ```
+
+    **Result:** Agent can access `agent-os/specs/{SELECTED_SPEC}/` from within worktree.
+  </substep>
+
+  <substep name="detect_claude_mode">
+    ### Detect Claude Startup Mode
+
+    **Purpose:** Determine correct command for user instructions.
+
+    Check environment:
+    - If `ANTHROPIC_API_KEY` is set → API mode
+    - If started with `--dangerously-skip-permissions` → API mode
+    - Otherwise → Claude Max mode
+
+    SET: CLAUDE_CMD based on detected mode
+    - Claude Max: `claude`
+    - API Mode: `claude --dangerously-skip-permissions`
+  </substep>
+
+  GOTO: phase_complete_worktree
 </step>
+
+---
+
+## Branch Strategy
+
+<step name="branch_setup">
+  ### Branch Strategy Setup
+
+  **Goal:** Create feature branch, work in main directory.
+
+  <substep name="create_branch">
+    ### Create Feature Branch
+
+    ```bash
+    # Create and switch to feature branch
+    git checkout -b "${BRANCH_NAME}"
+
+    # Verify
+    git branch --show-current
+    ```
+
+    Handle Edge Cases:
+    - Branch exists: Check out existing branch with `git checkout ${BRANCH_NAME}`
+    - Uncommitted changes: Commit or stash first
+  </substep>
+
+  SET: WORKTREE_PATH = "(none)"
+  SET: USE_WORKTREE = false
+
+  GOTO: phase_complete_branch
+</step>
+
+---
 
 ## Phase Completion
 
-<phase_complete_no_worktree condition="USE_WORKTREE = false">
+<phase_complete_worktree>
+  ### Phase Complete: Worktree Strategy
+
+  UPDATE: kanban-board.md (MAINTAIN TABLE FORMAT - see shared/resume-context.md)
+    Resume Context table fields:
+    | **Current Phase** | 2-complete |
+    | **Next Phase** | 3 - Execute Story |
+    | **Worktree Path** | agent-os/worktrees/{WORKTREE_NAME} |
+    | **Git Branch** | {BRANCH_NAME} |
+    | **Git Strategy** | worktree |
+    | **Current Story** | None |
+    | **Last Action** | Git worktree created with spec symlink |
+    | **Next Action** | Switch to worktree and execute first story |
+
+    Add Change Log entry
+
+  DETECT: Claude mode for command suggestion (see detect_claude_mode)
+
+  OUTPUT to user:
+  ---
+  ## Phase 2 Complete: Worktree Strategy
+
+  **Worktree:** agent-os/worktrees/{WORKTREE_NAME}
+  **Branch:** {BRANCH_NAME}
+  **Symlink:** Spec folder linked into worktree
+  **Git Strategy:** worktree
+
+  ### Next Steps
+
+  **You must switch to the worktree directory to continue:**
+
+  ```bash
+  cd agent-os/worktrees/{WORKTREE_NAME} && {CLAUDE_CMD}
+  ```
+
+  Then run:
+  ```
+  /execute-tasks
+  ```
+
+  ---
+  **Note:** Story execution MUST happen from within the worktree directory.
+  The entry point will verify you're in the correct working directory.
+  ---
+
+  STOP: Do not proceed to Phase 3 - user must switch directories
+</phase_complete_worktree>
+
+<phase_complete_branch>
+  ### Phase Complete: Branch Strategy
+
   UPDATE: kanban-board.md (MAINTAIN TABLE FORMAT - see shared/resume-context.md)
     Resume Context table fields:
     | **Current Phase** | 2-complete |
     | **Next Phase** | 3 - Execute Story |
     | **Worktree Path** | (none) |
-    | **Git Branch** | [current branch] |
+    | **Git Branch** | {BRANCH_NAME} |
+    | **Git Strategy** | branch |
     | **Current Story** | None |
-    | **Last Action** | Skipped worktree, switched to main branch |
+    | **Last Action** | Feature branch created |
     | **Next Action** | Execute first story |
 
     Add Change Log entry
 
   OUTPUT to user:
   ---
-  ## Phase 2 Complete: Worktree Setup Skipped
+  ## Phase 2 Complete: Branch Strategy
 
   **Working Directory:** Current project directory
-  **Branch:** [current-branch]
-  **Status:** Ready for story execution (no worktree)
+  **Branch:** {BRANCH_NAME}
+  **Git Strategy:** branch
 
   **Next Phase:** Execute First Story
 
@@ -118,38 +286,4 @@ Create git worktree for parallel spec execution.
   ---
 
   STOP: Do not proceed to Phase 3
-</phase_complete_no_worktree>
-
-<phase_complete_with_worktree condition="USE_WORKTREE = true">
-  UPDATE: kanban-board.md (MAINTAIN TABLE FORMAT - see shared/resume-context.md)
-    Resume Context table fields:
-    | **Current Phase** | 2-complete |
-    | **Next Phase** | 3 - Execute Story |
-    | **Worktree Path** | [captured value] |
-    | **Git Branch** | [captured value] |
-    | **Current Story** | None |
-    | **Last Action** | Git worktree created |
-    | **Next Action** | Execute first story |
-
-    Add Change Log entry
-
-  OUTPUT to user:
-  ---
-  ## Phase 2 Complete: Git Worktree Setup
-
-  **Worktree:** [worktree-path]
-  **Branch:** [branch-name]
-  **Status:** Ready for story execution
-
-  **Next Phase:** Execute First Story
-
-  ---
-  **To continue, run:**
-  ```
-  /clear
-  /execute-tasks
-  ```
-  ---
-
-  STOP: Do not proceed to Phase 3
-</phase_complete_with_worktree>
+</phase_complete_branch>
