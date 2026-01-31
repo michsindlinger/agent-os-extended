@@ -165,6 +165,9 @@ download_file "$REPO_URL/agent-os/workflows/core/optimize-profile-phase2.md" "ag
 download_file "$REPO_URL/agent-os/workflows/core/add-skill.md" "agent-os/workflows/core/add-skill.md" "workflows"
 download_file "$REPO_URL/agent-os/workflows/core/migrate-devteam-v2.md" "agent-os/workflows/core/migrate-devteam-v2.md" "workflows"
 
+# Accessibility validation
+download_file "$REPO_URL/agent-os/workflows/core/validate-accessibility-report.md" "agent-os/workflows/core/validate-accessibility-report.md" "workflows"
+
 # ═══════════════════════════════════════════════════════════
 # CONFIGURATION
 # ═══════════════════════════════════════════════════════════

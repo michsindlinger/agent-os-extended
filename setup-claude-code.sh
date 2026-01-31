@@ -92,6 +92,9 @@ command_files=(
     # Profile optimization
     "optimize-profile.md"
     "optimize-profile-match.md"
+
+    # Accessibility validation
+    "validate-accessibility-report.md"
 )
 
 for file in "${command_files[@]}"; do
