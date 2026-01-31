@@ -1,6 +1,6 @@
 ---
 description: Spec Phase 5 - Finalize with PR creation
-version: 3.1
+version: 3.2
 ---
 
 # Spec Phase 5: Finalize
@@ -45,12 +45,12 @@ Create pull request and provide final summary.
   RUN: afplay /System/Library/Sounds/Glass.aiff
 </step>
 
-<step name="worktree_cleanup" subagent="git-workflow" condition="USE_WORKTREE = true">
-  CHECK: Resume Context for "Use Worktree" value
+<step name="worktree_cleanup" subagent="git-workflow" condition="Git Strategy = worktree">
+  CHECK: Resume Context for "Git Strategy" value
 
-  IF "Use Worktree" = false OR WORKTREE_PATH = "(none)" OR WORKTREE_PATH empty:
+  IF "Git Strategy" != "worktree" OR WORKTREE_PATH = "(none)" OR WORKTREE_PATH empty:
     SKIP: This step
-    LOG: "No worktree cleanup needed (none was created)"
+    LOG: "No worktree cleanup needed (branch strategy or none created)"
     UPDATE: kanban-board.md - Last Action: Skipped worktree cleanup (none created)
 
   ELSE:
@@ -61,12 +61,14 @@ Create pull request and provide final summary.
     **WORKING_DIR:** {PROJECT_ROOT}
     (Use this as the git repository root - do NOT operate in nested repos)
 
-    Read Resume Context for WORKTREE_PATH and GIT_BRANCH.
+    Read Resume Context for WORKTREE_PATH (external location, e.g., ../projekt-x-worktrees/feature-name)
 
     Cleanup:
     1. Verify PR was created
-    2. Remove worktree: git -C '$PROJECT_ROOT' worktree remove [WORKTREE_PATH]
-    3. Verify: git -C '$PROJECT_ROOT' worktree list
+    2. Remove worktree: git worktree remove [WORKTREE_PATH]
+       Note: WORKTREE_PATH is external (e.g., ../projekt-x-worktrees/feature-name)
+    3. Verify: git worktree list
+    4. Optionally remove empty worktrees directory if no other worktrees exist
 
     Edge Cases:
     - PR not created: Skip cleanup, warn

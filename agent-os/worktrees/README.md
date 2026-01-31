@@ -1,43 +1,48 @@
-# Git Worktrees for Parallel Spec Execution
+# Git Worktrees - EXTERNAL LOCATION
 
-## Purpose
+## Important: Worktrees Are Now Created Outside the Project
 
-This directory contains git worktrees for parallel spec execution. Each spec gets its own isolated worktree, allowing multiple specs to be implemented simultaneously without branch conflicts.
+As of v3.3, worktrees are **no longer created in this directory**.
 
-## Structure
-
+Worktrees are now created in an external sibling directory:
 ```
-agent-os/worktrees/
-├── feature-a/           # Worktree for feature-a spec
-│   ├── .git             # Git worktree link
-│   └── [project files] # Working directory for this spec
-├── feature-b/           # Worktree for feature-b spec
-└── README.md           # This file
+{project-name}-worktrees/
 ```
+
+## Example
+
+If your project is at:
+```
+/path/to/projekt-x/
+```
+
+Worktrees will be created at:
+```
+/path/to/projekt-x-worktrees/feature-name/
+```
+
+## Why External?
+
+1. **Cleaner project directory** - No worktree artifacts in the repo
+2. **No symlinks needed** - Worktree contains full `.claude/` and `agent-os/`
+3. **Better isolation** - Worktrees are completely separate from main project
+4. **Simpler cleanup** - Delete the `-worktrees` folder when done
 
 ## Lifecycle
 
-1. **Created**: During `/execute-tasks` Phase 2 (Git Branch Setup)
+1. **Created**: During `/execute-tasks` Phase 2 (Git Strategy Setup)
 2. **Used**: During story execution (Phase 3)
-3. **Removed**: After PR merge (Phase 4 - Finalize)
-
-## Rules
-
-- Worktree name = Spec folder name (without YYYY-MM-DD prefix)
-- Example: `2026-01-14-user-auth` → worktree: `agent-os/worktrees/user-auth`
-- Each worktree has its own git branch
-- Worktrees are temporary - deleted after PR merge
-
-## Parallel Execution
-
-Multiple specs can execute in parallel because each has:
-- Separate worktree directory
-- Separate git branch
-- Independent working state
+3. **Removed**: After PR merge (Phase 5 - Finalize)
 
 ## Cleanup
 
-After PR merge, run:
+After PR merge, worktrees are automatically removed. Manual cleanup:
 ```bash
-git worktree remove agent-os/worktrees/[worktree-name]
+# From main project directory
+git worktree remove ../projekt-x-worktrees/feature-name
 ```
+
+## This Directory
+
+This directory exists only for backwards compatibility documentation.
+It may be removed in future versions.

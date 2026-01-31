@@ -8,6 +8,13 @@ encoding: UTF-8
 
 # Task Execution Entry Point
 
+## What's New in v3.3
+
+**External Worktree Support:**
+- Worktrees are now located OUTSIDE the project: `../{project}-worktrees/{feature}`
+- CWD check updated to support external worktree paths
+- No symlinks needed - worktree contains full `.claude/` and `agent-os/` folders
+
 ## What's New in v3.2
 
 **Worktree CWD Check:**
@@ -198,7 +205,7 @@ This reduces context usage by ~70-80% compared to loading the full workflow.
     EXTRACT: "Worktree Path" from Resume Context (if present)
 
     <cwd_check>
-      ## Worktree CWD Check (v3.2)
+      ## Worktree CWD Check (v3.3)
 
       **Purpose:** Ensure agent is running in correct directory for worktree-based specs.
 
@@ -208,19 +215,34 @@ This reduces context usage by ~70-80% compared to loading the full workflow.
          - Not set or "(none)" → Legacy spec (no CWD check needed)
 
       2. IF Git Strategy = "worktree":
-         GET: Worktree Path from Resume Context
+         GET: Worktree Path from Resume Context (e.g., `../projekt-x-worktrees/my-feature`)
          GET: Current working directory
 
          ```bash
          # Get current working directory
          CWD=$(pwd)
+
+         # Get worktree basename for comparison
+         WORKTREE_BASENAME=$(basename "${WORKTREE_PATH}")
+         CWD_BASENAME=$(basename "${CWD}")
          ```
 
-         COMPARE: CWD vs Worktree Path
-         - If Worktree Path is relative, resolve from project root
-         - Normalize both paths for comparison
+         COMPARE: Check if CWD is the correct worktree
+         - Compare directory basenames (feature name)
+         - Verify parent directory ends with "-worktrees"
 
-         IF CWD != Worktree Path:
+         ```bash
+         # Check if we're in the right worktree
+         CWD_PARENT=$(basename "$(dirname "${CWD}")")
+
+         # Valid if: basename matches AND parent ends with "-worktrees"
+         if [[ "${CWD_BASENAME}" == "${WORKTREE_BASENAME}" ]] && \
+            [[ "${CWD_PARENT}" == *-worktrees ]]; then
+           echo "In correct worktree"
+         fi
+         ```
+
+         IF CWD is NOT the correct worktree:
            DETECT: Claude mode for correct command
 
            <mode_detection_logic>
@@ -263,7 +285,7 @@ This reduces context usage by ~70-80% compared to loading the full workflow.
 
            STOP: Do not proceed - wrong working directory
 
-         ELSE (CWD matches Worktree Path):
+         ELSE (CWD is correct worktree):
            CONTINUE: Proceed to phase loading
 
       3. IF Git Strategy = "branch" OR not set:
