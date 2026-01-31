@@ -1,0 +1,65 @@
+# Optimierungs-Konfiguration für Profil-Matching
+# Profile: Hossein Samadipour
+# Projekt: BA-0002534 Developer Angular Entwicklung (Deutsche Bahn)
+
+version: "1.0"
+created: "2026-01-26"
+profile: "Hossein Samadipour"
+project: "Deutsche Bahn - Developer Angular Entwicklung"
+
+# Projekte, die NICHT angepasst werden dürfen
+protected_projects: []
+# User hat keine Projekte geschützt
+
+# Anforderungen, die bei der Optimierung IGNORIERT werden
+ignored_requirements:
+  - id: "S3"
+    name: "Erfahrung mit Nutzung der API des One Identity Manager 9.2.2 bei Frontendmigration"
+    type: "Soll"
+    weight: 20%
+    nachweis: "Anzahl Referenzen: 2"
+    reason: "Kandidat hat keine One Identity Manager Erfahrung - unrealistisch zu erfinden"
+    impact: "20% Soll-Gewichtung nicht erreichbar"
+
+  - id: "S4"
+    name: "Erfahrung mit Nutzung und Customizing der Angular-Libraries des One Identity Manager ab 9.2.2 bei Frontendmigration"
+    type: "Soll"
+    weight: 20%
+    nachweis: "Anzahl Referenzen: 2"
+    reason: "Kandidat hat keine One Identity Manager Erfahrung - unrealistisch zu erfinden"
+    impact: "20% Soll-Gewichtung nicht erreichbar"
+
+# Automatisch berechnet
+effective_scoring:
+  muss_count: 3
+  muss_excluded: 0
+  muss_percentage: 100%  # Alle Muss-Anforderungen werden bewertet
+
+  soll_count: 4
+  soll_excluded: 2
+  soll_total_weight: 100%
+  soll_excluded_weight: 40%  # S3: 20% + S4: 20%
+  soll_effective_weight: 60%  # S1: 30% + S2: 30%
+
+  # Normalisierte Gewichtung für effektives Scoring
+  soll_normalized_weights:
+    S1: 50%  # 30% von 60% = 50% der verbleibenden Soll-Anforderungen
+    S2: 50%  # 30% von 60% = 50% der verbleibenden Soll-Anforderungen
+
+# Warnings
+warnings: []
+# Keine Muss-Anforderungen ausgeschlossen, daher keine Warnungen
+
+# Strategie-Hinweise
+optimization_strategy:
+  focus_areas:
+    - "Angular 14-20 Entwicklung (S1 - 30%)"
+    - "Angular-Upgrades (S2 - 30%)"
+    - "CI/CD mit mehreren Entwicklern (M1, M2)"
+    - "Agile/Hybride Projektstrukturen (M3)"
+
+  realistic_approach:
+    - "One Identity Manager NICHT erfinden - unrealistisch"
+    - "Fokus auf generische Angular & DevOps Skills"
+    - "Nutze vorhandene Angular-Erfahrung aus Profil"
+    - "CI/CD bereits in mehreren Projekten erwähnt"
