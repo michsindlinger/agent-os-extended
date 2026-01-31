@@ -7,14 +7,14 @@
 
 | Field | Value |
 |-------|-------|
-| **Current Phase** | 3-in-progress |
-| **Next Phase** | 3 - Execute Story |
+| **Current Phase** | all-stories-done |
+| **Next Phase** | 4.5 - Integration Validation |
 | **Spec Folder** | agent-os/specs/2026-01-31-worktree-workflow-support |
 | **Worktree Path** | (none) |
 | **Git Branch** | main |
-| **Current Story** | WTS-001 |
-| **Last Action** | Started WTS-001 execution |
-| **Next Action** | Implement CWD check in entry-point |
+| **Current Story** | None |
+| **Last Action** | Completed WTS-002 - all stories done |
+| **Next Action** | Run integration validation |
 
 ---
 
@@ -23,11 +23,11 @@
 | Metric | Value |
 |--------|-------|
 | **Total Stories** | 2 |
-| **Completed** | 1 |
+| **Completed** | 2 |
 | **In Progress** | 0 |
 | **In Review** | 0 |
 | **Testing** | 0 |
-| **Backlog** | 1 |
+| **Backlog** | 0 |
 | **Blocked** | 0 |
 
 ---
@@ -45,9 +45,7 @@ None
 
 <!-- Stories that have not started yet (with complete DoR) -->
 
-| Story ID | Title | Type | Dependencies | DoR Status | Points |
-|----------|-------|------|--------------|------------|--------|
-| WTS-002 | Phase-2 Git Strategy & Symlink | Workflow | WTS-001 | ✅ Ready | M |
+None
 
 ---
 
@@ -82,6 +80,7 @@ None
 | Story ID | Title | Type | Dependencies | DoR Status | Points |
 |----------|-------|------|--------------|------------|--------|
 | WTS-001 | Entry-Point CWD Check | Workflow | None | ✅ Ready | S |
+| WTS-002 | Phase-2 Git Strategy & Symlink | Workflow | WTS-001 | ✅ Ready | M |
 
 ---
 
@@ -95,6 +94,8 @@ None
 | 2026-01-31 | - | Phase 1-complete | Phase 2-complete | Skipped worktree, working in main branch |
 | 2026-01-31 | WTS-001 | Backlog | In Progress | Started story execution |
 | 2026-01-31 | WTS-001 | In Progress | Done | CWD check implemented and tested |
+| 2026-01-31 | WTS-002 | Backlog | In Progress | Started story execution |
+| 2026-01-31 | WTS-002 | In Progress | Done | Git Strategy routing implemented - all stories complete |
 
 ---
 

@@ -11,6 +11,7 @@
 | Story | Summary | Key Changes |
 |-------|---------|-------------|
 | WTS-001 | Entry-Point CWD check for worktree strategy | entry-point.md v3.2, resume-context.md v3.1 |
+| WTS-002 | Phase-2 Git Strategy routing with worktree/symlink | spec-phase-2.md v3.2 |
 
 ---
 
@@ -40,6 +41,9 @@ _None yet_
 - **CWD Check Location:** Added `<cwd_check>` section in entry-point.md after kanban is read
 - **Git Strategy Field:** Resume Context now supports "Git Strategy" field (worktree | branch | not set)
 - **Backward Compatibility:** Specs without Git Strategy field are handled as legacy (no CWD check)
+- **Phase-2 Routing:** Now distinguishes between worktree and branch strategy
+- **Symlink Path:** Worktree uses `../../../../agent-os/specs/{SPEC}` relative symlink
+- **User Instructions:** Phase-2 outputs correct Claude command based on detected mode
 
 ---
 
@@ -49,3 +53,4 @@ _None yet_
 |------|--------|-------|
 | agent-os/workflows/core/execute-tasks/entry-point.md | Modified | WTS-001 |
 | agent-os/workflows/core/execute-tasks/shared/resume-context.md | Modified | WTS-001 |
+| agent-os/workflows/core/execute-tasks/spec-phase-2.md | Modified | WTS-002 |
