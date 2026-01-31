@@ -99,10 +99,15 @@ to fully understand requirements BEFORE generating user stories.
 ### Step 2.1: Requirements Dialog (Iterative)
 
 <mandatory_actions>
+  ⚠️ **CRITICAL: This workflow creates a NEW spec only!**
+  - NEVER modify, continue, or reference existing specs in agent-os/specs/
+  - NEVER ask the user which existing spec to work on
+  - ALWAYS create a fresh spec folder with today's date
+  - If user wants to modify existing spec → redirect to /update-feature
+
   1. LOAD context:
      - Product Brief: agent-os/product/product-brief-lite.md
      - Roadmap: agent-os/product/roadmap.md (if from roadmap)
-     - Existing specs: agent-os/specs/ (for context)
 
   2. INITIAL questions to user:
      - What is the feature? (user's perspective)
