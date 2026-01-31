@@ -10,7 +10,7 @@ version: 3.3
 **External Worktree Location:**
 - Worktrees are now created OUTSIDE the project directory
 - Location: `../{project-name}-worktrees/{feature-name}`
-- No symlinks needed - full repo including `.claude/` and `agent-os/` is in worktree
+- Full repo including `.claude/` and `agent-os/` is available in worktree
 - Keeps main project directory clean
 
 ## What's New in v3.2
@@ -153,7 +153,7 @@ Setup git environment based on chosen strategy:
     ls -la "${WORKTREE_PATH}/agent-os/"
     ```
 
-    **No symlinks needed** - the worktree is a full working copy.
+    The worktree is a full working copy with all project files
   </substep>
 
   <substep name="detect_claude_mode">
