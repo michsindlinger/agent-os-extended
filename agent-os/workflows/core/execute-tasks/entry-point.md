@@ -2,11 +2,20 @@
 description: Entry point for task execution - routes to appropriate phase
 globs:
 alwaysApply: false
-version: 3.1
+version: 3.2
 encoding: UTF-8
 ---
 
 # Task Execution Entry Point
+
+## What's New in v3.2
+
+**Worktree CWD Check:**
+- Entry point now checks if agent is running in the correct working directory
+- When Git Strategy is "worktree", validates CWD matches the Worktree Path
+- Displays clear warning with copy-paste command to switch directories
+- Automatically detects Claude mode (Max vs API) for correct command suggestion
+- Backward compatible: Branch strategy and legacy specs work unchanged
 
 ## What's New in v3.1
 
@@ -185,6 +194,81 @@ This reduces context usage by ~70-80% compared to loading the full workflow.
   IF kanban-board.md exists:
     READ: agent-os/specs/${SELECTED_SPEC}/kanban-board.md
     EXTRACT: "Current Phase" from Resume Context
+    EXTRACT: "Git Strategy" from Resume Context (if present)
+    EXTRACT: "Worktree Path" from Resume Context (if present)
+
+    <cwd_check>
+      ## Worktree CWD Check (v3.2)
+
+      **Purpose:** Ensure agent is running in correct directory for worktree-based specs.
+
+      1. GET: Git Strategy from Resume Context
+         - "worktree" → Worktree strategy active
+         - "branch" → Branch strategy (no CWD check needed)
+         - Not set or "(none)" → Legacy spec (no CWD check needed)
+
+      2. IF Git Strategy = "worktree":
+         GET: Worktree Path from Resume Context
+         GET: Current working directory
+
+         ```bash
+         # Get current working directory
+         CWD=$(pwd)
+         ```
+
+         COMPARE: CWD vs Worktree Path
+         - If Worktree Path is relative, resolve from project root
+         - Normalize both paths for comparison
+
+         IF CWD != Worktree Path:
+           DETECT: Claude mode for correct command
+
+           <mode_detection_logic>
+             **Determine Claude startup command:**
+
+             The agent should check its startup context:
+             - If running with Claude Max account → use `claude`
+             - If running with API token (GLM/Anthropic API) → use `claude --dangerously-skip-permissions`
+
+             **Note:** In practice, check the environment or startup flags.
+             For simplicity, assume API mode if `ANTHROPIC_API_KEY` is set or
+             if started with `--dangerously-skip-permissions`.
+           </mode_detection_logic>
+
+           SET: CLAUDE_CMD based on detected mode
+           - Claude Max: `claude`
+           - API Mode: `claude --dangerously-skip-permissions`
+
+           OUTPUT:
+           ---
+           ## ⚠️ Wrong Working Directory!
+
+           **You are not in the correct worktree directory.**
+
+           | Current | Expected |
+           |---------|----------|
+           | `{CWD}` | `{WORKTREE_PATH}` |
+
+           **To continue, run this command:**
+           ```bash
+           cd {WORKTREE_PATH} && {CLAUDE_CMD}
+           ```
+
+           Then run `/execute-tasks` again.
+
+           ---
+
+           **STOP:** Execution cannot continue from wrong directory.
+           ---
+
+           STOP: Do not proceed - wrong working directory
+
+         ELSE (CWD matches Worktree Path):
+           CONTINUE: Proceed to phase loading
+
+      3. IF Git Strategy = "branch" OR not set:
+         CONTINUE: No CWD check needed, proceed normally
+    </cwd_check>
 
     | Current Phase | Load Phase File |
     |---------------|-----------------|
