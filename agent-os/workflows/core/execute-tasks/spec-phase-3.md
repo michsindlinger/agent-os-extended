@@ -1,9 +1,15 @@
 ---
-description: Spec Phase 3 - Execute one user story (Direct Execution v3.2)
-version: 3.2
+description: Spec Phase 3 - Execute one user story (Direct Execution v3.3)
+version: 3.3
 ---
 
 # Spec Phase 3: Execute Story (Direct Execution)
+
+## What's New in v3.3
+
+- **Integration Requirements Check**: Prüft VOR Implementierung welche Verbindungen hergestellt werden müssen
+- **Integration Verification**: Verifiziert NACH Implementierung dass Verbindungen AKTIV sind (nicht nur Code existiert)
+- **FIX: "Komponenten gebaut aber nicht verbunden"** - Erzwingt dass Verbindungen tatsächlich hergestellt werden
 
 ## What's New in v3.2
 
@@ -65,6 +71,51 @@ maintaining full context throughout the story.
 
   IF file doesn't exist:
     NOTE: First story execution - no prior context needed
+</step>
+
+<step name="verify_integration_requirements">
+  ### Verify Integration Requirements (v3.3 - NEU)
+
+  **CRITICAL: Prüfe VOR der Implementierung welche Verbindungen diese Story herstellen MUSS.**
+
+  <integration_check>
+    1. READ: Story file
+       SEARCH for: "Integration DoD" section OR "Integration hergestellt:" items
+
+    2. IF Integration DoD items found:
+
+       EXTRACT: Alle Verbindungen die diese Story herstellen muss
+       ```
+       Integration: [Source] → [Target]
+       Validierung: [Command]
+       ```
+
+       FOR EACH required connection:
+         a. CHECK: Existiert die Source-Komponente bereits?
+            - IF Source in previous story: Verify it exists (grep/ls)
+            - IF Source in THIS story: Note to create it
+
+         b. CHECK: Existiert die Target-Komponente bereits?
+            - IF Target in previous story: READ the Target code
+            - IF Target in THIS story: Note to create it
+
+         c. IF Source AND Target already exist (from prior stories):
+            READ: Both component files
+            UNDERSTAND: Available exports/APIs
+            NOTE: "Diese Story MUSS [Source] mit [Target] verbinden via [Method]"
+
+       LOG: "Integration Requirements für diese Story:"
+       LOG: "- [Source] → [Target]: [Status: existing/to-create]"
+
+    3. IF NO Integration DoD items:
+       NOTE: "Story hat keine expliziten Integration-Anforderungen"
+       PROCEED: Normal implementation
+
+    4. **CRITICAL REMINDER:**
+       Am Ende dieser Story werden die Integration-DoD-Punkte VERIFIZIERT.
+       Es reicht NICHT, dass Code existiert.
+       Die Verbindung muss AKTIV hergestellt sein (Import + Aufruf).
+  </integration_check>
 </step>
 
 <step name="story_selection">
@@ -259,7 +310,45 @@ maintaining full context throughout the story.
        [VERIFY_COMMAND_2]
        ```
 
-    4. FIX: Any issues found before proceeding
+    4. **INTEGRATION VERIFICATION (v3.3 - KRITISCH):**
+
+       CHECK: Hat diese Story Integration-DoD items?
+
+       IF YES:
+         FOR EACH "Integration hergestellt: [Source] → [Target]" item:
+
+           a. VERIFY: Connection code exists
+              ```bash
+              # Beispiel: Prüfe ob Import existiert
+              grep -r "import.*{ServiceName}" src/components/
+              ```
+
+           b. VERIFY: Connection is USED (not just imported)
+              ```bash
+              # Beispiel: Prüfe ob Service aufgerufen wird
+              grep -r "serviceName\." src/components/ComponentName/
+              ```
+
+           c. RUN: Validierungsbefehl aus Integration-DoD
+              ```bash
+              [Validierungsbefehl aus Story DoD]
+              ```
+
+           IF any verification FAILS:
+             FLAG: "❌ Integration NICHT hergestellt: [Source] → [Target]"
+             REQUIRE: Fix before proceeding
+
+             **COMMON FIXES:**
+             - Import fehlt → Add import statement
+             - Import existiert aber nicht verwendet → Add actual usage
+             - Stub statt echter Aufruf → Implement real connection
+
+             FIX: Add the missing connection code
+             RE-VERIFY: Run checks again
+
+         LOG: "✅ Alle Integrationen verifiziert"
+
+    5. FIX: Any issues found before proceeding
 
     IF all checks pass:
       PROCEED to self_learning_check
@@ -488,6 +577,15 @@ maintaining full context throughout the story.
 </phase_complete>
 
 ---
+
+## Quick Reference: v3.3 Changes
+
+| v3.2 | v3.3 |
+|------|------|
+| No pre-check for integrations | verify_integration_requirements (NEW) |
+| Code existence = done | Code + active connection = done |
+| Integration issues found in Phase 4.5 | Integration verified per-story |
+| "Komponenten gebaut aber nicht verbunden" | Forced connection verification |
 
 ## Quick Reference: v3.2 Changes
 

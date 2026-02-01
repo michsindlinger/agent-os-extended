@@ -66,6 +66,41 @@
 
 ---
 
+## Komponenten-Verbindungen (KRITISCH)
+
+> **Zweck:** Explizit definieren WIE Komponenten miteinander verbunden werden.
+> Jede Verbindung MUSS einer Story zugeordnet sein.
+
+### Verbindungs-Matrix
+
+| Source | Target | Verbindungsart | Zuständige Story | Validierung |
+|--------|--------|----------------|------------------|-------------|
+| [Komponente A] | [Komponente B] | [API Call / Import / Event / etc.] | [STORY-ID] | [Wie prüfen] |
+| [Service X] | [Component Y] | [Hook / Context / Props] | [STORY-ID] | [grep/test] |
+
+### Verbindungs-Details
+
+**[VERBINDUNG-1]: [Source] → [Target]**
+- **Art:** [z.B. REST API Call, Direct Import, Event Bus, Context Provider]
+- **Schnittstelle:** [z.B. `GET /api/users`, `import { useUser } from...`]
+- **Datenfluss:** [Was wird übertragen]
+- **Story:** [STORY-ID] - Diese Story MUSS die Verbindung herstellen
+- **Validierung:** `[Bash-Befehl zum Prüfen, z.B. grep -r "import.*ServiceName"]`
+
+**[VERBINDUNG-2]: [Source] → [Target]**
+- **Art:** [...]
+- **Schnittstelle:** [...]
+- **Datenfluss:** [...]
+- **Story:** [STORY-ID]
+- **Validierung:** `[...]`
+
+### Verbindungs-Checkliste
+- [ ] Jede neue Komponente hat mindestens eine Verbindung definiert
+- [ ] Jede Verbindung ist einer Story zugeordnet
+- [ ] Validierungsbefehle sind ausführbar
+
+---
+
 ## Abhängigkeiten
 
 ### Interne Abhängigkeiten

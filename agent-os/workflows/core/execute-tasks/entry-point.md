@@ -2,11 +2,22 @@
 description: Entry point for task execution - routes to appropriate phase
 globs:
 alwaysApply: false
-version: 3.4
+version: 3.5
 encoding: UTF-8
 ---
 
 # Task Execution Entry Point
+
+## What's New in v3.5
+
+**Integration Verification (Phase 3):**
+- `verify_integration_requirements` step: Prüft VOR Implementierung welche Verbindungen nötig sind
+- `self_review` erweitert: Verifiziert dass Verbindungen AKTIV hergestellt wurden (nicht nur Code existiert)
+- FIX: "Komponenten gebaut aber nicht verbunden" - Erzwingt echte Integration per Story
+
+**Requires create-spec v2.9:**
+- Komponenten-Verbindungen Matrix im Implementation Plan
+- Integration DoD items in Stories mit Verbindungs-Verantwortung
 
 ## What's New in v3.4
 

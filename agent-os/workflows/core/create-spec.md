@@ -2,7 +2,7 @@
 description: Create Feature Specification with DevTeam (PO + Architect)
 globs:
 alwaysApply: false
-version: 2.8
+version: 2.9
 encoding: UTF-8
 ---
 
@@ -11,6 +11,14 @@ encoding: UTF-8
 ## Overview
 
 Create detailed feature specifications using DevTeam collaboration: PO gathers fachliche requirements, Architect adds technical refinement.
+
+**v2.9 Changes:**
+- **NEW: Komponenten-Verbindungen** - Explizite Definition WIE Komponenten verbunden werden
+- **NEW: Verbindungs-Matrix** im Implementation Plan Template mit Source/Target/Story-Zuordnung
+- **NEW: Integration DoD** - Stories mit Verbindungs-Verantwortung bekommen Integration-DoD-Punkte
+- **NEW: Verbindungs-Validierung** im Self-Review (Step 2.5.2)
+- **ENHANCED: Story Generation** - Stories erhalten Integration-Metadata wenn zuständig für Verbindung
+- **FIX: "Komponenten gebaut aber nicht verbunden"** - Verhindert isolierte Implementierung
 
 **v2.8 Changes:**
 - **NEW: Implementation Plan (Step 2.5)** - Lückenloser Plan mit Self-Review und Minimalinvasiv-Analyse
@@ -334,8 +342,32 @@ Mache einen kritischen Review des Implementierungsplans:
    - Gibt es einen besseren Weg?
    - Was sind die Trade-offs?
 
+5. KOMPONENTEN-VERBINDUNGEN (KRITISCH - v2.9)
+   - Ist JEDE neue Komponente mit mindestens einer anderen verbunden?
+   - Ist JEDE Verbindung einer konkreten Story zugeordnet?
+   - Gibt es "verwaiste" Komponenten ohne Verbindung?
+   - Sind die Verbindungs-Validierungen ausführbar?
+
 Wenn du Probleme findest, schlage Verbesserungen vor die ALLE
 Anforderungen OHNE Abstriche erfüllen.
+```
+
+**Verbindungs-Validierung:**
+```
+FOR EACH Komponente in "Neue Komponenten" table:
+  CHECK: Hat diese Komponente mindestens einen Eintrag in
+         "Komponenten-Verbindungen" (als Source ODER Target)?
+
+  IF NOT:
+    FLAG: "Verwaiste Komponente: [NAME] - keine Verbindung definiert!"
+    REQUIRE: Verbindung hinzufügen ODER Komponente entfernen
+
+FOR EACH Verbindung in "Komponenten-Verbindungen" table:
+  CHECK: Ist eine "Zuständige Story" angegeben?
+
+  IF NOT:
+    FLAG: "Verbindung ohne Story: [Source] → [Target]"
+    REQUIRE: Story zuordnen
 ```
 
 **Output:** Fülle `## Self-Review Ergebnisse` Sektion im Plan
@@ -624,6 +656,13 @@ Dokumentiere jede Optimierung mit Begründung.
   - Stories must be small enough for single Claude Code session
   - Each story gets its OWN file for better context efficiency
   - **Story grouping follows Implementation Plan phases**
+
+  **INTEGRATION REQUIREMENTS (v2.9 - KRITISCH):**
+  - CHECK: "Komponenten-Verbindungen" section in implementation-plan.md
+  - FOR EACH story that is "Zuständige Story" for a connection:
+    - ADD to story metadata: `Integration: [Source] → [Target]`
+    - This will be used by Architect to add Integration-DoD items
+  - Stories with integration responsibility MUST connect components, not just create them
 </mandatory_actions>
 
 </substep>
@@ -754,6 +793,30 @@ Use dev-team__architect agent to add technical refinement to fachliche user stor
         - Documentation updated
         - No linting errors
         - Completion Check commands successful
+
+        **Integration DoD (v2.9 - wenn Story Verbindung herstellt):**
+        CHECK: Hat diese Story einen "Integration:" Eintrag in der Metadata?
+        CHECK: Ist diese Story "Zuständige Story" für eine Verbindung im Plan?
+
+        IF YES:
+          READ: implementation-plan.md "Komponenten-Verbindungen" section
+          EXTRACT: Die Verbindung(en) für die diese Story zuständig ist
+
+          ADD Integration-DoD items:
+          - [ ] **Integration hergestellt: [Source] → [Target]**
+            - [ ] Import/Aufruf existiert in Code
+            - [ ] Verbindung ist funktional (nicht nur Stub)
+            - [ ] Validierung: `[Validierungsbefehl aus Plan]`
+
+          ADD to Completion Check:
+          ```bash
+          # Integration Validation
+          [Validierungsbefehl aus Plan, z.B.:]
+          grep -q "import.*ServiceName" src/path/to/file.ts && echo "✓ Import exists"
+          ```
+
+          **WICHTIG:** Diese Story ist NICHT done, wenn nur Code existiert.
+          Die Verbindung muss AKTIV hergestellt und validiert sein!
 
         **Betroffene Layer & Komponenten (NEU - PFLICHT):**
 
