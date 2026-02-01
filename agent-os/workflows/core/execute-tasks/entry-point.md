@@ -2,11 +2,19 @@
 description: Entry point for task execution - routes to appropriate phase
 globs:
 alwaysApply: false
-version: 3.2
+version: 3.4
 encoding: UTF-8
 ---
 
 # Task Execution Entry Point
+
+## What's New in v3.4
+
+**Handover Documentation (Spec only):**
+- Phase 3: Collects user-todos during implementation (tasks requiring manual action)
+- Phase 5: Generates test-scenarios.md with Happy-Path, Edge-Cases, Fehlerfälle
+- Phase 5: Finalizes user-todos.md with summary and priority classification
+- New templates: test-scenarios-template.md, user-todos-template.md
 
 ## What's New in v3.3
 
