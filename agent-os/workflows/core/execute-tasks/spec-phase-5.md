@@ -38,7 +38,11 @@ Create pull request, generate test documentation, and provide final summary.
     1. READ: All completed stories from agent-os/specs/{SELECTED_SPEC}/stories/
 
     2. CREATE: agent-os/specs/{SELECTED_SPEC}/test-scenarios.md
-       USE: Template from agent-os/templates/docs/test-scenarios-template.md
+
+       **TEMPLATE LOOKUP (Hybrid):**
+       1. Local: agent-os/templates/docs/test-scenarios-template.md
+       2. Global: ~/.agent-os/templates/docs/test-scenarios-template.md
+       Use the FIRST one found.
 
     3. FILL: Header information
        - [SPEC_NAME] → Spec folder name

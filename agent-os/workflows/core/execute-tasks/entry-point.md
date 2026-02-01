@@ -10,6 +10,11 @@ encoding: UTF-8
 
 ## What's New in v3.4
 
+**Hybrid Template Lookup:**
+- Templates searched in order: local (`agent-os/templates/`) → global (`~/.agent-os/templates/`)
+- Fixes "template not found" for projects without local templates
+- Applies to: kanban-board, test-scenarios, user-todos templates
+
 **Handover Documentation (Spec only):**
 - Phase 3: Collects user-todos during implementation (tasks requiring manual action)
 - Phase 5: Generates test-scenarios.md with Happy-Path, Edge-Cases, Fehlerfälle
