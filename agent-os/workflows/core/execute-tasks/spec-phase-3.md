@@ -1,9 +1,15 @@
 ---
-description: Spec Phase 3 - Execute one user story (Direct Execution v3.1)
-version: 3.1
+description: Spec Phase 3 - Execute one user story (Direct Execution v3.2)
+version: 3.2
 ---
 
 # Spec Phase 3: Execute Story (Direct Execution)
+
+## What's New in v3.2
+
+- **User-Todo Collection**: Captures manual tasks that arise during implementation
+- **Automatic user-todos.md Creation**: Creates file when first todo is identified
+- **Priority Classification**: Todos are categorized as Critical/Important/Optional
 
 ## What's New in v3.1
 
@@ -145,6 +151,75 @@ maintaining full context throughout the story.
   </implementation_process>
 
   OUTPUT: Implementation complete, ready for self-review
+</step>
+
+<step name="collect_user_todos">
+  ### Collect User-Todos (v3.2)
+
+  **DURING or AFTER implementation, identify tasks that require manual user action.**
+
+  <todo_detection>
+    REFLECT: Did implementation reveal tasks that cannot be automated?
+
+    **Common Categories:**
+
+    1. **Secrets & Credentials**
+       - API keys that need to be obtained
+       - OAuth apps that need to be registered
+       - Environment variables to set in production
+
+    2. **External Services**
+       - Third-party accounts to create
+       - Webhooks to configure
+       - DNS entries to add
+
+    3. **Infrastructure**
+       - Production environment configuration
+       - Deployment pipeline updates
+       - Database migrations to run manually
+
+    4. **Access & Permissions**
+       - Team member access to grant
+       - Service account permissions
+       - Repository secrets to add
+
+    5. **Documentation & Communication**
+       - Users to notify about changes
+       - External documentation to update
+
+    IF any manual tasks identified:
+
+      CHECK: Does user-todos.md exist?
+      ```bash
+      ls agent-os/specs/{SELECTED_SPEC}/user-todos.md 2>/dev/null
+      ```
+
+      IF NOT exists:
+        CREATE: agent-os/specs/{SELECTED_SPEC}/user-todos.md
+        USE: Template from agent-os/templates/docs/user-todos-template.md
+        FILL: [SPEC_NAME], [DATE], [SPEC_PATH]
+
+      APPEND: Each identified todo to appropriate section:
+
+      **Priority Classification:**
+      - **Kritisch**: Feature won't work without this
+      - **Wichtig**: Required for production
+      - **Optional**: Nice to have, recommended
+
+      **Format for each todo:**
+      ```markdown
+      - [ ] **[Todo Title]**
+        - Beschreibung: [What needs to be done]
+        - Grund: [Why it must be manual]
+        - Hinweis: [Helpful links or instructions]
+        - Story: [STORY_ID]
+      ```
+
+      LOG: "User-Todo added: [TODO_TITLE]"
+
+    IF no manual tasks:
+      SKIP: No user-todos to collect
+  </todo_detection>
 </step>
 
 <step name="self_review">
@@ -408,6 +483,14 @@ maintaining full context throughout the story.
 </phase_complete>
 
 ---
+
+## Quick Reference: v3.2 Changes
+
+| v3.1 | v3.2 |
+|------|------|
+| No todo collection | collect_user_todos (NEW) |
+| Manual tasks forgotten | user-todos.md tracks manual tasks |
+| - | Priority classification for todos |
 
 ## Quick Reference: v3.1 Changes
 

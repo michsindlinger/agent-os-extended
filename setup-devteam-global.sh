@@ -276,6 +276,8 @@ download_file "$REPO_URL/agent-os/templates/docs/dod-template.md" "$GLOBAL_DIR/t
 download_file "$REPO_URL/agent-os/templates/docs/dor-template.md" "$GLOBAL_DIR/templates/docs/dor-template.md"
 download_file "$REPO_URL/agent-os/templates/docs/effort-estimation-template.md" "$GLOBAL_DIR/templates/docs/effort-estimation-template.md"
 download_file "$REPO_URL/agent-os/templates/docs/implementation-plan-template.md" "$GLOBAL_DIR/templates/docs/implementation-plan-template.md"
+download_file "$REPO_URL/agent-os/templates/docs/test-scenarios-template.md" "$GLOBAL_DIR/templates/docs/test-scenarios-template.md"
+download_file "$REPO_URL/agent-os/templates/docs/user-todos-template.md" "$GLOBAL_DIR/templates/docs/user-todos-template.md"
 
 echo ""
 echo "✅ Global installation complete!"
