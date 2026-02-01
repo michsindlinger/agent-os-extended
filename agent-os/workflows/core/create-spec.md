@@ -2,7 +2,7 @@
 description: Create Feature Specification with DevTeam (PO + Architect)
 globs:
 alwaysApply: false
-version: 2.7
+version: 2.8
 encoding: UTF-8
 ---
 
@@ -12,10 +12,18 @@ encoding: UTF-8
 
 Create detailed feature specifications using DevTeam collaboration: PO gathers fachliche requirements, Architect adds technical refinement.
 
+**v2.8 Changes:**
+- **NEW: Implementation Plan (Step 2.5)** - Lückenloser Plan mit Self-Review und Minimalinvasiv-Analyse
+- **NEW: Kollegen-Methode** - Kritischer Self-Review vor Story-Generierung
+- **NEW: Editor-Option** - User kann Plan direkt im Editor bearbeiten
+- **NEW: implementation-plan.md** - Template für strukturierte Planung
+- **CHANGED: Step 2.4 → 2.6** - Stories werden jetzt aus dem Plan abgeleitet, nicht nur aus Clarification
+- **NEW: /review-implementation-plan Skill** - Standalone Review für existierende Pläne
+
 **v2.7 Changes:**
-- **NEW: Automatic Effort Estimation (Step 3.6)** - Dual estimation: Human-only + Human+AI Agent
-- **NEW: effort-estimation.md** - Per-Story und Gesamt-Schätzung im Spec-Ordner
-- **ENHANCED: Step 4 Summary** - Zeigt Aufwandsschätzung mit Zeitersparnis durch KI
+- Automatic Effort Estimation (Step 3.6) - Dual estimation: Human-only + Human+AI Agent
+- effort-estimation.md - Per-Story und Gesamt-Schätzung im Spec-Ordner
+- Step 4 Summary zeigt Aufwandsschätzung mit Zeitersparnis durch KI
 
 **v2.6 Changes:**
 - **NEW: Gherkin-Style User Stories** - PO schreibt Akzeptanzkriterien im Given-When-Then Format
@@ -91,7 +99,8 @@ to fully understand requirements BEFORE generating user stories.
   1. **Requirements Dialog** (Iterative clarification)
   2. **Clarification Document** (Summary for approval)
   3. **User Approval** (User confirms or requests changes)
-  4. **User Story Generation** (Only after approval)
+  4. **Implementation Plan** (NEW v2.8 - Lückenloser Plan mit Self-Review)
+  5. **User Story Generation** (Only after plan approval)
 </process_overview>
 
 <substep number="2.1" name="requirements_dialog">
@@ -250,21 +259,211 @@ Before generating user stories, create a summary document for user approval.
      ```
 
   2. BASED on user choice:
-     - If "Approve": Proceed to Step 2.4
+     - If "Approve": Proceed to Step 2.5 (Implementation Plan)
      - If "Request Changes": Update clarification, re-ask approval
      - If "Continue": Return to Step 2.1 with focused questions
 </mandatory_actions>
 
 </substep>
 
-<substep number="2.4" name="generate_stories">
+<substep number="2.5" name="implementation_plan">
 
-### Step 2.4: Generate User Stories (After Approval)
+### Step 2.5: Implementation Plan (Kollegen-Methode)
+
+**Ziel:** Lückenlosen Implementierungsplan erstellen, kritisch reviewen, und minimalinvasiv optimieren - BEVOR Stories geschrieben werden.
+
+> Basiert auf bewährtem Prompt:
+> "Erstelle zunächst einen lückenlosen, sorgfältig durchdachten Implementierungsplan.
+> Mache dann einen kritischen Review. Solltest du auf Probleme stoßen, suche einen
+> besseren Weg. Analysiere dann, wie du minimalinvasiv vorgehen kannst OHNE auf
+> Features zu verzichten. Erstelle dann Actionable Items als Tickets mit DoD."
 
 <mandatory_actions>
-  1. USE date-checker to get current date (YYYY-MM-DD)
 
-  2. CREATE spec folder structure:
+#### Step 2.5.1 - Implementation Plan erstellen
+
+**Input:** Genehmigtes `requirements-clarification.md`
+
+**Erstelle:** `implementation-plan.md` im Spec-Ordner
+
+1. LOAD template (hybrid lookup):
+   - TRY: agent-os/templates/docs/implementation-plan-template.md
+   - FALLBACK: ~/.agent-os/templates/docs/implementation-plan-template.md
+
+2. LOAD context:
+   - requirements-clarification.md (gerade genehmigt)
+   - agent-os/product/tech-stack.md
+   - agent-os/product/architecture-structure.md (if exists)
+
+3. EXPLORE codebase:
+   - Suche nach ähnlichen Features die bereits implementiert wurden
+   - Identifiziere wiederverwendbare Patterns und Komponenten
+   - Verstehe bestehende Architektur-Entscheidungen
+
+4. CREATE implementation-plan.md:
+   - **Executive Summary** - Was wird gebaut und warum (1-2 Sätze)
+   - **Architektur-Entscheidungen** - Welche Patterns/Ansätze werden verwendet
+   - **Komponenten-Übersicht** - Was muss erstellt/geändert werden
+   - **Umsetzungsphasen** - Grobe Reihenfolge der Umsetzung
+   - **Abhängigkeiten** - Was hängt wovon ab
+   - **Risiken & Mitigationen** - Potenzielle Probleme
+
+**Wichtig:** Noch KEINE detaillierten Dateipfade oder Story-Aufteilung!
+Der Plan ist architektonisch/strategisch, nicht taktisch.
+
+#### Step 2.5.2 - Kritischer Self-Review
+
+Führe einen kritischen Review des erstellten Plans durch:
+
+```
+Mache einen kritischen Review des Implementierungsplans:
+
+1. VOLLSTÄNDIGKEIT
+   - Sind alle Anforderungen aus der Clarification abgedeckt?
+   - Fehlen wichtige Aspekte?
+
+2. KONSISTENZ
+   - Gibt es Widersprüche im Plan?
+   - Passen die Architektur-Entscheidungen zusammen?
+
+3. RISIKEN
+   - Welche Probleme könnten auftreten?
+   - Gibt es kritische Abhängigkeiten?
+
+4. ALTERNATIVEN
+   - Gibt es einen besseren Weg?
+   - Was sind die Trade-offs?
+
+Wenn du Probleme findest, schlage Verbesserungen vor die ALLE
+Anforderungen OHNE Abstriche erfüllen.
+```
+
+**Output:** Fülle `## Self-Review Ergebnisse` Sektion im Plan
+
+#### Step 2.5.3 - Minimalinvasiv-Analyse
+
+1. **Codebase-Exploration durchführen:**
+   - Suche nach bestehenden Patterns die wiederverwendet werden können
+   - Identifiziere ähnliche Features im Projekt
+   - Prüfe welche Infrastruktur bereits existiert
+
+2. **Analyse durchführen:**
+```
+Analysiere den Plan auf Minimalinvasivität:
+
+1. WIEDERVERWENDUNG
+   - Welcher bestehende Code kann genutzt werden?
+   - Welche Patterns existieren bereits im Projekt?
+
+2. ÄNDERUNGSUMFANG
+   - Welche Änderungen sind wirklich nötig?
+   - Was kann vermieden werden?
+
+3. FEATURE-PRESERVATION (KRITISCH!)
+   - Validiere: KEIN Feature wird geopfert!
+   - Jede Optimierung muss alle Requirements erhalten
+
+Optimiere den Plan basierend auf deinen Erkenntnissen.
+Dokumentiere jede Optimierung mit Begründung.
+```
+
+3. **Output:** Fülle `## Minimalinvasiv-Optimierungen` Sektion im Plan
+
+4. **Feature-Preservation Checkliste abhaken:**
+   - [ ] Alle Requirements aus Clarification sind abgedeckt
+   - [ ] Kein Feature wurde geopfert
+   - [ ] Alle Akzeptanzkriterien bleiben erfüllbar
+
+#### Step 2.5.4 - User Review (mit Editor-Option)
+
+1. PRESENT den Implementation Plan dem User
+
+2. ASK user via AskUserQuestion:
+   ```
+   Question: "Ich habe einen Implementation Plan basierend auf der genehmigten
+              Clarification erstellt. Der Plan enthält Self-Review und
+              Minimalinvasiv-Optimierungen."
+
+   Options:
+   1. Plan genehmigen
+      → Weiter zu Step 2.6 (Story-Generierung aus Plan)
+
+   2. Im Editor öffnen
+      → Ich zeige dir den Dateipfad
+      → Du bearbeitest die Datei
+      → Sage 'fertig' wenn du bereit bist
+
+   3. Änderungen besprechen
+      → Beschreibe die gewünschten Anpassungen
+      → Ich aktualisiere den Plan
+
+   4. Zurück zur Clarification
+      → Fundamentale Anforderungsänderungen nötig
+      → Zurück zu Step 2.1
+   ```
+
+3. BASED on user choice:
+   - If "Plan genehmigen":
+     - Set Status: APPROVED
+     - Proceed to Step 2.6
+
+   - If "Im Editor öffnen":
+     - SHOW: "Der Plan liegt unter: agent-os/specs/[spec-name]/implementation-plan.md"
+     - INFORM: "Öffne die Datei, bearbeite sie, und sage 'fertig' wenn du bereit bist"
+     - WAIT for user confirmation
+     - READ plan again
+     - VALIDATE changes preserve all requirements
+     - Re-ask approval
+
+   - If "Änderungen besprechen":
+     - COLLECT user feedback
+     - UPDATE plan accordingly
+     - Re-run Self-Review if significant changes
+     - Re-ask approval
+
+   - If "Zurück zur Clarification":
+     - RETURN to Step 2.1
+
+</mandatory_actions>
+
+<instructions>
+  ACTION: Create Implementation Plan with Self-Review and Minimalinvasiv-Analyse
+  EXPLORE: Codebase for reusable patterns before planning
+  REVIEW: Critically review the plan for completeness and consistency
+  OPTIMIZE: For minimal changes while preserving ALL features
+  PRESENT: To user with edit options
+  REFERENCE: agent-os/standards/plan-review-guidelines.md
+</instructions>
+
+**Output:**
+- `agent-os/specs/[spec-name]/implementation-plan.md` (APPROVED)
+
+</substep>
+
+<substep number="2.6" name="generate_stories">
+
+### Step 2.6: Generate User Stories from Implementation Plan
+
+<mandatory_actions>
+  **Input:**
+  - Genehmigter `implementation-plan.md` (aus Step 2.5)
+  - `requirements-clarification.md` (als Referenz für Akzeptanzkriterien)
+
+  **Story-Ableitung aus Plan:**
+  Der Implementation Plan definiert die Phasen und Komponenten.
+  Jede Phase/Komponente wird zu einer oder mehreren Stories.
+
+  **Mapping:**
+  | Plan-Element | Story-Typ |
+  |--------------|-----------|
+  | Neue Komponente | Feature Story |
+  | Änderung an Bestehendem | Enhancement Story |
+  | Integration zwischen Komponenten | Integration Story |
+  | Kritisches Risiko | Spike/Research Story |
+
+  1. USE date-checker to get current date (YYYY-MM-DD) - if not already done
+
+  2. CREATE spec folder structure (if not already exists):
      ```
      agent-os/specs/YYYY-MM-DD-spec-name/
      ├── stories/              # NEW: Individual story files
@@ -303,7 +502,7 @@ Before generating user stories, create a summary document for user approval.
   5. CREATE stories/ directory
 
   6. CREATE individual story files (stories/story-XXX-[slug].md):
-     FOR EACH story from clarification:
+     FOR EACH story derived from Implementation Plan phases/components:
      - Generate story ID: [SPEC_PREFIX]-### (e.g., PROF-001, PROF-002)
      - Create file: stories/story-###-[slug].md
        where [slug] = title lowercase with hyphens
@@ -411,6 +610,8 @@ Before generating user stories, create a summary document for user approval.
   Reference: agent-os/templates/docs/story-template.md
 
   IMPORTANT:
+  - **Stories are derived from Implementation Plan phases/components**
+  - **Reference plan section in story for traceability**
   - Write ONLY fachliche (business) content
   - **USE GHERKIN-STYLE for all acceptance criteria (Given-When-Then)**
   - **Nutzer-Perspektive, keine technischen Details in Szenarien**
@@ -422,18 +623,20 @@ Before generating user stories, create a summary document for user approval.
   - Focus on WHAT user needs, not HOW to implement
   - Stories must be small enough for single Claude Code session
   - Each story gets its OWN file for better context efficiency
+  - **Story grouping follows Implementation Plan phases**
 </mandatory_actions>
 
 </substep>
 
 **Output:**
 - `agent-os/specs/YYYY-MM-DD-spec-name/requirements-clarification.md` (approved)
+- `agent-os/specs/YYYY-MM-DD-spec-name/implementation-plan.md` (approved - from Step 2.5)
 - `agent-os/specs/YYYY-MM-DD-spec-name/spec.md`
 - `agent-os/specs/YYYY-MM-DD-spec-name/spec-lite.md`
-- `agent-os/specs/YYYY-MM-DD-spec-name/story-index.md` (NEW)
-- `agent-os/specs/YYYY-MM-DD-spec-name/stories/story-001-[slug].md` (NEW - fachlich only)
-- `agent-os/specs/YYYY-MM-DD-spec-name/stories/story-002-[slug].md` (NEW - fachlich only)
-- ... (one file per story)
+- `agent-os/specs/YYYY-MM-DD-spec-name/story-index.md`
+- `agent-os/specs/YYYY-MM-DD-spec-name/stories/story-001-[slug].md` (fachlich only, derived from plan)
+- `agent-os/specs/YYYY-MM-DD-spec-name/stories/story-002-[slug].md` (fachlich only, derived from plan)
+- ... (one file per story, grouped by plan phases)
 
 </step>
 
@@ -1389,12 +1592,14 @@ Present completed specification to user.
 
   **Files:**
   - requirements-clarification.md - Approved requirements summary
+  - implementation-plan.md - Self-reviewed plan with minimalinvasiv optimizations (v2.8)
   - spec.md - Full specification
   - spec-lite.md - Quick reference summary
   - story-index.md - Story overview and dependency mapping
   - effort-estimation.md - Aufwandsschätzung (Human + AI)
   - stories/ - Individual story files (fachlich + technisch)
     * story-001-[slug].md, story-002-[slug].md, etc.
+    * Stories derived from Implementation Plan phases
     * Fachliche descriptions (PO)
     * Technical refinement (Architect): WAS/WIE/WO/WER/DoR/DoD
     * Dependencies mapped
@@ -1449,9 +1654,12 @@ Present completed specification to user.
 <verify>
   - [ ] Spec folder created (YYYY-MM-DD prefix)
   - [ ] requirements-clarification.md created and approved by user
+  - [ ] **implementation-plan.md created with Self-Review and Minimalinvasiv-Analyse (Step 2.5)** (v2.8)
+  - [ ] **Implementation Plan approved by user** (v2.8)
   - [ ] spec.md complete (all sections)
   - [ ] spec-lite.md concise
   - [ ] story-index.md created with all stories listed
+  - [ ] **Stories derived from Implementation Plan phases** (v2.8)
   - [ ] stories/ directory created with individual story files
   - [ ] Each story file has fachlich + technical content
   - [ ] All stories have DoR/DoD

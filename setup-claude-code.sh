@@ -102,6 +102,17 @@ for file in "${command_files[@]}"; do
 done
 
 # ═══════════════════════════════════════════════════════════
+# SKILLS - User-Invocable Skills
+# ═══════════════════════════════════════════════════════════
+
+echo ""
+echo "═══ Installing Skills ═══"
+
+mkdir -p .claude/skills/review-implementation-plan
+
+download_file "$REPO_URL/.claude/skills/review-implementation-plan/SKILL.md" ".claude/skills/review-implementation-plan/SKILL.md"
+
+# ═══════════════════════════════════════════════════════════
 # AGENTS - Utility Agents Only
 # ═══════════════════════════════════════════════════════════
 
@@ -137,7 +148,8 @@ echo ""
 echo "📁 Installed Structure:"
 echo ""
 echo "  .claude/"
-echo "    ├── commands/agent-os/   (24 core commands) ← +2 profile optimization"
+echo "    ├── commands/agent-os/   (24 core commands)"
+echo "    ├── skills/              (1 user-invocable skill)"
 echo "    └── agents/              (10 utility agents)"
 echo ""
 echo "📋 Available Commands:"
@@ -190,6 +202,10 @@ echo "    /add-skill                → Create custom skills for DevTeam agents"
 echo "    /migrate-skills           → Add YAML frontmatter to existing skills"
 echo "    /toggle-skill-activation  → Change skill activation mode"
 echo "    /migrate-devteam-v2       → Migrate DevTeam to v2.0 (skill-index)"
+echo ""
+echo "  Plan Review:"
+echo "    /review-implementation-plan → Standalone review of implementation plans"
+echo "                                   (Self-Review + Minimalinvasiv-Analyse)"
 echo ""
 echo "🤖 Utility Agents Installed:"
 echo "  • context-fetcher    → Conditional file loading"
