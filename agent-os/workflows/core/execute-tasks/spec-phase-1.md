@@ -1,9 +1,17 @@
 ---
 description: Spec Phase 1 - Initialize and create Kanban Board
-version: 3.1
+version: 3.2
 ---
 
 # Spec Phase 1: Initialize
+
+## What's New in v3.2
+
+**Hybrid Template Lookup:**
+- Templates are now searched in order: local → global
+- Local: `agent-os/templates/docs/`
+- Global: `~/.agent-os/templates/docs/`
+- Fixes "template not found" issues for projects without local templates
 
 ## What's New in v3.1
 
@@ -43,7 +51,13 @@ Select specification and create Kanban Board. One-time setup phase.
 
   Source: Parse story files in stories/ directory
   Output: agent-os/specs/{SELECTED_SPEC}/kanban-board.md
-  Template: agent-os/templates/docs/kanban-board-template.md
+
+  **TEMPLATE LOOKUP (Hybrid - v3.2):**
+  Search for template in this order:
+  1. Local: agent-os/templates/docs/kanban-board-template.md
+  2. Global: ~/.agent-os/templates/docs/kanban-board-template.md
+
+  Use the FIRST one found.
 
   **CRITICAL: TEMPLATE COMPLIANCE**
   You MUST use the EXACT format from the template. Do NOT invent your own format.
@@ -52,7 +66,8 @@ Select specification and create Kanban Board. One-time setup phase.
   - Only replace {{PLACEHOLDER}} variables with actual values
 
   STEPS:
-  1. READ the template: agent-os/templates/docs/kanban-board-template.md
+  1. FIND template using hybrid lookup (local first, then global)
+  2. READ the template file
   2. LIST all story files in agent-os/specs/{SELECTED_SPEC}/stories/
   3. FOR EACH story file:
      - READ the story file

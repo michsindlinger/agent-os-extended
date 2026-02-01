@@ -196,7 +196,12 @@ maintaining full context throughout the story.
 
       IF NOT exists:
         CREATE: agent-os/specs/{SELECTED_SPEC}/user-todos.md
-        USE: Template from agent-os/templates/docs/user-todos-template.md
+
+        **TEMPLATE LOOKUP (Hybrid):**
+        1. Local: agent-os/templates/docs/user-todos-template.md
+        2. Global: ~/.agent-os/templates/docs/user-todos-template.md
+        Use the FIRST one found.
+
         FILL: [SPEC_NAME], [DATE], [SPEC_PATH]
 
       APPEND: Each identified todo to appropriate section:
