@@ -88,6 +88,9 @@ download_file "$REPO_URL/agent-os/standards/best-practices.md" \
 download_file "$REPO_URL/agent-os/standards/tech-stack.md" \
   "$GLOBAL_DIR/standards/tech-stack.md" "tech-stack template"
 
+download_file "$REPO_URL/agent-os/standards/plan-review-guidelines.md" \
+  "$GLOBAL_DIR/standards/plan-review-guidelines.md" "plan-review-guidelines"
+
 # ═══════════════════════════════════════════════════════════
 # TEMPLATES (~80 files including skill SKILL.md files)
 # ═══════════════════════════════════════════════════════════
@@ -256,8 +259,8 @@ download_file "$REPO_URL/agent-os/templates/skills/deployment-automation/SKILL.m
 download_file "$REPO_URL/agent-os/templates/skills/file-organization-patterns/SKILL.md" "$GLOBAL_DIR/templates/skills/file-organization-patterns/SKILL.md"
 download_file "$REPO_URL/agent-os/templates/skills/testing-strategies/SKILL.md" "$GLOBAL_DIR/templates/skills/testing-strategies/SKILL.md"
 
-# Documentation templates (14)
-echo "→ Documentation templates (14)..."
+# Documentation templates (15)
+echo "→ Documentation templates (15)..."
 download_file "$REPO_URL/agent-os/templates/docs/spec-template.md" "$GLOBAL_DIR/templates/docs/spec-template.md"
 download_file "$REPO_URL/agent-os/templates/docs/spec-lite-template.md" "$GLOBAL_DIR/templates/docs/spec-lite-template.md"
 download_file "$REPO_URL/agent-os/templates/docs/user-stories-template.md" "$GLOBAL_DIR/templates/docs/user-stories-template.md"
@@ -272,16 +275,18 @@ download_file "$REPO_URL/agent-os/templates/docs/changelog-entry-template.md" "$
 download_file "$REPO_URL/agent-os/templates/docs/dod-template.md" "$GLOBAL_DIR/templates/docs/dod-template.md"
 download_file "$REPO_URL/agent-os/templates/docs/dor-template.md" "$GLOBAL_DIR/templates/docs/dor-template.md"
 download_file "$REPO_URL/agent-os/templates/docs/effort-estimation-template.md" "$GLOBAL_DIR/templates/docs/effort-estimation-template.md"
+download_file "$REPO_URL/agent-os/templates/docs/implementation-plan-template.md" "$GLOBAL_DIR/templates/docs/implementation-plan-template.md"
 
 echo ""
 echo "✅ Global installation complete!"
 echo ""
 echo "Installed to $GLOBAL_DIR:"
 echo ""
-echo "  standards/ (3 files)"
+echo "  standards/ (4 files)"
 echo "    ├── code-style.md"
 echo "    ├── best-practices.md"
-echo "    └── tech-stack.md"
+echo "    ├── tech-stack.md"
+echo "    └── plan-review-guidelines.md"
 echo ""
 echo "  agents/ (1 file)"
 echo "    └── platform-architect.md"
@@ -310,7 +315,7 @@ echo "    │   ├── orchestration/ (1)"
 echo "    │   ├── skill/ (1) - base template"
 echo "    │   ├── generic-skill/ (1)"
 echo "    │   └── root-level/ (5): api-implementation-patterns, ..."
-echo "    └── docs/ (13) ← story-template without WER field"
+echo "    └── docs/ (15) ← story-template, implementation-plan-template"
 echo ""
 echo "📚 Hybrid Lookup System:"
 echo ""
