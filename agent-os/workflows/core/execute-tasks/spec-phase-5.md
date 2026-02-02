@@ -1,9 +1,15 @@
 ---
-description: Spec Phase 5 - Finalize with PR creation
-version: 3.3
+description: Spec Phase 5 - Finalize with PR creation (Legacy Support v4.0)
+version: 4.0
 ---
 
 # Spec Phase 5: Finalize
+
+## What's New in v4.0
+
+- **Legacy Check**: This phase is now a legacy check for backward compatibility
+- **System Story 999**: For specs with System Stories, story-999 handles finalization
+- **Skip Logic**: If story-999 exists and is Done, this phase only shows completion summary
 
 ## What's New in v3.3
 
@@ -15,12 +21,67 @@ version: 3.3
 
 Create pull request, generate test documentation, and provide final summary.
 
+**Note:** For specs created with create-spec v3.0+, this functionality is handled by story-999.
+
 ## Entry Condition
 
 - kanban-board.md shows: 5-ready or all-stories-done
 - All stories in Done column
 
-## Actions
+## Legacy Check (v4.0)
+
+<legacy_check>
+  **BEFORE executing legacy logic, check for System Story 999:**
+
+  ```bash
+  ls agent-os/specs/${SELECTED_SPEC}/stories/story-999*.md 2>/dev/null
+  ```
+
+  IF story-999 exists:
+    READ: story-999 file
+    EXTRACT: Status field
+
+    IF Status = "Done":
+      LOG: "story-999 (Finalize PR) already completed - showing completion summary only"
+
+      # Just show the final summary - everything else was done by story-999
+      READ: kanban-board.md
+      EXTRACT: PR URL from "Last Action" if present
+
+      OUTPUT to user:
+      ---
+      ## Spec Execution Complete!
+
+      **Note:** Finalization was handled by System Story 999.
+
+      ### Kanban Board Status
+      - View: agent-os/specs/{SELECTED_SPEC}/kanban-board.md
+
+      ### Handover-Dokumentation
+      - **Test-Szenarien:** agent-os/specs/{SELECTED_SPEC}/test-scenarios.md
+      - **User-Todos:** agent-os/specs/{SELECTED_SPEC}/user-todos.md (if exists)
+      - **Review Report:** agent-os/specs/{SELECTED_SPEC}/review-report.md
+
+      ---
+      **Spec execution finished. No further phases.**
+      ---
+
+      STOP: Execution complete
+
+    ELSE (Status != "Done"):
+      LOG: "story-999 exists but not Done - returning to Phase 3"
+      UPDATE: kanban-board.md
+        | **Current Phase** | story-complete |
+        | **Next Action** | Execute story-999 |
+      INFORM: "System Story 999 needs to be executed. Run /execute-tasks again."
+      STOP: Return to Phase 3 for story-999
+
+  ELSE (no story-999):
+    LOG: "Legacy spec without System Stories - executing Phase 5"
+    CONTINUE: Execute legacy finalization below
+</legacy_check>
+
+## Actions (Legacy - for specs without System Stories)
 
 <step name="final_test_run" subagent="test-runner">
   USE: test-runner subagent

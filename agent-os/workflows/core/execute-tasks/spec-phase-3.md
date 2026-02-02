@@ -1,9 +1,18 @@
 ---
-description: Spec Phase 3 - Execute one user story (Direct Execution v3.3)
-version: 3.3
+description: Spec Phase 3 - Execute one user story (Direct Execution v4.0)
+version: 4.0
 ---
 
 # Spec Phase 3: Execute Story (Direct Execution)
+
+## What's New in v4.0
+
+- **System Story Detection**: Erkennt automatisch System Stories (story-997, 998, 999)
+- **System Story Execution**: Spezielle Execution Logic für jede System Story:
+  - story-997: Code Review (git diff, review-report.md)
+  - story-998: Integration Validation (ersetzt Phase 4.5)
+  - story-999: Finalize PR (ersetzt Phase 5)
+- **Backward Compatibility**: Reguläre Stories werden weiterhin normal ausgeführt
 
 ## What's New in v3.3
 
@@ -130,6 +139,289 @@ maintaining full context throughout the story.
   IF no eligible story:
     ERROR: "All remaining stories have unmet dependencies"
     LIST: Blocked stories and their dependencies
+</step>
+
+<step name="detect_system_story">
+  ### Detect System Story (v4.0)
+
+  **CHECK: Is selected story a System Story?**
+
+  <system_story_detection>
+    EXTRACT: Story ID from selected story filename
+
+    IF story ID matches "story-997*" OR story ID matches "*-997*":
+      SET: SYSTEM_STORY_TYPE = "code-review"
+      GOTO: execute_system_story_997
+
+    ELSE IF story ID matches "story-998*" OR story ID matches "*-998*":
+      SET: SYSTEM_STORY_TYPE = "integration-validation"
+      GOTO: execute_system_story_998
+
+    ELSE IF story ID matches "story-999*" OR story ID matches "*-999*":
+      SET: SYSTEM_STORY_TYPE = "finalize-pr"
+      GOTO: execute_system_story_999
+
+    ELSE:
+      SET: SYSTEM_STORY_TYPE = "regular"
+      CONTINUE: Normal story execution (proceed to update_kanban_in_progress)
+  </system_story_detection>
+</step>
+
+<step name="execute_system_story_997">
+  ### Execute System Story 997: Code Review (v4.0)
+
+  **Purpose:** Starkes Modell reviewt den gesamten Feature-Diff
+
+  <code_review_execution>
+    1. UPDATE: kanban-board.md
+       - MOVE: story-997 to "In Progress"
+       - UPDATE Resume Context
+
+    2. GET: Full diff between main and current branch
+       ```bash
+       git diff main...HEAD --name-only > /tmp/changed_files.txt
+       git diff main...HEAD --stat
+       ```
+
+    3. CATEGORIZE: Changed files
+       - New files (Added)
+       - Modified files
+       - Deleted files
+
+    4. REVIEW: Each changed file
+       FOR EACH file in changed_files:
+         READ: File content
+         ANALYZE:
+         - Code style conformance
+         - Architecture patterns followed
+         - Security best practices
+         - Performance considerations
+         - Error handling
+         - Test coverage
+
+         RECORD: Issues found (Critical/Major/Minor)
+
+    5. CREATE: agent-os/specs/{SELECTED_SPEC}/review-report.md
+
+       **Content:**
+       ```markdown
+       # Code Review Report - [SPEC_NAME]
+
+       **Datum:** [DATE]
+       **Branch:** [BRANCH_NAME]
+       **Reviewer:** Claude (Opus)
+
+       ## Review Summary
+
+       **Geprüfte Commits:** [N]
+       **Geprüfte Dateien:** [N]
+       **Gefundene Issues:** [N]
+
+       | Schweregrad | Anzahl |
+       |-------------|--------|
+       | Critical | [N] |
+       | Major | [N] |
+       | Minor | [N] |
+
+       ## Geprüfte Dateien
+
+       [List of all reviewed files with status]
+
+       ## Issues
+
+       [Categorized list of issues found]
+
+       ## Empfehlungen
+
+       [List of recommendations]
+
+       ## Fazit
+
+       [Summary: Review passed / Review with notes / Review failed]
+       ```
+
+    6. VERIFY: No critical issues blocking
+       IF critical issues found:
+         ASK user via AskUserQuestion:
+         "Code Review fand kritische Issues. Wie fortfahren?
+         1. Issues jetzt beheben (Recommended)
+         2. Issues dokumentieren und fortfahren
+         3. Zurück zu Phase 3 (reguläre Stories)"
+
+    7. MARK: story-997 as Done
+       UPDATE: kanban-board.md
+       COMMIT: "feat: [story-997] Code Review completed"
+
+    8. PROCEED: To next story (story-998)
+  </code_review_execution>
+
+  GOTO: phase_complete
+</step>
+
+<step name="execute_system_story_998">
+  ### Execute System Story 998: Integration Validation (v4.0)
+
+  **Purpose:** Ersetzt Phase 4.5 - Integration Tests aus spec.md ausführen
+
+  <integration_validation_execution>
+    1. UPDATE: kanban-board.md
+       - MOVE: story-998 to "In Progress"
+       - UPDATE Resume Context
+
+    2. LOAD: Integration Requirements from spec.md
+       READ: agent-os/specs/{SELECTED_SPEC}/spec.md
+       EXTRACT: "## Integration Requirements" section
+
+    3. CHECK: MCP tools available
+       ```bash
+       claude mcp list
+       ```
+       NOTE: Tests requiring unavailable MCP tools will be skipped
+
+    4. DETECT: Integration Type
+       | Integration Type | Action |
+       |------------------|--------|
+       | Backend-only | API + DB integration tests |
+       | Frontend-only | Component tests, optional browser |
+       | Full-stack | All tests + E2E |
+       | Not defined | Basic smoke tests |
+
+    5. RUN: Integration Tests
+       FOR EACH test command in Integration Requirements:
+         RUN: Test command
+         RECORD: Result (PASSED / FAILED / SKIPPED)
+
+    6. VERIFY: Komponenten-Verbindungen
+       IF implementation-plan.md has "Komponenten-Verbindungen" section:
+         FOR EACH defined connection:
+           VERIFY: Connection is active (import + usage exists)
+
+    7. HANDLE: Test Results
+       IF all tests PASSED:
+         LOG: "Integration validation passed"
+         PROCEED: Mark story as Done
+
+       ELSE (some FAILED):
+         GENERATE: Integration Fix Report
+         ASK user via AskUserQuestion:
+         "Integration validation failed. Options:
+         1. Fix issues now (Recommended)
+         2. Review and manually fix
+         3. Skip and continue anyway (NOT RECOMMENDED)"
+
+         IF fix now:
+           FIX: Issues
+           RE-RUN: Failed tests
+         ELSE IF skip:
+           WARN: "Proceeding with failed tests"
+
+    8. MARK: story-998 as Done
+       UPDATE: kanban-board.md
+       COMMIT: "feat: [story-998] Integration Validation completed"
+
+    9. PROCEED: To next story (story-999)
+  </integration_validation_execution>
+
+  GOTO: phase_complete
+</step>
+
+<step name="execute_system_story_999">
+  ### Execute System Story 999: Finalize PR (v4.0)
+
+  **Purpose:** Ersetzt Phase 5 - Test-Szenarien, User-Todos, PR, Worktree Cleanup
+
+  <finalize_pr_execution>
+    1. UPDATE: kanban-board.md
+       - MOVE: story-999 to "In Progress"
+       - UPDATE Resume Context
+
+    2. GENERATE: test-scenarios.md
+       READ: All completed stories from agent-os/specs/{SELECTED_SPEC}/stories/
+
+       **TEMPLATE LOOKUP (Hybrid):**
+       1. Local: agent-os/templates/docs/test-scenarios-template.md
+       2. Global: ~/.agent-os/templates/docs/test-scenarios-template.md
+
+       FOR EACH completed story:
+         EXTRACT: Gherkin scenarios
+         GENERATE:
+         - Happy Path test steps
+         - Edge Cases
+         - Fehlerfälle
+
+       CREATE: agent-os/specs/{SELECTED_SPEC}/test-scenarios.md
+
+    3. FINALIZE: user-todos.md (if exists)
+       CHECK: Does user-todos.md exist?
+       ```bash
+       ls agent-os/specs/{SELECTED_SPEC}/user-todos.md 2>/dev/null
+       ```
+
+       IF EXISTS:
+         - Remove duplicates
+         - Verify priority classification
+         - Remove unused sections
+         - Add summary at top
+
+    4. CREATE: Pull Request
+       USE: git-workflow subagent
+       "Create PR for spec: {SELECTED_SPEC}
+
+       **WORKING_DIR:** {PROJECT_ROOT} (or {WORKTREE_PATH} if USE_WORKTREE = true)
+
+       - Commit any remaining changes
+       - Push all commits
+       - Create PR to main branch
+       - Include summary of all stories
+       - Reference test-scenarios.md and user-todos.md"
+
+       CAPTURE: PR URL
+
+    5. UPDATE: Roadmap (if applicable)
+       CHECK: Did this spec complete a roadmap item?
+       IF yes: UPDATE agent-os/product/roadmap.md
+
+    6. CLEANUP: Worktree (if used)
+       CHECK: Resume Context for "Git Strategy" value
+
+       IF "Git Strategy" = "worktree":
+         USE: git-workflow subagent
+         "Clean up git worktree: {SELECTED_SPEC}
+         - Verify PR was created
+         - Remove worktree
+         - Verify cleanup"
+
+    7. PLAY: Completion sound
+       ```bash
+       afplay /System/Library/Sounds/Glass.aiff 2>/dev/null || true
+       ```
+
+    8. MARK: story-999 as Done
+       UPDATE: kanban-board.md
+       - Set Current Phase: complete
+       - Set Last Action: PR created - [PR URL]
+       COMMIT: "feat: [story-999] PR finalized"
+
+    9. OUTPUT: Final summary to user
+       ---
+       ## Spec Execution Complete!
+
+       ### What's Been Done
+       [List all completed stories]
+
+       ### Pull Request
+       [PR URL]
+
+       ### Handover-Dokumentation
+       - **Test-Szenarien:** agent-os/specs/{SELECTED_SPEC}/test-scenarios.md
+       - **User-Todos:** [IF EXISTS: agent-os/specs/{SELECTED_SPEC}/user-todos.md]
+
+       ---
+       **Spec execution finished. No further phases.**
+       ---
+  </finalize_pr_execution>
+
+  STOP: Execution complete
 </step>
 
 <step name="update_kanban_in_progress">
@@ -577,6 +869,15 @@ maintaining full context throughout the story.
 </phase_complete>
 
 ---
+
+## Quick Reference: v4.0 Changes
+
+| v3.3 | v4.0 |
+|------|------|
+| No system story detection | detect_system_story step (NEW) |
+| Phase 4.5 for integration | story-998 handles integration |
+| Phase 5 for PR/cleanup | story-999 handles finalization |
+| Legacy phase routing | System stories execute in Phase 3 |
 
 ## Quick Reference: v3.3 Changes
 

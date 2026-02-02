@@ -2,7 +2,7 @@
 description: Create Feature Specification with DevTeam (PO + Architect)
 globs:
 alwaysApply: false
-version: 2.9
+version: 3.0
 encoding: UTF-8
 ---
 
@@ -11,6 +11,14 @@ encoding: UTF-8
 ## Overview
 
 Create detailed feature specifications using DevTeam collaboration: PO gathers fachliche requirements, Architect adds technical refinement.
+
+**v3.0 Changes:**
+- **NEW: System Stories** - 3 automatisch generierte Stories am Ende jeder Spec:
+  - story-997: Code Review (Opus reviewt gesamten Feature-Diff)
+  - story-998: Integration Validation (ersetzt Phase 4.5)
+  - story-999: Finalize PR (ersetzt Phase 5 - Test-Szenarien, User-Todos, PR, Cleanup)
+- **ENHANCED: Backward Compatibility** - Specs ohne System Stories funktionieren weiterhin
+- **SIMPLIFIED: execute-tasks** - Phase 4.5 und 5 werden zu Legacy-Checks
 
 **v2.9 Changes:**
 - **NEW: Komponenten-Verbindungen** - Explizite Definition WIE Komponenten verbunden werden
@@ -938,47 +946,81 @@ Use dev-team__architect agent to add technical refinement to fachliche user stor
      - Performance requirements
      - Security patterns
 
-  5. ⚠️ **INTEGRATION STORY REQUIREMENT** (CRITICAL for multi-story specs):
+  5. ⚠️ **SYSTEM STORIES REQUIREMENT** (v3.0 - CRITICAL for ALL specs):
 
-     CHECK: Does this spec have multiple stories that need integration?
+     **ALWAYS create these 3 system stories at the END of EVERY spec:**
 
-     IF (Backend stories + Frontend stories) OR (Multiple dependent stories):
+     These stories replace Phase 4.5 and Phase 5 of execute-tasks.
+     They are executed AFTER all regular stories are done.
 
-       CREATE an additional Integration & Validation story:
-       - Story ID: [PREFIX]-999 (last story to execute)
-       - Title: "Integration & End-to-End Validation"
-       - Type: Test/Integration
-       - Dependencies: All other stories in this spec
+     <system_story_generation>
 
-       Fill this story with:
-       **User Story:**
-       Als Systemadministrator
-       möchte ich dass alle Komponenten dieser Spec zusammenwirken,
-       damit das Feature vollständig funktioniert.
+       ### story-997: Code Review
 
-       **Akzeptanzkriterien:**
-       - [ ] INTEGRATION_PASS: All integration tests from spec.md pass
-       - [ ] END_TO_END: Complete user journey works
-       - [ ] COMPONENT_INTEGRATION: Backend and Frontend are connected
-       - [ ] [Optional MCP_PLAYWRIGHT]: UI flow works end-to-end
+       CREATE: agent-os/specs/[SPEC_NAME]/stories/story-997-code-review.md
 
-       **Technical Details:**
-       - WAS: Integration validation of all stories in this spec
-       - WIE: Run integration tests defined in spec.md Integration Requirements
-       - WO: Integration test scripts or manual test procedures
-       - WER: dev-team__qa-specialist or test-runner
-       - Abhängigkeiten: All other stories in this spec
-       - Geschätzte Komplexität: S
+       **TEMPLATE LOOKUP (Hybrid):**
+       1. Local: agent-os/templates/docs/system-story-997-code-review-template.md
+       2. Global: ~/.agent-os/templates/docs/system-story-997-code-review-template.md
 
-       **Completion Check:**
-       ```bash
-       # Run integration tests from spec.md
-       [INTEGRATION_TEST_COMMANDS_FROM_SPEC]
-       ```
+       FILL placeholders:
+       - [SPEC_PREFIX] → Spec prefix (e.g., PROF)
+       - [SPEC_NAME] → Full spec name
+       - [CREATED_DATE] → Current date
 
-       UPDATE story-index.md to include this story as the LAST story
+       **Purpose:** Starkes Modell (Opus) reviewt den gesamten Feature-Diff
+       **Type:** System/Review
+       **Dependencies:** Alle regulären Stories dieser Spec
 
-       MARK: This story ensures the complete system works, not just individual parts
+       ---
+
+       ### story-998: Integration Validation
+
+       CREATE: agent-os/specs/[SPEC_NAME]/stories/story-998-integration-validation.md
+
+       **TEMPLATE LOOKUP (Hybrid):**
+       1. Local: agent-os/templates/docs/system-story-998-integration-validation-template.md
+       2. Global: ~/.agent-os/templates/docs/system-story-998-integration-validation-template.md
+
+       FILL placeholders:
+       - [SPEC_PREFIX] → Spec prefix
+       - [SPEC_NAME] → Full spec name
+       - [CREATED_DATE] → Current date
+
+       **Purpose:** Ersetzt Phase 4.5 - Integration Tests aus spec.md ausführen
+       **Type:** System/Integration
+       **Dependencies:** story-997
+
+       ---
+
+       ### story-999: Finalize PR
+
+       CREATE: agent-os/specs/[SPEC_NAME]/stories/story-999-finalize-pr.md
+
+       **TEMPLATE LOOKUP (Hybrid):**
+       1. Local: agent-os/templates/docs/system-story-999-finalize-pr-template.md
+       2. Global: ~/.agent-os/templates/docs/system-story-999-finalize-pr-template.md
+
+       FILL placeholders:
+       - [SPEC_PREFIX] → Spec prefix
+       - [SPEC_NAME] → Full spec name
+       - [CREATED_DATE] → Current date
+
+       **Purpose:** Ersetzt Phase 5 - Test-Szenarien, User-Todos, PR, Worktree Cleanup
+       **Type:** System/Finalization
+       **Dependencies:** story-998
+
+     </system_story_generation>
+
+     UPDATE story-index.md to include all 3 system stories:
+     - Mark them as "System" type
+     - Set dependencies correctly (997 → 998 → 999)
+     - Note: They execute AFTER all regular stories
+
+     **IMPORTANT:**
+     - System stories are ALWAYS created, even for single-story specs
+     - They ensure consistent quality and process for ALL specs
+     - Backward compatibility: Specs without system stories use legacy Phase 4.5/5
 
   Templates (hybrid lookup):
   - story-template.md (for structure reference)
@@ -996,7 +1038,7 @@ Use dev-team__architect agent to add technical refinement to fachliche user stor
   - Keep stories small (automated validation in Step 3.5)
   - **DoR validation will run in Step 3.4 - all checkboxes must be [x]**
   - Update story-index.md after refining each story
-  - **Create Integration Story for multi-story specs (Backend + Frontend)**
+  - **MUST create 3 System Stories (997, 998, 999) for ALL specs** (NEW v3.0)
   - Reference: agent-os/docs/story-sizing-guidelines.md
   - Reference: agent-os/team/skill-index.md (for skill selection)
 
@@ -1733,5 +1775,6 @@ Present completed specification to user.
   - [ ] **DoR validation passed (Step 3.4)**
   - [ ] **Story size validation passed (Step 3.5)**
   - [ ] **effort-estimation.md created with dual estimation (Step 3.6)** (v2.7)
+  - [ ] **System Stories created (story-997, story-998, story-999)** (v3.0)
   - [ ] Ready for /execute-tasks
 </verify>

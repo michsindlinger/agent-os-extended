@@ -1,19 +1,60 @@
 ---
-description: Spec Phase 4.5 - Integration Validation before PR
-version: 3.0
+description: Spec Phase 4.5 - Integration Validation before PR (Legacy Support v4.0)
+version: 4.0
 ---
 
 # Spec Phase 4.5: Integration Validation
+
+## What's New in v4.0
+
+- **Legacy Check**: This phase is now a legacy check for backward compatibility
+- **System Story 998**: For specs with System Stories, story-998 handles integration validation
+- **Skip Logic**: If story-998 exists and is Done, this phase is skipped
 
 ## Purpose
 Validate complete system works end-to-end AFTER all stories complete, BEFORE creating PR.
 Prevents "stories done but system doesn't work" problem.
 
+**Note:** For specs created with create-spec v3.0+, this functionality is handled by story-998.
+
 ## Entry Condition
 - kanban-board.md shows: all-stories-done
 - All stories in Done column
 
-## Actions
+## Legacy Check (v4.0)
+
+<legacy_check>
+  **BEFORE executing legacy logic, check for System Story 998:**
+
+  ```bash
+  ls agent-os/specs/${SELECTED_SPEC}/stories/story-998*.md 2>/dev/null
+  ```
+
+  IF story-998 exists:
+    READ: story-998 file
+    EXTRACT: Status field
+
+    IF Status = "Done":
+      LOG: "story-998 (Integration Validation) already completed - skipping Phase 4.5"
+      UPDATE: kanban-board.md
+        | **Current Phase** | 5-ready |
+        | **Last Action** | Phase 4.5 skipped (handled by story-998) |
+      GOTO: phase_complete (skip to Phase 5)
+
+    ELSE (Status != "Done"):
+      LOG: "story-998 exists but not Done - returning to Phase 3"
+      UPDATE: kanban-board.md
+        | **Current Phase** | story-complete |
+        | **Next Action** | Execute story-998 |
+      INFORM: "System Story 998 needs to be executed. Run /execute-tasks again."
+      STOP: Return to Phase 3 for story-998
+
+  ELSE (no story-998):
+    LOG: "Legacy spec without System Stories - executing Phase 4.5"
+    CONTINUE: Execute legacy integration validation below
+</legacy_check>
+
+## Actions (Legacy - for specs without System Stories)
 
 <step name="load_spec_integration_requirements">
   READ: agent-os/specs/{SELECTED_SPEC}/spec.md
