@@ -2,11 +2,25 @@
 description: Entry point for task execution - routes to appropriate phase
 globs:
 alwaysApply: false
-version: 3.5
+version: 3.6
 encoding: UTF-8
 ---
 
 # Task Execution Entry Point
+
+## What's New in v3.6
+
+**System Stories Support:**
+- Detects System Stories (story-997, 998, 999) in specs
+- Routes to Phase 3 when System Stories are pending (even if regular backlog is empty)
+- Phase 4.5 and 5 become legacy checks (skip if System Stories exist and are Done)
+- Backward compatible: Specs without System Stories work unchanged
+
+**Requires create-spec v3.0:**
+- System Stories (997, 998, 999) are automatically generated
+- story-997: Code Review
+- story-998: Integration Validation (replaces Phase 4.5)
+- story-999: Finalize PR (replaces Phase 5)
 
 ## What's New in v3.5
 
@@ -316,14 +330,56 @@ This reduces context usage by ~70-80% compared to loading the full workflow.
          CONTINUE: No CWD check needed, proceed normally
     </cwd_check>
 
-    | Current Phase | Load Phase File |
-    |---------------|-----------------|
-    | 1-complete | spec-phase-2.md |
-    | 2-complete | spec-phase-3.md |
-    | story-complete | spec-phase-3.md |
-    | all-stories-done | spec-phase-4-5.md |
-    | 5-ready | spec-phase-5.md |
-    | complete | INFORM: "Spec execution complete. PR created." |
+    <system_stories_check>
+      ## System Stories Detection (v3.6)
+
+      **Before routing, check for System Stories:**
+
+      1. CHECK: Do System Stories exist in this spec?
+         ```bash
+         ls agent-os/specs/${SELECTED_SPEC}/stories/story-997*.md \
+            agent-os/specs/${SELECTED_SPEC}/stories/story-998*.md \
+            agent-os/specs/${SELECTED_SPEC}/stories/story-999*.md 2>/dev/null
+         ```
+
+      2. IF System Stories exist:
+         EXTRACT: Status of each System Story from story files
+
+         SET: HAS_SYSTEM_STORIES = true
+         SET: SYSTEM_STORIES_DONE = true if ALL (997, 998, 999) have Status: Done
+
+      3. IF no System Stories:
+         SET: HAS_SYSTEM_STORIES = false
+         NOTE: Use legacy Phase 4.5 and 5 routing
+    </system_stories_check>
+
+    | Current Phase | Condition | Load Phase File |
+    |---------------|-----------|-----------------|
+    | 1-complete | - | spec-phase-2.md |
+    | 2-complete | - | spec-phase-3.md |
+    | story-complete | - | spec-phase-3.md |
+    | all-stories-done | HAS_SYSTEM_STORIES = true AND NOT SYSTEM_STORIES_DONE | spec-phase-3.md (execute System Stories) |
+    | all-stories-done | HAS_SYSTEM_STORIES = false | spec-phase-4-5.md (legacy) |
+    | all-stories-done | SYSTEM_STORIES_DONE = true | spec-phase-5.md (legacy check only) |
+    | 5-ready | - | spec-phase-5.md |
+    | complete | - | INFORM: "Spec execution complete. PR created." |
+
+    **Routing Logic (v3.6):**
+
+    ```
+    IF Current Phase = "all-stories-done":
+      IF HAS_SYSTEM_STORIES AND story-997/998/999 NOT all Done:
+        # System Stories pending - continue Phase 3
+        LOAD: spec-phase-3.md
+
+      ELSE IF NOT HAS_SYSTEM_STORIES:
+        # Legacy spec - use old Phase 4.5
+        LOAD: spec-phase-4-5.md
+
+      ELSE IF SYSTEM_STORIES_DONE:
+        # System Stories done - legacy check
+        LOAD: spec-phase-5.md (will skip to completion)
+    ```
 
     LOAD: Appropriate phase file
     STOP: After loading
