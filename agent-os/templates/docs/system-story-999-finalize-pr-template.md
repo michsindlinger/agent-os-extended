@@ -60,7 +60,18 @@ Scenario: Erstellung des Pull Requests
   And referenziert alle implementierten Stories
 ```
 
-### Szenario 4: Worktree Cleanup
+### Szenario 4: Project Knowledge aktualisieren (v4.1)
+
+```gherkin
+Scenario: Aktualisierung des Project Knowledge
+  Given Stories mit "Creates Reusable: yes" wurden implementiert
+  When ich das Project Knowledge aktualisiere
+  Then werden neue Artefakte in knowledge-index.md eingetragen
+  And entsprechende Detail-Dateien werden erstellt/aktualisiert
+  And der Quick Summary wird aktualisiert
+```
+
+### Szenario 5: Worktree Cleanup
 
 ```gherkin
 Scenario: Aufräumen des Git Worktrees
@@ -103,16 +114,23 @@ Scenario: Aufräumen des Git Worktrees
    - Duplikate entfernen
    - Zusammenfassung hinzufügen
 
-3. **Pull Request erstellen:**
+3. **Project Knowledge aktualisieren (v4.1):**
+   - Stories mit "Creates Reusable: yes" scannen
+   - Artefakte aus "Reusable Artifacts" Tabelle extrahieren
+   - knowledge-index.md aktualisieren (oder erstellen)
+   - Detail-Dateien aktualisieren (ui-components.md, etc.)
+   - Knowledge-Änderungen committen
+
+4. **Pull Request erstellen:**
    - Alle Änderungen committen
    - Branch pushen
    - PR mit gh cli erstellen
 
-4. **Worktree Cleanup (wenn verwendet):**
+5. **Worktree Cleanup (wenn verwendet):**
    - Worktree entfernen
    - Aufräumen
 
-5. **Abschluss:**
+6. **Abschluss:**
    - Kanban-Board finalisieren
    - Completion Sound abspielen
 
@@ -130,6 +148,7 @@ Scenario: Aufräumen des Git Worktrees
 
 - [ ] test-scenarios.md generiert
 - [ ] user-todos.md finalisiert (wenn vorhanden)
+- [ ] Project Knowledge aktualisiert (wenn "Creates Reusable" Stories vorhanden)
 - [ ] Alle Änderungen committed
 - [ ] Pull Request erstellt
 - [ ] PR URL dokumentiert
@@ -140,17 +159,20 @@ Scenario: Aufräumen des Git Worktrees
 
 ## Technisches Refinement
 
-**WAS:** PR-Finalisierung mit Dokumentation und Cleanup
+**WAS:** PR-Finalisierung mit Dokumentation, Knowledge Update und Cleanup
 
 **WIE:**
 - Test-Szenarien aus Stories generieren
 - User-Todos bereinigen
+- Project Knowledge aktualisieren (Stories mit "Creates Reusable: yes")
 - PR erstellen mit gh cli
 - Worktree aufräumen
 
 **WO:**
 - Output: `agent-os/specs/[SPEC_NAME]/test-scenarios.md`
 - Output: `agent-os/specs/[SPEC_NAME]/user-todos.md` (aktualisiert)
+- Output: `agent-os/knowledge/knowledge-index.md` (wenn Artefakte vorhanden)
+- Output: `agent-os/knowledge/*.md` (Detail-Dateien)
 - Output: Pull Request auf GitHub
 
 **WER:** git-workflow Agent
@@ -208,6 +230,55 @@ Für jede abgeschlossene Story:
 
 **Geschätzte Zeit:** [ROUGH_ESTIMATE]
 ```
+
+---
+
+## Project Knowledge Update (v4.1)
+
+### Wann wird aktualisiert?
+
+Das Project Knowledge wird nur aktualisiert wenn:
+- Mindestens eine Story "Creates Reusable: yes" hat
+- Die "Reusable Artifacts" Tabelle Einträge enthält
+
+### Ablauf
+
+1. **Stories scannen:**
+   ```
+   FOR EACH story in stories/:
+     SKIP system stories (997, 998, 999)
+     CHECK "Creates Reusable" field
+     IF yes: EXTRACT artifacts from table
+   ```
+
+2. **Knowledge-Index aktualisieren:**
+   - Erstelle `agent-os/knowledge/` Verzeichnis wenn nicht vorhanden
+   - Erstelle/aktualisiere `knowledge-index.md`
+   - Aktualisiere Kategorien-Tabelle
+   - Aktualisiere Quick Summary
+
+3. **Detail-Dateien aktualisieren:**
+   - Mappe Artefakt-Typ zu Detail-Datei:
+     | Typ | Datei |
+     |-----|-------|
+     | UI Component | ui-components.md |
+     | API Endpoint | api-contracts.md |
+     | Service/Hook | shared-services.md |
+     | Model/Schema | data-models.md |
+   - Füge neue Einträge in Übersichts-Tabelle
+   - Füge Detail-Sektionen hinzu
+
+### Template Lookup (Hybrid)
+
+1. Local: `agent-os/templates/knowledge/[template].md`
+2. Global: `~/.agent-os/templates/knowledge/[template].md`
+
+### Dynamische Kategorien
+
+Wenn ein Artefakt-Typ nicht zu bestehenden Kategorien passt:
+- Inferiere Kategorie-Namen aus Artefakt
+- Erstelle neue Kategorie-Datei
+- Füge neue Zeile zur knowledge-index.md hinzu
 
 ---
 
@@ -292,6 +363,7 @@ gh pr view --json url 2>/dev/null && echo "PR exists"
 **Story ist DONE wenn:**
 1. test-scenarios.md wurde generiert
 2. user-todos.md wurde finalisiert (wenn vorhanden)
-3. Pull Request wurde erstellt
-4. Worktree wurde aufgeräumt (wenn verwendet)
-5. Kanban-Board zeigt "complete"
+3. Project Knowledge wurde aktualisiert (wenn "Creates Reusable" Stories vorhanden)
+4. Pull Request wurde erstellt
+5. Worktree wurde aufgeräumt (wenn verwendet)
+6. Kanban-Board zeigt "complete"
