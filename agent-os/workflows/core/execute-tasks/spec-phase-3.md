@@ -1,9 +1,17 @@
 ---
-description: Spec Phase 3 - Execute one user story (Direct Execution v4.0)
-version: 4.0
+description: Spec Phase 3 - Execute one user story (Direct Execution v4.1)
+version: 4.1
 ---
 
 # Spec Phase 3: Execute Story (Direct Execution)
+
+## What's New in v4.1
+
+- **Project Knowledge Update**: story-999 aktualisiert automatisch das Project Knowledge
+  - Extrahiert Artefakte aus Stories mit "Creates Reusable: yes"
+  - Aktualisiert knowledge-index.md mit neuen Einträgen
+  - Erstellt/aktualisiert Detail-Dateien (ui-components.md, etc.)
+  - Unterstützt dynamische Kategorie-Erstellung
 
 ## What's New in v4.0
 
@@ -326,9 +334,9 @@ maintaining full context throughout the story.
 </step>
 
 <step name="execute_system_story_999">
-  ### Execute System Story 999: Finalize PR (v4.0)
+  ### Execute System Story 999: Finalize PR (v4.1)
 
-  **Purpose:** Ersetzt Phase 5 - Test-Szenarien, User-Todos, PR, Worktree Cleanup
+  **Purpose:** Ersetzt Phase 5 - Test-Szenarien, User-Todos, PR, Worktree Cleanup, **Project Knowledge Update**
 
   <finalize_pr_execution>
     1. UPDATE: kanban-board.md
@@ -363,7 +371,98 @@ maintaining full context throughout the story.
          - Remove unused sections
          - Add summary at top
 
-    4. CREATE: Pull Request
+    4. UPDATE: Project Knowledge (v4.1 - NEW)
+       <update_project_knowledge>
+
+         **Purpose:** Extrahiere wiederverwendbare Artefakte aus dieser Spec und füge sie zum Project Knowledge hinzu.
+
+         1. SCAN: All story files for reusable artifacts
+            ```
+            FOR EACH story file in agent-os/specs/{SELECTED_SPEC}/stories/:
+              SKIP: System stories (997, 998, 999)
+
+              READ: Story file
+              CHECK: "Creates Reusable" field
+
+              IF "Creates Reusable" = "yes":
+                EXTRACT: "Reusable Artifacts" table entries
+                COLLECT: Artifact name, type, path, description
+                LOG: "Found reusable artifact: [name] ([type])"
+
+              ELSE:
+                SKIP: Story not knowledge-worthy
+            ```
+
+         2. IF no reusable artifacts found:
+            LOG: "Keine wiederverwendbaren Artefakte in dieser Spec"
+            SKIP: Rest of knowledge update
+            PROCEED: To step 5
+
+         3. ENSURE: Knowledge directory exists
+            ```bash
+            mkdir -p agent-os/knowledge
+            ```
+
+         4. UPDATE/CREATE: knowledge-index.md
+            CHECK: Does agent-os/knowledge/knowledge-index.md exist?
+
+            IF NOT exists:
+              COPY from template (hybrid lookup):
+              1. Local: agent-os/templates/knowledge/knowledge-index-template.md
+              2. Global: ~/.agent-os/templates/knowledge/knowledge-index-template.md
+
+            READ: Current knowledge-index.md
+
+            FOR EACH collected artifact:
+              DETERMINE: Category based on artifact type:
+              | Artifact Type | Category | Detail File |
+              |---------------|----------|-------------|
+              | UI Component | UI Components | ui-components.md |
+              | API Endpoint | API Contracts | api-contracts.md |
+              | Service/Hook/Utility | Shared Services | shared-services.md |
+              | Model/Schema/Type | Data Models | data-models.md |
+
+              IF type doesn't match existing categories:
+                INFER: New category name from artifact
+                CREATE: New category file
+                ADD: New row to Categories table in index
+
+              UPDATE: "Einträge" count in matching category row
+              UPDATE: "Zuletzt aktualisiert" date
+              UPDATE: "Quick Summary" section with new artifact names
+
+         5. UPDATE/CREATE: Detail files
+            FOR EACH category with new artifacts:
+
+              CHECK: Does agent-os/knowledge/[category].md exist?
+
+              IF NOT exists:
+                COPY from template (hybrid lookup):
+                1. Local: agent-os/templates/knowledge/[category]-template.md
+                2. Global: ~/.agent-os/templates/knowledge/[category]-template.md
+
+              READ: Current detail file
+
+              FOR EACH artifact in this category:
+                ADD to overview table:
+                | [Name] | [Path] | [Props/Signature] | [SPEC_NAME] ([DATE]) |
+
+                ADD detail section (following template format):
+                - Name, Path, Description
+                - Usage example (if available)
+                - Reference to spec where created
+
+         6. COMMIT: Knowledge updates
+            ```bash
+            git add agent-os/knowledge/
+            git commit -m "docs: Update Project Knowledge from {SELECTED_SPEC}"
+            ```
+
+            LOG: "Project Knowledge aktualisiert mit [N] neuen Artefakten"
+
+       </update_project_knowledge>
+
+    5. CREATE: Pull Request
        USE: git-workflow subagent
        "Create PR for spec: {SELECTED_SPEC}
 
@@ -377,11 +476,11 @@ maintaining full context throughout the story.
 
        CAPTURE: PR URL
 
-    5. UPDATE: Roadmap (if applicable)
+    6. UPDATE: Roadmap (if applicable)
        CHECK: Did this spec complete a roadmap item?
        IF yes: UPDATE agent-os/product/roadmap.md
 
-    6. CLEANUP: Worktree (if used)
+    7. CLEANUP: Worktree (if used)
        CHECK: Resume Context for "Git Strategy" value
 
        IF "Git Strategy" = "worktree":
@@ -391,18 +490,18 @@ maintaining full context throughout the story.
          - Remove worktree
          - Verify cleanup"
 
-    7. PLAY: Completion sound
+    8. PLAY: Completion sound
        ```bash
        afplay /System/Library/Sounds/Glass.aiff 2>/dev/null || true
        ```
 
-    8. MARK: story-999 as Done
+    9. MARK: story-999 as Done
        UPDATE: kanban-board.md
        - Set Current Phase: complete
        - Set Last Action: PR created - [PR URL]
        COMMIT: "feat: [story-999] PR finalized"
 
-    9. OUTPUT: Final summary to user
+    10. OUTPUT: Final summary to user
        ---
        ## Spec Execution Complete!
 
@@ -869,6 +968,15 @@ maintaining full context throughout the story.
 </phase_complete>
 
 ---
+
+## Quick Reference: v4.1 Changes
+
+| v4.0 | v4.1 |
+|------|------|
+| No knowledge tracking | Project Knowledge Update in story-999 (NEW) |
+| Artifacts not persisted | Reusable artifacts added to knowledge-index.md |
+| - | Dynamic category creation for new artifact types |
+| - | Detail files auto-created from templates |
 
 ## Quick Reference: v4.0 Changes
 

@@ -2,7 +2,7 @@
 description: Create Feature Specification with DevTeam (PO + Architect)
 globs:
 alwaysApply: false
-version: 3.0
+version: 3.1
 encoding: UTF-8
 ---
 
@@ -11,6 +11,14 @@ encoding: UTF-8
 ## Overview
 
 Create detailed feature specifications using DevTeam collaboration: PO gathers fachliche requirements, Architect adds technical refinement.
+
+**v3.1 Changes:**
+- **NEW: Project Knowledge Integration** - Load existing project artifacts at spec creation
+  - Step 2.1: Load knowledge-index.md to show available components/services
+  - Step 2.5: Load relevant detail files based on implementation plan keywords
+  - Step 3: Architect marks "Creates Reusable" for stories that add to knowledge
+- **NEW: Knowledge Templates** - 5 new templates in agent-os/templates/knowledge/
+- **ENHANCED: Story Template** - "Creates Reusable" field for knowledge tracking
 
 **v3.0 Changes:**
 - **NEW: System Stories** - 3 automatisch generierte Stories am Ende jeder Spec:
@@ -134,13 +142,39 @@ to fully understand requirements BEFORE generating user stories.
      - Product Brief: agent-os/product/product-brief-lite.md
      - Roadmap: agent-os/product/roadmap.md (if from roadmap)
 
-  2. INITIAL questions to user:
+  2. LOAD project knowledge (v3.1 - if exists):
+     TRY READ: agent-os/knowledge/knowledge-index.md
+
+     IF file exists AND has entries:
+       INFORM user: "Folgende Projekt-Artefakte sind verfügbar:"
+
+       EXTRACT: Quick Summary section
+       SHOW to user:
+       ```
+       📦 Verfügbare Projekt-Artefakte:
+       - UI: [components from Quick Summary]
+       - API: [endpoints from Quick Summary]
+       - Services: [services from Quick Summary]
+       - Models: [models from Quick Summary]
+
+       💡 Diese können in der neuen Spec wiederverwendet werden.
+       ```
+
+       USE: Knowledge context for requirements dialog
+       - Suggest reuse of existing components when relevant
+       - Reference existing APIs when discussing integrations
+       - Follow established patterns from knowledge
+
+     ELSE IF file doesn't exist OR empty:
+       NOTE: "Noch keine Projekt-Artefakte vorhanden (wird nach erster Spec-Fertigstellung gefüllt)"
+
+  3. INITIAL questions to user:
      - What is the feature? (user's perspective)
      - Who needs it? (target users)
      - Why is it valuable? (business value)
      - What problem does it solve?
 
-  3. ITERATIVE clarification (CONTINUE until complete):
+  4. ITERATIVE clarification (CONTINUE until complete):
      - What are the edge cases?
      - Where does this feature affect the system? (explore dependencies)
      - What existing features/components are related?
@@ -149,13 +183,13 @@ to fully understand requirements BEFORE generating user stories.
      - Are there permissions/security considerations?
      - Are there performance requirements?
 
-  4. DEEP-DIVE based on complexity:
+  5. DEEP-DIVE based on complexity:
      - If complex: Ask follow-up about integration points
      - If affects multiple components: Map the relationships
      - If unclear: Request examples or use cases
      - If risky: Discuss mitigation strategies
 
-  5. CONTINUE asking questions until:
+  6. CONTINUE asking questions until:
      - All aspects are clear
      - Dependencies are mapped
      - Edge cases are identified
@@ -311,12 +345,43 @@ Before generating user stories, create a summary document for user approval.
    - agent-os/product/tech-stack.md
    - agent-os/product/architecture-structure.md (if exists)
 
-3. EXPLORE codebase:
+3. LOAD relevant project knowledge details (v3.1):
+   TRY READ: agent-os/knowledge/knowledge-index.md
+
+   IF file exists:
+     ANALYZE: Requirements and planned implementation topics
+     MATCH: Against knowledge-index.md "Trigger-Keywords" column
+
+     FOR EACH matched category:
+       LOAD: agent-os/knowledge/[category-file].md
+       USE: For implementation planning
+
+     **Matching Examples:**
+     | Plan mentions... | Trigger matches | Loads |
+     |------------------|-----------------|-------|
+     | "User Profile Component" | UI, Component | ui-components.md |
+     | "REST API endpoint" | API, Endpoint, REST | api-contracts.md |
+     | "AuthService" | Service | shared-services.md |
+     | "User model/schema" | Model, Schema | data-models.md |
+
+     INFORM user which knowledge was loaded:
+     ```
+     📚 Geladenes Project Knowledge für Implementation Plan:
+     - ui-components.md: [N] verfügbare UI-Komponenten
+     - shared-services.md: [N] verfügbare Services
+     ```
+
+     USE in plan creation:
+     - Reference existing components that can be reused
+     - Follow established patterns from knowledge
+     - Avoid recreating existing functionality
+
+4. EXPLORE codebase:
    - Suche nach ähnlichen Features die bereits implementiert wurden
    - Identifiziere wiederverwendbare Patterns und Komponenten
    - Verstehe bestehende Architektur-Entscheidungen
 
-4. CREATE implementation-plan.md:
+5. CREATE implementation-plan.md:
    - **Executive Summary** - Was wird gebaut und warum (1-2 Sätze)
    - **Architektur-Entscheidungen** - Welche Patterns/Ansätze werden verwendet
    - **Komponenten-Übersicht** - Was muss erstellt/geändert werden
@@ -894,6 +959,30 @@ Use dev-team__architect agent to add technical refinement to fachliche user stor
         - Database story → backend-persistence-adapter
         - DevOps story → devops-pipeline-engineering, devops-infrastructure-provisioning
 
+        **Creates Reusable Artifacts:** (v3.1 - FILL for Project Knowledge)
+        ANALYZE: Does this story create artifacts that other stories might reuse?
+
+        **Criteria for "Creates Reusable: yes":**
+        - New UI components (Button, Input, Modal, etc.)
+        - New shared services (AuthService, ApiClient, etc.)
+        - New hooks/utilities (useAuth, formatDate, etc.)
+        - New API endpoints that will be called by other features
+        - New data models/types that will be used elsewhere
+
+        **Criteria for "Creates Reusable: no":**
+        - Page-specific components (UserProfilePage, etc.)
+        - Bug fixes
+        - Configuration changes
+        - One-time features
+
+        IF "Creates Reusable: yes":
+          FILL "Reusable Artifacts" table in story:
+          | Artefakt | Typ | Pfad | Beschreibung |
+          |----------|-----|------|--------------|
+          | [Name] | [UI/API/Service/Model] | [Path] | [Brief description] |
+
+          These artifacts will be added to Project Knowledge after spec completion.
+
         **Completion Check:**
         ```bash
         # Auto-Verify Commands - all must exit with 0
@@ -1034,6 +1123,7 @@ Use dev-team__architect agent to add technical refinement to fachliche user stor
   - Define clear DoD per story
   - Map ALL dependencies
   - **MUST select relevant skills from skill-index.md for each story** (NEW v2.4)
+  - **MUST set "Creates Reusable" field for each story** (NEW v3.1)
   - Add Completion Check section with bash verify commands
   - Keep stories small (automated validation in Step 3.5)
   - **DoR validation will run in Step 3.4 - all checkboxes must be [x]**
@@ -1041,6 +1131,7 @@ Use dev-team__architect agent to add technical refinement to fachliche user stor
   - **MUST create 3 System Stories (997, 998, 999) for ALL specs** (NEW v3.0)
   - Reference: agent-os/docs/story-sizing-guidelines.md
   - Reference: agent-os/team/skill-index.md (for skill selection)
+  - Reference: agent-os/knowledge/knowledge-index.md (for existing artifacts)
 
   FULL-STACK KONSISTENZ (NEU v2.5):
   - **MUST fill "Betroffene Layer & Komponenten" section for EVERY story**

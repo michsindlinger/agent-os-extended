@@ -224,6 +224,31 @@ Beispiele: user-registration, order-processing, payment-flow
 
 ---
 
+### Creates Reusable Artifacts
+
+> **Vom Architect auszufüllen:** Markiere "yes" wenn diese Story wiederverwendbare Artefakte erstellt
+> (UI-Komponenten, Shared Services, API-Endpunkte, etc.)
+> Diese werden nach Spec-Abschluss automatisch ins Project Knowledge aufgenommen.
+
+**Creates Reusable:** [yes/no]
+
+**Reusable Artifacts:** (nur ausfüllen wenn Creates Reusable = yes)
+
+| Artefakt | Typ | Pfad | Beschreibung |
+|----------|-----|------|--------------|
+| [Name] | [UI/API/Service/Model] | [Dateipfad] | [Kurze Beschreibung] |
+
+<!--
+Beispiele:
+
+| Button | UI Component | src/components/ui/Button.tsx | Primary/Secondary Button mit Variants |
+| useAuth | Hook | src/hooks/useAuth.ts | Authentication State Hook |
+| /api/users | API Endpoint | src/app/api/users/route.ts | User CRUD Operations |
+| UserService | Service | src/services/UserService.ts | User Business Logic |
+-->
+
+---
+
 ### Completion Check
 
 ```bash
