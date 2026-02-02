@@ -1,9 +1,17 @@
 ---
 description: Spec Phase 2 - Git Strategy Setup (Worktree or Branch)
-version: 3.3
+version: 3.4
 ---
 
 # Spec Phase 2: Git Strategy Setup
+
+## What's New in v3.4
+
+**Auto-Commit Before Worktree:**
+- Automatically commits uncommitted changes (spec files) before creating worktree
+- Ensures the specification is available in the worktree
+- Uses git-workflow agent for clean commit with proper message
+- Prevents "missing spec" issues when switching to worktree
 
 ## What's New in v3.3
 
@@ -107,6 +115,44 @@ Setup git environment based on chosen strategy:
     IF server running:
       ASK: "Dev server running on port 3000. Shut down? (yes/no)"
       IF yes: Kill server
+  </substep>
+
+  <substep name="commit_pending_changes">
+    ### Commit Pending Changes Before Worktree (v3.4)
+
+    **Purpose:** Ensure spec and kanban files are committed before creating worktree.
+    Without this, the worktree would not contain the specification.
+
+    ```bash
+    # Check for uncommitted changes
+    git status --porcelain
+    ```
+
+    IF uncommitted changes exist:
+      USE: git-workflow subagent
+
+      PROMPT: "Commit all uncommitted changes in agent-os/specs/ directory.
+
+      **Commit Message Format:**
+      ```
+      feat(spec): Add specification for {SELECTED_SPEC}
+
+      - Kanban board initialized
+      - Stories ready for execution
+      ```
+
+      **Steps:**
+      1. Stage all files in agent-os/specs/{SELECTED_SPEC}/
+      2. Also stage agent-os/backlog/ if there are changes
+      3. Create commit with the message above
+      4. Do NOT push to remote
+
+      **Important:** Only commit agent-os/ changes, not other project files."
+
+      WAIT: For git-workflow completion
+
+    ELSE:
+      INFORM: "No uncommitted changes - spec already committed"
   </substep>
 
   <substep name="create_worktree">
