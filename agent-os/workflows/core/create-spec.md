@@ -2,7 +2,7 @@
 description: Create Feature Specification with DevTeam (PO + Architect)
 globs:
 alwaysApply: false
-version: 3.1
+version: 3.2
 encoding: UTF-8
 ---
 
@@ -35,6 +35,11 @@ Create detailed feature specifications using DevTeam collaboration: PO gathers f
 - **NEW: Verbindungs-Validierung** im Self-Review (Step 2.5.2)
 - **ENHANCED: Story Generation** - Stories erhalten Integration-Metadata wenn zuständig für Verbindung
 - **FIX: "Komponenten gebaut aber nicht verbunden"** - Verhindert isolierte Implementierung
+
+**v3.2 Changes:**
+- **NEW: Plan-Agent Delegation** - Step 2.5 delegiert an spezialisierten Plan-Agenten (wie EnterPlanMode)
+- **Getrennte Kontext-Fenster** - Planung und Ausführung nutzen separate Agenten
+- **Konsistentes Verhalten** - Gleicher Plan-Prozess wie direkter Prompt
 
 **v2.8 Changes:**
 - **NEW: Implementation Plan (Step 2.5)** - Lückenloser Plan mit Self-Review und Minimalinvasiv-Analyse
@@ -318,176 +323,207 @@ Before generating user stories, create a summary document for user approval.
 
 <substep number="2.5" name="implementation_plan">
 
-### Step 2.5: Implementation Plan (Kollegen-Methode)
+### Step 2.5: Implementation Plan (Kollegen-Methode mit Plan-Agenten)
 
 **Ziel:** Lückenlosen Implementierungsplan erstellen, kritisch reviewen, und minimalinvasiv optimieren - BEVOR Stories geschrieben werden.
 
-> Basiert auf bewährtem Prompt:
+**NEU v3.2:** Delegation an spezialisierten Plan-Agenten (wie EnterPlanMode) für bessere Planungsqualität und getrennte Kontext-Fenster.
+
+> Basierend auf bewährtem Prompt:
 > "Erstelle zunächst einen lückenlosen, sorgfältig durchdachten Implementierungsplan.
 > Mache dann einen kritischen Review. Solltest du auf Probleme stoßen, suche einen
 > besseren Weg. Analysiere dann, wie du minimalinvasiv vorgehen kannst OHNE auf
-> Features zu verzichten. Erstelle dann Actionable Items als Tickets mit DoD."
+> Features zu verzichten."
+
+<delegation>
+  DELEGATE to Plan Agent via Task tool:
+
+  PROMPT:
+  """
+  Create a detailed implementation plan for the following feature requirements.
+
+  ⚠️ **CRITICAL: This is a PLANNING task only!**
+  - You are creating a strategic/architectural plan
+  - NO implementation code, NO detailed file paths yet
+  - Focus on: What components, how they connect, execution phases
+  - Output: implementation-plan.md document
+
+  **Input Context:**
+  - Requirements Clarification: agent-os/specs/[spec-name]/requirements-clarification.md
+  - Tech Stack: agent-os/product/tech-stack.md
+  - Architecture: agent-os/product/architecture-structure.md (if exists)
+
+  **Step 1: Load Project Knowledge (if available)**
+  TRY READ: agent-os/knowledge/knowledge-index.md
+
+  IF file exists:
+    ANALYZE: Requirements and planned implementation topics
+    MATCH: Against knowledge-index.md "Trigger-Keywords" column
+
+    FOR EACH matched category:
+      LOAD: agent-os/knowledge/[category-file].md
+      USE: For implementation planning
+
+    INFORM user which knowledge was loaded
+
+  **Step 2: Explore Codebase**
+  BEFORE creating the plan:
+  - Search for similar features already implemented
+  - Identify reusable patterns and components
+  - Understand existing architecture decisions
+  - Check what infrastructure already exists
+
+  **Step 3: Create Lückenlosen Implementation Plan**
+
+  CREATE file: agent-os/specs/[spec-name]/implementation-plan.md
+
+  Use template (hybrid lookup):
+  - TRY: agent-os/templates/docs/implementation-plan-template.md
+  - FALLBACK: ~/.agent-os/templates/docs/implementation-plan-template.md
+
+  Fill with:
+  - **Executive Summary** - What is being built and why (1-2 sentences)
+  - **Architecture Decisions** - Which patterns/approaches to use
+  - **Component Overview** - What needs to be created/changed
+  - **Implementation Phases** - Rough execution order
+  - **Dependencies** - What depends on what
+  - **Risks & Mitigations** - Potential problems
+
+  IMPORTANT: NO detailed file paths or story breakdown yet!
+  This is architectural/strategic, not tactical.
+
+  **Step 4: Critical Self-Review (Kollegen-Methode)**
+
+  Perform a critical review of your plan:
+
+  ```
+  Critical Review Checklist:
+
+  1. COMPLETENESS
+     - Are all requirements from clarification covered?
+     - Are any important aspects missing?
+
+  2. CONSISTENCY
+     - Are there contradictions in the plan?
+     - Do architecture decisions fit together?
+
+  3. RISKS
+     - What problems could occur?
+     - Are there critical dependencies?
+
+  4. ALTERNATIVES
+     - Is there a better way?
+     - What are the trade-offs?
+
+  5. COMPONENT CONNECTIONS (CRITICAL - v2.9)
+     - Is EVERY new component connected to at least one other?
+     - Is EVERY connection assigned to a specific story?
+     - Are there "orphaned" components without connections?
+     - Are connection validations executable?
+
+  If you find problems, suggest improvements that fulfill ALL
+  requirements WITHOUT compromises.
+  ```
+
+  Connection Validation:
+  ```
+  FOR EACH component in "New Components" table:
+    CHECK: Does this component have at least one entry in
+           "Component Connections" (as Source OR Target)?
+
+    IF NOT:
+      FLAG: "Orphaned component: [NAME] - no connection defined!"
+      REQUIRE: Add connection OR remove component
+
+  FOR EACH connection in "Component Connections" table:
+    CHECK: Is a "Responsible Story" specified?
+
+    IF NOT:
+      FLAG: "Connection without story: [Source] → [Target]"
+      REQUIRE: Assign story
+  ```
+
+  Output: Fill `## Self-Review Results` section in the plan
+
+  **Step 5: Minimal-Invasive Analysis**
+
+  1. Perform codebase exploration:
+     - Find existing patterns that can be reused
+     - Identify similar features in the project
+     - Check what infrastructure already exists
+
+  2. Perform analysis:
+  ```
+  Analyze the plan for minimal invasiveness:
+
+  1. REUSE
+     - Which existing code can be used?
+     - Which patterns already exist in the project?
+
+  2. CHANGE SCOPE
+     - Which changes are really necessary?
+     - What can be avoided?
+
+  3. FEATURE PRESERVATION (CRITICAL!)
+     - Validate: NO feature is sacrificed!
+     - Every optimization must preserve all requirements
+
+  Optimize the plan based on your findings.
+  Document each optimization with rationale.
+  ```
+
+  3. Output: Fill `## Minimal-Invasive Optimizations` section in the plan
+
+  4. Feature-Preservation Checklist:
+     - [ ] All requirements from clarification are covered
+     - [ ] No feature was sacrificed
+     - [ ] All acceptance criteria remain achievable
+
+  **Step 6: Mark Plan as Ready for Review**
+
+  Set status in implementation-plan.md to "PENDING_USER_REVIEW"
+  """
+
+  WAIT for Plan Agent completion
+  RECEIVE:
+    - agent-os/specs/[spec-name]/implementation-plan.md (complete with self-review and optimizations)
+
+</delegation>
 
 <mandatory_actions>
 
-#### Step 2.5.1 - Implementation Plan erstellen
+#### Step 2.5.1 - Plan Agent Results verarbeiten
 
-**Input:** Genehmigtes `requirements-clarification.md`
+**Input:** Vom Plan-Agenten erstellter `implementation-plan.md`
 
-**Erstelle:** `implementation-plan.md` im Spec-Ordner
+1. VERIFY plan exists and contains all required sections:
+   - Executive Summary
+   - Architecture Decisions
+   - Component Overview
+   - Component Connections table (v2.9)
+   - Implementation Phases
+   - Self-Review Results
+   - Minimal-Invasive Optimizations
 
-1. LOAD template (hybrid lookup):
-   - TRY: agent-os/templates/docs/implementation-plan-template.md
-   - FALLBACK: ~/.agent-os/templates/docs/implementation-plan-template.md
+2. INFORM user about plan creation:
+   ```
+   ✅ Der Plan-Agent hat einen detaillierten Implementation Plan erstellt.
+   Der Plan enthält:
+   - Architektur-Entscheidungen
+   - Komponenten-Übersicht mit Verbindungen
+   - Umsetzungsphasen
+   - Kritischen Self-Review
+   - Minimalinvasiv-Optimierungen
+   ```
 
-2. LOAD context:
-   - requirements-clarification.md (gerade genehmigt)
-   - agent-os/product/tech-stack.md
-   - agent-os/product/architecture-structure.md (if exists)
-
-3. LOAD relevant project knowledge details (v3.1):
-   TRY READ: agent-os/knowledge/knowledge-index.md
-
-   IF file exists:
-     ANALYZE: Requirements and planned implementation topics
-     MATCH: Against knowledge-index.md "Trigger-Keywords" column
-
-     FOR EACH matched category:
-       LOAD: agent-os/knowledge/[category-file].md
-       USE: For implementation planning
-
-     **Matching Examples:**
-     | Plan mentions... | Trigger matches | Loads |
-     |------------------|-----------------|-------|
-     | "User Profile Component" | UI, Component | ui-components.md |
-     | "REST API endpoint" | API, Endpoint, REST | api-contracts.md |
-     | "AuthService" | Service | shared-services.md |
-     | "User model/schema" | Model, Schema | data-models.md |
-
-     INFORM user which knowledge was loaded:
-     ```
-     📚 Geladenes Project Knowledge für Implementation Plan:
-     - ui-components.md: [N] verfügbare UI-Komponenten
-     - shared-services.md: [N] verfügbare Services
-     ```
-
-     USE in plan creation:
-     - Reference existing components that can be reused
-     - Follow established patterns from knowledge
-     - Avoid recreating existing functionality
-
-4. EXPLORE codebase:
-   - Suche nach ähnlichen Features die bereits implementiert wurden
-   - Identifiziere wiederverwendbare Patterns und Komponenten
-   - Verstehe bestehende Architektur-Entscheidungen
-
-5. CREATE implementation-plan.md:
-   - **Executive Summary** - Was wird gebaut und warum (1-2 Sätze)
-   - **Architektur-Entscheidungen** - Welche Patterns/Ansätze werden verwendet
-   - **Komponenten-Übersicht** - Was muss erstellt/geändert werden
-   - **Umsetzungsphasen** - Grobe Reihenfolge der Umsetzung
-   - **Abhängigkeiten** - Was hängt wovon ab
-   - **Risiken & Mitigationen** - Potenzielle Probleme
-
-**Wichtig:** Noch KEINE detaillierten Dateipfade oder Story-Aufteilung!
-Der Plan ist architektonisch/strategisch, nicht taktisch.
-
-#### Step 2.5.2 - Kritischer Self-Review
-
-Führe einen kritischen Review des erstellten Plans durch:
-
-```
-Mache einen kritischen Review des Implementierungsplans:
-
-1. VOLLSTÄNDIGKEIT
-   - Sind alle Anforderungen aus der Clarification abgedeckt?
-   - Fehlen wichtige Aspekte?
-
-2. KONSISTENZ
-   - Gibt es Widersprüche im Plan?
-   - Passen die Architektur-Entscheidungen zusammen?
-
-3. RISIKEN
-   - Welche Probleme könnten auftreten?
-   - Gibt es kritische Abhängigkeiten?
-
-4. ALTERNATIVEN
-   - Gibt es einen besseren Weg?
-   - Was sind die Trade-offs?
-
-5. KOMPONENTEN-VERBINDUNGEN (KRITISCH - v2.9)
-   - Ist JEDE neue Komponente mit mindestens einer anderen verbunden?
-   - Ist JEDE Verbindung einer konkreten Story zugeordnet?
-   - Gibt es "verwaiste" Komponenten ohne Verbindung?
-   - Sind die Verbindungs-Validierungen ausführbar?
-
-Wenn du Probleme findest, schlage Verbesserungen vor die ALLE
-Anforderungen OHNE Abstriche erfüllen.
-```
-
-**Verbindungs-Validierung:**
-```
-FOR EACH Komponente in "Neue Komponenten" table:
-  CHECK: Hat diese Komponente mindestens einen Eintrag in
-         "Komponenten-Verbindungen" (als Source ODER Target)?
-
-  IF NOT:
-    FLAG: "Verwaiste Komponente: [NAME] - keine Verbindung definiert!"
-    REQUIRE: Verbindung hinzufügen ODER Komponente entfernen
-
-FOR EACH Verbindung in "Komponenten-Verbindungen" table:
-  CHECK: Ist eine "Zuständige Story" angegeben?
-
-  IF NOT:
-    FLAG: "Verbindung ohne Story: [Source] → [Target]"
-    REQUIRE: Story zuordnen
-```
-
-**Output:** Fülle `## Self-Review Ergebnisse` Sektion im Plan
-
-#### Step 2.5.3 - Minimalinvasiv-Analyse
-
-1. **Codebase-Exploration durchführen:**
-   - Suche nach bestehenden Patterns die wiederverwendet werden können
-   - Identifiziere ähnliche Features im Projekt
-   - Prüfe welche Infrastruktur bereits existiert
-
-2. **Analyse durchführen:**
-```
-Analysiere den Plan auf Minimalinvasivität:
-
-1. WIEDERVERWENDUNG
-   - Welcher bestehende Code kann genutzt werden?
-   - Welche Patterns existieren bereits im Projekt?
-
-2. ÄNDERUNGSUMFANG
-   - Welche Änderungen sind wirklich nötig?
-   - Was kann vermieden werden?
-
-3. FEATURE-PRESERVATION (KRITISCH!)
-   - Validiere: KEIN Feature wird geopfert!
-   - Jede Optimierung muss alle Requirements erhalten
-
-Optimiere den Plan basierend auf deinen Erkenntnissen.
-Dokumentiere jede Optimierung mit Begründung.
-```
-
-3. **Output:** Fülle `## Minimalinvasiv-Optimierungen` Sektion im Plan
-
-4. **Feature-Preservation Checkliste abhaken:**
-   - [ ] Alle Requirements aus Clarification sind abgedeckt
-   - [ ] Kein Feature wurde geopfert
-   - [ ] Alle Akzeptanzkriterien bleiben erfüllbar
-
-#### Step 2.5.4 - User Review (mit Editor-Option)
+#### Step 2.5.2 - User Review (mit Editor-Option)
 
 1. PRESENT den Implementation Plan dem User
 
 2. ASK user via AskUserQuestion:
    ```
-   Question: "Ich habe einen Implementation Plan basierend auf der genehmigten
-              Clarification erstellt. Der Plan enthält Self-Review und
-              Minimalinvasiv-Optimierungen."
+   Question: "Der Plan-Agent hat einen Implementation Plan erstellt. Der Plan enthält
+              Self-Review und Minimalinvasiv-Optimierungen."
 
    Options:
    1. Plan genehmigen
@@ -523,7 +559,7 @@ Dokumentiere jede Optimierung mit Begründung.
    - If "Änderungen besprechen":
      - COLLECT user feedback
      - UPDATE plan accordingly
-     - Re-run Self-Review if significant changes
+     - For significant changes: Re-delegate to Plan Agent for revised plan
      - Re-ask approval
 
    - If "Zurück zur Clarification":
@@ -532,11 +568,11 @@ Dokumentiere jede Optimierung mit Begründung.
 </mandatory_actions>
 
 <instructions>
-  ACTION: Create Implementation Plan with Self-Review and Minimalinvasiv-Analyse
-  EXPLORE: Codebase for reusable patterns before planning
-  REVIEW: Critically review the plan for completeness and consistency
-  OPTIMIZE: For minimal changes while preserving ALL features
+  ACTION: Delegate to Plan Agent for implementation planning
+  WAIT: For plan agent to complete with self-review and optimizations
+  VERIFY: Plan contains all required sections
   PRESENT: To user with edit options
+  REDELEGATE: To Plan Agent if significant changes requested
   REFERENCE: agent-os/standards/plan-review-guidelines.md
 </instructions>
 
@@ -1850,7 +1886,7 @@ Present completed specification to user.
 <verify>
   - [ ] Spec folder created (YYYY-MM-DD prefix)
   - [ ] requirements-clarification.md created and approved by user
-  - [ ] **implementation-plan.md created with Self-Review and Minimalinvasiv-Analyse (Step 2.5)** (v2.8)
+  - [ ] **implementation-plan.md created by Plan Agent with Self-Review and Minimalinvasiv-Analyse (Step 2.5)** (v3.2)
   - [ ] **Implementation Plan approved by user** (v2.8)
   - [ ] spec.md complete (all sections)
   - [ ] spec-lite.md concise
