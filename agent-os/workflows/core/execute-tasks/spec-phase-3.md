@@ -1,9 +1,16 @@
 ---
-description: Spec Phase 3 - Execute one user story (Direct Execution v4.1)
-version: 4.1
+description: Spec Phase 3 - Execute one user story (JSON v5.0)
+version: 5.0
 ---
 
 # Spec Phase 3: Execute Story (Direct Execution)
+
+## What's New in v5.0
+
+- **JSON-Based Kanban**: Liest/schreibt kanban.json statt kanban-board.md
+- **Strukturierte Story-Updates**: stories[].status, timing, implementation in JSON
+- **boardStatus Sync**: Automatische Zähler-Updates in boardStatus
+- **changeLog Tracking**: Alle Änderungen werden im changeLog protokolliert
 
 ## What's New in v4.1
 
@@ -55,16 +62,26 @@ maintaining full context throughout the story.
 
 ## Entry Condition
 
-- kanban-board.md exists
-- Resume Context shows: Phase 2-complete OR story-complete
-- Stories remain in Backlog
+- kanban.json exists
+- resumeContext.currentPhase = "2-complete" OR "story-complete"
+- Stories remain with status = "ready"
 
 ## Actions
 
 <step name="load_state">
-  READ: agent-os/specs/{SELECTED_SPEC}/kanban-board.md
-  EXTRACT: Resume Context
-  IDENTIFY: Next eligible story from Backlog (respecting dependencies)
+  ### Load State from JSON
+
+  READ: agent-os/specs/{SELECTED_SPEC}/kanban.json
+
+  EXTRACT:
+  - resumeContext (currentPhase, currentStory, progressIndex)
+  - stories[] array
+  - boardStatus
+  - execution
+
+  IDENTIFY: Next eligible story from stories[] where:
+  - status = "ready"
+  - All dependencies are in status = "done"
 </step>
 
 <step name="load_integration_context">
@@ -524,13 +541,36 @@ maintaining full context throughout the story.
 </step>
 
 <step name="update_kanban_in_progress">
-  UPDATE: kanban-board.md (MAINTAIN TABLE FORMAT - see shared/resume-context.md)
-    - MOVE: Selected story from Backlog to "In Progress" section
-    - UPDATE Board Status table: In Progress +1, Backlog -1
-    - UPDATE Resume Context table:
-      | **Current Story** | [story-id] |
-      | **Last Action** | Started [story-id] execution |
-    - ADD Change Log entry
+  ### Update Kanban JSON - In Progress
+
+  READ: agent-os/specs/{SELECTED_SPEC}/kanban.json
+
+  UPDATE:
+  - stories[SELECTED_STORY.id].status = "in_progress"
+  - stories[SELECTED_STORY.id].phase = "implementing"
+  - stories[SELECTED_STORY.id].timing.startedAt = "{NOW}"
+  - resumeContext.currentStory = "{SELECTED_STORY.id}"
+  - resumeContext.currentStoryPhase = "implementing"
+  - resumeContext.lastAction = "Started {SELECTED_STORY.id}"
+  - resumeContext.nextAction = "Implement {SELECTED_STORY.title}"
+  - boardStatus.ready -= 1
+  - boardStatus.inProgress += 1
+  - execution.status = "executing"
+  - execution.startedAt = "{NOW}" (if null)
+
+  ADD to changeLog[]:
+  ```json
+  {
+    "timestamp": "{NOW}",
+    "action": "status_changed",
+    "storyId": "{SELECTED_STORY.id}",
+    "from": "ready",
+    "to": "in_progress",
+    "details": "Started story execution"
+  }
+  ```
+
+  WRITE: kanban.json
 
   UPDATE: Story file (agent-os/specs/{SELECTED_SPEC}/stories/{STORY_FILE})
     - FIND: Line containing "Status: Ready"
@@ -843,20 +883,66 @@ maintaining full context throughout the story.
     - CHECK: All DoD items marked as [x]
 </step>
 
+<step name="update_kanban_json_done">
+  ### Update Kanban JSON - Story Done
+
+  READ: agent-os/specs/{SELECTED_SPEC}/kanban.json
+
+  GET: Modified files from git
+  ```bash
+  git diff --name-only HEAD~1
+  ```
+
+  GET: Last commit info
+  ```bash
+  git log -1 --format="%H|%s|%aI"
+  ```
+
+  UPDATE:
+  - stories[SELECTED_STORY.id].status = "done"
+  - stories[SELECTED_STORY.id].phase = "completed"
+  - stories[SELECTED_STORY.id].timing.completedAt = "{NOW}"
+  - stories[SELECTED_STORY.id].implementation.filesModified = ["{modified_files}"]
+  - stories[SELECTED_STORY.id].implementation.commits = [
+      {"hash": "{COMMIT_HASH}", "message": "{COMMIT_MSG}", "timestamp": "{COMMIT_TIME}"}
+    ]
+  - stories[SELECTED_STORY.id].verification.dodChecked = true
+  - resumeContext.currentStory = null
+  - resumeContext.currentStoryPhase = null
+  - resumeContext.progressIndex += 1
+  - resumeContext.lastAction = "Completed {SELECTED_STORY.id}"
+  - boardStatus.inProgress -= 1
+  - boardStatus.done += 1
+  - statistics.completedEffort += {SELECTED_STORY.effort}
+  - statistics.remainingEffort -= {SELECTED_STORY.effort}
+  - statistics.progressPercent = (completedEffort / totalEffort) * 100
+
+  ADD to changeLog[]:
+  ```json
+  {
+    "timestamp": "{NOW}",
+    "action": "status_changed",
+    "storyId": "{SELECTED_STORY.id}",
+    "from": "in_progress",
+    "to": "done",
+    "details": "Story completed - DoD verified"
+  }
+  ```
+
+  WRITE: kanban.json
+</step>
+
 <step name="story_commit" subagent="git-workflow">
-  UPDATE: kanban-board.md
-    - MOVE: Story to "Done"
-    - UPDATE Board Status: In Progress -1, Completed +1
-
   USE: git-workflow subagent
-  "Commit story [story-id]:
+  "Commit story {SELECTED_STORY.id}:
 
-  **WORKING_DIR:** {PROJECT_ROOT} (or {WORKTREE_PATH} if USE_WORKTREE = true)
+  **WORKING_DIR:** {PROJECT_ROOT} (or {WORKTREE_PATH} if resumeContext.gitStrategy = worktree)
 
-  - Message: feat/fix: [story-id] [Story Title]
+  - Message: feat/fix: {SELECTED_STORY.id} {SELECTED_STORY.title}
   - Stage all changes including:
     - Implementation files
     - Story file with Status: Done
+    - kanban.json
     - integration-context.md updates
     - Any dos-and-donts.md updates
     - Any domain doc updates
@@ -906,23 +992,35 @@ maintaining full context throughout the story.
 ## Phase Completion
 
 <phase_complete>
-  CHECK: Remaining stories in Backlog
+  ### Check Remaining Stories
 
-  IF backlog NOT empty:
-    UPDATE: kanban-board.md (MAINTAIN TABLE FORMAT)
-      Resume Context table fields:
-      | **Current Phase** | story-complete |
-      | **Next Phase** | 3 - Execute Story |
-      | **Current Story** | None |
-      | **Last Action** | Completed [story-id] - self-review passed |
-      | **Next Action** | Execute next story |
+  READ: agent-os/specs/{SELECTED_SPEC}/kanban.json
+  COUNT: Stories where status = "ready" OR status = "blocked" (unresolved)
+
+  IF ready stories remain:
+    UPDATE: kanban.json
+    - resumeContext.currentPhase = "story-complete"
+    - resumeContext.nextPhase = "3-execute-story"
+    - resumeContext.nextAction = "Execute next story"
+
+    ADD to changeLog[]:
+    ```json
+    {
+      "timestamp": "{NOW}",
+      "action": "story_completed",
+      "storyId": "{SELECTED_STORY.id}",
+      "details": "Progress: {boardStatus.done}/{boardStatus.total}"
+    }
+    ```
+
+    WRITE: kanban.json
 
     OUTPUT to user:
     ---
-    ## Story Complete: [story-id] - [Story Title]
+    ## Story Complete: {SELECTED_STORY.id} - {SELECTED_STORY.title}
 
-    **Progress:** [X] of [TOTAL] stories
-    **Remaining:** [Y] stories
+    **Progress:** {boardStatus.done} of {boardStatus.total} stories ({statistics.progressPercent}%)
+    **Remaining:** {boardStatus.ready} stories
 
     **Self-Learning:** [Updated/No updates]
     **Domain Docs:** [Updated/No updates]
@@ -939,20 +1037,30 @@ maintaining full context throughout the story.
 
     STOP: Do not proceed to next story
 
-  ELSE (backlog empty):
-    UPDATE: kanban-board.md (MAINTAIN TABLE FORMAT)
-      Resume Context table fields:
-      | **Current Phase** | all-stories-done |
-      | **Next Phase** | 4.5 - Integration Validation |
-      | **Current Story** | None |
-      | **Last Action** | Completed final story |
-      | **Next Action** | Run integration validation |
+  ELSE (all stories done):
+    UPDATE: kanban.json
+    - resumeContext.currentPhase = "all-stories-done"
+    - resumeContext.nextPhase = "4.5-integration-validation"
+    - resumeContext.nextAction = "Run integration validation"
+    - execution.status = "stories-complete"
+
+    ADD to changeLog[]:
+    ```json
+    {
+      "timestamp": "{NOW}",
+      "action": "all_stories_completed",
+      "storyId": null,
+      "details": "All {boardStatus.total} stories completed"
+    }
+    ```
+
+    WRITE: kanban.json
 
     OUTPUT to user:
     ---
     ## All Stories Complete!
 
-    **Progress:** [TOTAL] of [TOTAL] stories
+    **Progress:** {boardStatus.total} of {boardStatus.total} stories (100%)
 
     **Next Phase:** Integration Validation
 
@@ -968,6 +1076,22 @@ maintaining full context throughout the story.
 </phase_complete>
 
 ---
+
+## Quick Reference: v5.0 Changes
+
+| v4.1 (MD-Based) | v5.0 (JSON-Based) |
+|-----------------|-------------------|
+| kanban-board.md | kanban.json |
+| MD table parsing | Direct JSON field access |
+| Manual status updates | Structured stories[].status |
+| No boardStatus sync | Automatic boardStatus counters |
+| MD Change Log | JSON changeLog[] array |
+
+**Benefits v5.0:**
+- Reliable state tracking (no MD parsing errors)
+- Easier resumability (structured JSON)
+- Better tooling support (jq, scripts)
+- Consistent with backlog.json pattern
 
 ## Quick Reference: v4.1 Changes
 

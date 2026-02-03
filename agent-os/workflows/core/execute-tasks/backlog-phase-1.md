@@ -1,111 +1,179 @@
 ---
-description: Backlog Phase 1 - Initialize Daily Kanban
-version: 3.2
+description: Backlog Phase 1 - Initialize Daily Kanban (JSON v4.0)
+version: 4.0
 ---
 
 # Backlog Phase 1: Initialize Daily Kanban
+
+## What's New in v4.0
+
+**JSON-Based Kanban:**
+- Creates `executions/kanban-${TODAY}.json` statt `.md`
+- Liest Items aus `backlog.json`
+- Strukturierte Daten für bessere Resumability
 
 ## Purpose
 Create today's Kanban Board for backlog execution.
 
 ## Entry Condition
 - EXECUTION_MODE = "backlog"
-- No kanban-[TODAY].md exists
+- No executions/kanban-[TODAY].json exists
 
 ## Actions
 
 <step name="get_today_date">
   USE: date-checker to get current date
   SET: TODAY = YYYY-MM-DD
+  SET: NOW = ISO-8601 timestamp
 </step>
 
-<step name="collect_ready_stories">
-  LIST: All story files in backlog (excluding done/ folder)
+<step name="read_backlog_json">
+  ### Read Backlog JSON
+
+  READ: agent-os/backlog/backlog.json
+
+  IF file NOT exists:
+    ERROR: "backlog.json nicht gefunden. Führe erst /add-bug oder /add-todo aus."
+    STOP
+
+  EXTRACT: All items from items[] array
+  FILTER: items where status = "ready"
+
+  SET: ready_items = filtered items
+  SET: blocked_items = items where status = "blocked"
+  SET: TOTAL_ITEMS = ready_items.length
+</step>
+
+<step name="create_daily_kanban_json">
+  ### Create Daily Kanban JSON
+
+  CREATE: agent-os/backlog/executions/ directory if not exists
   ```bash
-  ls agent-os/backlog/user-story-*.md agent-os/backlog/bug-*.md 2>/dev/null
+  mkdir -p agent-os/backlog/executions
   ```
-  NOTE: Completed stories are in agent-os/backlog/done/ and won't be listed
 
-  FOR EACH story file:
-    READ: Story file
-    CHECK: DoR status (all [x] checked?)
-    IF DoR complete: ADD to ready_stories list
-    ELSE: ADD to blocked_stories list
+  **TEMPLATE LOOKUP (Hybrid):**
+  1. Local: agent-os/templates/json/execution-kanban-template.json
+  2. Global: ~/.agent-os/templates/json/execution-kanban-template.json
+
+  READ: Template file
+
+  CREATE: agent-os/backlog/executions/kanban-{TODAY}.json
+
+  **JSON Content:**
+  ```json
+  {
+    "$schema": "../../templates/schemas/execution-kanban-schema.json",
+    "version": "1.0",
+
+    "execution": {
+      "id": "kanban-{TODAY}",
+      "date": "{TODAY}",
+      "startedAt": "{NOW}",
+      "completedAt": null,
+      "status": "executing"
+    },
+
+    "resumeContext": {
+      "currentPhase": "1-complete",
+      "currentItem": null,
+      "currentStoryPhase": null,
+      "worktreePath": null,
+      "gitBranch": null,
+      "lastAction": "Execution kanban created",
+      "nextAction": "Execute first item",
+      "progressIndex": 0,
+      "totalItems": {TOTAL_ITEMS}
+    },
+
+    "sourceBacklog": {
+      "path": "../backlog.json",
+      "snapshotAt": "{NOW}"
+    },
+
+    "items": [
+      // COPY: Each ready_item with executionStatus = "queued"
+      {
+        "id": "{item.id}",
+        "title": "{item.title}",
+        "type": "{item.type}",
+        "priority": "{item.priority}",
+        "effort": {item.effort},
+        "category": "{item.category}",
+        "sourceFile": "{item.sourceFile}",
+        "executionStatus": "queued",
+        "timing": {
+          "queuedAt": "{NOW}",
+          "startedAt": null,
+          "completedAt": null
+        }
+      }
+    ],
+
+    "boardStatus": {
+      "total": {TOTAL_ITEMS},
+      "queued": {TOTAL_ITEMS},
+      "inProgress": 0,
+      "inReview": 0,
+      "testing": 0,
+      "done": 0,
+      "blocked": 0,
+      "skipped": 0
+    },
+
+    "executionOrder": [
+      // IDs in execution order (by priority, then by creation date)
+    ],
+
+    "changeLog": [
+      {
+        "timestamp": "{NOW}",
+        "action": "kanban_created",
+        "itemId": null,
+        "details": "Execution kanban created with {TOTAL_ITEMS} items"
+      }
+    ]
+  }
+  ```
+
+  **Sort executionOrder by:**
+  1. Priority: critical > high > medium > low
+  2. Creation date (oldest first)
 </step>
 
-<step name="create_daily_kanban" subagent="file-creator">
-  USE: file-creator subagent
+<step name="update_backlog_json">
+  ### Update Backlog JSON
 
-  PROMPT: "Create daily kanban board for backlog execution.
+  READ: agent-os/backlog/backlog.json
 
-  Output: agent-os/backlog/kanban-{TODAY}.md
+  UPDATE:
+  - resumeContext.activeKanban = "kanban-{TODAY}"
+  - resumeContext.currentPhase = "executing"
+  - resumeContext.lastExecution = "{TODAY}"
+  - resumeContext.lastAction = "Execution started"
+  - resumeContext.nextAction = "Execute items from kanban-{TODAY}"
 
-  Content Structure:
-  ```markdown
-  # Backlog Kanban - {TODAY}
-
-  > Daily task execution board
-  > Created: {TODAY}
-
-  ## Resume Context
-
-  | Field | Value |
-  |-------|-------|
-  | **Execution Mode** | Backlog |
-  | **Current Phase** | 1-complete |
-  | **Next Phase** | 2 - Execute Story |
-  | **Current Story** | None |
-  | **Last Action** | Daily kanban created |
-  | **Next Action** | Execute first story |
-
-  ---
-
-  ## Board Status
-
-  - **Total Stories**: {TOTAL}
-  - **Completed**: 0
-  - **In Progress**: 0
-  - **Backlog**: {READY_COUNT}
-  - **Blocked**: {BLOCKED_COUNT}
-
-  ---
-
-  ## Backlog
-
-  | Story ID | Title | Type | Priority | Points |
-  |----------|-------|------|----------|--------|
-  {READY_STORIES_TABLE}
-
-  ---
-
-  ## In Progress
-
-  <!-- Currently executing story -->
-
-  ---
-
-  ## Done
-
-  <!-- Completed stories today -->
-
-  ---
-
-  ## Blocked
-
-  {BLOCKED_STORIES_TABLE}
-
-  ---
-
-  ## Change Log
-
-  | Time | Action |
-  |------|--------|
-  | {TIMESTAMP} | Daily kanban created with {TOTAL} stories |
+  ADD to executions[]:
+  ```json
+  {
+    "id": "kanban-{TODAY}",
+    "date": "{TODAY}",
+    "status": "active",
+    "itemCount": {TOTAL_ITEMS}
+  }
   ```
 
-  Replace placeholders with actual values."
+  ADD to changeLog[]:
+  ```json
+  {
+    "timestamp": "{NOW}",
+    "action": "execution_started",
+    "itemId": null,
+    "details": "Started execution kanban-{TODAY} with {TOTAL_ITEMS} items"
+  }
+  ```
 
-  WAIT: For file-creator completion
+  WRITE: backlog.json
 </step>
 
 ## Phase Completion
@@ -116,12 +184,13 @@ Create today's Kanban Board for backlog execution.
   ## Backlog Phase 1 Complete: Daily Kanban Created
 
   **Date:** {TODAY}
-  **Stories Ready:** {READY_COUNT}
-  **Blocked:** {BLOCKED_COUNT}
+  **Items Ready:** {TOTAL_ITEMS}
+  **Blocked:** {blocked_items.length}
 
-  **Kanban:** agent-os/backlog/kanban-{TODAY}.md
+  **Execution Kanban:** agent-os/backlog/executions/kanban-{TODAY}.json
+  **Backlog Updated:** agent-os/backlog/backlog.json
 
-  **Next Phase:** Execute First Story
+  **Next Phase:** Execute First Item
 
   ---
   **To continue, run:**

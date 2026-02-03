@@ -1,9 +1,15 @@
 ---
-description: Spec Phase 2 - Git Strategy Setup (Worktree or Branch)
-version: 3.4
+description: Spec Phase 2 - Git Strategy Setup (JSON v4.0)
+version: 4.0
 ---
 
 # Spec Phase 2: Git Strategy Setup
+
+## What's New in v4.0
+
+**JSON-Based Kanban:**
+- Liest/schreibt kanban.json statt kanban-board.md
+- resumeContext Felder werden direkt in JSON aktualisiert
 
 ## What's New in v3.4
 
@@ -37,16 +43,23 @@ Setup git environment based on chosen strategy:
 
 ## Entry Condition
 
-- kanban-board.md exists
-- Resume Context shows: Phase 1-complete
+- kanban.json exists
+- resumeContext.currentPhase = "1-complete"
 
 ## Actions
 
 <step name="load_resume_context">
-  READ: agent-os/specs/{SELECTED_SPEC}/kanban-board.md
-  EXTRACT: Resume Context section
-  VALIDATE: Phase 1 is complete
-  EXTRACT: Git Strategy (if already set in Phase 1)
+  ### Load Resume Context from JSON
+
+  READ: agent-os/specs/{SELECTED_SPEC}/kanban.json
+
+  EXTRACT:
+  - resumeContext.currentPhase
+  - resumeContext.gitStrategy (if already set)
+  - spec.id
+  - spec.name
+
+  VALIDATE: currentPhase = "1-complete"
 </step>
 
 <step name="ask_git_strategy">
@@ -258,18 +271,30 @@ Setup git environment based on chosen strategy:
 <phase_complete_worktree>
   ### Phase Complete: Worktree Strategy
 
-  UPDATE: kanban-board.md (MAINTAIN TABLE FORMAT - see shared/resume-context.md)
-    Resume Context table fields:
-    | **Current Phase** | 2-complete |
-    | **Next Phase** | 3 - Execute Story |
-    | **Worktree Path** | ../{PROJECT_DIR}-worktrees/{WORKTREE_NAME} |
-    | **Git Branch** | {BRANCH_NAME} |
-    | **Git Strategy** | worktree |
-    | **Current Story** | None |
-    | **Last Action** | Git worktree created (external location) |
-    | **Next Action** | Switch to worktree and execute first story |
+  READ: agent-os/specs/{SELECTED_SPEC}/kanban.json
 
-    Add Change Log entry
+  UPDATE:
+  - resumeContext.currentPhase = "2-complete"
+  - resumeContext.nextPhase = "3-execute-story"
+  - resumeContext.worktreePath = "../{PROJECT_DIR}-worktrees/{WORKTREE_NAME}"
+  - resumeContext.gitBranch = "{BRANCH_NAME}"
+  - resumeContext.gitStrategy = "worktree"
+  - resumeContext.currentStory = null
+  - resumeContext.lastAction = "Git worktree created (external location)"
+  - resumeContext.nextAction = "Switch to worktree and execute first story"
+  - execution.status = "ready"
+
+  ADD to changeLog[]:
+  ```json
+  {
+    "timestamp": "{NOW}",
+    "action": "phase_completed",
+    "storyId": null,
+    "details": "Phase 2 complete - Worktree strategy: {WORKTREE_PATH}"
+  }
+  ```
+
+  WRITE: kanban.json
 
   DETECT: Claude mode for command suggestion (see detect_claude_mode)
 
@@ -305,18 +330,30 @@ Setup git environment based on chosen strategy:
 <phase_complete_branch>
   ### Phase Complete: Branch Strategy
 
-  UPDATE: kanban-board.md (MAINTAIN TABLE FORMAT - see shared/resume-context.md)
-    Resume Context table fields:
-    | **Current Phase** | 2-complete |
-    | **Next Phase** | 3 - Execute Story |
-    | **Worktree Path** | (none) |
-    | **Git Branch** | {BRANCH_NAME} |
-    | **Git Strategy** | branch |
-    | **Current Story** | None |
-    | **Last Action** | Feature branch created |
-    | **Next Action** | Execute first story |
+  READ: agent-os/specs/{SELECTED_SPEC}/kanban.json
 
-    Add Change Log entry
+  UPDATE:
+  - resumeContext.currentPhase = "2-complete"
+  - resumeContext.nextPhase = "3-execute-story"
+  - resumeContext.worktreePath = null
+  - resumeContext.gitBranch = "{BRANCH_NAME}"
+  - resumeContext.gitStrategy = "branch"
+  - resumeContext.currentStory = null
+  - resumeContext.lastAction = "Feature branch created"
+  - resumeContext.nextAction = "Execute first story"
+  - execution.status = "ready"
+
+  ADD to changeLog[]:
+  ```json
+  {
+    "timestamp": "{NOW}",
+    "action": "phase_completed",
+    "storyId": null,
+    "details": "Phase 2 complete - Branch strategy: {BRANCH_NAME}"
+  }
+  ```
+
+  WRITE: kanban.json
 
   OUTPUT to user:
   ---

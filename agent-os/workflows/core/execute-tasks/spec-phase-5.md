@@ -1,9 +1,13 @@
 ---
-description: Spec Phase 5 - Finalize with PR creation (Legacy Support v4.0)
-version: 4.0
+description: Spec Phase 5 - Finalize with PR creation (JSON v5.0)
+version: 5.0
 ---
 
 # Spec Phase 5: Finalize
+
+## What's New in v5.0
+
+- **JSON-Based**: Liest/schreibt kanban.json statt kanban-board.md
 
 ## What's New in v4.0
 
@@ -25,28 +29,25 @@ Create pull request, generate test documentation, and provide final summary.
 
 ## Entry Condition
 
-- kanban-board.md shows: 5-ready or all-stories-done
-- All stories in Done column
+- kanban.json shows: resumeContext.currentPhase = "5-ready" OR "all-stories-done"
+- All stories with status = "done"
 
-## Legacy Check (v4.0)
+## Legacy Check (v5.0)
 
 <legacy_check>
   **BEFORE executing legacy logic, check for System Story 999:**
 
-  ```bash
-  ls agent-os/specs/${SELECTED_SPEC}/stories/story-999*.md 2>/dev/null
-  ```
+  READ: agent-os/specs/{SELECTED_SPEC}/kanban.json
+  FIND: Story in stories[] where id contains "999"
 
-  IF story-999 exists:
-    READ: story-999 file
-    EXTRACT: Status field
+  IF story-999 exists in kanban.json:
+    EXTRACT: stories[999].status
 
-    IF Status = "Done":
+    IF status = "done":
       LOG: "story-999 (Finalize PR) already completed - showing completion summary only"
 
       # Just show the final summary - everything else was done by story-999
-      READ: kanban-board.md
-      EXTRACT: PR URL from "Last Action" if present
+      EXTRACT: PR URL from resumeContext.lastAction if present
 
       OUTPUT to user:
       ---
@@ -54,8 +55,8 @@ Create pull request, generate test documentation, and provide final summary.
 
       **Note:** Finalization was handled by System Story 999.
 
-      ### Kanban Board Status
-      - View: agent-os/specs/{SELECTED_SPEC}/kanban-board.md
+      ### Kanban Status
+      - View: agent-os/specs/{SELECTED_SPEC}/kanban.json
 
       ### Handover-Dokumentation
       - **Test-Szenarien:** agent-os/specs/{SELECTED_SPEC}/test-scenarios.md
@@ -68,11 +69,15 @@ Create pull request, generate test documentation, and provide final summary.
 
       STOP: Execution complete
 
-    ELSE (Status != "Done"):
-      LOG: "story-999 exists but not Done - returning to Phase 3"
-      UPDATE: kanban-board.md
-        | **Current Phase** | story-complete |
-        | **Next Action** | Execute story-999 |
+    ELSE (status != "done"):
+      LOG: "story-999 exists but not done - returning to Phase 3"
+
+      UPDATE: kanban.json
+      - resumeContext.currentPhase = "story-complete"
+      - resumeContext.nextAction = "Execute story-999"
+
+      WRITE: kanban.json
+
       INFORM: "System Story 999 needs to be executed. Run /execute-tasks again."
       STOP: Return to Phase 3 for story-999
 
@@ -248,29 +253,44 @@ Create pull request, generate test documentation, and provide final summary.
 ## Phase Completion
 
 <phase_complete>
-  UPDATE: kanban-board.md (MAINTAIN TABLE FORMAT - see shared/resume-context.md)
-    Resume Context table fields:
-    | **Current Phase** | complete |
-    | **Next Phase** | None |
-    | **Current Story** | None |
-    | **Last Action** | PR created - [PR URL] |
-    | **Next Action** | Review and merge PR |
+  READ: agent-os/specs/{SELECTED_SPEC}/kanban.json
 
-    Add Change Log entry: Spec execution complete - PR created
+  UPDATE:
+  - resumeContext.currentPhase = "complete"
+  - resumeContext.nextPhase = null
+  - resumeContext.lastAction = "PR created - {PR_URL}"
+  - resumeContext.nextAction = "Review and merge PR"
+  - execution.status = "complete"
+  - execution.completedAt = "{NOW}"
+
+  ADD to changeLog[]:
+  ```json
+  {
+    "timestamp": "{NOW}",
+    "action": "execution_completed",
+    "storyId": null,
+    "details": "Spec execution complete - PR created: {PR_URL}"
+  }
+  ```
+
+  WRITE: kanban.json
 
   OUTPUT to user:
   ---
   ## Spec Execution Complete!
 
   ### What's Been Done
-  [List all completed stories]
+  {FOR EACH story in stories[] where status = "done":
+    - {story.id}: {story.title}
+  }
 
-  ### Kanban Board Status
-  - Completed: [TOTAL] stories
-  - View: agent-os/specs/{SELECTED_SPEC}/kanban-board.md
+  ### Kanban Status
+  - Completed: {boardStatus.done} stories
+  - Total Effort: {statistics.totalEffort} points
+  - View: agent-os/specs/{SELECTED_SPEC}/kanban.json
 
   ### Pull Request
-  [PR URL]
+  {PR_URL}
 
   ### Handover-Dokumentation
 

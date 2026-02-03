@@ -2,7 +2,7 @@
 description: Add new user story to existing specification
 globs:
 alwaysApply: false
-version: 1.0
+version: 2.0
 encoding: UTF-8
 ---
 
@@ -11,6 +11,13 @@ encoding: UTF-8
 ## Overview
 
 Add a new user story to an existing specification. Use this when requirements change or expand during implementation.
+
+**v2.0 Changes (JSON Migration):**
+- **BREAKING: JSON statt Markdown Kanban** - kanban.json als Single Source of Truth
+- **NEW: Structured Story Data** - Stories werden als JSON-Objekte hinzugefügt
+- **NEW: Automatic Statistics** - boardStatus und statistics werden automatisch aktualisiert
+- **NEW: Change Log** - Audit Trail für hinzugefügte Stories
+- **REMOVED: kanban-board.md Update** - Ersetzt durch kanban.json
 
 **Use Cases:**
 - Neue Anforderung während laufender Implementierung
@@ -269,40 +276,110 @@ Main agent does technical refinement guided by architect-refinement skill.
 
 </step>
 
-<step number="6" name="update_kanban_if_exists">
+<step number="6" name="update_kanban_json">
 
-### Step 6: Update Kanban Board (if exists)
+### Step 6: Update Kanban JSON
 
-<conditional_logic>
-  CHECK: Does kanban-board.md exist?
-  ```bash
-  ls agent-os/specs/[SELECTED_SPEC]/kanban-board.md 2>/dev/null
-  ```
+<mandatory_actions>
+  1. CHECK: Does kanban.json exist?
+     ```bash
+     ls agent-os/specs/[SELECTED_SPEC]/kanban.json 2>/dev/null
+     ```
 
-  IF kanban-board.md EXISTS:
-    READ: kanban-board.md
+  2. IF kanban.json EXISTS:
+     READ: kanban.json
+     PARSE: JSON content
 
-    ADD story to Backlog section:
-    | Story ID | Title | Type | Dependencies | DoR Status | Points |
-    | [NEW_ID] | [Title] | [Type] | [Deps] | ✅ Ready | [Points] |
+     CREATE new story object:
+     ```json
+     {
+       "id": "[STORY_ID]",
+       "title": "[STORY_TITLE]",
+       "slug": "[SLUG]",
+       "classification": {
+         "type": "[TYPE from Step 2]",
+         "priority": "[PRIORITY]",
+         "effort": [EFFORT_POINTS],
+         "complexity": "[XS/S/M]"
+       },
+       "dependencies": [DEPENDENCY_IDS],
+       "blockedBy": [],
+       "blocks": [],
+       "status": "ready",
+       "phase": null,
+       "dorStatus": "ready",
+       "storyFile": "stories/story-[NUMBER]-[slug].md",
+       "timing": {
+         "createdAt": "[CURRENT_ISO_TIMESTAMP]",
+         "updatedAt": "[CURRENT_ISO_TIMESTAMP]",
+         "startedAt": null,
+         "completedAt": null
+       },
+       "implementation": {
+         "model": null,
+         "filesModified": [],
+         "testsAdded": [],
+         "commits": []
+       },
+       "verification": {
+         "dorChecked": true,
+         "dodChecked": false,
+         "testsPass": null,
+         "lintPass": null,
+         "buildPass": null
+       }
+     }
+     ```
 
-    UPDATE Board Status:
-    - Total Stories: +1
-    - Backlog: +1
+     ADD story to kanban.json:
+       APPEND: New story to `stories` array
 
-    ADD Change Log entry:
-    | [Timestamp] | Story Added | [STORY_ID] | /add-story | New requirement added |
+     UPDATE boardStatus:
+       ```
+       boardStatus.total += 1
+       boardStatus.ready += 1
+       ```
 
-    WRITE: Updated kanban-board.md
+     UPDATE statistics:
+       ```
+       statistics.totalEffort += [EFFORT_POINTS]
+       statistics.remainingEffort += [EFFORT_POINTS]
+       statistics.byType.[TYPE] += 1
+       statistics.byPriority.[PRIORITY] += 1
+       ```
 
-    NOTE to user:
-    "Story added to existing Kanban board.
-     It will be executed in the next /execute-tasks run."
+     UPDATE blockedBy for dependent stories:
+       IF new story has dependencies:
+         FOR EACH dependency_id in dependencies:
+           FIND: story with id = dependency_id
+           ADD: new story's id to that story's `blocks` array
 
-  ELSE:
-    NOTE to user:
-    "No active Kanban board. Story will be included when /execute-tasks runs."
-</conditional_logic>
+     ADD changeLog entry:
+       ```json
+       {
+         "timestamp": "[CURRENT_ISO_TIMESTAMP]",
+         "action": "story_added",
+         "storyId": "[STORY_ID]",
+         "details": "Story added via /add-story: [STORY_TITLE]"
+       }
+       ```
+
+     WRITE: Updated kanban.json
+
+     VERIFY: JSON is valid
+       ```bash
+       cat agent-os/specs/[SELECTED_SPEC]/kanban.json | python3 -m json.tool > /dev/null && echo "Valid JSON"
+       ```
+
+     NOTE to user:
+       "Story added to kanban.json.
+        It will be executed in the next /execute-tasks run."
+
+  ELSE (no kanban.json):
+     NOTE to user:
+       "No kanban.json found. Story added to stories/ directory.
+        Run /execute-tasks [SPEC] to create kanban and execute."
+</mandatory_actions>
 
 </step>
 
@@ -350,7 +427,9 @@ Main agent does technical refinement guided by architect-refinement skill.
   - [ ] Technical refinement complete
   - [ ] All DoR checkboxes marked [x]
   - [ ] Story-index.md updated
-  - [ ] Kanban board updated (if exists)
+  - [ ] **kanban.json updated with new story object** (v2.0)
+  - [ ] **boardStatus and statistics recalculated** (v2.0)
+  - [ ] **changeLog entry added** (v2.0)
   - [ ] Ready for /execute-tasks
 </verify>
 

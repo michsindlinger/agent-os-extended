@@ -1,17 +1,23 @@
 ---
-description: Spec Phase 1 - Initialize and create Kanban Board
-version: 3.2
+description: Spec Phase 1 - Initialize and create Kanban Board (JSON v4.0)
+version: 4.0
 ---
 
 # Spec Phase 1: Initialize
+
+## What's New in v4.0
+
+**JSON-Based Kanban:**
+- Creates `kanban.json` statt `kanban-board.md`
+- Falls kanban.json bereits existiert (von /create-spec), wird es nur validiert
+- Strukturierte Daten für bessere Resumability
 
 ## What's New in v3.2
 
 **Hybrid Template Lookup:**
 - Templates are now searched in order: local → global
-- Local: `agent-os/templates/docs/`
-- Global: `~/.agent-os/templates/docs/`
-- Fixes "template not found" issues for projects without local templates
+- Local: `agent-os/templates/json/`
+- Global: `~/.agent-os/templates/json/`
 
 ## What's New in v3.1
 
@@ -20,10 +26,10 @@ version: 3.2
 - Enables proper integration when stories execute in separate sessions
 
 ## Purpose
-Select specification and create Kanban Board. One-time setup phase.
+Select specification and validate/create Kanban Board. One-time setup phase.
 
 ## Entry Condition
-- No kanban-board.md exists for target spec
+- No kanban.json exists OR kanban.json needs initialization
 
 ## Actions
 
@@ -44,71 +50,170 @@ Select specification and create Kanban Board. One-time setup phase.
     IF multiple: ASK user via AskUserQuestion
 </step>
 
-<step name="create_kanban_board" subagent="file-creator">
-  USE: file-creator subagent
+<step name="check_existing_kanban_json">
+  ### Check for Existing kanban.json
 
-  PROMPT: "Create kanban board for spec: agent-os/specs/{SELECTED_SPEC}/
-
-  Source: Parse story files in stories/ directory
-  Output: agent-os/specs/{SELECTED_SPEC}/kanban-board.md
-
-  **TEMPLATE LOOKUP (Hybrid - v3.2):**
-  Search for template in this order:
-  1. Local: agent-os/templates/docs/kanban-board-template.md
-  2. Global: ~/.agent-os/templates/docs/kanban-board-template.md
-
-  Use the FIRST one found.
-
-  **CRITICAL: TEMPLATE COMPLIANCE**
-  You MUST use the EXACT format from the template. Do NOT invent your own format.
-  - READ the template file FIRST
-  - COPY the structure EXACTLY
-  - Only replace {{PLACEHOLDER}} variables with actual values
-
-  STEPS:
-  1. FIND template using hybrid lookup (local first, then global)
-  2. READ the template file
-  2. LIST all story files in agent-os/specs/{SELECTED_SPEC}/stories/
-  3. FOR EACH story file:
-     - READ the story file
-     - VALIDATE DoR:
-       * CHECK: All DoR checkboxes are marked [x]
-       * IF any [ ] unchecked: STORY_STATUS = ⚠️ Blocked
-       * IF all [x]: STORY_STATUS = ✅ Ready
-     - EXTRACT: Story ID, Title, Type, Dependencies, Points
-
-  4. CREATE kanban board by COPYING template structure and replacing:
-     - {{SPEC_NAME}} → Spec folder name
-     - {{TOTAL_STORIES}} → Count from story files
-     - {{COMPLETED_COUNT}} → 0
-     - {{IN_PROGRESS_COUNT}} → 0
-     - {{IN_REVIEW_COUNT}} → 0
-     - {{TESTING_COUNT}} → 0
-     - {{BACKLOG_COUNT}} → Count of READY stories
-     - {{BLOCKED_COUNT}} → Count of BLOCKED stories
-     - {{CURRENT_PHASE}} → 1-complete
-     - {{NEXT_PHASE}} → 2 - Git Worktree
-     - {{SPEC_FOLDER}} → Spec folder name
-     - {{WORKTREE_PATH}} → (pending)
-     - {{GIT_BRANCH}} → (pending)
-     - {{CURRENT_STORY}} → None
-     - {{LAST_ACTION}} → Kanban board created
-     - {{NEXT_ACTION}} → Setup git worktree
-     - {{BACKLOG_STORIES}} → Story table rows
-     - {{BLOCKED_STORIES}} → Blocked story table rows (if any)
-     - Other sections → Empty or 'None'
-
-  **IMPORTANT: Resume Context Format**
-  The Resume Context MUST be a TABLE, not key-value pairs:
-  ```markdown
-  | Field | Value |
-  |-------|-------|
-  | **Current Phase** | 1-complete |
-  | **Next Phase** | 2 - Git Worktree |
+  CHECK: Does kanban.json already exist?
+  ```bash
+  ls agent-os/specs/${SELECTED_SPEC}/kanban.json 2>/dev/null
   ```
-  NOT: **Current Phase:** 1-complete"
 
-  WAIT: For file-creator completion
+  IF kanban.json EXISTS:
+    READ: kanban.json
+    VALIDATE: JSON structure is valid
+
+    IF resumeContext.currentPhase != "1-kanban-setup":
+      LOG: "kanban.json already initialized by /create-spec"
+      GOTO: create_integration_context
+
+    ELSE:
+      LOG: "kanban.json exists but needs completion"
+      CONTINUE: To story parsing
+
+  ELSE (no kanban.json):
+    LOG: "Creating new kanban.json"
+    CONTINUE: To create_kanban_json
+</step>
+
+<step name="create_kanban_json">
+  ### Create/Update Kanban JSON
+
+  **TEMPLATE LOOKUP (Hybrid - v4.0):**
+  1. Local: agent-os/templates/json/spec-kanban-template.json
+  2. Global: ~/.agent-os/templates/json/spec-kanban-template.json
+
+  READ: Template file
+
+  LIST: All story files in agent-os/specs/{SELECTED_SPEC}/stories/
+  ```bash
+  ls agent-os/specs/${SELECTED_SPEC}/stories/story-*.md
+  ```
+
+  SET: stories_data = []
+  SET: total_effort = 0
+
+  FOR EACH story file:
+    READ: Story file
+    EXTRACT:
+    - Story ID (from filename: story-XXX-slug.md)
+    - Title
+    - Type (frontend/backend/devops/test/docs/integration)
+    - Dependencies (array of story IDs)
+    - Effort (story points)
+    - Priority
+
+    VALIDATE DoR:
+    - CHECK: All DoR checkboxes are marked [x]
+    - IF any [ ] unchecked: status = "blocked"
+    - IF all [x]: status = "ready"
+
+    ADD to stories_data[]:
+    ```json
+    {
+      "id": "{STORY_ID}",
+      "title": "{TITLE}",
+      "file": "stories/{FILENAME}",
+      "type": "{TYPE}",
+      "priority": "{PRIORITY}",
+      "effort": {EFFORT},
+      "status": "ready|blocked",
+      "phase": "pending",
+      "dependencies": ["{DEP_1}", "{DEP_2}"],
+      "blockedBy": [],
+      "timing": {
+        "createdAt": "{FILE_DATE}",
+        "startedAt": null,
+        "completedAt": null
+      },
+      "implementation": {
+        "filesModified": [],
+        "commits": []
+      },
+      "verification": {
+        "dodChecked": false,
+        "integrationVerified": false
+      }
+    }
+    ```
+
+    total_effort += EFFORT
+
+  CREATE: agent-os/specs/{SELECTED_SPEC}/kanban.json
+
+  **JSON Content:**
+  ```json
+  {
+    "$schema": "../../templates/schemas/spec-kanban-schema.json",
+    "version": "1.0",
+
+    "spec": {
+      "id": "{SELECTED_SPEC}",
+      "name": "{SPEC_NAME}",
+      "prefix": "{SPEC_PREFIX}",
+      "specFile": "spec.md",
+      "specLiteFile": "spec-lite.md",
+      "createdAt": "{NOW}"
+    },
+
+    "resumeContext": {
+      "currentPhase": "1-complete",
+      "nextPhase": "2-worktree-setup",
+      "worktreePath": null,
+      "gitBranch": null,
+      "gitStrategy": null,
+      "currentStory": null,
+      "currentStoryPhase": null,
+      "lastAction": "Kanban board created",
+      "nextAction": "Setup git worktree or branch",
+      "progressIndex": 0,
+      "totalStories": {STORIES_COUNT}
+    },
+
+    "execution": {
+      "status": "not_started",
+      "startedAt": null,
+      "completedAt": null,
+      "model": null
+    },
+
+    "stories": [STORIES_DATA],
+
+    "boardStatus": {
+      "total": {STORIES_COUNT},
+      "ready": {READY_COUNT},
+      "inProgress": 0,
+      "inReview": 0,
+      "testing": 0,
+      "done": 0,
+      "blocked": {BLOCKED_COUNT}
+    },
+
+    "statistics": {
+      "totalEffort": {total_effort},
+      "completedEffort": 0,
+      "remainingEffort": {total_effort},
+      "progressPercent": 0,
+      "byType": {...},
+      "byPriority": {...}
+    },
+
+    "executionPlan": {
+      "strategy": "dependency-aware",
+      "phases": []
+    },
+
+    "changeLog": [
+      {
+        "timestamp": "{NOW}",
+        "action": "kanban_created",
+        "storyId": null,
+        "details": "Kanban initialized with {STORIES_COUNT} stories"
+      }
+    ]
+  }
+  ```
+
+  WRITE: kanban.json
 </step>
 
 <step name="create_integration_context" subagent="file-creator">
@@ -177,20 +282,38 @@ Select specification and create Kanban Board. One-time setup phase.
 ## Phase Completion
 
 <phase_complete>
-  UPDATE: kanban-board.md Resume Context
-    - Current Phase: 1-complete
-    - Next Phase: 2 - Git Worktree
+  ### Finalize kanban.json
+
+  READ: agent-os/specs/{SELECTED_SPEC}/kanban.json
+
+  UPDATE (if not already set):
+  - resumeContext.currentPhase = "1-complete"
+  - resumeContext.nextPhase = "2-worktree-setup"
+  - resumeContext.lastAction = "Phase 1 complete - Kanban initialized"
+  - resumeContext.nextAction = "Setup git strategy (worktree or branch)"
+
+  ADD to changeLog[]:
+  ```json
+  {
+    "timestamp": "{NOW}",
+    "action": "phase_completed",
+    "storyId": null,
+    "details": "Phase 1 complete - {boardStatus.total} stories ready"
+  }
+  ```
+
+  WRITE: kanban.json
 
   OUTPUT to user:
   ---
   ## Phase 1 Complete: Initialization
 
   **Created:**
-  - Kanban Board: agent-os/specs/{SELECTED_SPEC}/kanban-board.md
+  - Kanban JSON: agent-os/specs/{SELECTED_SPEC}/kanban.json
   - Integration Context: agent-os/specs/{SELECTED_SPEC}/integration-context.md
-  - Stories loaded: [X] stories in Backlog
+  - Stories loaded: {boardStatus.ready} ready, {boardStatus.blocked} blocked
 
-  **Next Phase:** Git Worktree Setup
+  **Next Phase:** Git Strategy Setup (Worktree or Branch)
 
   ---
   **To continue, run:**

@@ -2,7 +2,7 @@
 description: Create Feature Specification with DevTeam (PO + Architect)
 globs:
 alwaysApply: false
-version: 3.2
+version: 3.3
 encoding: UTF-8
 ---
 
@@ -36,10 +36,18 @@ Create detailed feature specifications using DevTeam collaboration: PO gathers f
 - **ENHANCED: Story Generation** - Stories erhalten Integration-Metadata wenn zuständig für Verbindung
 - **FIX: "Komponenten gebaut aber nicht verbunden"** - Verhindert isolierte Implementierung
 
+**v3.3 Changes (JSON Migration):**
+- **NEW: kanban.json** - JSON-basiertes Kanban als Single Source of Truth
+- **NEW: Structured Story Data** - Stories werden als JSON-Objekte in kanban.json gespeichert
+- **NEW: Execution Plan in JSON** - Phasen und Dependencies als strukturierte Daten
+- **ENHANCED: story-index.md** - Bleibt als Human-Readable View, abgeleitet aus kanban.json
+- **NEW: Statistics** - Automatische Berechnung von Spec-Statistiken
+- **NEW: Resume Context** - Bessere Recovery nach /clear durch JSON-State
+
 **v3.2 Changes:**
-- **NEW: Plan-Agent Delegation** - Step 2.5 delegiert an spezialisierten Plan-Agenten (wie EnterPlanMode)
-- **Getrennte Kontext-Fenster** - Planung und Ausführung nutzen separate Agenten
-- **Konsistentes Verhalten** - Gleicher Plan-Prozess wie direkter Prompt
+- Plan-Agent Delegation - Step 2.5 delegiert an spezialisierten Plan-Agenten
+- Getrennte Kontext-Fenster - Planung und Ausführung nutzen separate Agenten
+- Konsistentes Verhalten - Gleicher Plan-Prozess wie direkter Prompt
 
 **v2.8 Changes:**
 - **NEW: Implementation Plan (Step 2.5)** - Lückenloser Plan mit Self-Review und Minimalinvasiv-Analyse
@@ -613,7 +621,8 @@ Before generating user stories, create a summary document for user approval.
      │   └── ...
      ├── spec.md
      ├── spec-lite.md
-     ├── story-index.md       # NEW: Story overview
+     ├── story-index.md       # Human-readable story overview
+     ├── kanban.json          # NEW v3.3: Machine-readable kanban (Single Source of Truth)
      └── requirements-clarification.md
      ```
 
@@ -721,11 +730,40 @@ Before generating user stories, create a summary document for user approval.
        * List of story files
        * Blocked Stories section (initially empty)
 
+  8. CREATE kanban.json (Single Source of Truth for /execute-tasks):
+     - Use template: agent-os/templates/json/spec-kanban-template.json
+     - Fill with:
+       * spec.id = folder name (YYYY-MM-DD-spec-name)
+       * spec.name = human-readable name
+       * spec.prefix = derived from spec name (e.g., "WSD" from "Workflow Specific Documents")
+       * stories[] = array of story objects with:
+         - id: PREFIX-NNN (e.g., WSD-001)
+         - title: story title
+         - slug: url-safe title
+         - classification: { type, priority, effort, complexity }
+         - dependencies: [] (initially empty)
+         - status: "ready" (or "blocked" if missing DoR)
+         - dorStatus: "ready" or "incomplete"
+         - storyFile: relative path to story MD
+         - timing: { createdAt, updatedAt }
+         - implementation: { filesModified: [], testsAdded: [], commits: [] }
+         - verification: { dorChecked: false, dodChecked: false }
+       * boardStatus = calculated from stories
+       * statistics = calculated (totalEffort, byType, byPriority)
+       * executionPlan.phases = derived from implementation-plan.md phases
+       * changeLog = initial entry "Kanban created from /create-spec"
+
+     TEMPLATE LOOKUP (hybrid):
+       1. TRY READ: agent-os/templates/json/spec-kanban-template.json
+       2. IF file not found or error:
+          READ: ~/.agent-os/templates/json/spec-kanban-template.json
+       3. IF still not found: Error - run setup-devteam-global.sh
+
   Templates (hybrid lookup - MUST TRY BOTH):
-  FOR EACH template needed (story-template.md, story-index-template.md, etc.):
-    1. TRY READ: agent-os/templates/docs/[template].md
+  FOR EACH template needed (story-template.md, story-index-template.md, spec-kanban-template.json, etc.):
+    1. TRY READ: agent-os/templates/[docs|json]/[template]
     2. IF file not found or error:
-       READ: ~/.agent-os/templates/docs/[template].md
+       READ: ~/.agent-os/templates/[docs|json]/[template]
     3. IF still not found: Error - run setup-devteam-global.sh
 
   STORY SIZING:
@@ -781,7 +819,8 @@ Before generating user stories, create a summary document for user approval.
 - `agent-os/specs/YYYY-MM-DD-spec-name/implementation-plan.md` (approved - from Step 2.5)
 - `agent-os/specs/YYYY-MM-DD-spec-name/spec.md`
 - `agent-os/specs/YYYY-MM-DD-spec-name/spec-lite.md`
-- `agent-os/specs/YYYY-MM-DD-spec-name/story-index.md`
+- `agent-os/specs/YYYY-MM-DD-spec-name/story-index.md` (human-readable)
+- `agent-os/specs/YYYY-MM-DD-spec-name/kanban.json` (NEW v3.3 - Single Source of Truth)
 - `agent-os/specs/YYYY-MM-DD-spec-name/stories/story-001-[slug].md` (fachlich only, derived from plan)
 - `agent-os/specs/YYYY-MM-DD-spec-name/stories/story-002-[slug].md` (fachlich only, derived from plan)
 - ... (one file per story, grouped by plan phases)
@@ -1827,7 +1866,8 @@ Present completed specification to user.
   - implementation-plan.md - Self-reviewed plan with minimalinvasiv optimizations (v2.8)
   - spec.md - Full specification
   - spec-lite.md - Quick reference summary
-  - story-index.md - Story overview and dependency mapping
+  - story-index.md - Story overview and dependency mapping (human-readable)
+  - kanban.json - Machine-readable kanban (Single Source of Truth for /execute-tasks) (v3.3)
   - effort-estimation.md - Aufwandsschätzung (Human + AI)
   - stories/ - Individual story files (fachlich + technisch)
     * story-001-[slug].md, story-002-[slug].md, etc.
@@ -1890,7 +1930,8 @@ Present completed specification to user.
   - [ ] **Implementation Plan approved by user** (v2.8)
   - [ ] spec.md complete (all sections)
   - [ ] spec-lite.md concise
-  - [ ] story-index.md created with all stories listed
+  - [ ] story-index.md created with all stories listed (human-readable)
+  - [ ] **kanban.json created with all stories as JSON objects** (v3.3)
   - [ ] **Stories derived from Implementation Plan phases** (v2.8)
   - [ ] stories/ directory created with individual story files
   - [ ] Each story file has fachlich + technical content

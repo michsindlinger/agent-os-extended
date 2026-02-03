@@ -2,7 +2,7 @@
 description: Add quick task to backlog with lightweight PO + Architect refinement
 globs:
 alwaysApply: false
-version: 1.3
+version: 2.0
 encoding: UTF-8
 ---
 
@@ -11,6 +11,13 @@ encoding: UTF-8
 ## Overview
 
 Add a lightweight task to the backlog without full spec creation. Uses same story template as create-spec but with minimal overhead.
+
+**v2.0 Changes (JSON Migration):**
+- **BREAKING: JSON statt Markdown** - backlog.json als Single Source of Truth
+- **NEW: Structured Data** - Items werden als JSON-Objekte gespeichert
+- **NEW: Statistics** - Automatische Berechnung von Backlog-Statistiken
+- **NEW: Change Log** - Audit Trail für alle Änderungen
+- **REMOVED: story-index.md** - Ersetzt durch backlog.json
 
 **Use Cases:**
 - Small UI tweaks (e.g., "Add loading state to modal")
@@ -26,7 +33,7 @@ Add a lightweight task to the backlog without full spec creation. Uses same stor
 
 <step number="1" name="backlog_setup">
 
-### Step 1: Backlog Setup
+### Step 1: Backlog Setup (JSON)
 
 <mandatory_actions>
   1. CHECK: Does agent-os/backlog/ directory exist?
@@ -34,33 +41,48 @@ Add a lightweight task to the backlog without full spec creation. Uses same stor
      ls -la agent-os/backlog/ 2>/dev/null
      ```
 
-  2. IF NOT exists:
+  2. IF directory NOT exists:
      CREATE: agent-os/backlog/ directory
-     CREATE: agent-os/backlog/story-index.md (from template)
+     CREATE: agent-os/backlog/stories/ subdirectory
 
-     <template_lookup>
-       PATH: backlog-story-index-template.md
+  3. CHECK: Does agent-os/backlog/backlog.json exist?
 
-       LOOKUP STRATEGY (MUST TRY BOTH):
-         1. READ: agent-os/templates/docs/backlog-story-index-template.md
-         2. IF file not found OR read error:
-            READ: ~/.agent-os/templates/docs/backlog-story-index-template.md
-         3. IF both fail: Error - run setup-devteam-global.sh
+     IF NOT exists:
+       CREATE: agent-os/backlog/backlog.json (from template)
 
-       ⚠️ WICHTIG: Bei "Error reading file" IMMER den Fallback-Pfad versuchen!
-     </template_lookup>
+       <template_lookup>
+         PATH: backlog-template.json
 
-  3. USE: date-checker to get current date (YYYY-MM-DD)
+         LOOKUP STRATEGY (MUST TRY BOTH):
+           1. READ: agent-os/templates/json/backlog-template.json
+           2. IF file not found OR read error:
+              READ: ~/.agent-os/templates/json/backlog-template.json
+           3. IF both fail: Error - run setup-devteam-global.sh
 
-  4. DETERMINE: Next story index for today
-     COUNT: Existing stories with today's date prefix
-     ```bash
-     ls agent-os/backlog/ | grep "^$(date +%Y-%m-%d)" | wc -l
-     ```
+         ⚠️ WICHTIG: Bei "Error reading file" IMMER den Fallback-Pfad versuchen!
+       </template_lookup>
+
+       REPLACE placeholders:
+         - {{CREATED_AT}} → Current ISO 8601 timestamp
+
+     ELSE:
+       READ: agent-os/backlog/backlog.json
+       PARSE: JSON content
+
+  4. USE: date-checker to get current date (YYYY-MM-DD)
+
+  5. DETERMINE: Next todo index for today
+     FROM backlog.json:
+       FILTER: items where id starts with today's date AND type = "todo"
+       COUNT: Number of matching items
      NEXT_INDEX = count + 1 (formatted as 3 digits: 001, 002, etc.)
 
-  5. GENERATE: Story ID = YYYY-MM-DD-[INDEX]
+  6. GENERATE: Todo ID = YYYY-MM-DD-[INDEX]
      Example: 2025-01-15-001, 2025-01-15-002
+
+  7. GENERATE: Slug from todo title
+     TRANSFORM: lowercase, replace spaces with hyphens, remove special chars
+     Example: "Loading State Modal" → "loading-state-modal"
 </mandatory_actions>
 
 </step>
@@ -180,11 +202,13 @@ Add a lightweight task to the backlog without full spec creation. Uses same stor
   - Keine UI-Implementierung ("klicke Button mit id=xyz")
   - Fokus auf Nutzer-Erlebnis, nicht Code
 
-  5. WRITE: Story file to agent-os/backlog/
+  5. WRITE: Story file to agent-os/backlog/stories/
+     PATH: agent-os/backlog/stories/todo-[TODO_ID]-[SLUG].md
+     Example: agent-os/backlog/stories/todo-2025-01-15-001-loading-state-modal.md
 </mandatory_actions>
 
 <story_file_structure>
-  agent-os/backlog/user-story-YYYY-MM-DD-[INDEX]-[slug].md
+  agent-os/backlog/stories/todo-YYYY-MM-DD-[INDEX]-[slug].md
 </story_file_structure>
 
 </step>
@@ -487,23 +511,67 @@ Validate that the task complies with size guidelines for single-session executio
 
 </step>
 
-<step number="5" name="update_story_index">
+<step number="5" name="update_backlog_json">
 
-### Step 5: Update Backlog Story Index
+### Step 5: Update Backlog JSON
 
 <mandatory_actions>
-  1. READ: agent-os/backlog/story-index.md
+  1. READ: agent-os/backlog/backlog.json (if not already in memory)
 
-  2. ADD new story to Story Summary table:
-     | Story ID | Title | Type | Priority | Dependencies | Status | Points |
+  2. CREATE new item object:
+     ```json
+     {
+       "id": "[TODO_ID]",
+       "type": "todo",
+       "title": "[TODO_TITLE]",
+       "slug": "[SLUG]",
+       "priority": "[PRIORITY from Step 2]",
+       "severity": null,
+       "effort": [EFFORT_POINTS],
+       "status": "ready",
+       "category": "[CATEGORY from Step 2: frontend/backend/devops/test]",
+       "storyFile": "stories/todo-[TODO_ID]-[SLUG].md",
+       "rootCause": null,
+       "createdAt": "[CURRENT_ISO_TIMESTAMP]",
+       "updatedAt": "[CURRENT_ISO_TIMESTAMP]",
+       "executedIn": null,
+       "completedAt": null
+     }
+     ```
 
-  3. UPDATE totals:
-     - Total Stories: +1
-     - Backlog Count: +1
+  3. ADD item to backlog.json:
+     APPEND: New item to `items` array
 
-  4. UPDATE: Last Updated date
+  4. UPDATE statistics:
+     ```
+     statistics.total += 1
+     statistics.byStatus.ready += 1
+     statistics.byType.todo += 1
+     statistics.byCategory.[CATEGORY] += 1
+     statistics.totalEffort += [EFFORT_POINTS]
+     ```
 
-  5. WRITE: Updated story-index.md
+  5. ADD changeLog entry:
+     ```json
+     {
+       "timestamp": "[CURRENT_ISO_TIMESTAMP]",
+       "action": "item_added",
+       "itemId": "[TODO_ID]",
+       "details": "Todo added via /add-todo: [TODO_TITLE]"
+     }
+     ```
+
+  6. UPDATE metadata:
+     ```
+     metadata.lastUpdated = "[CURRENT_ISO_TIMESTAMP]"
+     ```
+
+  7. WRITE: Updated backlog.json
+
+  8. VERIFY: JSON is valid
+     ```bash
+     cat agent-os/backlog/backlog.json | python3 -m json.tool > /dev/null && echo "Valid JSON"
+     ```
 </mandatory_actions>
 
 </step>
@@ -517,23 +585,27 @@ Validate that the task complies with size guidelines for single-session executio
 <summary_template>
   ✅ Task added to backlog!
 
-  **Story ID:** [YYYY-MM-DD-INDEX]
-  **File:** agent-os/backlog/user-story-[YYYY-MM-DD]-[INDEX]-[slug].md
+  **Todo ID:** [YYYY-MM-DD-INDEX]
+  **Story File:** agent-os/backlog/stories/todo-[YYYY-MM-DD]-[INDEX]-[slug].md
+  **Backlog:** agent-os/backlog/backlog.json
 
   **Summary:**
-  - Title: [Story Title]
+  - Title: [Todo Title]
   - Type: [Frontend/Backend/etc.]
   - Complexity: [XS/S]
   - Status: Ready
 
-  **Backlog Status:**
-  - Total tasks: [N]
-  - Ready for execution: [N]
+  **Backlog Status (from backlog.json):**
+  - Total items: [statistics.total]
+  - Bugs: [statistics.byType.bug]
+  - Todos: [statistics.byType.todo]
+  - Ready for execution: [statistics.byStatus.ready]
 
   **Next Steps:**
   1. Add more tasks: /add-todo "[description]"
-  2. Execute backlog: /execute-tasks backlog
-  3. View backlog: agent-os/backlog/story-index.md
+  2. Add bugs: /add-bug "[description]"
+  3. Execute backlog: /execute-tasks backlog
+  4. View backlog: agent-os/backlog/backlog.json
 </summary_template>
 
 </step>
@@ -543,14 +615,17 @@ Validate that the task complies with size guidelines for single-session executio
 ## Final Checklist
 
 <verify>
-  - [ ] Backlog directory exists
-  - [ ] Story file created with correct naming
-  - [ ] Story ID format: YYYY-MM-DD-[INDEX]
+  - [ ] Backlog directory exists (agent-os/backlog/)
+  - [ ] Backlog JSON exists (agent-os/backlog/backlog.json)
+  - [ ] Story file created in stories/ subdirectory
+  - [ ] Todo ID format: YYYY-MM-DD-[INDEX]
   - [ ] Fachliche content complete (brief)
   - [ ] Technical refinement complete
   - [ ] All DoR checkboxes marked [x]
   - [ ] **Story size validation passed (Step 4.5)**
-  - [ ] Story-index.md updated
+  - [ ] **backlog.json updated with new item**
+  - [ ] **statistics recalculated**
+  - [ ] **changeLog entry added**
   - [ ] Ready for /execute-tasks backlog
 </verify>
 
