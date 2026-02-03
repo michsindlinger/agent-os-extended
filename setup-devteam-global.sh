@@ -287,11 +287,12 @@ download_file "$REPO_URL/agent-os/templates/json/backlog-template.json" "$GLOBAL
 download_file "$REPO_URL/agent-os/templates/json/execution-kanban-template.json" "$GLOBAL_DIR/templates/json/execution-kanban-template.json"
 download_file "$REPO_URL/agent-os/templates/json/spec-kanban-template.json" "$GLOBAL_DIR/templates/json/spec-kanban-template.json"
 
-# JSON schemas (3) - v4.0 Kanban Migration
-echo "→ JSON schemas (3)..."
+# JSON schemas (4) - v4.0 Kanban Migration + Feedback
+echo "→ JSON schemas (4)..."
 download_file "$REPO_URL/agent-os/templates/schemas/backlog-schema.json" "$GLOBAL_DIR/templates/schemas/backlog-schema.json"
 download_file "$REPO_URL/agent-os/templates/schemas/execution-kanban-schema.json" "$GLOBAL_DIR/templates/schemas/execution-kanban-schema.json"
 download_file "$REPO_URL/agent-os/templates/schemas/spec-kanban-schema.json" "$GLOBAL_DIR/templates/schemas/spec-kanban-schema.json"
+download_file "$REPO_URL/agent-os/templates/schemas/feedback-analysis-schema.json" "$GLOBAL_DIR/templates/schemas/feedback-analysis-schema.json"
 
 echo ""
 echo "✅ Global installation complete!"
@@ -331,7 +332,9 @@ echo "    │   ├── orchestration/ (1)"
 echo "    │   ├── skill/ (1) - base template"
 echo "    │   ├── generic-skill/ (1)"
 echo "    │   └── root-level/ (5): api-implementation-patterns, ..."
-echo "    └── docs/ (15) ← story-template, implementation-plan-template"
+echo "    ├── docs/ (15) ← story-template, implementation-plan-template"
+echo "    ├── json/ (3) ← backlog, execution-kanban, spec-kanban"
+echo "    └── schemas/ (4) ← backlog, execution-kanban, spec-kanban, feedback-analysis"
 echo ""
 echo "📚 Hybrid Lookup System:"
 echo ""
