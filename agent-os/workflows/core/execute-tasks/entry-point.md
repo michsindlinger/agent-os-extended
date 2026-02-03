@@ -245,14 +245,16 @@ This reduces context usage by ~70-80% compared to loading the full workflow.
          "📥 **Kanban Sync:** Added {N} new items to today's execution: {ITEM_IDS}"
     </kanban_sync_json>
 
+    ## Backlog Phase Routing Table (v4.0)
+
     | currentPhase (JSON) | Load Phase File |
     |---------------------|-----------------|
     | 1-kanban-setup | backlog-phase-1.md |
-    | 2-worktree-setup | backlog-phase-2.md |
-    | 3-story-execution | backlog-phase-2.md |
-    | 4-review-testing | backlog-phase-2.md |
-    | 5-completion | backlog-phase-3.md |
-    | 6-cleanup | INFORM: "Backlog execution complete for today" |
+    | 1-complete | backlog-phase-2.md |
+    | item-complete | backlog-phase-2.md |
+    | in_progress | backlog-phase-2.md |
+    | all-items-done | backlog-phase-3.md |
+    | complete | INFORM: "Backlog execution complete for today" |
 
     LOAD: Appropriate phase file
     STOP: After loading
@@ -302,15 +304,32 @@ This reduces context usage by ~70-80% compared to loading the full workflow.
     ```
 
     IF kanban-board.md exists:
-      WARN: "Using legacy MD kanban. Consider running /create-spec again for JSON support."
-      READ: agent-os/specs/${SELECTED_SPEC}/kanban-board.md
-      EXTRACT: "Current Phase" from Resume Context (MD table)
-      EXTRACT: "Git Strategy" from Resume Context (if present)
-      EXTRACT: "Worktree Path" from Resume Context (if present)
-      SET: USING_JSON = false
+      ## Migration Prompt (v4.0)
+      ASK via AskUserQuestion:
+      "Diese Spec nutzt noch das alte MD-Format (kanban-board.md).
+
+      Möchtest du zu JSON migrieren für bessere Resumability?
+
+      1. Ja, jetzt migrieren (Recommended) - Führt /migrate-kanban aus
+      2. Nein, mit MD fortfahren - Nutzt Legacy-Modus"
+
+      IF user chooses "Ja, jetzt migrieren":
+        RUN: /migrate-kanban ${SELECTED_SPEC}
+        AFTER migration:
+          RE-READ: agent-os/specs/${SELECTED_SPEC}/kanban.json
+          SET: USING_JSON = true
+          CONTINUE with JSON routing
+
+      ELSE (user chooses MD):
+        WARN: "⚠️ Using legacy MD kanban. Some features may not work optimally."
+        READ: agent-os/specs/${SELECTED_SPEC}/kanban-board.md
+        EXTRACT: "Current Phase" from Resume Context (MD table)
+        EXTRACT: "Git Strategy" from Resume Context (if present)
+        EXTRACT: "Worktree Path" from Resume Context (if present)
+        SET: USING_JSON = false
 
     ELSE:
-      # No kanban at all - need to initialize
+      # No kanban at all - need to initialize (will create JSON)
       LOAD: @agent-os/workflows/core/execute-tasks/spec-phase-1.md
       STOP: After loading
 
@@ -405,44 +424,81 @@ This reduces context usage by ~70-80% compared to loading the full workflow.
     </cwd_check>
 
     <system_stories_check>
-      ## System Stories Detection (v3.6)
+      ## System Stories Detection (v4.0)
 
       **Before routing, check for System Stories:**
 
-      1. CHECK: Do System Stories exist in this spec?
-         ```bash
-         ls agent-os/specs/${SELECTED_SPEC}/stories/story-997*.md \
-            agent-os/specs/${SELECTED_SPEC}/stories/story-998*.md \
-            agent-os/specs/${SELECTED_SPEC}/stories/story-999*.md 2>/dev/null
-         ```
+      IF USING_JSON = true:
+        ## JSON-Based Check (preferred)
+        1. READ: kanban.json → stories[] array
 
-      2. IF System Stories exist:
-         EXTRACT: Status of each System Story from story files
+        2. FIND: System Stories by ID pattern
+           - story-997 (Code Review)
+           - story-998 (Integration Validation)
+           - story-999 (Finalize PR)
 
-         SET: HAS_SYSTEM_STORIES = true
-         SET: SYSTEM_STORIES_DONE = true if ALL (997, 998, 999) have Status: Done
+        3. IF any System Story found in stories[]:
+           SET: HAS_SYSTEM_STORIES = true
 
-      3. IF no System Stories:
-         SET: HAS_SYSTEM_STORIES = false
-         NOTE: Use legacy Phase 4.5 and 5 routing
+           CHECK: Status of each System Story
+           - stories[997].status
+           - stories[998].status
+           - stories[999].status
+
+           SET: SYSTEM_STORIES_DONE = true if ALL have status = "done"
+
+        4. IF no System Stories in stories[]:
+           SET: HAS_SYSTEM_STORIES = false
+           NOTE: Use legacy Phase 4.5 and 5 routing
+
+      ELSE (USING_JSON = false):
+        ## Legacy Check (fallback)
+        1. CHECK: Do System Stories exist in this spec?
+           ```bash
+           ls agent-os/specs/${SELECTED_SPEC}/stories/story-997*.md \
+              agent-os/specs/${SELECTED_SPEC}/stories/story-998*.md \
+              agent-os/specs/${SELECTED_SPEC}/stories/story-999*.md 2>/dev/null
+           ```
+
+        2. IF System Stories exist:
+           EXTRACT: Status of each System Story from story files
+
+           SET: HAS_SYSTEM_STORIES = true
+           SET: SYSTEM_STORIES_DONE = true if ALL (997, 998, 999) have Status: Done
+
+        3. IF no System Stories:
+           SET: HAS_SYSTEM_STORIES = false
+           NOTE: Use legacy Phase 4.5 and 5 routing
     </system_stories_check>
 
-    | Current Phase | Condition | Load Phase File |
-    |---------------|-----------|-----------------|
-    | 1-complete | - | spec-phase-2.md |
-    | 2-complete | - | spec-phase-3.md |
-    | story-complete | - | spec-phase-3.md |
-    | all-stories-done | HAS_SYSTEM_STORIES = true AND NOT SYSTEM_STORIES_DONE | spec-phase-3.md (execute System Stories) |
-    | all-stories-done | HAS_SYSTEM_STORIES = false | spec-phase-4-5.md (legacy) |
-    | all-stories-done | SYSTEM_STORIES_DONE = true | spec-phase-5.md (legacy check only) |
-    | 5-ready | - | spec-phase-5.md |
-    | complete | - | INFORM: "Spec execution complete. PR created." |
+    ## Phase Routing Table (v4.0)
 
-    **Routing Logic (v3.6):**
+    | currentPhase (JSON) | currentPhase (MD) | Condition | Load Phase File |
+    |---------------------|-------------------|-----------|-----------------|
+    | 1-kanban-setup | - | - | spec-phase-1.md |
+    | 1-complete | 1-complete | - | spec-phase-2.md |
+    | 2-complete | 2-complete | - | spec-phase-3.md |
+    | 3-execute-story | - | - | spec-phase-3.md |
+    | story-complete | story-complete | - | spec-phase-3.md |
+    | all-stories-done | all-stories-done | HAS_SYSTEM_STORIES AND NOT SYSTEM_STORIES_DONE | spec-phase-3.md |
+    | all-stories-done | all-stories-done | NOT HAS_SYSTEM_STORIES | spec-phase-4-5.md |
+    | all-stories-done | all-stories-done | SYSTEM_STORIES_DONE | spec-phase-5.md |
+    | 4.5-integration-validation | - | - | spec-phase-4-5.md |
+    | 5-ready | 5-ready | - | spec-phase-5.md |
+    | 5-finalize | - | - | spec-phase-5.md |
+    | complete | complete | - | INFORM: "Spec execution complete." |
+
+    **Routing Logic (v4.0):**
 
     ```
-    IF Current Phase = "all-stories-done":
-      IF HAS_SYSTEM_STORIES AND story-997/998/999 NOT all Done:
+    IF USING_JSON:
+      EXTRACT: currentPhase from kanban.json → resumeContext.currentPhase
+
+    ELSE:
+      EXTRACT: currentPhase from kanban-board.md → Resume Context table
+
+    IF currentPhase = "all-stories-done":
+      IF HAS_SYSTEM_STORIES AND NOT SYSTEM_STORIES_DONE:
         # System Stories pending - continue Phase 3
         LOAD: spec-phase-3.md
 
