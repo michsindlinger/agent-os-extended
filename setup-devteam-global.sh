@@ -2,7 +2,7 @@
 
 # Agent OS DevTeam System - Global Installation
 # Installs standards and templates to ~/.agent-os/ as fallback for all projects
-# Version: 3.0 - New skill structure for Direct Execution
+# Version: 4.0 - JSON Kanban Migration + New skill structure for Direct Execution
 
 set -e
 
@@ -70,6 +70,8 @@ mkdir -p "$GLOBAL_DIR/templates/skills/platform"
 mkdir -p "$GLOBAL_DIR/templates/skills/skill"
 mkdir -p "$GLOBAL_DIR/templates/skills"
 mkdir -p "$GLOBAL_DIR/templates/docs"
+mkdir -p "$GLOBAL_DIR/templates/json"
+mkdir -p "$GLOBAL_DIR/templates/schemas"
 mkdir -p "$GLOBAL_DIR/templates/feasibility"
 
 # ═══════════════════════════════════════════════════════════
@@ -278,6 +280,18 @@ download_file "$REPO_URL/agent-os/templates/docs/effort-estimation-template.md" 
 download_file "$REPO_URL/agent-os/templates/docs/implementation-plan-template.md" "$GLOBAL_DIR/templates/docs/implementation-plan-template.md"
 download_file "$REPO_URL/agent-os/templates/docs/test-scenarios-template.md" "$GLOBAL_DIR/templates/docs/test-scenarios-template.md"
 download_file "$REPO_URL/agent-os/templates/docs/user-todos-template.md" "$GLOBAL_DIR/templates/docs/user-todos-template.md"
+
+# JSON templates (3) - v4.0 Kanban Migration
+echo "→ JSON templates (3)..."
+download_file "$REPO_URL/agent-os/templates/json/backlog-template.json" "$GLOBAL_DIR/templates/json/backlog-template.json"
+download_file "$REPO_URL/agent-os/templates/json/execution-kanban-template.json" "$GLOBAL_DIR/templates/json/execution-kanban-template.json"
+download_file "$REPO_URL/agent-os/templates/json/spec-kanban-template.json" "$GLOBAL_DIR/templates/json/spec-kanban-template.json"
+
+# JSON schemas (3) - v4.0 Kanban Migration
+echo "→ JSON schemas (3)..."
+download_file "$REPO_URL/agent-os/templates/schemas/backlog-schema.json" "$GLOBAL_DIR/templates/schemas/backlog-schema.json"
+download_file "$REPO_URL/agent-os/templates/schemas/execution-kanban-schema.json" "$GLOBAL_DIR/templates/schemas/execution-kanban-schema.json"
+download_file "$REPO_URL/agent-os/templates/schemas/spec-kanban-schema.json" "$GLOBAL_DIR/templates/schemas/spec-kanban-schema.json"
 
 echo ""
 echo "✅ Global installation complete!"

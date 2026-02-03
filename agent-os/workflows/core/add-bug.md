@@ -2,7 +2,7 @@
 description: Add bug to backlog with hypothesis-driven root-cause analysis
 globs:
 alwaysApply: false
-version: 2.4
+version: 3.0
 encoding: UTF-8
 ---
 
@@ -19,14 +19,17 @@ Add a bug to the backlog with structured root-cause analysis. Uses hypothesis-dr
 - Dokumentierter Analyseprozess
 - **NEU: User Hypothesis Dialog** - Benutzer-Wissen VOR der RCA abfragen
 
+**v3.0 Changes (JSON Migration):**
+- **BREAKING: JSON statt Markdown** - backlog.json als Single Source of Truth
+- **NEW: Structured Data** - Items werden als JSON-Objekte gespeichert
+- **NEW: Statistics** - Automatische Berechnung von Backlog-Statistiken
+- **NEW: Change Log** - Audit Trail für alle Änderungen
+- **REMOVED: story-index.md** - Ersetzt durch backlog.json
+
 **v2.4 Changes:**
-- **NEW: User Hypothesis Dialog (Step 2.5)** - Interaktiver Dialog VOR der RCA
-  - Benutzer kann eigene Vermutungen teilen
-  - Bereits untersuchte Bereiche dokumentieren
-  - Ausgeschlossene Ursachen markieren
-  - Gemeinsame Diskussion möglich
-- **ENHANCED: RCA berücksichtigt User-Input** - User-Hypothesen werden priorisiert
-- **NEW: Quelle-Spalte in Hypothesen-Tabelle** - Zeigt ob Hypothese von User oder Agent
+- User Hypothesis Dialog (Step 2.5) - Interaktiver Dialog VOR der RCA
+- RCA berücksichtigt User-Input - User-Hypothesen werden priorisiert
+- Quelle-Spalte in Hypothesen-Tabelle - Zeigt ob Hypothese von User oder Agent
 
 **v2.3 Changes:**
 - Gherkin-Style Bug-Fix Stories - Akzeptanzkriterien als Given-When-Then Szenarien
@@ -41,7 +44,7 @@ Add a bug to the backlog with structured root-cause analysis. Uses hypothesis-dr
 
 <step number="1" name="backlog_setup">
 
-### Step 1: Backlog Setup
+### Step 1: Backlog Setup (JSON)
 
 <mandatory_actions>
   1. CHECK: Does agent-os/backlog/ directory exist?
@@ -49,33 +52,48 @@ Add a bug to the backlog with structured root-cause analysis. Uses hypothesis-dr
      ls -la agent-os/backlog/ 2>/dev/null
      ```
 
-  2. IF NOT exists:
+  2. IF directory NOT exists:
      CREATE: agent-os/backlog/ directory
-     CREATE: agent-os/backlog/story-index.md (from template)
+     CREATE: agent-os/backlog/stories/ subdirectory
 
-     <template_lookup>
-       PATH: backlog-story-index-template.md
+  3. CHECK: Does agent-os/backlog/backlog.json exist?
 
-       LOOKUP STRATEGY (MUST TRY BOTH):
-         1. READ: agent-os/templates/docs/backlog-story-index-template.md
-         2. IF file not found OR read error:
-            READ: ~/.agent-os/templates/docs/backlog-story-index-template.md
-         3. IF both fail: Error - run setup-devteam-global.sh
+     IF NOT exists:
+       CREATE: agent-os/backlog/backlog.json (from template)
 
-       ⚠️ WICHTIG: Bei "Error reading file" IMMER den Fallback-Pfad versuchen!
-     </template_lookup>
+       <template_lookup>
+         PATH: backlog-template.json
 
-  3. USE: date-checker to get current date (YYYY-MM-DD)
+         LOOKUP STRATEGY (MUST TRY BOTH):
+           1. READ: agent-os/templates/json/backlog-template.json
+           2. IF file not found OR read error:
+              READ: ~/.agent-os/templates/json/backlog-template.json
+           3. IF both fail: Error - run setup-devteam-global.sh
 
-  4. DETERMINE: Next bug index for today
-     COUNT: Existing bugs with today's date prefix
-     ```bash
-     ls agent-os/backlog/ | grep "^bug-$(date +%Y-%m-%d)" | wc -l
-     ```
+         ⚠️ WICHTIG: Bei "Error reading file" IMMER den Fallback-Pfad versuchen!
+       </template_lookup>
+
+       REPLACE placeholders:
+         - {{CREATED_AT}} → Current ISO 8601 timestamp
+
+     ELSE:
+       READ: agent-os/backlog/backlog.json
+       PARSE: JSON content
+
+  4. USE: date-checker to get current date (YYYY-MM-DD)
+
+  5. DETERMINE: Next bug index for today
+     FROM backlog.json:
+       FILTER: items where id starts with today's date AND type = "bug"
+       COUNT: Number of matching items
      NEXT_INDEX = count + 1 (formatted as 3 digits: 001, 002, etc.)
 
-  5. GENERATE: Bug ID = YYYY-MM-DD-[INDEX]
+  6. GENERATE: Bug ID = YYYY-MM-DD-[INDEX]
      Example: 2025-01-15-001, 2025-01-15-002
+
+  7. GENERATE: Slug from bug title
+     TRANSFORM: lowercase, replace spaces with hyphens, remove special chars
+     Example: "Login nach Reset" → "login-nach-reset"
 </mandatory_actions>
 
 </step>
@@ -732,7 +750,9 @@ Der Benutzer kennt oft das System besser und hat möglicherweise bereits untersu
 
   4. LEAVE Architect sections partially empty (Step 5 fills them)
 
-  5. WRITE: Bug file to agent-os/backlog/
+  5. WRITE: Bug file to agent-os/backlog/stories/
+     PATH: agent-os/backlog/stories/bug-[BUG_ID]-[SLUG].md
+     Example: agent-os/backlog/stories/bug-2025-01-15-001-login-after-reset.md
 </mandatory_actions>
 
 </step>
@@ -985,24 +1005,67 @@ Validate that the bug fix complies with size guidelines for single-session execu
 
 </step>
 
-<step number="6" name="update_story_index">
+<step number="6" name="update_backlog_json">
 
-### Step 6: Update Backlog Story Index
+### Step 6: Update Backlog JSON
 
 <mandatory_actions>
-  1. READ: agent-os/backlog/story-index.md
+  1. READ: agent-os/backlog/backlog.json (if not already in memory)
 
-  2. ADD new bug to Story Summary table:
-     | Bug ID | Title | Type | Priority | Dependencies | Status | Points |
-     Note: Use 🐛 emoji prefix for bug entries
+  2. CREATE new item object:
+     ```json
+     {
+       "id": "[BUG_ID]",
+       "type": "bug",
+       "title": "[BUG_TITLE]",
+       "slug": "[SLUG]",
+       "priority": "[PRIORITY from Step 2]",
+       "severity": "[SEVERITY from Step 2]",
+       "effort": [EFFORT_POINTS],
+       "status": "ready",
+       "category": "[CATEGORY from Step 2: frontend/backend/devops/integration]",
+       "storyFile": "stories/bug-[BUG_ID]-[SLUG].md",
+       "rootCause": "[Brief root cause from Step 3]",
+       "createdAt": "[CURRENT_ISO_TIMESTAMP]",
+       "updatedAt": "[CURRENT_ISO_TIMESTAMP]",
+       "executedIn": null,
+       "completedAt": null
+     }
+     ```
 
-  3. UPDATE totals:
-     - Total Stories: +1
-     - Backlog Count: +1
+  3. ADD item to backlog.json:
+     APPEND: New item to `items` array
 
-  4. UPDATE: Last Updated date
+  4. UPDATE statistics:
+     ```
+     statistics.total += 1
+     statistics.byStatus.ready += 1
+     statistics.byType.bug += 1
+     statistics.byCategory.[CATEGORY] += 1
+     statistics.totalEffort += [EFFORT_POINTS]
+     ```
 
-  5. WRITE: Updated story-index.md
+  5. ADD changeLog entry:
+     ```json
+     {
+       "timestamp": "[CURRENT_ISO_TIMESTAMP]",
+       "action": "item_added",
+       "itemId": "[BUG_ID]",
+       "details": "Bug added via /add-bug: [BUG_TITLE]"
+     }
+     ```
+
+  6. UPDATE metadata:
+     ```
+     metadata.lastUpdated = "[CURRENT_ISO_TIMESTAMP]"
+     ```
+
+  7. WRITE: Updated backlog.json
+
+  8. VERIFY: JSON is valid
+     ```bash
+     cat agent-os/backlog/backlog.json | python3 -m json.tool > /dev/null && echo "Valid JSON"
+     ```
 </mandatory_actions>
 
 </step>
@@ -1017,7 +1080,8 @@ Validate that the bug fix complies with size guidelines for single-session execu
   ✅ Bug added to backlog with Root-Cause-Analyse!
 
   **Bug ID:** [YYYY-MM-DD-INDEX]
-  **File:** agent-os/backlog/bug-[YYYY-MM-DD]-[INDEX]-[slug].md
+  **Story File:** agent-os/backlog/stories/bug-[YYYY-MM-DD]-[INDEX]-[slug].md
+  **Backlog:** agent-os/backlog/backlog.json
 
   **Summary:**
   - Title: 🐛 [Bug Title]
@@ -1031,16 +1095,17 @@ Validate that the bug fix complies with size guidelines for single-session execu
   - Root Cause gefunden: ✅
   - Betroffene Dateien: [N]
 
-  **Backlog Status:**
-  - Total tasks: [N]
-  - Bugs: [N]
-  - Ready for execution: [N]
+  **Backlog Status (from backlog.json):**
+  - Total items: [statistics.total]
+  - Bugs: [statistics.byType.bug]
+  - Todos: [statistics.byType.todo]
+  - Ready for execution: [statistics.byStatus.ready]
 
   **Next Steps:**
   1. Add more bugs: /add-bug "[description]"
   2. Add quick tasks: /add-todo "[description]"
   3. Execute backlog: /execute-tasks backlog
-  4. View backlog: agent-os/backlog/story-index.md
+  4. View backlog: agent-os/backlog/backlog.json
 </summary_template>
 
 </step>
@@ -1050,18 +1115,21 @@ Validate that the bug fix complies with size guidelines for single-session execu
 ## Final Checklist
 
 <verify>
-  - [ ] Backlog directory exists
+  - [ ] Backlog directory exists (agent-os/backlog/)
+  - [ ] Backlog JSON exists (agent-os/backlog/backlog.json)
   - [ ] Bug description gathered (symptom, repro, expected/actual)
   - [ ] Bug type determined (Frontend/Backend/DevOps)
   - [ ] **User Hypothesis Dialog completed (Step 2.5)**
   - [ ] **User-Input dokumentiert (falls vorhanden)**
   - [ ] Hypothesis-Driven RCA completed (mit User-Input)
   - [ ] Root Cause identified and documented
-  - [ ] Bug story file created with correct naming
+  - [ ] Bug story file created in stories/ subdirectory
   - [ ] Technical refinement complete
   - [ ] All DoR checkboxes marked [x]
   - [ ] **Bug size validation passed (Step 5.5)**
-  - [ ] Story-index.md updated
+  - [ ] **backlog.json updated with new item**
+  - [ ] **statistics recalculated**
+  - [ ] **changeLog entry added**
   - [ ] Ready for /execute-tasks backlog
 </verify>
 

@@ -2,11 +2,28 @@
 description: Entry point for task execution - routes to appropriate phase
 globs:
 alwaysApply: false
-version: 3.6
+version: 4.0
 encoding: UTF-8
 ---
 
 # Task Execution Entry Point
+
+## What's New in v4.0
+
+**JSON-Based Kanban (Breaking Change):**
+- Specs: `kanban.json` replaces `kanban-board.md` as Single Source of Truth
+- Backlog: `backlog.json` + `executions/kanban-*.json` replaces daily MD kanbans
+- Resume Context now read from JSON instead of MD tables
+- All status updates written to JSON for better parsing and reliability
+- Backward compatible: Falls back to MD parsing if JSON not found
+
+**Requires create-spec v3.3:**
+- `kanban.json` generated alongside story-index.md
+- JSON schema validation for all kanban operations
+
+**Requires add-bug/add-todo v2.0+/v3.0+:**
+- Items stored in `backlog.json`
+- Story details in `stories/` subdirectory
 
 ## What's New in v3.6
 
@@ -117,29 +134,33 @@ This reduces context usage by ~70-80% compared to loading the full workflow.
     CHECK: Are there active kanban boards?
 
     ```bash
-    # Check for active spec kanbans
-    SPEC_KANBANS=$(ls agent-os/specs/*/kanban-board.md 2>/dev/null | head -5)
+    # Check for active spec kanbans (JSON preferred, MD fallback)
+    SPEC_KANBANS_JSON=$(ls agent-os/specs/*/kanban.json 2>/dev/null | head -5)
+    SPEC_KANBANS_MD=$(ls agent-os/specs/*/kanban-board.md 2>/dev/null | head -5)
 
-    # Check for active backlog kanban (today)
+    # Check for backlog (JSON preferred)
+    BACKLOG_JSON=$(ls agent-os/backlog/backlog.json 2>/dev/null)
+
+    # Check for active backlog execution (today)
     TODAY=$(date +%Y-%m-%d)
-    BACKLOG_KANBAN=$(ls agent-os/backlog/kanban-${TODAY}.md 2>/dev/null)
+    BACKLOG_EXECUTION=$(ls agent-os/backlog/executions/kanban-${TODAY}.json 2>/dev/null)
 
-    # Check for pending backlog stories
-    BACKLOG_STORIES=$(ls agent-os/backlog/user-story-*.md agent-os/backlog/bug-*.md 2>/dev/null | wc -l)
+    # Fallback: Check legacy MD backlog
+    BACKLOG_KANBAN_MD=$(ls agent-os/backlog/kanban-${TODAY}.md 2>/dev/null)
     ```
 
-    IF active kanban exists (spec or backlog):
+    IF active kanban exists (spec JSON/MD or backlog execution):
       DETECT: Which kanban is active
       RESUME: That execution automatically
 
-    ELSE IF backlog has stories AND specs exist:
+    ELSE IF backlog.json has ready items AND specs exist:
       ASK via AskUserQuestion:
       "What would you like to execute?
       1. Execute Backlog ([N] quick tasks)
       2. Execute Spec (select from available)
       3. View status only"
 
-    ELSE IF only backlog has stories:
+    ELSE IF only backlog has ready items:
       SET: EXECUTION_MODE = "backlog"
 
     ELSE IF only specs exist:
@@ -157,61 +178,92 @@ This reduces context usage by ~70-80% compared to loading the full workflow.
 <backlog_routing>
   USE: date-checker to get current date (YYYY-MM-DD)
 
-  CHECK: Does today's kanban exist?
-  ```bash
-  ls agent-os/backlog/kanban-${TODAY}.md 2>/dev/null
-  ```
+  ## Check for Backlog JSON (v4.0)
 
-  IF NO kanban:
+  1. CHECK: Does backlog.json exist?
+     ```bash
+     ls agent-os/backlog/backlog.json 2>/dev/null
+     ```
+
+     IF NO backlog.json:
+       ERROR: "No backlog found. Use /add-bug or /add-todo first."
+       STOP
+
+  2. READ: agent-os/backlog/backlog.json
+     PARSE: JSON content
+
+  3. CHECK: Is there an active execution kanban for today?
+     ```bash
+     ls agent-os/backlog/executions/kanban-${TODAY}.json 2>/dev/null
+     ```
+
+     OR CHECK: backlog.json → resumeContext.activeKanban
+
+  IF NO active execution:
     LOAD: @agent-os/workflows/core/execute-tasks/backlog-phase-1.md
     STOP: After loading
 
-  IF kanban exists:
-    READ: agent-os/backlog/kanban-${TODAY}.md
-    EXTRACT: "Current Phase" from Resume Context
+  IF active execution exists:
+    READ: agent-os/backlog/executions/kanban-${TODAY}.json
+    EXTRACT: "currentPhase" from resumeContext (JSON field)
 
-    <kanban_sync>
-      ## Auto-Sync: Check for New Stories (v3.1)
+    <kanban_sync_json>
+      ## Auto-Sync: Check for New Items in backlog.json (v4.0)
 
-      BEFORE loading phase, sync any new stories added after kanban creation:
+      BEFORE loading phase, sync any new items added after execution kanban creation:
 
-      1. LIST: All story files in backlog folder (excluding done/)
-         ```bash
-         ls agent-os/backlog/user-story-*.md agent-os/backlog/bug-*.md 2>/dev/null
-         ```
+      1. READ: backlog.json → items[]
+         FILTER: items where status = "ready"
 
-      2. EXTRACT: Story IDs already in kanban
-         - Parse "## Backlog", "## In Progress", "## Done" sections
-         - Collect all Story IDs listed
+      2. READ: execution kanban → items[]
+         COLLECT: All item IDs in execution
 
-      3. COMPARE: Find new stories
-         FOR EACH file in backlog folder:
-           EXTRACT: Story ID from filename (e.g., "US-001" from "user-story-US-001-title.md")
-           IF Story ID NOT in kanban:
-             ADD to NEW_STORIES list
+      3. COMPARE: Find new ready items
+         FOR EACH item in backlog.json where status = "ready":
+           IF item.id NOT in execution kanban:
+             ADD to NEW_ITEMS list
 
-      4. IF NEW_STORIES is not empty:
-         READ: Each new story file
-         EXTRACT: Title, Type, Priority, Points
+      4. IF NEW_ITEMS is not empty:
+         FOR EACH new item:
+           ADD: Item object to execution kanban → items[]
+           SET: executionStatus = "queued"
 
-         UPDATE: kanban-${TODAY}.md
-           - ADD new stories to "## Backlog" table
-           - UPDATE "Board Status" totals
-           - ADD Change Log entry: "{TIMESTAMP} | Synced {N} new stories: {STORY_IDS}"
+         UPDATE: execution kanban → boardStatus.queued
+         UPDATE: execution kanban → boardStatus.total
+
+         ADD changeLog entry:
+         {
+           "timestamp": "[NOW]",
+           "action": "kanban_synced",
+           "itemId": null,
+           "details": "Synced {N} new items: {ITEM_IDS}"
+         }
+
+         WRITE: Updated execution kanban
 
          INFORM user:
-         "📥 **Kanban Sync:** Added {N} new stories to today's board: {STORY_IDS}"
-    </kanban_sync>
+         "📥 **Kanban Sync:** Added {N} new items to today's execution: {ITEM_IDS}"
+    </kanban_sync_json>
 
-    | Current Phase | Load Phase File |
-    |---------------|-----------------|
-    | 1-complete | backlog-phase-2.md |
-    | story-complete | backlog-phase-2.md |
-    | all-stories-done | backlog-phase-3.md |
-    | complete | INFORM: "Backlog execution complete for today" |
+    | currentPhase (JSON) | Load Phase File |
+    |---------------------|-----------------|
+    | 1-kanban-setup | backlog-phase-1.md |
+    | 2-worktree-setup | backlog-phase-2.md |
+    | 3-story-execution | backlog-phase-2.md |
+    | 4-review-testing | backlog-phase-2.md |
+    | 5-completion | backlog-phase-3.md |
+    | 6-cleanup | INFORM: "Backlog execution complete for today" |
 
     LOAD: Appropriate phase file
     STOP: After loading
+
+  ## Fallback: Legacy MD Kanban (backward compatibility)
+
+  IF backlog.json not found AND kanban-${TODAY}.md exists:
+    WARN: "Using legacy MD kanban. Consider upgrading to JSON."
+    READ: agent-os/backlog/kanban-${TODAY}.md
+    EXTRACT: "Current Phase" from Resume Context (MD table)
+    CONTINUE with legacy routing
 </backlog_routing>
 
 ---
@@ -227,20 +279,42 @@ This reduces context usage by ~70-80% compared to loading the full workflow.
     IF 1 spec: SET SELECTED_SPEC automatically
     IF multiple: ASK user via AskUserQuestion
 
-  CHECK: Does kanban-board.md exist?
+  ## Check for Kanban JSON (v4.0 - preferred)
+
+  CHECK: Does kanban.json exist?
   ```bash
-  ls agent-os/specs/${SELECTED_SPEC}/kanban-board.md 2>/dev/null
+  ls agent-os/specs/${SELECTED_SPEC}/kanban.json 2>/dev/null
   ```
 
-  IF NO kanban-board.md:
-    LOAD: @agent-os/workflows/core/execute-tasks/spec-phase-1.md
-    STOP: After loading
+  IF kanban.json exists:
+    READ: agent-os/specs/${SELECTED_SPEC}/kanban.json
+    PARSE: JSON content
+    EXTRACT: resumeContext.currentPhase
+    EXTRACT: resumeContext.worktreePath
+    EXTRACT: resumeContext.gitBranch
+    SET: USING_JSON = true
 
-  IF kanban-board.md exists:
-    READ: agent-os/specs/${SELECTED_SPEC}/kanban-board.md
-    EXTRACT: "Current Phase" from Resume Context
-    EXTRACT: "Git Strategy" from Resume Context (if present)
-    EXTRACT: "Worktree Path" from Resume Context (if present)
+  ELSE:
+    ## Fallback: Legacy kanban-board.md
+    CHECK: Does kanban-board.md exist?
+    ```bash
+    ls agent-os/specs/${SELECTED_SPEC}/kanban-board.md 2>/dev/null
+    ```
+
+    IF kanban-board.md exists:
+      WARN: "Using legacy MD kanban. Consider running /create-spec again for JSON support."
+      READ: agent-os/specs/${SELECTED_SPEC}/kanban-board.md
+      EXTRACT: "Current Phase" from Resume Context (MD table)
+      EXTRACT: "Git Strategy" from Resume Context (if present)
+      EXTRACT: "Worktree Path" from Resume Context (if present)
+      SET: USING_JSON = false
+
+    ELSE:
+      # No kanban at all - need to initialize
+      LOAD: @agent-os/workflows/core/execute-tasks/spec-phase-1.md
+      STOP: After loading
+
+  IF kanban exists (JSON or MD):
 
     <cwd_check>
       ## Worktree CWD Check (v3.3)

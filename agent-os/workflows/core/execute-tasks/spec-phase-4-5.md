@@ -1,9 +1,13 @@
 ---
-description: Spec Phase 4.5 - Integration Validation before PR (Legacy Support v4.0)
-version: 4.0
+description: Spec Phase 4.5 - Integration Validation before PR (JSON v5.0)
+version: 5.0
 ---
 
 # Spec Phase 4.5: Integration Validation
+
+## What's New in v5.0
+
+- **JSON-Based**: Liest/schreibt kanban.json statt kanban-board.md
 
 ## What's New in v4.0
 
@@ -18,34 +22,49 @@ Prevents "stories done but system doesn't work" problem.
 **Note:** For specs created with create-spec v3.0+, this functionality is handled by story-998.
 
 ## Entry Condition
-- kanban-board.md shows: all-stories-done
-- All stories in Done column
+- kanban.json shows: resumeContext.currentPhase = "all-stories-done"
+- All stories with status = "done"
 
-## Legacy Check (v4.0)
+## Legacy Check (v5.0)
 
 <legacy_check>
   **BEFORE executing legacy logic, check for System Story 998:**
 
-  ```bash
-  ls agent-os/specs/${SELECTED_SPEC}/stories/story-998*.md 2>/dev/null
-  ```
+  READ: agent-os/specs/{SELECTED_SPEC}/kanban.json
+  FIND: Story in stories[] where id contains "998"
 
-  IF story-998 exists:
-    READ: story-998 file
-    EXTRACT: Status field
+  IF story-998 exists in kanban.json:
+    EXTRACT: stories[998].status
 
-    IF Status = "Done":
+    IF status = "done":
       LOG: "story-998 (Integration Validation) already completed - skipping Phase 4.5"
-      UPDATE: kanban-board.md
-        | **Current Phase** | 5-ready |
-        | **Last Action** | Phase 4.5 skipped (handled by story-998) |
+
+      UPDATE: kanban.json
+      - resumeContext.currentPhase = "5-ready"
+      - resumeContext.lastAction = "Phase 4.5 skipped (handled by story-998)"
+
+      ADD to changeLog[]:
+      ```json
+      {
+        "timestamp": "{NOW}",
+        "action": "phase_skipped",
+        "storyId": "story-998",
+        "details": "Phase 4.5 handled by System Story 998"
+      }
+      ```
+
+      WRITE: kanban.json
       GOTO: phase_complete (skip to Phase 5)
 
-    ELSE (Status != "Done"):
-      LOG: "story-998 exists but not Done - returning to Phase 3"
-      UPDATE: kanban-board.md
-        | **Current Phase** | story-complete |
-        | **Next Action** | Execute story-998 |
+    ELSE (status != "done"):
+      LOG: "story-998 exists but not done - returning to Phase 3"
+
+      UPDATE: kanban.json
+      - resumeContext.currentPhase = "story-complete"
+      - resumeContext.nextAction = "Execute story-998"
+
+      WRITE: kanban.json
+
       INFORM: "System Story 998 needs to be executed. Run /execute-tasks again."
       STOP: Return to Phase 3 for story-998
 
@@ -130,13 +149,25 @@ Prevents "stories done but system doesn't work" problem.
 ## Phase Completion
 
 <phase_complete>
-  UPDATE: kanban-board.md (MAINTAIN TABLE FORMAT - see shared/resume-context.md)
-    Resume Context table fields:
-    | **Current Phase** | 5-ready |
-    | **Next Phase** | 5 - Finalize |
-    | **Current Story** | None |
-    | **Last Action** | Integration validation: PASSED |
-    | **Next Action** | Create pull request |
+  READ: agent-os/specs/{SELECTED_SPEC}/kanban.json
+
+  UPDATE:
+  - resumeContext.currentPhase = "5-ready"
+  - resumeContext.nextPhase = "5-finalize"
+  - resumeContext.lastAction = "Integration validation: PASSED"
+  - resumeContext.nextAction = "Create pull request"
+
+  ADD to changeLog[]:
+  ```json
+  {
+    "timestamp": "{NOW}",
+    "action": "phase_completed",
+    "storyId": null,
+    "details": "Phase 4.5 complete - Integration validation passed"
+  }
+  ```
+
+  WRITE: kanban.json
 
   OUTPUT to user:
   ---

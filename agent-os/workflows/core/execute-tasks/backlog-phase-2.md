@@ -1,9 +1,15 @@
 ---
-description: Backlog Phase 2 - Execute one backlog story (Direct Execution v3.0)
-version: 3.0
+description: Backlog Phase 2 - Execute one backlog story (JSON v4.0)
+version: 4.0
 ---
 
 # Backlog Phase 2: Execute Story (Direct Execution)
+
+## What's New in v4.0
+
+- **JSON-Based Kanban**: Liest/schreibt execution-kanban.json
+- **Backlog Sync**: Synchronisiert Status zurück nach backlog.json
+- **Strukturierte Updates**: JSON-Feld-Updates statt MD-Parsing
 
 ## What's New in v3.0
 
@@ -18,35 +24,73 @@ Execute ONE backlog story. Simpler than spec execution (no git worktree, no inte
 
 ## Entry Condition
 
-- kanban-[TODAY].md exists
-- Resume Context shows: Phase 1-complete OR story-complete
-- Stories remain in Backlog
+- executions/kanban-[TODAY].json exists
+- resumeContext.currentPhase = "1-complete" OR "item-complete"
+- Items remain with executionStatus = "queued"
 
 ## Actions
 
 <step name="load_state">
-  READ: agent-os/backlog/kanban-{TODAY}.md
-  EXTRACT: Resume Context
-  IDENTIFY: Next story from Backlog
+  ### Load State from JSON
+
+  READ: agent-os/backlog/executions/kanban-{TODAY}.json
+
+  EXTRACT:
+  - resumeContext (currentPhase, currentItem, progressIndex)
+  - items[] array
+  - executionOrder[] array
+  - boardStatus
+
+  IDENTIFY: Next item from executionOrder where executionStatus = "queued"
 </step>
 
 <step name="story_selection">
-  SELECT: First story from Backlog section
-  (Backlog stories have no dependencies - execute in order)
+  ### Select Next Item
+
+  FIND: First item in executionOrder where:
+  - items[id].executionStatus = "queued"
+
+  IF no queued items:
+    LOG: "All items completed"
+    GOTO: phase_complete (all done)
+
+  SET: SELECTED_ITEM = items[selected_id]
 </step>
 
 <step name="update_kanban_in_progress">
-  UPDATE: kanban-{TODAY}.md
-    - MOVE: Selected story from Backlog to "In Progress"
-    - UPDATE Board Status
-    - SET Resume Context: Current Story = [story-id]
-    - ADD Change Log entry
+  ### Update Kanban JSON - In Progress
+
+  READ: agent-os/backlog/executions/kanban-{TODAY}.json
+
+  UPDATE:
+  - items[SELECTED_ITEM.id].executionStatus = "in_progress"
+  - items[SELECTED_ITEM.id].timing.startedAt = "{NOW}"
+  - resumeContext.currentItem = "{SELECTED_ITEM.id}"
+  - resumeContext.lastAction = "Started {SELECTED_ITEM.id}"
+  - resumeContext.nextAction = "Implement {SELECTED_ITEM.title}"
+  - boardStatus.queued -= 1
+  - boardStatus.inProgress += 1
+
+  ADD to changeLog[]:
+  ```json
+  {
+    "timestamp": "{NOW}",
+    "action": "status_changed",
+    "itemId": "{SELECTED_ITEM.id}",
+    "from": "queued",
+    "to": "in_progress",
+    "details": "Started execution"
+  }
+  ```
+
+  WRITE: kanban-{TODAY}.json
 </step>
 
 <step name="load_story">
   ### Load Story Details
 
-  READ: Story file from agent-os/backlog/
+  READ: Story file from SELECTED_ITEM.sourceFile
+  (Path stored in execution-kanban.json items[].sourceFile)
 
   EXTRACT:
   - Story ID and Title
@@ -131,6 +175,8 @@ Execute ONE backlog story. Simpler than spec execution (no git worktree, no inte
 </step>
 
 <step name="move_story_to_done">
+  ### Move Story File to Done
+
   MOVE: Story file to done/ folder
   ```bash
   mkdir -p agent-os/backlog/done
@@ -139,21 +185,78 @@ Execute ONE backlog story. Simpler than spec execution (no git worktree, no inte
   NOTE: This prevents the story from being picked up in future kanbans
 </step>
 
+<step name="update_kanban_json_done">
+  ### Update Kanban JSON - Done
+
+  READ: agent-os/backlog/executions/kanban-{TODAY}.json
+
+  UPDATE:
+  - items[SELECTED_ITEM.id].executionStatus = "done"
+  - items[SELECTED_ITEM.id].timing.completedAt = "{NOW}"
+  - resumeContext.currentItem = null
+  - resumeContext.progressIndex += 1
+  - resumeContext.lastAction = "Completed {SELECTED_ITEM.id}"
+  - boardStatus.inProgress -= 1
+  - boardStatus.done += 1
+
+  ADD to changeLog[]:
+  ```json
+  {
+    "timestamp": "{NOW}",
+    "action": "status_changed",
+    "itemId": "{SELECTED_ITEM.id}",
+    "from": "in_progress",
+    "to": "done",
+    "details": "Item completed"
+  }
+  ```
+
+  WRITE: kanban-{TODAY}.json
+</step>
+
+<step name="update_backlog_json_done">
+  ### Update Backlog JSON - Item Done
+
+  READ: agent-os/backlog/backlog.json
+
+  FIND: Item in items[] where id = SELECTED_ITEM.id
+
+  UPDATE:
+  - items[id].status = "done"
+  - items[id].completedAt = "{NOW}"
+  - statistics.byStatus.ready -= 1
+  - statistics.byStatus.done += 1
+  - statistics.completedEffort += SELECTED_ITEM.effort
+
+  ADD to changeLog[]:
+  ```json
+  {
+    "timestamp": "{NOW}",
+    "action": "status_changed",
+    "itemId": "{SELECTED_ITEM.id}",
+    "from": "ready",
+    "to": "done",
+    "details": "Completed in kanban-{TODAY}"
+  }
+  ```
+
+  WRITE: backlog.json
+</step>
+
 <step name="story_commit" subagent="git-workflow">
-  UPDATE: kanban-{TODAY}.md
-    - MOVE: Story from "In Progress" to "Done"
-    - UPDATE Board Status
-    - ADD Change Log entry
+  ### Commit Changes
 
   USE: git-workflow subagent
-  "Commit backlog story {STORY_ID}:
+  "Commit backlog item {SELECTED_ITEM.id}:
 
   **WORKING_DIR:** {PROJECT_ROOT}
 
-  - Message: fix/feat: {STORY_ID} [Story Title]
+  - Message: fix/feat: {SELECTED_ITEM.id} {SELECTED_ITEM.title}
   - Stage all changes including:
     - Implementation files
     - Moved story file in done/
+    - kanban-{TODAY}.json
+    - backlog.json
     - Any dos-and-donts.md updates
   - Push to current branch"
 </step>
@@ -161,23 +264,27 @@ Execute ONE backlog story. Simpler than spec execution (no git worktree, no inte
 ## Phase Completion
 
 <phase_complete>
-  CHECK: Remaining stories in Backlog
+  ### Check Remaining Items
 
-  IF backlog NOT empty:
-    UPDATE: kanban-{TODAY}.md Resume Context
-      - Current Phase: story-complete
-      - Next Phase: 2 - Execute Story (next)
-      - Current Story: None
+  READ: agent-os/backlog/executions/kanban-{TODAY}.json
+  COUNT: Items where executionStatus = "queued"
+
+  IF queued items remain:
+    UPDATE: kanban-{TODAY}.json
+    - resumeContext.currentPhase = "item-complete"
+    - resumeContext.nextAction = "Execute next item"
+
+    WRITE: kanban-{TODAY}.json
 
     OUTPUT to user:
     ---
-    ## Story Complete: {STORY_ID}
+    ## Item Complete: {SELECTED_ITEM.id}
 
-    **Progress:** {COMPLETED} of {TOTAL} stories today
+    **Progress:** {boardStatus.done} of {boardStatus.total} items today
 
     **Self-Learning:** [Updated/No updates]
 
-    **Next:** Execute next story
+    **Next:** Execute next item
 
     ---
     **To continue, run:**
@@ -187,18 +294,29 @@ Execute ONE backlog story. Simpler than spec execution (no git worktree, no inte
     ```
     ---
 
-    STOP: Do not proceed to next story
+    STOP: Do not proceed to next item
 
-  ELSE (backlog empty):
-    UPDATE: kanban-{TODAY}.md Resume Context
-      - Current Phase: all-stories-done
-      - Next Phase: 3 - Daily Summary
+  ELSE (all items done):
+    UPDATE: kanban-{TODAY}.json
+    - resumeContext.currentPhase = "all-items-done"
+    - resumeContext.nextAction = "Generate daily summary"
+    - execution.status = "completed"
+    - execution.completedAt = "{NOW}"
+
+    WRITE: kanban-{TODAY}.json
+
+    UPDATE: agent-os/backlog/backlog.json
+    - resumeContext.currentPhase = "execution-complete"
+    - resumeContext.lastAction = "Execution completed"
+    - executions[kanban-{TODAY}].status = "completed"
+
+    WRITE: backlog.json
 
     OUTPUT to user:
     ---
-    ## All Backlog Stories Complete!
+    ## All Backlog Items Complete!
 
-    **Today's Progress:** {TOTAL} stories completed
+    **Today's Progress:** {boardStatus.total} items completed
 
     **Next Phase:** Daily Summary
 

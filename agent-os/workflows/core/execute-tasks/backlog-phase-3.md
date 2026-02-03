@@ -1,56 +1,113 @@
 ---
-description: Backlog Phase 3 - Daily Summary
-version: 3.3
+description: Backlog Phase 3 - Daily Summary (JSON v4.0)
+version: 4.0
 ---
 
 # Backlog Phase 3: Daily Summary
 
+## What's New in v4.0
+
+- **JSON-Based**: Liest aus execution-kanban.json
+- **Backlog Statistics**: Aktualisiert backlog.json Statistiken
+- **Execution History**: Speichert Ausführungshistorie in backlog.json
+
 ## Purpose
-Summarize today's work and update story-index.
+Summarize today's work and update backlog statistics.
 
 ## Entry Condition
-- kanban-{TODAY}.md shows: all-stories-done
-- All stories in Done column
+- executions/kanban-{TODAY}.json shows: resumeContext.currentPhase = "all-items-done"
+- All items with executionStatus = "done"
 
 ## Actions
 
-<step name="update_story_index">
-  READ: agent-os/backlog/story-index.md
+<step name="load_execution_data">
+  ### Load Execution Data
 
-  FOR EACH completed story (from kanban Done column):
-    UPDATE: Status = "Done"
-    UPDATE: Completed date
-    NOTE: Story files are already in agent-os/backlog/done/ (moved in Phase 2)
+  READ: agent-os/backlog/executions/kanban-{TODAY}.json
 
-  UPDATE: Totals
-    - Completed: +N
-    - Ready for Execution: -N
+  EXTRACT:
+  - items[] where executionStatus = "done"
+  - boardStatus (total, done counts)
+  - execution.startedAt
+  - execution.completedAt
+  - changeLog[]
 
-  ADD: Today's kanban to Execution History table
+  SET: completed_items = filtered items
+  SET: TOTAL_COMPLETED = completed_items.length
+</step>
 
-  WRITE: Updated story-index.md
+<step name="update_backlog_statistics">
+  ### Update Backlog Statistics
+
+  READ: agent-os/backlog/backlog.json
+
+  UPDATE resumeContext:
+  - activeKanban = null
+  - currentPhase = "idle"
+  - lastExecution = "{TODAY}"
+  - lastAction = "Daily execution completed"
+  - nextAction = "Add items or start next execution"
+
+  UPDATE executions[] entry for kanban-{TODAY}:
+  - status = "completed"
+  - completedItems = {TOTAL_COMPLETED}
+
+  ADD to changeLog[]:
+  ```json
+  {
+    "timestamp": "{NOW}",
+    "action": "execution_completed",
+    "itemId": null,
+    "details": "Completed {TOTAL_COMPLETED} items in kanban-{TODAY}"
+  }
+  ```
+
+  WRITE: backlog.json
+</step>
+
+<step name="finalize_kanban_json">
+  ### Finalize Execution Kanban
+
+  READ: agent-os/backlog/executions/kanban-{TODAY}.json
+
+  UPDATE:
+  - resumeContext.currentPhase = "complete"
+  - resumeContext.lastAction = "Daily summary generated"
+  - resumeContext.nextAction = "None - execution complete"
+
+  ADD to changeLog[]:
+  ```json
+  {
+    "timestamp": "{NOW}",
+    "action": "execution_finalized",
+    "itemId": null,
+    "details": "Daily summary generated"
+  }
+  ```
+
+  WRITE: kanban-{TODAY}.json
 </step>
 
 ## Phase Completion
 
 <phase_complete>
-  UPDATE: kanban-{TODAY}.md Resume Context
-    - Current Phase: complete
-    - Next Phase: None
-
   OUTPUT to user:
   ---
   ## Daily Backlog Execution Complete!
 
   ### Today's Summary ({TODAY})
 
-  **Completed Stories:**
-  {LIST_OF_COMPLETED_STORIES}
+  **Completed Items:** {TOTAL_COMPLETED}
 
-  **Kanban:** agent-os/backlog/kanban-{TODAY}.md
+  | Item ID | Title | Type |
+  |---------|-------|------|
+  {FOR EACH completed_item: | {item.id} | {item.title} | {item.type} |}
+
+  **Execution Kanban:** agent-os/backlog/executions/kanban-{TODAY}.json
+  **Backlog Updated:** agent-os/backlog/backlog.json
 
   ### What's Next?
-  1. Add more tasks: `/add-todo "[description]"`
+  1. Add more tasks: `/add-todo "[description]"` or `/add-bug "[description]"`
   2. Create spec for larger features: `/create-spec`
   3. Tomorrow: `/execute-tasks backlog` for new daily kanban
 
