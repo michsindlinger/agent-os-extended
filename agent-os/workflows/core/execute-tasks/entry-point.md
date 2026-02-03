@@ -283,7 +283,9 @@ This reduces context usage by ~70-80% compared to loading the full workflow.
 
   ## Check for Kanban JSON (v4.0 - preferred)
 
-  CHECK: Does kanban.json exist?
+  **IMPORTANT: ALWAYS check kanban.json FIRST before kanban-board.md!**
+
+  1. FIRST: Check for kanban.json (preferred format)
   ```bash
   ls agent-os/specs/${SELECTED_SPEC}/kanban.json 2>/dev/null
   ```
@@ -296,8 +298,10 @@ This reduces context usage by ~70-80% compared to loading the full workflow.
     EXTRACT: resumeContext.gitBranch
     SET: USING_JSON = true
 
-  ELSE:
-    ## Fallback: Legacy kanban-board.md
+  ELSE (kanban.json NOT found):
+    ## 2. ONLY THEN: Fallback to Legacy kanban-board.md
+    **This is the FALLBACK - only used when kanban.json does NOT exist!**
+
     CHECK: Does kanban-board.md exist?
     ```bash
     ls agent-os/specs/${SELECTED_SPEC}/kanban-board.md 2>/dev/null
