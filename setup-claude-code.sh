@@ -83,6 +83,9 @@ command_files=(
     "toggle-skill-activation.md"
     "migrate-devteam-v2.md"
 
+    # Kanban migration
+    "migrate-kanban.md"
+
     # Brainstorming
     "start-brainstorming.md"
     "transfer-and-create-spec.md"
@@ -148,7 +151,7 @@ echo ""
 echo "📁 Installed Structure:"
 echo ""
 echo "  .claude/"
-echo "    ├── commands/agent-os/   (24 core commands)"
+echo "    ├── commands/agent-os/   (25 core commands)"
 echo "    ├── skills/              (1 user-invocable skill)"
 echo "    └── agents/              (10 utility agents)"
 echo ""
@@ -202,6 +205,9 @@ echo "    /add-skill                → Create custom skills for DevTeam agents"
 echo "    /migrate-skills           → Add YAML frontmatter to existing skills"
 echo "    /toggle-skill-activation  → Change skill activation mode"
 echo "    /migrate-devteam-v2       → Migrate DevTeam to v2.0 (skill-index)"
+echo ""
+echo "  Migration:"
+echo "    /migrate-kanban           → Migrate MD kanbans to JSON format"
 echo ""
 echo "  Plan Review:"
 echo "    /review-implementation-plan → Standalone review of implementation plans"
