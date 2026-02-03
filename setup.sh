@@ -169,6 +169,12 @@ download_file "$REPO_URL/agent-os/workflows/core/migrate-devteam-v2.md" "agent-o
 # Accessibility validation
 download_file "$REPO_URL/agent-os/workflows/core/validate-accessibility-report.md" "agent-os/workflows/core/validate-accessibility-report.md" "workflows"
 
+# Migration
+download_file "$REPO_URL/agent-os/workflows/core/migrate-kanban.md" "agent-os/workflows/core/migrate-kanban.md" "workflows"
+
+# Feedback processing
+download_file "$REPO_URL/agent-os/workflows/core/process-feedback.md" "agent-os/workflows/core/process-feedback.md" "workflows"
+
 # ═══════════════════════════════════════════════════════════
 # CONFIGURATION
 # ═══════════════════════════════════════════════════════════
@@ -236,7 +242,7 @@ echo "📁 Installed Structure:"
 echo ""
 echo "  agent-os/"
 echo "    ├── standards/              (3 core files)"
-echo "    ├── workflows/core/         (20 core workflows)"
+echo "    ├── workflows/core/         (22 core workflows)"
 echo "    │   └── execute-tasks/      (12 phase files - 80% less context)"
 echo "    ├── workflows/meta/         (1 meta workflow)"
 echo "    └── config.yml              (minimal configuration)"
@@ -245,7 +251,7 @@ echo "  CLAUDE.md                     (project instructions template)"
 echo ""
 echo "📊 Statistics:"
 echo "  • Standards: 3 files"
-echo "  • Workflows: 31 files (18 core + 12 execute-tasks phases + 1 meta)"
+echo "  • Workflows: 33 files (20 core + 12 execute-tasks phases + 1 meta)"
 echo "  • Config: 1 file"
 echo "  • Total: 35 files + CLAUDE.md"
 echo ""

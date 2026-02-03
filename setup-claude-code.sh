@@ -86,6 +86,9 @@ command_files=(
     # Kanban migration
     "migrate-kanban.md"
 
+    # Feedback processing
+    "process-feedback.md"
+
     # Brainstorming
     "start-brainstorming.md"
     "transfer-and-create-spec.md"
@@ -208,6 +211,9 @@ echo "    /migrate-devteam-v2       → Migrate DevTeam to v2.0 (skill-index)"
 echo ""
 echo "  Migration:"
 echo "    /migrate-kanban           → Migrate MD kanbans to JSON format"
+echo ""
+echo "  Feedback Processing:"
+echo "    /process-feedback         → Analyze customer feedback into specs/bugs/todos"
 echo ""
 echo "  Plan Review:"
 echo "    /review-implementation-plan → Standalone review of implementation plans"
