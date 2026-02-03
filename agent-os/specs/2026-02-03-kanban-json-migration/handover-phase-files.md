@@ -36,6 +36,13 @@
 - `spec-phase-4-5.md` (v5.0) - Liest kanban.json für Integration Check
 - `spec-phase-5.md` (v5.0) - Updatet kanban.json auf complete
 
+### 6. Entry-Point Verbesserungen ✅ (2026-02-03)
+- `entry-point.md` - Verbesserte JSON/MD Detection:
+  - Migration-Prompt wenn MD-Kanban gefunden wird
+  - Bietet `/migrate-kanban` automatisch an
+  - JSON-basierte System Stories Detection
+  - Aktualisierte Routing-Tabellen für JSON-Phasen
+
 ---
 
 ## Test-Szenario
