@@ -64,6 +64,8 @@ command_files=(
     "create-spec.md"
     "add-story.md"
     "retroactive-doc.md"
+    "retroactive-spec.md"
+    "change-spec.md"
 
     # Bug management
     "add-bug.md"
@@ -131,6 +133,7 @@ download_file "$REPO_URL/.claude/agents/file-creator.md" ".claude/agents/file-cr
 download_file "$REPO_URL/.claude/agents/git-workflow.md" ".claude/agents/git-workflow.md"
 download_file "$REPO_URL/.claude/agents/date-checker.md" ".claude/agents/date-checker.md"
 download_file "$REPO_URL/.claude/agents/test-runner.md" ".claude/agents/test-runner.md"
+download_file "$REPO_URL/.claude/agents/codebase-analyzer.md" ".claude/agents/codebase-analyzer.md"
 
 # Product planning agents
 download_file "$REPO_URL/.claude/agents/product-strategist.md" ".claude/agents/product-strategist.md"
