@@ -10,3 +10,7 @@ agent-os/workflows/core/analyze-ferienwohnung.md
 .claude/skills/write-like-me/
 agent-os/analyses/
 agent-os/templates/analyses/
+
+# Agent OS Secrets
+.agent-os/product/secrets.md
+agent-os/product/secrets.md

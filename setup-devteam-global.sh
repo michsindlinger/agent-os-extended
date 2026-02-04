@@ -117,6 +117,7 @@ download_file "$REPO_URL/agent-os/templates/product/design-system-template.md" "
 download_file "$REPO_URL/agent-os/templates/product/ux-patterns-template.md" "$GLOBAL_DIR/templates/product/ux-patterns-template.md"
 download_file "$REPO_URL/agent-os/templates/product/blocker-analysis-template.md" "$GLOBAL_DIR/templates/product/blocker-analysis-template.md"
 download_file "$REPO_URL/agent-os/templates/product/milestone-plan-template.md" "$GLOBAL_DIR/templates/product/milestone-plan-template.md"
+download_file "$REPO_URL/agent-os/templates/product/secrets-template.md" "$GLOBAL_DIR/templates/product/secrets-template.md"
 
 # Feasibility templates (1)
 echo "→ Feasibility templates (1)..."
