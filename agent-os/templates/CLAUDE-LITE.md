@@ -13,6 +13,7 @@ Essential guidance for Claude Code development. **Context is loaded on-demand** 
 - **Technical Architecture**: agent-os/product/tech-stack.md
 - **Development Roadmap**: agent-os/product/roadmap.md
 - **Architecture Decision**: agent-os/product/architecture-decision.md
+- **Secrets & Credentials**: agent-os/product/secrets.md (Required credentials tracking)
 
 ### Development Standards (DO NOT use @ prefix)
 - **Tech Stack Defaults**: agent-os/standards/tech-stack.md
@@ -105,6 +106,9 @@ DELEGATE to context-fetcher:
 - `agent-os/product/` - Product vision, tech-stack, roadmap
 - `agent-os/specs/` - Feature specifications
 - `agent-os/team/` - DevTeam agents and skills
+
+## Development Notes
+- Bitte merke dir, wir nutzen hier in diesem Branch die V2-Komponenten für die Projekte und die Profile im Moment und für die Seite Teams und Settings.
 
 ---
 
