@@ -2,7 +2,7 @@
 description: Product Planning for new projects with Agent OS
 globs:
 alwaysApply: false
-version: 4.0
+version: 4.1
 encoding: UTF-8
 installation: global
 ---
@@ -474,6 +474,41 @@ Use tech-architect agent to analyze product complexity and recommend appropriate
 
 </step>
 
+<step number="7.5" subagent="file-creator" name="secrets_setup">
+
+### Step 7.5: Secrets and Credentials Setup
+
+Use file-creator agent to set up the secrets management template.
+
+<delegation>
+  DELEGATE to file-creator via Task tool:
+
+  PROMPT:
+  "Set up secrets management template for the project.
+
+  Context:
+  - Product Name: from agent-os/product/product-brief.md
+
+  Tasks:
+  1. Load secrets-template.md (hybrid lookup: project → global)
+     - TRY: agent-os/templates/product/secrets-template.md
+     - FALLBACK: ~/.agent-os/templates/product/secrets-template.md
+  2. Extract product name
+  3. Replace [PROJECT_NAME] placeholder
+  4. Write to: agent-os/product/secrets.md
+
+  Note: This file is used to track required credentials for the project lifecycle.
+  It is ignored by git for security."
+
+  WAIT for file-creator completion
+  NOTE: "Secrets template created at agent-os/product/secrets.md"
+</delegation>
+
+**Template:** `agent-os/templates/product/secrets-template.md`
+**Output:** `agent-os/product/secrets.md`
+
+</step>
+
 <step number="8" subagent="file-creator" name="boilerplate_generation">
 
 ### Step 8: Boilerplate Structure Generation
@@ -579,6 +614,7 @@ Created Documentation:
 ✅ product-brief.md - Product definition
 ✅ product-brief-lite.md - Condensed version
 ✅ tech-stack.md - Technology choices
+✅ secrets.md - Required credentials tracking
 ✅ roadmap.md - Development phases
 ✅ architecture-decision.md - Architecture pattern
 ✅ architecture-structure.md - Folder conventions
@@ -613,6 +649,7 @@ Next Steps:
 | product-brief.md | Complete product definition | product-brief.md |
 | product-brief-lite.md | Condensed for AI context | product-brief-lite.md |
 | tech-stack.md | Technology choices | tech-stack.md |
+| secrets.md | Required credentials tracking | secrets-template.md |
 | roadmap.md | Development phases | roadmap.md |
 | architecture-decision.md | Architecture ADRs | architecture-decision.md |
 | architecture-structure.md | Folder conventions | architecture-structure.md |
@@ -623,4 +660,4 @@ Next Steps:
 
 **Duration:** 15-25 minutes
 **User Interactions:** 3-4 decision points
-**Output:** 6 files + 1 directory structure + CLAUDE.md update
+**Output:** 7 files + 1 directory structure + CLAUDE.md update

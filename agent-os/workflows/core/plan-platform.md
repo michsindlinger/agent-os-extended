@@ -2,7 +2,7 @@
 description: Platform Planning for multi-module projects with Agent OS
 globs:
 alwaysApply: false
-version: 1.0
+version: 1.1
 encoding: UTF-8
 installation: global
 ---
@@ -310,6 +310,41 @@ Use design-extractor agent to analyze existing design and create design-system.m
 
 </step>
 
+<step number="5.6" subagent="file-creator" name="secrets_setup">
+
+### Step 5.6: Secrets and Credentials Setup
+
+Use file-creator agent to set up the secrets management template.
+
+<delegation>
+  DELEGATE to file-creator via Task tool:
+
+  PROMPT:
+  "Set up secrets management template for the platform.
+
+  Context:
+  - Platform Name: from agent-os/product/platform-brief.md
+
+  Tasks:
+  1. Load secrets-template.md (hybrid lookup: project → global)
+     - TRY: agent-os/templates/product/secrets-template.md
+     - FALLBACK: ~/.agent-os/templates/product/secrets-template.md
+  2. Extract platform name
+  3. Replace [PROJECT_NAME] placeholder
+  4. Write to: agent-os/product/secrets.md
+
+  Note: This file is used to track required credentials for the platform lifecycle.
+  It is ignored by git for security."
+
+  WAIT for file-creator completion
+  NOTE: "Secrets template created at agent-os/product/secrets.md"
+</delegation>
+
+**Template:** `agent-os/templates/product/secrets-template.md`
+**Output:** `agent-os/product/secrets.md`
+
+</step>
+
 <step number="6" subagent="tech-architect" name="dependency_analysis">
 
 ### Step 6: Module Dependency Analysis
@@ -555,6 +590,7 @@ Created Documentation:
 ✅ platform-brief.md - Platform vision
 ✅ [N] module-brief.md files - Module definitions
 ✅ tech-stack.md - Technology choices (platform + modules)
+✅ secrets.md - Required credentials tracking
 ✅ design-system.md - UI design tokens (if platform has UI)
 ✅ module-dependencies.md - Dependency graph
 ✅ platform-architecture.md - System architecture
@@ -566,6 +602,7 @@ Directory Structure:
 agent-os/product/
 ├── platform-brief.md
 ├── tech-stack.md
+├── secrets.md
 ├── design-system.md          # Optional (if UI exists)
 ├── modules/
 │   ├── [module-1]/
@@ -610,6 +647,7 @@ Next Steps:
 | platform-brief.md | Platform vision | platform-brief-template.md |
 | modules/[name]/module-brief.md | Module definitions | module-brief-template.md |
 | tech-stack.md | Tech choices | tech-stack-template.md |
+| secrets.md | Required credentials tracking | secrets-template.md |
 | design-system.md | UI design tokens (optional) | design-system-template.md |
 | architecture/module-dependencies.md | Dependency graph | module-dependencies-template.md |
 | architecture/platform-architecture.md | System architecture | platform-architecture-template.md |
@@ -621,7 +659,7 @@ Next Steps:
 
 **Duration:** 30-45 minutes
 **User Interactions:** 3-4 decision points
-**Output:** 5+ core files + N module briefs + N module roadmaps + CLAUDE.md update
+**Output:** 6+ core files + N module briefs + N module roadmaps + CLAUDE.md update
 
 ## Differences from /plan-product
 
