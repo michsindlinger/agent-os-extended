@@ -107,6 +107,9 @@ echo "═══ Installing Core Workflows ═══"
 # Meta workflow
 download_file "$REPO_URL/agent-os/workflows/meta/pre-flight.md" "agent-os/workflows/meta/pre-flight.md" "workflows"
 
+# Security 
+download_file "$REPO_URL/agent-os/templates/product/secrets-template.md" "agent-os/templates/product/secrets-template.md" "templates" 
+
 # Product planning
 download_file "$REPO_URL/agent-os/workflows/core/plan-product.md" "agent-os/workflows/core/plan-product.md" "workflows"
 download_file "$REPO_URL/agent-os/workflows/core/analyze-feasibility.md" "agent-os/workflows/core/analyze-feasibility.md" "workflows"
