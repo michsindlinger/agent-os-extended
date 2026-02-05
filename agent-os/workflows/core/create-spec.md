@@ -2,7 +2,7 @@
 description: Create Feature Specification with DevTeam (PO + Architect)
 globs:
 alwaysApply: false
-version: 3.3
+version: 3.4
 encoding: UTF-8
 ---
 
@@ -35,6 +35,11 @@ Create detailed feature specifications using DevTeam collaboration: PO gathers f
 - **NEW: Verbindungs-Validierung** im Self-Review (Step 2.5.2)
 - **ENHANCED: Story Generation** - Stories erhalten Integration-Metadata wenn zuständig für Verbindung
 - **FIX: "Komponenten gebaut aber nicht verbunden"** - Verhindert isolierte Implementierung
+
+**v3.4 Changes:**
+- **NEW: Optional Effort Estimation** - Step 3.5.1 asks user (default: skip)
+- **ENHANCED: Model Parameters** - Use haiku for simple tasks to reduce costs
+- **CHANGED: Step 4 Summary** - Handles both with/without effort estimation
 
 **v3.3 Changes (JSON Migration):**
 - **NEW: kanban.json** - JSON-basiertes Kanban als Single Source of Truth
@@ -227,7 +232,7 @@ to fully understand requirements BEFORE generating user stories.
 Before generating user stories, create a summary document for user approval.
 
 <mandatory_actions>
-  1. Use date-checker to get current date (YYYY-MM-DD)
+  1. DELEGATE to date-checker via Task tool (model="haiku") to get current date (YYYY-MM-DD)
 
   2. Create spec folder: agent-os/specs/YYYY-MM-DD-spec-name/
 
@@ -344,6 +349,7 @@ Before generating user stories, create a summary document for user approval.
 > Features zu verzichten."
 
 <delegation>
+  <!-- Uses default model (opus) for complex planning with self-review -->
   DELEGATE to Plan Agent via Task tool:
 
   PROMPT:
@@ -834,6 +840,7 @@ Before generating user stories, create a summary document for user approval.
 Use dev-team__architect agent to add technical refinement to fachliche user stories.
 
 <delegation>
+  <!-- Uses default model (opus) for critical architecture decisions -->
   DELEGATE to dev-team__architect via Task tool:
 
   PROMPT:
@@ -1623,6 +1630,37 @@ Validate that all stories comply with size guidelines to prevent mid-execution c
 
 </step>
 
+<substep number="3.5.1" name="effort_estimation_choice">
+
+### Step 3.5.1: Effort Estimation Decision
+
+<user_choice>
+  ASK user via AskUserQuestion:
+
+  Question: "Story size validation complete. Would you like to create an effort estimation?"
+
+  Options:
+  1. Skip effort estimation (Recommended)
+     → Proceed directly to Step 4 (Spec Complete)
+     → You can run /estimate-spec later if needed
+
+  2. Create effort estimation now
+     → Generate dual estimation (Human + AI-Adjusted)
+     → Adds effort-estimation.md to spec folder
+     → Takes 1-2 minutes
+</user_choice>
+
+<decision_handling>
+  IF choice = "Skip effort estimation":
+    LOG: "Effort estimation skipped - can be run later via /estimate-spec"
+    PROCEED: To Step 4 (skip Step 3.6)
+
+  ELSE IF choice = "Create effort estimation now":
+    PROCEED: To Step 3.6 (execute effort estimation)
+</decision_handling>
+
+</substep>
+
 <step number="3.6" name="effort_estimation">
 
 ### Step 3.6: Effort Estimation (Dual: Human + AI-Adjusted)
@@ -1884,6 +1922,9 @@ Present completed specification to user.
   - Can run parallel: [N]
   - Sequential dependencies: [N]
 
+  [CHECK if file exists: agent-os/specs/[spec-name]/effort-estimation.md]
+
+  [IF EXISTS:]
   **📊 Aufwandsschätzung:**
 
   | Metrik | Human-only | Human + KI | Ersparnis |
@@ -1894,6 +1935,10 @@ Present completed specification to user.
   💡 **Mit KI-Unterstützung** sparen Sie ca. **[%]%** der Entwicklungszeit!
 
   Details: agent-os/specs/[spec-name]/effort-estimation.md
+
+  [IF NOT EXISTS:]
+  **📊 Aufwandsschätzung:**
+  ⏭️ Skipped - Run `/estimate-spec` if needed later
 
   **Next Steps:**
 
@@ -1942,7 +1987,7 @@ Present completed specification to user.
   - [ ] Cross-cutting decisions (if applicable)
   - [ ] **DoR validation passed (Step 3.4)**
   - [ ] **Story size validation passed (Step 3.5)**
-  - [ ] **effort-estimation.md created with dual estimation (Step 3.6)** (v2.7)
+  - [ ] **effort-estimation.md created (OPTIONAL - Step 3.6)** (v2.7)
   - [ ] **System Stories created (story-997, story-998, story-999)** (v3.0)
   - [ ] Ready for /execute-tasks
 </verify>
