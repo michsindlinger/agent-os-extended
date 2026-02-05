@@ -298,7 +298,7 @@ Present the understood feature to the user for confirmation.
 
 ### Step 5: Spec Generation
 
-Create spec.md and spec-lite.md based on code analysis.
+Create spec.md, spec-lite.md, and kanban.json based on code analysis.
 
 <mandatory_actions>
   1. CREATE spec folder:
@@ -450,6 +450,29 @@ Create spec.md and spec-lite.md based on code analysis.
        ### Potential Refactoring Areas
        [If any issues were noticed - optional]
      </code_references_template>
+
+  5. CREATE kanban.json from template:
+     - LOAD template: @agent-os/templates/json/spec-kanban-template.json
+     - REPLACE placeholders:
+       - {{SPEC_ID}}: "retro-[feature-name]"
+       - {{SPEC_NAME}}: [FEATURE_NAME]
+       - {{SPEC_PREFIX}}: "RETRO"
+       - {{CREATED_AT}}: [CURRENT_DATE]
+       - {{TOTAL_STORIES}}: 0
+       - {{TOTAL_EFFORT}}: 0
+     - SET values for retroactive spec:
+       - resumeContext.currentPhase: "completed"
+       - resumeContext.nextPhase: null
+       - resumeContext.progressIndex: 0
+       - resumeContext.totalStories: 0
+       - boardStatus.total: 0
+       - boardStatus.ready: 0
+       - statistics.totalEffort: 0
+       - statistics.remainingEffort: 0
+       - execution.status: "completed"
+       - stories: []
+       - executionPlan.phases: []
+     - SAVE to: agent-os/specs/YYYY-MM-DD-retro-[feature-name]/kanban.json
 </mandatory_actions>
 
 </step>
@@ -471,6 +494,7 @@ Present completed spec to user for review.
      - spec.md - Full specification
      - spec-lite.md - Quick reference
      - code-references.md - Analyzed code files
+     - kanban.json - Empty kanban (feature already implemented)
 
      **Feature Summary:**
      - [Brief description]
@@ -517,6 +541,7 @@ Present completed spec to user for review.
   - [ ] spec.md created with architecture details
   - [ ] spec-lite.md created as quick reference
   - [ ] code-references.md created with file inventory
+  - [ ] kanban.json created (empty, retroactive spec)
   - [ ] User reviewed and approved
   - [ ] Marked as retroactive (not forward-planned)
 </verify>
