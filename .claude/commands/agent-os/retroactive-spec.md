@@ -11,6 +11,6 @@ then generates spec.md and spec-lite.md documentation.
 - Clarifying questions are asked when implementation details are unclear
 - Final spec is generated for your confirmation
 
-**Output:** spec.md and spec-lite.md (no stories, as feature is already implemented)
+**Output:** spec.md, spec-lite.md, code-references.md, and empty kanban.json (no stories, as feature is already implemented)
 
 Refer to the instructions located in agent-os/workflows/core/retroactive-spec.md
