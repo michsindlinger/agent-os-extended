@@ -669,6 +669,10 @@ maintaining full context throughout the story.
        - Users to notify about changes
        - External documentation to update
 
+    6. **Sonstige manuelle Aufgaben**
+       - Alles, was nicht in die obigen Kategorien passt
+       - z.B. Design-Reviews, Daten-Importe, manuelle Tests auf bestimmten Geräten, Content-Pflege
+
     IF any manual tasks identified:
 
       CHECK: Does user-todos.md exist?
