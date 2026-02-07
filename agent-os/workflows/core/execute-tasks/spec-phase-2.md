@@ -1,9 +1,17 @@
 ---
-description: Spec Phase 2 - Git Strategy Setup (JSON v4.0)
-version: 4.0
+description: Spec Phase 2 - Git Strategy Setup (JSON v4.1)
+version: 4.1
 ---
 
 # Spec Phase 2: Git Strategy Setup
+
+## What's New in v4.1
+
+**Current Branch Strategy:**
+- New third git strategy option: "Im aktuellen Branch arbeiten"
+- Works directly in the current branch without creating a new one
+- No branch creation, no worktree - simplest option for quick tasks
+- Stored as `gitStrategy: "current-branch"` in kanban.json
 
 ## What's New in v4.0
 
@@ -39,7 +47,8 @@ version: 4.0
 
 Setup git environment based on chosen strategy:
 - **Worktree:** Isolated directory for parallel execution
-- **Branch:** Work directly in main directory
+- **Branch:** Create new feature branch, work in main directory
+- **Current Branch:** Work directly in the current branch without creating a new one
 
 ## Entry Condition
 
@@ -75,7 +84,8 @@ Setup git environment based on chosen strategy:
 
     **Options:**
     1. "Worktree (Recommended)" - Isoliertes Verzeichnis für paralleles Arbeiten. Spec wird per Symlink verlinkt.
-    2. "Branch" - Arbeitet direkt im Hauptverzeichnis auf einem Feature-Branch.
+    2. "Branch" - Erstellt neuen Feature-Branch und arbeitet im Hauptverzeichnis.
+    3. "Im aktuellen Branch arbeiten" - Arbeitet direkt im aktuellen Branch ohne neuen Branch zu erstellen.
 
     SET: GIT_STRATEGY based on user choice
 </step>
@@ -111,6 +121,9 @@ Setup git environment based on chosen strategy:
 
   ELSE IF GIT_STRATEGY = "branch":
     GOTO: branch_setup
+
+  ELSE IF GIT_STRATEGY = "current-branch":
+    GOTO: current_branch_setup
 </git_strategy_routing>
 
 ---
@@ -266,6 +279,33 @@ Setup git environment based on chosen strategy:
 
 ---
 
+## Current Branch Strategy
+
+<step name="current_branch_setup">
+  ### Current Branch Strategy Setup
+
+  **Goal:** Work directly in the current branch without creating a new one.
+
+  <substep name="detect_current_branch">
+    ### Detect Current Branch
+
+    ```bash
+    # Get current branch name
+    CURRENT_BRANCH=$(git branch --show-current)
+    echo "Current branch: ${CURRENT_BRANCH}"
+    ```
+
+    SET: BRANCH_NAME = ${CURRENT_BRANCH}
+  </substep>
+
+  SET: WORKTREE_PATH = "(none)"
+  SET: USE_WORKTREE = false
+
+  GOTO: phase_complete_current_branch
+</step>
+
+---
+
 ## Phase Completion
 
 <phase_complete_worktree>
@@ -375,3 +415,52 @@ Setup git environment based on chosen strategy:
 
   STOP: Do not proceed to Phase 3
 </phase_complete_branch>
+
+<phase_complete_current_branch>
+  ### Phase Complete: Current Branch Strategy
+
+  READ: agent-os/specs/{SELECTED_SPEC}/kanban.json
+
+  UPDATE:
+  - resumeContext.currentPhase = "2-complete"
+  - resumeContext.nextPhase = "3-execute-story"
+  - resumeContext.worktreePath = null
+  - resumeContext.gitBranch = "{BRANCH_NAME}"
+  - resumeContext.gitStrategy = "current-branch"
+  - resumeContext.currentStory = null
+  - resumeContext.lastAction = "Using current branch"
+  - resumeContext.nextAction = "Execute first story"
+  - execution.status = "ready"
+
+  ADD to changeLog[]:
+  ```json
+  {
+    "timestamp": "{NOW}",
+    "action": "phase_completed",
+    "storyId": null,
+    "details": "Phase 2 complete - Current branch strategy: {BRANCH_NAME}"
+  }
+  ```
+
+  WRITE: kanban.json
+
+  OUTPUT to user:
+  ---
+  ## Phase 2 Complete: Current Branch Strategy
+
+  **Working Directory:** Current project directory
+  **Branch:** {BRANCH_NAME} (existing)
+  **Git Strategy:** current-branch
+
+  **Next Phase:** Execute First Story
+
+  ---
+  **To continue, run:**
+  ```
+  /clear
+  /execute-tasks
+  ```
+  ---
+
+  STOP: Do not proceed to Phase 3
+</phase_complete_current_branch>

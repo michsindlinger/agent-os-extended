@@ -16,7 +16,7 @@ The Resume Context in kanban-board.md enables phase recovery.
 | **Spec Folder** | Full path | agent-os/specs/2026-01-13-feature-name |
 | **Worktree Path** | Git worktree path (external) | ../projekt-x-worktrees/feature-name or (none) |
 | **Git Branch** | Branch name | feature-name or main |
-| **Git Strategy** | Git workflow strategy | worktree, branch, or (not set) |
+| **Git Strategy** | Git workflow strategy | worktree, branch, current-branch, or (not set) |
 | **Current Story** | Story being worked on | STORY-001 or None |
 | **Last Action** | What just happened | Kanban board created |
 | **Next Action** | What needs to happen | Create git worktree |

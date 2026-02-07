@@ -290,7 +290,7 @@ Select specification and validate/create Kanban Board. One-time setup phase.
   - resumeContext.currentPhase = "1-complete"
   - resumeContext.nextPhase = "2-worktree-setup"
   - resumeContext.lastAction = "Phase 1 complete - Kanban initialized"
-  - resumeContext.nextAction = "Setup git strategy (worktree or branch)"
+  - resumeContext.nextAction = "Setup git strategy (worktree, branch, or current-branch)"
 
   ADD to changeLog[]:
   ```json
@@ -313,7 +313,7 @@ Select specification and validate/create Kanban Board. One-time setup phase.
   - Integration Context: agent-os/specs/{SELECTED_SPEC}/integration-context.md
   - Stories loaded: {boardStatus.ready} ready, {boardStatus.blocked} blocked
 
-  **Next Phase:** Git Strategy Setup (Worktree or Branch)
+  **Next Phase:** Git Strategy Setup
 
   ---
   **To continue, run:**

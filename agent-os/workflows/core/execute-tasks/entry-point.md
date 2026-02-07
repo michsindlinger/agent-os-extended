@@ -423,7 +423,7 @@ This reduces context usage by ~70-80% compared to loading the full workflow.
          ELSE (CWD is correct worktree):
            CONTINUE: Proceed to phase loading
 
-      3. IF Git Strategy = "branch" OR not set:
+      3. IF Git Strategy = "branch" OR "current-branch" OR not set:
          CONTINUE: No CWD check needed, proceed normally
     </cwd_check>
 
