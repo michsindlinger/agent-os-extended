@@ -76,13 +76,7 @@ Select specification and validate/create Kanban Board. One-time setup phase.
 </step>
 
 <step name="create_kanban_json">
-  ### Create/Update Kanban JSON
-
-  **TEMPLATE LOOKUP (Hybrid - v4.0):**
-  1. Local: agent-os/templates/json/spec-kanban-template.json
-  2. Global: ~/.agent-os/templates/json/spec-kanban-template.json
-
-  READ: Template file
+  ### Create Kanban JSON via MCP Tool
 
   LIST: All story files in agent-os/specs/{SELECTED_SPEC}/stories/
   ```bash
@@ -90,17 +84,16 @@ Select specification and validate/create Kanban Board. One-time setup phase.
   ```
 
   SET: stories_data = []
-  SET: total_effort = 0
 
   FOR EACH story file:
     READ: Story file
     EXTRACT:
-    - Story ID (from filename: story-XXX-slug.md)
-    - Title
-    - Type (frontend/backend/devops/test/docs/integration)
-    - Dependencies (array of story IDs)
-    - Effort (story points)
-    - Priority
+    - Story ID (from file or content)
+    - Title (from # heading)
+    - Type (from metadata: frontend/backend/devops/test/docs/integration)
+    - Dependencies (from metadata, array of story IDs)
+    - Effort (from metadata, as NUMBER of story points)
+    - Priority (from metadata: critical/high/medium/low)
 
     VALIDATE DoR:
     - CHECK: All DoR checkboxes are marked [x]
@@ -108,112 +101,33 @@ Select specification and validate/create Kanban Board. One-time setup phase.
     - IF all [x]: status = "ready"
 
     ADD to stories_data[]:
-    ```json
     {
       "id": "{STORY_ID}",
       "title": "{TITLE}",
       "file": "stories/{FILENAME}",
       "type": "{TYPE}",
       "priority": "{PRIORITY}",
-      "effort": {EFFORT},
+      "effort": {EFFORT_NUMBER},
       "status": "ready|blocked",
-      "phase": "pending",
-      "dependencies": ["{DEP_1}", "{DEP_2}"],
-      "blockedBy": [],
-      "timing": {
-        "createdAt": "{FILE_DATE}",
-        "startedAt": null,
-        "completedAt": null
-      },
-      "implementation": {
-        "filesModified": [],
-        "commits": []
-      },
-      "verification": {
-        "dodChecked": false,
-        "integrationVerified": false
-      }
+      "dependencies": ["{DEP_1}", "{DEP_2}"]
     }
-    ```
 
-    total_effort += EFFORT
-
-  CREATE: agent-os/specs/{SELECTED_SPEC}/kanban.json
-
-  **JSON Content:**
-  ```json
+  CALL MCP TOOL: kanban_create
+  Input:
   {
-    "$schema": "../../templates/schemas/spec-kanban-schema.json",
-    "version": "1.0",
-
-    "spec": {
-      "id": "{SELECTED_SPEC}",
-      "name": "{SPEC_NAME}",
-      "prefix": "{SPEC_PREFIX}",
-      "specFile": "spec.md",
-      "specLiteFile": "spec-lite.md",
-      "createdAt": "{NOW}"
-    },
-
-    "resumeContext": {
-      "currentPhase": "1-complete",
-      "nextPhase": "2-worktree-setup",
-      "worktreePath": null,
-      "gitBranch": null,
-      "gitStrategy": null,
-      "currentStory": null,
-      "currentStoryPhase": null,
-      "lastAction": "Kanban board created",
-      "nextAction": "Setup git worktree or branch",
-      "progressIndex": 0,
-      "totalStories": {STORIES_COUNT}
-    },
-
-    "execution": {
-      "status": "not_started",
-      "startedAt": null,
-      "completedAt": null,
-      "model": null
-    },
-
-    "stories": [STORIES_DATA],
-
-    "boardStatus": {
-      "total": {STORIES_COUNT},
-      "ready": {READY_COUNT},
-      "inProgress": 0,
-      "inReview": 0,
-      "testing": 0,
-      "done": 0,
-      "blocked": {BLOCKED_COUNT}
-    },
-
-    "statistics": {
-      "totalEffort": {total_effort},
-      "completedEffort": 0,
-      "remainingEffort": {total_effort},
-      "progressPercent": 0,
-      "byType": {...},
-      "byPriority": {...}
-    },
-
-    "executionPlan": {
-      "strategy": "dependency-aware",
-      "phases": []
-    },
-
-    "changeLog": [
-      {
-        "timestamp": "{NOW}",
-        "action": "kanban_created",
-        "storyId": null,
-        "details": "Kanban initialized with {STORIES_COUNT} stories"
-      }
-    ]
+    "specId": "{SELECTED_SPEC}",
+    "specName": "{SPEC_NAME}",
+    "specPrefix": "{SPEC_PREFIX}",
+    "stories": [{stories_data array}]
   }
-  ```
 
-  WRITE: kanban.json
+  VERIFY: Tool returns {"success": true, "path": "...", "storyCount": N}
+  LOG: "Kanban created with {storyCount} stories via MCP tool"
+
+  NOTE: The MCP tool creates the full KanbanJsonV1 structure including:
+  - spec metadata, resumeContext (phase 1-complete), execution (not_started)
+  - stories array with timing/implementation/verification
+  - boardStatus (calculated), statistics, executionPlan, changeLog
 </step>
 
 <step name="create_integration_context" subagent="file-creator">

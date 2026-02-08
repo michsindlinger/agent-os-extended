@@ -68,43 +68,81 @@ maintaining full context throughout the story.
 
 ## Actions
 
-<step name="load_state">
-  ### Load State from JSON
+<step name="load_next_task">
+  ### Load Next Task via Smart MCP Tool
 
-  READ: agent-os/specs/{SELECTED_SPEC}/kanban.json
+  **NEW: Single tool call replaces multiple file reads and parsing.**
 
-  EXTRACT:
-  - resumeContext (currentPhase, currentStory, progressIndex)
-  - stories[] array
-  - boardStatus
-  - execution
+  CALL MCP TOOL: kanban_get_next_task
+  Input:
+  {
+    "specId": "{SELECTED_SPEC}"
+  }
 
-  IDENTIFY: Next eligible story from stories[] where:
-  - status = "ready"
-  - All dependencies are in status = "done"
-</step>
+  RECEIVE: Complete task context in one structured response
+  {
+    "success": true,
+    "story": {
+      "id": "{STORY_ID}",
+      "title": "{TITLE}",
+      "type": "{TYPE}",
+      "priority": "{PRIORITY}",
+      "effort": {EFFORT},
+      "dependencies": ["{DEP_IDS}"],
+      "model": "{MODEL}",
+      "feature": "```gherkin\nFeature: ...",
+      "scenarios": ["```gherkin\nScenario: ..."],
+      "technicalDetails": {
+        "was": "{WHAT_TO_BUILD}",
+        "wie": "{ARCHITECTURE_GUIDANCE}",
+        "wo": ["{FILE_PATHS}"],
+        "wer": "{AGENT_NAME}"
+      },
+      "dod": ["{DOD_ITEMS}"]
+    },
+    "integrationContext": {
+      "completedStories": [
+        {"id": "{PREV_ID}", "summary": "{WHAT_WAS_BUILT}", "files": ["{FILES}"]}
+      ],
+      "newExports": {
+        "components": ["{COMPONENT_EXPORTS}"],
+        "services": ["{SERVICE_EXPORTS}"],
+        "hooks": ["{HOOK_EXPORTS}"]
+      }
+    },
+    "resumeInfo": {
+      "currentPhase": "{PHASE}",
+      "gitStrategy": "{STRATEGY}",
+      "gitBranch": "{BRANCH}",
+      "progressIndex": {N},
+      "totalStories": {TOTAL}
+    },
+    "boardSummary": {
+      "ready": {N}, "inProgress": {N}, "done": {N}
+    }
+  }
 
-<step name="load_integration_context">
-  ### Load Integration Context (v3.1)
+  VERIFY: Tool returns success=true
+  SET: SELECTED_STORY = response.story
+  SET: INTEGRATION_CONTEXT = response.integrationContext
 
-  **CRITICAL: Read this BEFORE implementing to understand prior work.**
+  LOG: "Loaded next task: {STORY_ID} - {TITLE} (Story {progressIndex+1}/{totalStories})"
 
-  READ: agent-os/specs/{SELECTED_SPEC}/integration-context.md
+  IF no ready stories (success=false):
+    LOG: "No ready stories found - all stories are in_progress, done, or blocked"
+    STOP: Execution complete
 
-  IF file exists:
-    EXTRACT and UNDERSTAND:
-    - **Completed Stories**: What was already implemented
-    - **New Exports & APIs**: Functions, components, services to USE (not recreate)
-    - **Integration Notes**: How things connect together
-    - **File Change Summary**: Which files were modified
+  **Token Savings:**
+  - Old method: ~3300 tokens (kanban.json + story.md + integration.md reads + parsing)
+  - New method: ~450 tokens (1 tool call + compact JSON response)
+  - Saved: ~2850 tokens (86%) per story
+  - Parser: Regex (free, 95% cases) with Haiku fallback ($0.001, 5% cases)
 
-    **USE THIS CONTEXT:**
-    - Import and use existing exports instead of creating duplicates
-    - Follow established patterns from prior stories
-    - Integrate with existing code, don't work in isolation
-
-  IF file doesn't exist:
-    NOTE: First story execution - no prior context needed
+  **What the tool does (server-side, zero Opus tokens):**
+  - Reads kanban.json to find next ready story
+  - Parses story .md file using layered parser (regex → Haiku fallback)
+  - Reads and filters integration-context.md (only relevant completed stories)
+  - Returns everything bundled as structured JSON
 </step>
 
 <step name="verify_integration_requirements">
@@ -541,36 +579,26 @@ maintaining full context throughout the story.
 </step>
 
 <step name="update_kanban_in_progress">
-  ### Update Kanban JSON - In Progress
+  ### Update Kanban JSON - Story Started
 
-  READ: agent-os/specs/{SELECTED_SPEC}/kanban.json
-
-  UPDATE:
-  - stories[SELECTED_STORY.id].status = "in_progress"
-  - stories[SELECTED_STORY.id].phase = "implementing"
-  - stories[SELECTED_STORY.id].timing.startedAt = "{NOW}"
-  - resumeContext.currentStory = "{SELECTED_STORY.id}"
-  - resumeContext.currentStoryPhase = "implementing"
-  - resumeContext.lastAction = "Started {SELECTED_STORY.id}"
-  - resumeContext.nextAction = "Implement {SELECTED_STORY.title}"
-  - boardStatus.ready -= 1
-  - boardStatus.inProgress += 1
-  - execution.status = "executing"
-  - execution.startedAt = "{NOW}" (if null)
-
-  ADD to changeLog[]:
-  ```json
+  CALL MCP TOOL: kanban_start_story
+  Input:
   {
-    "timestamp": "{NOW}",
-    "action": "status_changed",
+    "specId": "{SELECTED_SPEC}",
     "storyId": "{SELECTED_STORY.id}",
-    "from": "ready",
-    "to": "in_progress",
-    "details": "Started story execution"
+    "model": "{CURRENT_MODEL_ID}"
   }
-  ```
 
-  WRITE: kanban.json
+  VERIFY: Tool returns {"success": true, "story": {...}}
+  LOG: "Story {SELECTED_STORY.id} marked as in_progress via MCP tool"
+
+  NOTE: The MCP tool automatically updates:
+  - story.status → in_progress, story.phase → implementing
+  - story.timing.startedAt, story.model
+  - resumeContext.currentStory, currentStoryPhase, lastAction, nextAction
+  - boardStatus counters (ready -1, inProgress +1)
+  - execution.status → executing, execution.startedAt (if null)
+  - Adds changeLog entry
 
   UPDATE: Story file (agent-os/specs/{SELECTED_SPEC}/stories/{STORY_FILE})
     - FIND: Line containing "Status: Ready"
@@ -578,20 +606,23 @@ maintaining full context throughout the story.
 </step>
 
 <step name="load_story">
-  ### Load Story Details
+  ### Story Details Available
 
-  READ: Story file from agent-os/specs/{SELECTED_SPEC}/stories/story-XXX-[slug].md
+  **Story data already loaded via kanban_get_next_task (previous step).**
 
-  EXTRACT:
+  AVAILABLE from SELECTED_STORY:
   - Story ID and Title
-  - Feature description (Gherkin)
-  - Acceptance Criteria (Gherkin scenarios)
-  - Technical Details (WAS, WIE, WO)
-  - DoD Checklist
-  - Domain reference (if specified)
+  - Feature description (SELECTED_STORY.feature)
+  - Acceptance Criteria (SELECTED_STORY.scenarios[])
+  - Technical Details (SELECTED_STORY.technicalDetails: was, wie, wo, wer)
+  - DoD Checklist (SELECTED_STORY.dod[])
 
-  NOTE: Skills are NOT extracted here - they load automatically when you
-  edit files matching their glob patterns.
+  AVAILABLE from INTEGRATION_CONTEXT:
+  - Completed stories and their exports
+  - New components, services, hooks to reuse
+
+  NOTE: Skills load automatically when you edit files matching their glob patterns.
+  No additional file reads needed - all data pre-parsed by MCP tool.
 </step>
 
 <step name="implement">
@@ -888,9 +919,7 @@ maintaining full context throughout the story.
 </step>
 
 <step name="update_kanban_json_done">
-  ### Update Kanban JSON - Story Done
-
-  READ: agent-os/specs/{SELECTED_SPEC}/kanban.json
+  ### Update Kanban JSON - Story Complete
 
   GET: Modified files from git
   ```bash
@@ -902,38 +931,38 @@ maintaining full context throughout the story.
   git log -1 --format="%H|%s|%aI"
   ```
 
-  UPDATE:
-  - stories[SELECTED_STORY.id].status = "done"
-  - stories[SELECTED_STORY.id].phase = "completed"
-  - stories[SELECTED_STORY.id].timing.completedAt = "{NOW}"
-  - stories[SELECTED_STORY.id].implementation.filesModified = ["{modified_files}"]
-  - stories[SELECTED_STORY.id].implementation.commits = [
-      {"hash": "{COMMIT_HASH}", "message": "{COMMIT_MSG}", "timestamp": "{COMMIT_TIME}"}
-    ]
-  - stories[SELECTED_STORY.id].verification.dodChecked = true
-  - resumeContext.currentStory = null
-  - resumeContext.currentStoryPhase = null
-  - resumeContext.progressIndex += 1
-  - resumeContext.lastAction = "Completed {SELECTED_STORY.id}"
-  - boardStatus.inProgress -= 1
-  - boardStatus.done += 1
-  - statistics.completedEffort += {SELECTED_STORY.effort}
-  - statistics.remainingEffort -= {SELECTED_STORY.effort}
-  - statistics.progressPercent = (completedEffort / totalEffort) * 100
+  PARSE: Git output into variables
+  - modified_files[] array
+  - commit_hash, commit_message, commit_timestamp
 
-  ADD to changeLog[]:
-  ```json
+  CALL MCP TOOL: kanban_complete_story
+  Input:
   {
-    "timestamp": "{NOW}",
-    "action": "status_changed",
+    "specId": "{SELECTED_SPEC}",
     "storyId": "{SELECTED_STORY.id}",
-    "from": "in_progress",
-    "to": "done",
-    "details": "Story completed - DoD verified"
+    "filesModified": ["{FILE1}", "{FILE2}", ...],
+    "commits": [
+      {
+        "hash": "{COMMIT_HASH}",
+        "message": "{COMMIT_MSG}",
+        "timestamp": "{COMMIT_TIME}"
+      }
+    ]
   }
-  ```
 
-  WRITE: kanban.json
+  VERIFY: Tool returns {"success": true, "story": {...}, "remaining": N}
+  LOG: "Story {SELECTED_STORY.id} marked as done via MCP tool. Remaining stories: {remaining}"
+
+  NOTE: The MCP tool automatically updates:
+  - story.status → done, story.phase → completed
+  - story.timing.completedAt
+  - story.implementation.filesModified, commits
+  - story.verification.dodChecked → true
+  - resumeContext.currentStory → null, progressIndex +1, lastAction, nextAction
+  - boardStatus counters (inProgress -1, done +1)
+  - statistics (completedEffort, remainingEffort, progressPercent)
+  - execution.status → "completed" (if all stories done)
+  - Adds changeLog entry
 </step>
 
 <step name="story_commit" subagent="git-workflow">
