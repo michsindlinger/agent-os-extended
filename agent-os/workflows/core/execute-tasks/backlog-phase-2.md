@@ -58,32 +58,25 @@ Execute ONE backlog story. Simpler than spec execution (no git worktree, no inte
 </step>
 
 <step name="update_kanban_in_progress">
-  ### Update Kanban JSON - In Progress
+  ### Mark Item Started via MCP Tool
 
-  READ: agent-os/backlog/executions/kanban-{TODAY}.json
-
-  UPDATE:
-  - items[SELECTED_ITEM.id].executionStatus = "in_progress"
-  - items[SELECTED_ITEM.id].timing.startedAt = "{NOW}"
-  - resumeContext.currentItem = "{SELECTED_ITEM.id}"
-  - resumeContext.lastAction = "Started {SELECTED_ITEM.id}"
-  - resumeContext.nextAction = "Implement {SELECTED_ITEM.title}"
-  - boardStatus.queued -= 1
-  - boardStatus.inProgress += 1
-
-  ADD to changeLog[]:
-  ```json
+  CALL MCP TOOL: backlog_start_item
+  Input:
   {
-    "timestamp": "{NOW}",
-    "action": "status_changed",
-    "itemId": "{SELECTED_ITEM.id}",
-    "from": "queued",
-    "to": "in_progress",
-    "details": "Started execution"
+    "executionId": "kanban-{TODAY}",
+    "itemId": "{SELECTED_ITEM.id}"
   }
-  ```
 
-  WRITE: kanban-{TODAY}.json
+  VERIFY: Tool returns {"success": true, "item": {...}}
+  LOG: "Item {SELECTED_ITEM.id} marked as in_progress via MCP tool"
+
+  NOTE: The MCP tool automatically updates:
+  - item.executionStatus → in_progress
+  - item.timing.startedAt
+  - resumeContext (currentItem, currentPhase, lastAction, nextAction)
+  - boardStatus counters (queued -1, inProgress +1)
+  - changeLog entry
+  - All atomic with file lock (prevents race conditions)
 </step>
 
 <step name="load_story">
@@ -175,72 +168,66 @@ Execute ONE backlog story. Simpler than spec execution (no git worktree, no inte
 </step>
 
 <step name="move_story_to_done">
-  ### Move Story File to Done
+  ### Move Item File to Done
 
-  MOVE: Story file to done/ folder
+  MOVE: Item file to done/ folder
   ```bash
   mkdir -p agent-os/backlog/done
-  mv agent-os/backlog/{STORY_FILE} agent-os/backlog/done/
+  mv agent-os/backlog/{SELECTED_ITEM.sourceFile} agent-os/backlog/done/
   ```
-  NOTE: This prevents the story from being picked up in future kanbans
+
+  EXAMPLE:
+  ```bash
+  mkdir -p agent-os/backlog/done
+  mv agent-os/backlog/items/improvement-003-*.md agent-os/backlog/done/
+  ```
+
+  NOTE: This prevents the item from being picked up in future executions
+  VERIFY: File was moved successfully
+  ```bash
+  ls agent-os/backlog/done/ | grep -q "$(basename {SELECTED_ITEM.sourceFile})" && echo "✓ Moved"
+  ```
 </step>
 
 <step name="update_kanban_json_done">
-  ### Update Kanban JSON - Done
+  ### Mark Item Complete via MCP Tool
 
-  READ: agent-os/backlog/executions/kanban-{TODAY}.json
-
-  UPDATE:
-  - items[SELECTED_ITEM.id].executionStatus = "done"
-  - items[SELECTED_ITEM.id].timing.completedAt = "{NOW}"
-  - resumeContext.currentItem = null
-  - resumeContext.progressIndex += 1
-  - resumeContext.lastAction = "Completed {SELECTED_ITEM.id}"
-  - boardStatus.inProgress -= 1
-  - boardStatus.done += 1
-
-  ADD to changeLog[]:
-  ```json
-  {
-    "timestamp": "{NOW}",
-    "action": "status_changed",
-    "itemId": "{SELECTED_ITEM.id}",
-    "from": "in_progress",
-    "to": "done",
-    "details": "Item completed"
-  }
+  GET: Modified files (optional)
+  ```bash
+  git diff --name-only HEAD~1 2>/dev/null || echo ""
   ```
 
-  WRITE: kanban-{TODAY}.json
-</step>
-
-<step name="update_backlog_json_done">
-  ### Update Backlog JSON - Item Done
-
-  READ: agent-os/backlog/backlog.json
-
-  FIND: Item in items[] where id = SELECTED_ITEM.id
-
-  UPDATE:
-  - items[id].status = "done"
-  - items[id].completedAt = "{NOW}"
-  - statistics.byStatus.ready -= 1
-  - statistics.byStatus.done += 1
-  - statistics.completedEffort += SELECTED_ITEM.effort
-
-  ADD to changeLog[]:
-  ```json
+  CALL MCP TOOL: backlog_complete_item
+  Input:
   {
-    "timestamp": "{NOW}",
-    "action": "status_changed",
+    "executionId": "kanban-{TODAY}",
     "itemId": "{SELECTED_ITEM.id}",
-    "from": "ready",
-    "to": "done",
-    "details": "Completed in kanban-{TODAY}"
+    "filesModified": ["{modified_files if available}"]
   }
-  ```
 
-  WRITE: backlog.json
+  VERIFY: Tool returns {
+    "success": true,
+    "item": {...},
+    "remaining": N
+  }
+
+  LOG: "Item {SELECTED_ITEM.id} completed via MCP tool. Remaining: {remaining}"
+
+  NOTE: The MCP tool automatically updates BOTH:
+
+  **Execution Kanban (kanban-{TODAY}.json):**
+  - item.executionStatus → done
+  - item.timing.completedAt
+  - resumeContext (currentItem → null, progressIndex +1, lastAction, nextAction)
+  - boardStatus counters (inProgress -1, done +1)
+  - changeLog entry
+
+  **Backlog Index (backlog-index.json):**
+  - item.status → done
+  - item.completedAt timestamp
+  - changeLog entry
+
+  All atomic with file lock (no corruption risk).
 </step>
 
 <step name="story_commit" subagent="git-workflow">
@@ -254,11 +241,33 @@ Execute ONE backlog story. Simpler than spec execution (no git worktree, no inte
   - Message: fix/feat: {SELECTED_ITEM.id} {SELECTED_ITEM.title}
   - Stage all changes including:
     - Implementation files
-    - Moved story file in done/
-    - kanban-{TODAY}.json
-    - backlog.json
+    - Moved item file in done/
+    - agent-os/backlog/executions/kanban-{TODAY}.json
+    - agent-os/backlog/backlog-index.json
     - Any dos-and-donts.md updates
   - Push to current branch"
+</step>
+
+<step name="session_end">
+  ### End of Single-Item Execution
+
+  **CRITICAL INSTRUCTION:**
+
+  This workflow is designed for SINGLE-ITEM execution.
+  You MUST stop now and let the user decide whether to continue.
+
+  DO NOT:
+  - ❌ Load the next item
+  - ❌ Read the kanban again
+  - ❌ Continue to another step
+  - ❌ Auto-execute remaining items
+
+  REASON:
+  - Context preservation (each item starts fresh)
+  - User oversight (review each item's changes)
+  - Token efficiency (avoid context buildup)
+
+  **Your session ends here. Output the completion message and STOP.**
 </step>
 
 ## Phase Completion
@@ -270,47 +279,66 @@ Execute ONE backlog story. Simpler than spec execution (no git worktree, no inte
   COUNT: Items where executionStatus = "queued"
 
   IF queued items remain:
-    UPDATE: kanban-{TODAY}.json
-    - resumeContext.currentPhase = "item-complete"
-    - resumeContext.nextAction = "Execute next item"
 
-    WRITE: kanban-{TODAY}.json
+    NOTE: Kanban already updated via backlog_complete_item MCP tool
+    (currentPhase = "item-complete", progressIndex incremented)
 
-    OUTPUT to user:
+    OUTPUT to user (and STOP immediately after):
     ---
-    ## Item Complete: {SELECTED_ITEM.id}
+    ## ✅ Item Complete: {SELECTED_ITEM.id}
 
-    **Progress:** {boardStatus.done} of {boardStatus.total} items today
+    **Progress:** {boardStatus.done} of {boardStatus.total} items completed today
+    **Remaining:** {remaining} items
 
     **Self-Learning:** [Updated/No updates]
 
-    **Next:** Execute next item
-
     ---
-    **To continue, run:**
-    ```
+
+    ## ⚠️ IMPORTANT: Single-Item Execution Mode
+
+    **This workflow executes ONE item at a time to preserve context quality.**
+
+    **Remaining items:** {remaining}
+    - Next item: {next_item_id_if_available}
+
+    **To continue with next item, run:**
+    ```bash
     /clear
     /execute-tasks backlog
     ```
+
+    **Why /clear?**
+    - Clears this session's context
+    - Prevents token buildup
+    - Each item starts fresh
+
     ---
 
-    STOP: Do not proceed to next item
+    **CRITICAL: DO NOT CONTINUE TO NEXT ITEM IN THIS SESSION.**
+    **STOP EXECUTION NOW. USER MUST RUN /clear FIRST.**
+
+    ---
+
+    STOP: End of Phase 2 - Single item execution complete
 
   ELSE (all items done):
-    UPDATE: kanban-{TODAY}.json
+
+    NOTE: Update execution completion status
+
+    READ: agent-os/backlog/executions/kanban-{TODAY}.json
+    UPDATE:
     - resumeContext.currentPhase = "all-items-done"
     - resumeContext.nextAction = "Generate daily summary"
     - execution.status = "completed"
     - execution.completedAt = "{NOW}"
-
     WRITE: kanban-{TODAY}.json
 
-    UPDATE: agent-os/backlog/backlog.json
+    READ: agent-os/backlog/backlog-index.json
+    UPDATE:
     - resumeContext.currentPhase = "execution-complete"
-    - resumeContext.lastAction = "Execution completed"
-    - executions[kanban-{TODAY}].status = "completed"
-
-    WRITE: backlog.json
+    - resumeContext.lastAction = "Execution completed for {TODAY}"
+    - executions (find kanban-{TODAY}, set status = "completed")
+    WRITE: backlog-index.json
 
     OUTPUT to user:
     ---

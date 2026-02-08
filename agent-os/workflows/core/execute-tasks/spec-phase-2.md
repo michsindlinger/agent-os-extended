@@ -311,30 +311,24 @@ Setup git environment based on chosen strategy:
 <phase_complete_worktree>
   ### Phase Complete: Worktree Strategy
 
-  READ: agent-os/specs/{SELECTED_SPEC}/kanban.json
-
-  UPDATE:
-  - resumeContext.currentPhase = "2-complete"
-  - resumeContext.nextPhase = "3-execute-story"
-  - resumeContext.worktreePath = "../{PROJECT_DIR}-worktrees/{WORKTREE_NAME}"
-  - resumeContext.gitBranch = "{BRANCH_NAME}"
-  - resumeContext.gitStrategy = "worktree"
-  - resumeContext.currentStory = null
-  - resumeContext.lastAction = "Git worktree created (external location)"
-  - resumeContext.nextAction = "Switch to worktree and execute first story"
-  - execution.status = "ready"
-
-  ADD to changeLog[]:
-  ```json
+  CALL MCP TOOL: kanban_set_git_strategy
+  Input:
   {
-    "timestamp": "{NOW}",
-    "action": "phase_completed",
-    "storyId": null,
-    "details": "Phase 2 complete - Worktree strategy: {WORKTREE_PATH}"
+    "specId": "{SELECTED_SPEC}",
+    "gitStrategy": "worktree",
+    "gitBranch": "{BRANCH_NAME}",
+    "worktreePath": "../{PROJECT_DIR}-worktrees/{WORKTREE_NAME}"
   }
-  ```
 
-  WRITE: kanban.json
+  VERIFY: Tool returns {"success": true}
+  LOG: "Git worktree strategy set via MCP tool"
+
+  NOTE: The MCP tool automatically:
+  - Updates resumeContext.gitStrategy, gitBranch, worktreePath
+  - Advances currentPhase from 1-complete to 2-complete
+  - Sets nextPhase to 3-execute-story
+  - Updates lastAction and nextAction
+  - Adds changeLog entry
 
   DETECT: Claude mode for command suggestion (see detect_claude_mode)
 
@@ -370,30 +364,18 @@ Setup git environment based on chosen strategy:
 <phase_complete_branch>
   ### Phase Complete: Branch Strategy
 
-  READ: agent-os/specs/{SELECTED_SPEC}/kanban.json
-
-  UPDATE:
-  - resumeContext.currentPhase = "2-complete"
-  - resumeContext.nextPhase = "3-execute-story"
-  - resumeContext.worktreePath = null
-  - resumeContext.gitBranch = "{BRANCH_NAME}"
-  - resumeContext.gitStrategy = "branch"
-  - resumeContext.currentStory = null
-  - resumeContext.lastAction = "Feature branch created"
-  - resumeContext.nextAction = "Execute first story"
-  - execution.status = "ready"
-
-  ADD to changeLog[]:
-  ```json
+  CALL MCP TOOL: kanban_set_git_strategy
+  Input:
   {
-    "timestamp": "{NOW}",
-    "action": "phase_completed",
-    "storyId": null,
-    "details": "Phase 2 complete - Branch strategy: {BRANCH_NAME}"
+    "specId": "{SELECTED_SPEC}",
+    "gitStrategy": "branch",
+    "gitBranch": "{BRANCH_NAME}"
   }
-  ```
 
-  WRITE: kanban.json
+  VERIFY: Tool returns {"success": true}
+  LOG: "Git branch strategy set via MCP tool"
+
+  NOTE: The MCP tool automatically handles all kanban.json updates
 
   OUTPUT to user:
   ---
@@ -419,30 +401,18 @@ Setup git environment based on chosen strategy:
 <phase_complete_current_branch>
   ### Phase Complete: Current Branch Strategy
 
-  READ: agent-os/specs/{SELECTED_SPEC}/kanban.json
-
-  UPDATE:
-  - resumeContext.currentPhase = "2-complete"
-  - resumeContext.nextPhase = "3-execute-story"
-  - resumeContext.worktreePath = null
-  - resumeContext.gitBranch = "{BRANCH_NAME}"
-  - resumeContext.gitStrategy = "current-branch"
-  - resumeContext.currentStory = null
-  - resumeContext.lastAction = "Using current branch"
-  - resumeContext.nextAction = "Execute first story"
-  - execution.status = "ready"
-
-  ADD to changeLog[]:
-  ```json
+  CALL MCP TOOL: kanban_set_git_strategy
+  Input:
   {
-    "timestamp": "{NOW}",
-    "action": "phase_completed",
-    "storyId": null,
-    "details": "Phase 2 complete - Current branch strategy: {BRANCH_NAME}"
+    "specId": "{SELECTED_SPEC}",
+    "gitStrategy": "current-branch",
+    "gitBranch": "{BRANCH_NAME}"
   }
-  ```
 
-  WRITE: kanban.json
+  VERIFY: Tool returns {"success": true}
+  LOG: "Git current-branch strategy set via MCP tool"
+
+  NOTE: The MCP tool automatically handles all kanban.json updates
 
   OUTPUT to user:
   ---

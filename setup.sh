@@ -236,6 +236,22 @@ else
 fi
 
 # ═══════════════════════════════════════════════════════════
+# MCP SERVER (OPTIONAL)
+# ═══════════════════════════════════════════════════════════
+
+echo ""
+echo "═══ Installing Kanban MCP Server (optional) ═══"
+
+if command -v npx >/dev/null 2>&1; then
+  echo "Installing Kanban MCP Server..."
+  bash setup-mcp.sh
+else
+  echo "⚠️  npx not found - MCP server installation skipped"
+  echo "   Install Node.js to enable MCP tools for kanban management"
+  echo "   You can run setup-mcp.sh manually later after installing Node.js"
+fi
+
+# ═══════════════════════════════════════════════════════════
 # SUMMARY
 # ═══════════════════════════════════════════════════════════
 

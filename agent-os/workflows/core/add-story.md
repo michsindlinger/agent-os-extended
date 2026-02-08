@@ -278,7 +278,7 @@ Main agent does technical refinement guided by architect-refinement skill.
 
 <step number="6" name="update_kanban_json">
 
-### Step 6: Update Kanban JSON
+### Step 6: Add Story to Kanban via MCP Tool
 
 <mandatory_actions>
   1. CHECK: Does kanban.json exist?
@@ -287,93 +287,49 @@ Main agent does technical refinement guided by architect-refinement skill.
      ```
 
   2. IF kanban.json EXISTS:
-     READ: kanban.json
-     PARSE: JSON content
 
-     CREATE new story object:
-     ```json
+     EXTRACT from created story file:
+     - Story ID: [STORY_ID]
+     - Title: [STORY_TITLE]
+     - Type: [TYPE]
+     - Priority: [PRIORITY]
+     - Effort: [EFFORT_POINTS] (as number)
+     - Dependencies: [DEPENDENCY_IDS]
+     - Complexity: [XS/S/M]
+
+     CALL MCP TOOL: kanban_add_item
+     Input:
      {
-       "id": "[STORY_ID]",
-       "title": "[STORY_TITLE]",
-       "slug": "[SLUG]",
-       "classification": {
-         "type": "[TYPE from Step 2]",
+       "specId": "[SELECTED_SPEC]",
+       "itemType": "story",
+       "data": {
+         "id": "[STORY_ID]",
+         "title": "[STORY_TITLE]",
+         "type": "[TYPE]",
          "priority": "[PRIORITY]",
-         "effort": [EFFORT_POINTS],
-         "complexity": "[XS/S/M]"
-       },
-       "dependencies": [DEPENDENCY_IDS],
-       "blockedBy": [],
-       "blocks": [],
-       "status": "ready",
-       "phase": null,
-       "dorStatus": "ready",
-       "storyFile": "stories/story-[NUMBER]-[slug].md",
-       "timing": {
-         "createdAt": "[CURRENT_ISO_TIMESTAMP]",
-         "updatedAt": "[CURRENT_ISO_TIMESTAMP]",
-         "startedAt": null,
-         "completedAt": null
-       },
-       "implementation": {
-         "model": null,
-         "filesModified": [],
-         "testsAdded": [],
-         "commits": []
-       },
-       "verification": {
-         "dorChecked": true,
-         "dodChecked": false,
-         "testsPass": null,
-         "lintPass": null,
-         "buildPass": null
+         "effort": [EFFORT_NUMBER],
+         "status": "ready",
+         "dependencies": [DEPENDENCY_IDS]
        }
      }
-     ```
 
-     ADD story to kanban.json:
-       APPEND: New story to `stories` array
+     VERIFY: Tool returns {
+       "success": true,
+       "item": { "id": "...", "file": "stories/story-NNN-slug.md" },
+       "newTotal": N
+     }
 
-     UPDATE boardStatus:
-       ```
-       boardStatus.total += 1
-       boardStatus.ready += 1
-       ```
+     LOG: "Story {STORY_ID} added to kanban via MCP tool. Total stories: {newTotal}"
 
-     UPDATE statistics:
-       ```
-       statistics.totalEffort += [EFFORT_POINTS]
-       statistics.remainingEffort += [EFFORT_POINTS]
-       statistics.byType.[TYPE] += 1
-       statistics.byPriority.[PRIORITY] += 1
-       ```
-
-     UPDATE blockedBy for dependent stories:
-       IF new story has dependencies:
-         FOR EACH dependency_id in dependencies:
-           FIND: story with id = dependency_id
-           ADD: new story's id to that story's `blocks` array
-
-     ADD changeLog entry:
-       ```json
-       {
-         "timestamp": "[CURRENT_ISO_TIMESTAMP]",
-         "action": "story_added",
-         "storyId": "[STORY_ID]",
-         "details": "Story added via /add-story: [STORY_TITLE]"
-       }
-       ```
-
-     WRITE: Updated kanban.json
-
-     VERIFY: JSON is valid
-       ```bash
-       cat agent-os/specs/[SELECTED_SPEC]/kanban.json | python3 -m json.tool > /dev/null && echo "Valid JSON"
-       ```
-
-     NOTE to user:
-       "Story added to kanban.json.
-        It will be executed in the next /execute-tasks run."
+     NOTE: The MCP tool automatically:
+     - Validates story ID is unique
+     - Validates dependencies exist
+     - Reads the story .md file we created in Step 3
+     - Adds story to kanban.stories[]
+     - Updates boardStatus (total +1, ready +1)
+     - Recalculates statistics
+     - Adds changeLog entry
+     - All atomic with file lock (no corruption risk)
 
   ELSE (no kanban.json):
      NOTE to user:

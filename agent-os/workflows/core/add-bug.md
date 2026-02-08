@@ -1608,65 +1608,48 @@ Validate that the bug fix complies with size guidelines for single-session execu
 
 <step number="6" name="update_backlog_json">
 
-### Step 6: Update Backlog JSON
+### Step 6: Add Bug to Backlog via MCP Tool
 
 <mandatory_actions>
-  1. READ: agent-os/backlog/backlog.json (if not already in memory)
+  EXTRACT from previous steps:
+  - Bug Title: [BUG_TITLE]
+  - Description: [From bug story file or Step 2]
+  - Priority: [PRIORITY]
+  - Severity: [SEVERITY]
+  - Category: [CATEGORY]
+  - Root Cause: [Brief summary from Step 3]
+  - Related Spec: [IF applicable]
 
-  2. CREATE new item object:
-     ```json
-     {
-       "id": "[BUG_ID]",
-       "type": "bug",
-       "title": "[BUG_TITLE]",
-       "slug": "[SLUG]",
-       "priority": "[PRIORITY from Step 2]",
-       "severity": "[SEVERITY from Step 2]",
-       "effort": [EFFORT_POINTS],
-       "status": "ready",
-       "category": "[CATEGORY from Step 2: frontend/backend/devops/integration]",
-       "storyFile": "stories/bug-[BUG_ID]-[SLUG].md",
-       "rootCause": "[Brief root cause from Step 3]",
-       "createdAt": "[CURRENT_ISO_TIMESTAMP]",
-       "updatedAt": "[CURRENT_ISO_TIMESTAMP]",
-       "executedIn": null,
-       "completedAt": null
-     }
-     ```
+  CALL MCP TOOL: backlog_add_item
+  Input:
+  {
+    "itemType": "bug",
+    "data": {
+      "title": "[BUG_TITLE]",
+      "description": "[BUG_DESCRIPTION from Step 2]\n\nRoot Cause: [BRIEF_ROOT_CAUSE]\n\nSeverity: [SEVERITY]",
+      "priority": "[PRIORITY]",
+      "source": "/add-bug command",
+      "relatedSpec": "[RELATED_SPEC or null]",
+      "estimatedEffort": [EFFORT_POINTS],
+      "severity": "[SEVERITY]",
+      "reproduction": "[REPRODUCTION_STEPS from Step 2]"
+    }
+  }
 
-  3. ADD item to backlog.json:
-     APPEND: New item to `items` array
+  VERIFY: Tool returns {
+    "success": true,
+    "itemId": "BUG-NNN",
+    "path": "items/bug-NNN-slug.md"
+  }
 
-  4. UPDATE statistics:
-     ```
-     statistics.total += 1
-     statistics.byStatus.ready += 1
-     statistics.byType.bug += 1
-     statistics.byCategory.[CATEGORY] += 1
-     statistics.totalEffort += [EFFORT_POINTS]
-     ```
+  LOG: "Bug {itemId} added to backlog via MCP tool"
 
-  5. ADD changeLog entry:
-     ```json
-     {
-       "timestamp": "[CURRENT_ISO_TIMESTAMP]",
-       "action": "item_added",
-       "itemId": "[BUG_ID]",
-       "details": "Bug added via /add-bug: [BUG_TITLE]"
-     }
-     ```
-
-  6. UPDATE metadata:
-     ```
-     metadata.lastUpdated = "[CURRENT_ISO_TIMESTAMP]"
-     ```
-
-  7. WRITE: Updated backlog.json
-
-  8. VERIFY: JSON is valid
-     ```bash
-     cat agent-os/backlog/backlog.json | python3 -m json.tool > /dev/null && echo "Valid JSON"
-     ```
+  NOTE: The MCP tool automatically:
+  - Generates unique bug ID (BUG-001, BUG-002, etc.)
+  - Creates bug item file in agent-os/backlog/items/
+  - Updates backlog-index.json (creates if needed)
+  - Uses bug template with all metadata
+  - All atomic with file lock (no corruption risk)
 </mandatory_actions>
 
 </step>

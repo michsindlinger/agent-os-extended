@@ -4,6 +4,10 @@ test-project
 .agent-os.backup-*
 .claude/plans/
 
+# Kanban file locks
+**/*.lock
+**/kanban.json.lock
+
 # Private/Personal Content
 .claude/commands/agent-os/analyze-ferienwohnung.md
 agent-os/workflows/core/analyze-ferienwohnung.md
