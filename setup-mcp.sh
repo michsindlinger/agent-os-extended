@@ -66,18 +66,41 @@ if [ -f "$MCP_CONFIG" ]; then
     echo "   Skipping configuration update"
   else
     # Backup existing config
-    cp "$MCP_CONFIG" "${MCP_CONFIG}.backup"
+    cp "$MCP_CONFIG" "${MCP_CONFIG}.backup.$(date +%s)"
 
-    # Add kanban server entry (basic merge - assumes mcpServers object exists)
-    # For production, would use jq for proper JSON merging
-    echo "   Note: Manual merge may be needed if .mcp.json has complex structure"
-    echo "   Add this to your .mcp.json manually if auto-merge fails:"
-    echo ""
-    echo '   "kanban": {'
-    echo '     "command": "npx",'
-    echo '     "args": ["tsx", "'"$MCP_DIR"'/kanban-mcp-server.ts"]'
-    echo '   }'
-    echo ""
+    # Use Python to properly merge JSON (available on macOS/Linux)
+    python3 <<PYTHON
+import json
+import sys
+
+try:
+    with open('$MCP_CONFIG', 'r') as f:
+        config = json.load(f)
+
+    # Add kanban server
+    if 'mcpServers' not in config:
+        config['mcpServers'] = {}
+
+    config['mcpServers']['kanban'] = {
+        'command': 'npx',
+        'args': ['tsx', '$MCP_DIR/kanban-mcp-server.ts']
+    }
+
+    # Write updated config
+    with open('$MCP_CONFIG', 'w') as f:
+        json.dump(config, f, indent=2)
+
+    print('   ✅ Kanban MCP server added to .mcp.json')
+except Exception as e:
+    print(f'   ⚠️  Auto-merge failed: {e}')
+    print('   Please add manually:')
+    print('   "kanban": {')
+    print('     "command": "npx",')
+    print('     "args": ["tsx", "$MCP_DIR/kanban-mcp-server.ts"]')
+    print('   }')
+    sys.exit(0)  # Don't fail the script
+PYTHON
+
   fi
 else
   echo "📝 Creating new $MCP_CONFIG..."
