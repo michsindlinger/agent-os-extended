@@ -9,7 +9,7 @@ version: 4.0
 
 **JSON-Based Kanban:**
 - Creates `executions/kanban-${TODAY}.json` statt `.md`
-- Liest Items aus `backlog.json`
+- Liest Items aus `backlog-index.json` (v4.1+) or `backlog.json` (legacy fallback)
 - Strukturierte Daten für bessere Resumability
 
 ## Purpose
@@ -28,20 +28,26 @@ Create today's Kanban Board for backlog execution.
 </step>
 
 <step name="read_backlog_json">
-  ### Read Backlog JSON
+  ### Read Backlog Index
 
-  READ: agent-os/backlog/backlog.json
+  READ: agent-os/backlog/backlog-index.json
 
   IF file NOT exists:
-    ERROR: "backlog.json nicht gefunden. Führe erst /add-bug oder /add-todo aus."
-    STOP
+    # Fallback to legacy backlog.json for backward compatibility
+    TRY READ: agent-os/backlog/backlog.json
+    IF also not found:
+      ERROR: "Backlog not found. Run /add-bug or /add-todo first."
+      STOP
 
   EXTRACT: All items from items[] array
-  FILTER: items where status = "ready"
+  FILTER: items where status = "open" (backlog-index uses "open" instead of "ready")
 
   SET: ready_items = filtered items
   SET: blocked_items = items where status = "blocked"
   SET: TOTAL_ITEMS = ready_items.length
+
+  NOTE: Items in backlog-index.json have IDs like TODO-001, ITEM-001, DEBT-001, BUG-001.
+        These IDs will be used in the execution kanban (no ID transformation).
 </step>
 
 <step name="create_daily_kanban_json">
@@ -87,7 +93,7 @@ Create today's Kanban Board for backlog execution.
     },
 
     "sourceBacklog": {
-      "path": "../backlog.json",
+      "path": "../backlog-index.json",
       "snapshotAt": "{NOW}"
     },
 
@@ -142,18 +148,19 @@ Create today's Kanban Board for backlog execution.
 </step>
 
 <step name="update_backlog_json">
-  ### Update Backlog JSON
+  ### Update Backlog Index
 
-  READ: agent-os/backlog/backlog.json
+  READ: agent-os/backlog/backlog-index.json
 
-  UPDATE:
+  UPDATE or ADD resumeContext (if not exists):
   - resumeContext.activeKanban = "kanban-{TODAY}"
   - resumeContext.currentPhase = "executing"
   - resumeContext.lastExecution = "{TODAY}"
   - resumeContext.lastAction = "Execution started"
   - resumeContext.nextAction = "Execute items from kanban-{TODAY}"
 
-  ADD to executions[]:
+  UPDATE or ADD executions[] array (if not exists):
+  APPEND:
   ```json
   {
     "id": "kanban-{TODAY}",
@@ -163,7 +170,8 @@ Create today's Kanban Board for backlog execution.
   }
   ```
 
-  ADD to changeLog[]:
+  UPDATE or ADD changeLog[] array (if not exists):
+  APPEND:
   ```json
   {
     "timestamp": "{NOW}",
@@ -173,7 +181,13 @@ Create today's Kanban Board for backlog execution.
   }
   ```
 
-  WRITE: backlog.json
+  WRITE: backlog-index.json
+
+  NOTE: backlog-index.json structure:
+  - items[] - all backlog items with TODO/ITEM/DEBT/BUG IDs
+  - resumeContext - execution state
+  - executions[] - history of daily executions
+  - changeLog[] - audit trail
 </step>
 
 ## Phase Completion
@@ -188,7 +202,7 @@ Create today's Kanban Board for backlog execution.
   **Blocked:** {blocked_items.length}
 
   **Execution Kanban:** agent-os/backlog/executions/kanban-{TODAY}.json
-  **Backlog Updated:** agent-os/backlog/backlog.json
+  **Backlog Updated:** agent-os/backlog/backlog-index.json
 
   **Next Phase:** Execute First Item
 
