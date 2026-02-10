@@ -1467,10 +1467,29 @@ async function handleBacklogCompleteItem(
     const indexContent = await readFile(indexPath, 'utf-8');
     const index = JSON.parse(indexContent);
 
-    const indexItem = index.items?.find((i: any) => i.id === args.itemId);
+    // Find item by ID - handle ID mismatch between execution kanban and backlog index
+    // Execution kanban might use date-based IDs (2026-02-10-001)
+    // Backlog index uses TODO/ITEM/DEBT/BUG IDs (TODO-001)
+    // Match by file path instead of ID for robustness
+    const indexItem = index.items?.find((i: any) => {
+      // Try exact ID match first
+      if (i.id === args.itemId) return true;
+
+      // Try matching by source file (execution kanban stores sourceFile, index stores file)
+      if (item.sourceFile && i.file) {
+        const execFile = item.sourceFile.replace('items/', '');
+        const indexFile = i.file.replace('items/', '');
+        if (execFile === indexFile) return true;
+      }
+
+      return false;
+    });
+
     if (indexItem) {
       indexItem.status = 'done';
       indexItem.completedAt = now;
+    } else {
+      console.error(`[BacklogComplete] Warning: Item ${args.itemId} not found in backlog-index. File: ${item.sourceFile}`);
     }
 
     // Add changelog to backlog index
