@@ -1470,16 +1470,33 @@ async function handleBacklogCompleteItem(
     // Find item by ID - handle ID mismatch between execution kanban and backlog index
     // Execution kanban might use date-based IDs (2026-02-10-001)
     // Backlog index uses TODO/ITEM/DEBT/BUG IDs (TODO-001)
-    // Match by file path instead of ID for robustness
+    // Multiple fallback strategies for robustness
     const indexItem = index.items?.find((i: any) => {
-      // Try exact ID match first
+      // Strategy 1: Exact ID match
       if (i.id === args.itemId) return true;
 
-      // Try matching by source file (execution kanban stores sourceFile, index stores file)
+      // Strategy 2: Match by file path (strip directory)
       if (item.sourceFile && i.file) {
-        const execFile = item.sourceFile.replace('items/', '');
-        const indexFile = i.file.replace('items/', '');
+        const execFile = item.sourceFile.replace(/^(items|stories)\//, '');
+        const indexFile = i.file.replace(/^(items|stories)\//, '');
         if (execFile === indexFile) return true;
+      }
+
+      // Strategy 3: Extract number from both IDs and match (e.g., 2026-02-10-003 → 003, TODO-003 → 003)
+      const execNumMatch = args.itemId.match(/(\d+)$/);
+      const indexNumMatch = i.id.match(/(\d+)$/);
+      if (execNumMatch && indexNumMatch) {
+        const execNum = execNumMatch[1];
+        const indexNum = indexNumMatch[1];
+        // Also check that types are compatible (todo matches TODO, etc.)
+        const execType = item.type || args.itemId.toLowerCase();
+        const indexType = i.type || i.id.toLowerCase();
+        const typeMatch = execType.includes('todo') === indexType.includes('todo') ||
+                         execType.includes('debt') === indexType.includes('debt') ||
+                         execType.includes('bug') === indexType.includes('bug') ||
+                         execType.includes('item') === indexType.includes('item');
+
+        if (execNum === indexNum && typeMatch) return true;
       }
 
       return false;
