@@ -158,6 +158,9 @@ download_file "$REPO_URL/agent-os/workflows/core/execute-tasks/shared/skill-extr
 # Backlog / Quick tasks
 download_file "$REPO_URL/agent-os/workflows/core/add-todo.md" "agent-os/workflows/core/add-todo.md" "workflows"
 
+# Concept planning
+download_file "$REPO_URL/agent-os/workflows/core/plan-concept.md" "agent-os/workflows/core/plan-concept.md" "workflows"
+
 # Brainstorming
 download_file "$REPO_URL/agent-os/workflows/core/start-brainstorming.md" "agent-os/workflows/core/start-brainstorming.md" "workflows"
 download_file "$REPO_URL/agent-os/workflows/core/transfer-and-create-spec.md" "agent-os/workflows/core/transfer-and-create-spec.md" "workflows"
@@ -180,6 +183,12 @@ download_file "$REPO_URL/agent-os/workflows/core/migrate-kanban.md" "agent-os/wo
 
 # Feedback processing
 download_file "$REPO_URL/agent-os/workflows/core/process-feedback.md" "agent-os/workflows/core/process-feedback.md" "workflows"
+
+# OpenClaw Strategy
+mkdir -p agent-os/workflows/openclaw
+mkdir -p agent-os/templates/openclaw
+download_file "$REPO_URL/agent-os/workflows/openclaw/openclaw-strategy.md" "agent-os/workflows/openclaw/openclaw-strategy.md" "workflows"
+download_file "$REPO_URL/agent-os/templates/openclaw/strategy-document-template.md" "agent-os/templates/openclaw/strategy-document-template.md" "templates"
 
 # ═══════════════════════════════════════════════════════════
 # CONFIGURATION
