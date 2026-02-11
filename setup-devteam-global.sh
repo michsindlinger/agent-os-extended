@@ -73,6 +73,7 @@ mkdir -p "$GLOBAL_DIR/templates/docs"
 mkdir -p "$GLOBAL_DIR/templates/json"
 mkdir -p "$GLOBAL_DIR/templates/schemas"
 mkdir -p "$GLOBAL_DIR/templates/feasibility"
+mkdir -p "$GLOBAL_DIR/templates/concept"
 
 # ═══════════════════════════════════════════════════════════
 # STANDARDS
@@ -122,6 +123,17 @@ download_file "$REPO_URL/agent-os/templates/product/secrets-template.md" "$GLOBA
 # Feasibility templates (1)
 echo "→ Feasibility templates (1)..."
 download_file "$REPO_URL/agent-os/templates/feasibility/feasibility-report.md" "$GLOBAL_DIR/templates/feasibility/feasibility-report.md"
+
+# Concept templates (7)
+echo "→ Concept templates (7)..."
+mkdir -p "$GLOBAL_DIR/templates/concept"
+download_file "$REPO_URL/agent-os/templates/concept/concept-analysis-template.md" "$GLOBAL_DIR/templates/concept/concept-analysis-template.md"
+download_file "$REPO_URL/agent-os/templates/concept/domain-research-template.md" "$GLOBAL_DIR/templates/concept/domain-research-template.md"
+download_file "$REPO_URL/agent-os/templates/concept/competence-map-template.md" "$GLOBAL_DIR/templates/concept/competence-map-template.md"
+download_file "$REPO_URL/agent-os/templates/concept/proposal-concept-template.md" "$GLOBAL_DIR/templates/concept/proposal-concept-template.md"
+download_file "$REPO_URL/agent-os/templates/concept/pitch-script-template.md" "$GLOBAL_DIR/templates/concept/pitch-script-template.md"
+download_file "$REPO_URL/agent-os/templates/concept/poc-plan-template.md" "$GLOBAL_DIR/templates/concept/poc-plan-template.md"
+download_file "$REPO_URL/agent-os/templates/concept/overview-template.md" "$GLOBAL_DIR/templates/concept/overview-template.md"
 
 # Platform templates (7)
 echo "→ Platform templates (7)..."
@@ -309,11 +321,12 @@ echo ""
 echo "  agents/ (1 file)"
 echo "    └── platform-architect.md"
 echo ""
-echo "  templates/ (~70 files)"
+echo "  templates/ (~77 files)"
 echo "    ├── CLAUDE-LITE.md (for single products)"
 echo "    ├── CLAUDE-PLATFORM.md (for platforms)"
 echo "    ├── product/ (10)"
 echo "    ├── platform/ (7)"
+echo "    ├── concept/ (7) ← proposal-concept, pitch-script, poc-plan, ..."
 echo "    ├── skills/ (v3.0 - NEW STRUCTURE)"
 echo "    │   ├── Universal (3): quality-gates, po-requirements, architect-refinement"
 echo "    │   ├── frontend/"

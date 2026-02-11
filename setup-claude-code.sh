@@ -91,6 +91,9 @@ command_files=(
     # Feedback processing
     "process-feedback.md"
 
+    # Concept planning
+    "plan-concept.md"
+
     # Brainstorming
     "start-brainstorming.md"
     "transfer-and-create-spec.md"
@@ -103,6 +106,9 @@ command_files=(
 
     # Accessibility validation
     "validate-accessibility-report.md"
+
+    # OpenClaw Strategy
+    "openclaw-strategy.md"
 )
 
 for file in "${command_files[@]}"; do
@@ -157,7 +163,7 @@ echo ""
 echo "📁 Installed Structure:"
 echo ""
 echo "  .claude/"
-echo "    ├── commands/agent-os/   (25 core commands)"
+echo "    ├── commands/agent-os/   (26 core commands)"
 echo "    ├── skills/              (1 user-invocable skill)"
 echo "    └── agents/              (10 utility agents)"
 echo ""
@@ -196,6 +202,9 @@ echo "  Self-Learning (NEW in v3.0):"
 echo "    /add-learning             → Add insight to skill dos-and-donts.md"
 echo "    /add-domain              → Add business domain area documentation"
 echo ""
+echo "  Concept Planning:"
+echo "    /plan-concept             → Create proposal package from project inquiry"
+echo ""
 echo "  Brainstorming:"
 echo "    /start-brainstorming      → Interactive idea exploration"
 echo "    /transfer-and-create-spec → Convert brainstorming to spec"
@@ -217,6 +226,10 @@ echo "    /migrate-kanban           → Migrate MD kanbans to JSON format"
 echo ""
 echo "  Feedback Processing:"
 echo "    /process-feedback         → Analyze customer feedback into specs/bugs/todos"
+echo ""
+echo "  OpenClaw Strategy:"
+echo "    /openclaw-strategy          → Interactive strategy advisor for OpenClaw automation"
+echo "                                   (Goal → Discovery → Strategy Document)"
 echo ""
 echo "  Plan Review:"
 echo "    /review-implementation-plan → Standalone review of implementation plans"
