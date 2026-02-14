@@ -1,12 +1,12 @@
 #!/bin/bash
 
-# Agent OS Extended - DevTeam System Installation
-# Installs core Agent OS structure for DevTeam workflow
+# Specwright - DevTeam System Installation
+# Installs core Specwright structure for DevTeam workflow
 # Version: 2.3 - Phase-based execute-tasks for 80% context reduction
 
 set -e
 
-REPO_URL="https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main"
+REPO_URL="https://raw.githubusercontent.com/michsindlinger/specwright/main"
 OVERWRITE_WORKFLOWS=false
 OVERWRITE_STANDARDS=false
 
@@ -22,7 +22,7 @@ while [[ $# -gt 0 ]]; do
             shift
             ;;
         -h|--help)
-            echo "Agent OS DevTeam System - Project Installation"
+            echo "Specwright DevTeam System - Project Installation"
             echo ""
             echo "Usage: $0 [options]"
             echo ""
@@ -31,7 +31,7 @@ while [[ $# -gt 0 ]]; do
             echo "  --overwrite-standards      Overwrite existing standards files"
             echo "  -h, --help                 Show this help message"
             echo ""
-            echo "Installs Agent OS DevTeam system in current project."
+            echo "Installs Specwright DevTeam system in current project."
             exit 0
             ;;
         *)
@@ -42,18 +42,31 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-echo "🤖 Agent OS DevTeam System v2.3 - Project Installation"
+echo "🤖 Specwright DevTeam System v2.3 - Project Installation"
 echo "Installing core structure in current project..."
 echo ""
 
+# Legacy detection: Check for existing agent-os/ installation
+if [[ -d "agent-os" && ! -L "agent-os" ]]; then
+    echo "⚠️  Detected existing agent-os/ installation."
+    echo "   Agent OS has been renamed to Specwright."
+    echo ""
+    echo "   To migrate your existing project, run:"
+    echo "   curl -fsSL https://raw.githubusercontent.com/michsindlinger/specwright/main/migrate-to-specwright.sh | bash"
+    echo ""
+    echo "   Or use --fresh flag for a clean install alongside existing agent-os/."
+    echo ""
+    exit 1
+fi
+
 # Create project directories
 echo "Creating directory structure..."
-mkdir -p agent-os/standards
-mkdir -p agent-os/workflows/core
-mkdir -p agent-os/workflows/meta
-mkdir -p agent-os/templates  # For optional project overrides
-mkdir -p agent-os/templates/product  # For product templates
-mkdir -p agent-os/docs  # Documentation and guides
+mkdir -p specwright/standards
+mkdir -p specwright/workflows/core
+mkdir -p specwright/workflows/meta
+mkdir -p specwright/templates  # For optional project overrides
+mkdir -p specwright/templates/product  # For product templates
+mkdir -p specwright/docs  # Documentation and guides
 
 # Function to download file if it doesn't exist or if overwrite is enabled
 download_file() {
@@ -83,9 +96,9 @@ echo ""
 echo "═══ Installing Standards ═══"
 
 # Core standards only (global fallback available via setup-devteam-global.sh)
-download_file "$REPO_URL/agent-os/standards/code-style.md" "agent-os/standards/code-style.md" "standards"
-download_file "$REPO_URL/agent-os/standards/best-practices.md" "agent-os/standards/best-practices.md" "standards"
-download_file "$REPO_URL/agent-os/standards/plan-review-guidelines.md" "agent-os/standards/plan-review-guidelines.md" "standards"
+download_file "$REPO_URL/specwright/standards/code-style.md" "specwright/standards/code-style.md" "standards"
+download_file "$REPO_URL/specwright/standards/best-practices.md" "specwright/standards/best-practices.md" "standards"
+download_file "$REPO_URL/specwright/standards/plan-review-guidelines.md" "specwright/standards/plan-review-guidelines.md" "standards"
 
 # ═══════════════════════════════════════════════════════════
 # DOCS - Documentation and Guides
@@ -94,9 +107,9 @@ download_file "$REPO_URL/agent-os/standards/plan-review-guidelines.md" "agent-os
 echo ""
 echo "═══ Installing Documentation ═══"
 
-download_file "$REPO_URL/agent-os/docs/story-sizing-guidelines.md" "agent-os/docs/story-sizing-guidelines.md" "docs"
-download_file "$REPO_URL/agent-os/docs/mcp-setup-guide.md" "agent-os/docs/mcp-setup-guide.md" "docs"
-download_file "$REPO_URL/agent-os/docs/agent-learning-guide.md" "agent-os/docs/agent-learning-guide.md" "docs"
+download_file "$REPO_URL/specwright/docs/story-sizing-guidelines.md" "specwright/docs/story-sizing-guidelines.md" "docs"
+download_file "$REPO_URL/specwright/docs/mcp-setup-guide.md" "specwright/docs/mcp-setup-guide.md" "docs"
+download_file "$REPO_URL/specwright/docs/agent-learning-guide.md" "specwright/docs/agent-learning-guide.md" "docs"
 
 # ═══════════════════════════════════════════════════════════
 # WORKFLOWS - Core DevTeam Workflows Only
@@ -106,89 +119,89 @@ echo ""
 echo "═══ Installing Core Workflows ═══"
 
 # Meta workflow
-download_file "$REPO_URL/agent-os/workflows/meta/pre-flight.md" "agent-os/workflows/meta/pre-flight.md" "workflows"
+download_file "$REPO_URL/specwright/workflows/meta/pre-flight.md" "specwright/workflows/meta/pre-flight.md" "workflows"
 
 # Security 
-download_file "$REPO_URL/agent-os/templates/product/secrets-template.md" "agent-os/templates/product/secrets-template.md" "templates" 
+download_file "$REPO_URL/specwright/templates/product/secrets-template.md" "specwright/templates/product/secrets-template.md" "templates" 
 
 # Product planning
-download_file "$REPO_URL/agent-os/workflows/core/plan-product.md" "agent-os/workflows/core/plan-product.md" "workflows"
-download_file "$REPO_URL/agent-os/workflows/core/analyze-feasibility.md" "agent-os/workflows/core/analyze-feasibility.md" "workflows"
+download_file "$REPO_URL/specwright/workflows/core/plan-product.md" "specwright/workflows/core/plan-product.md" "workflows"
+download_file "$REPO_URL/specwright/workflows/core/analyze-feasibility.md" "specwright/workflows/core/analyze-feasibility.md" "workflows"
 
 # Platform planning
-download_file "$REPO_URL/agent-os/workflows/core/plan-platform.md" "agent-os/workflows/core/plan-platform.md" "workflows"
+download_file "$REPO_URL/specwright/workflows/core/plan-platform.md" "specwright/workflows/core/plan-platform.md" "workflows"
 
 # Blocker analysis
-download_file "$REPO_URL/agent-os/workflows/core/analyze-blockers.md" "agent-os/workflows/core/analyze-blockers.md" "workflows"
+download_file "$REPO_URL/specwright/workflows/core/analyze-blockers.md" "specwright/workflows/core/analyze-blockers.md" "workflows"
 
 # Milestone planning
-download_file "$REPO_URL/agent-os/workflows/core/plan-milestones.md" "agent-os/workflows/core/plan-milestones.md" "workflows"
+download_file "$REPO_URL/specwright/workflows/core/plan-milestones.md" "specwright/workflows/core/plan-milestones.md" "workflows"
 
 # Team setup
-download_file "$REPO_URL/agent-os/workflows/core/build-development-team.md" "agent-os/workflows/core/build-development-team.md" "workflows"
+download_file "$REPO_URL/specwright/workflows/core/build-development-team.md" "specwright/workflows/core/build-development-team.md" "workflows"
 
 # Spec development
-download_file "$REPO_URL/agent-os/workflows/core/create-spec.md" "agent-os/workflows/core/create-spec.md" "workflows"
-download_file "$REPO_URL/agent-os/workflows/core/add-story.md" "agent-os/workflows/core/add-story.md" "workflows"
-download_file "$REPO_URL/agent-os/workflows/core/retroactive-doc.md" "agent-os/workflows/core/retroactive-doc.md" "workflows"
-download_file "$REPO_URL/agent-os/workflows/core/retroactive-spec.md" "agent-os/workflows/core/retroactive-spec.md" "workflows"
-download_file "$REPO_URL/agent-os/workflows/core/change-spec.md" "agent-os/workflows/core/change-spec.md" "workflows"
+download_file "$REPO_URL/specwright/workflows/core/create-spec.md" "specwright/workflows/core/create-spec.md" "workflows"
+download_file "$REPO_URL/specwright/workflows/core/add-story.md" "specwright/workflows/core/add-story.md" "workflows"
+download_file "$REPO_URL/specwright/workflows/core/retroactive-doc.md" "specwright/workflows/core/retroactive-doc.md" "workflows"
+download_file "$REPO_URL/specwright/workflows/core/retroactive-spec.md" "specwright/workflows/core/retroactive-spec.md" "workflows"
+download_file "$REPO_URL/specwright/workflows/core/change-spec.md" "specwright/workflows/core/change-spec.md" "workflows"
 
 # Bug management
-download_file "$REPO_URL/agent-os/workflows/core/add-bug.md" "agent-os/workflows/core/add-bug.md" "workflows"
-download_file "$REPO_URL/agent-os/workflows/core/create-bug.md" "agent-os/workflows/core/create-bug.md" "workflows"
-download_file "$REPO_URL/agent-os/workflows/core/execute-bug.md" "agent-os/workflows/core/execute-bug.md" "workflows"
+download_file "$REPO_URL/specwright/workflows/core/add-bug.md" "specwright/workflows/core/add-bug.md" "workflows"
+download_file "$REPO_URL/specwright/workflows/core/create-bug.md" "specwright/workflows/core/create-bug.md" "workflows"
+download_file "$REPO_URL/specwright/workflows/core/execute-bug.md" "specwright/workflows/core/execute-bug.md" "workflows"
 
 # Task execution (Phase-based architecture v3.0)
-mkdir -p agent-os/workflows/core/execute-tasks
-mkdir -p agent-os/workflows/core/execute-tasks/shared
-download_file "$REPO_URL/agent-os/workflows/core/execute-tasks/entry-point.md" "agent-os/workflows/core/execute-tasks/entry-point.md" "workflows"
-download_file "$REPO_URL/agent-os/workflows/core/execute-tasks/spec-phase-1.md" "agent-os/workflows/core/execute-tasks/spec-phase-1.md" "workflows"
-download_file "$REPO_URL/agent-os/workflows/core/execute-tasks/spec-phase-2.md" "agent-os/workflows/core/execute-tasks/spec-phase-2.md" "workflows"
-download_file "$REPO_URL/agent-os/workflows/core/execute-tasks/spec-phase-3.md" "agent-os/workflows/core/execute-tasks/spec-phase-3.md" "workflows"
-download_file "$REPO_URL/agent-os/workflows/core/execute-tasks/spec-phase-4-5.md" "agent-os/workflows/core/execute-tasks/spec-phase-4-5.md" "workflows"
-download_file "$REPO_URL/agent-os/workflows/core/execute-tasks/spec-phase-5.md" "agent-os/workflows/core/execute-tasks/spec-phase-5.md" "workflows"
-download_file "$REPO_URL/agent-os/workflows/core/execute-tasks/backlog-phase-1.md" "agent-os/workflows/core/execute-tasks/backlog-phase-1.md" "workflows"
-download_file "$REPO_URL/agent-os/workflows/core/execute-tasks/backlog-phase-2.md" "agent-os/workflows/core/execute-tasks/backlog-phase-2.md" "workflows"
-download_file "$REPO_URL/agent-os/workflows/core/execute-tasks/backlog-phase-3.md" "agent-os/workflows/core/execute-tasks/backlog-phase-3.md" "workflows"
-download_file "$REPO_URL/agent-os/workflows/core/execute-tasks/shared/resume-context.md" "agent-os/workflows/core/execute-tasks/shared/resume-context.md" "workflows"
-download_file "$REPO_URL/agent-os/workflows/core/execute-tasks/shared/error-handling.md" "agent-os/workflows/core/execute-tasks/shared/error-handling.md" "workflows"
-download_file "$REPO_URL/agent-os/workflows/core/execute-tasks/shared/skill-extraction.md" "agent-os/workflows/core/execute-tasks/shared/skill-extraction.md" "workflows"
+mkdir -p specwright/workflows/core/execute-tasks
+mkdir -p specwright/workflows/core/execute-tasks/shared
+download_file "$REPO_URL/specwright/workflows/core/execute-tasks/entry-point.md" "specwright/workflows/core/execute-tasks/entry-point.md" "workflows"
+download_file "$REPO_URL/specwright/workflows/core/execute-tasks/spec-phase-1.md" "specwright/workflows/core/execute-tasks/spec-phase-1.md" "workflows"
+download_file "$REPO_URL/specwright/workflows/core/execute-tasks/spec-phase-2.md" "specwright/workflows/core/execute-tasks/spec-phase-2.md" "workflows"
+download_file "$REPO_URL/specwright/workflows/core/execute-tasks/spec-phase-3.md" "specwright/workflows/core/execute-tasks/spec-phase-3.md" "workflows"
+download_file "$REPO_URL/specwright/workflows/core/execute-tasks/spec-phase-4-5.md" "specwright/workflows/core/execute-tasks/spec-phase-4-5.md" "workflows"
+download_file "$REPO_URL/specwright/workflows/core/execute-tasks/spec-phase-5.md" "specwright/workflows/core/execute-tasks/spec-phase-5.md" "workflows"
+download_file "$REPO_URL/specwright/workflows/core/execute-tasks/backlog-phase-1.md" "specwright/workflows/core/execute-tasks/backlog-phase-1.md" "workflows"
+download_file "$REPO_URL/specwright/workflows/core/execute-tasks/backlog-phase-2.md" "specwright/workflows/core/execute-tasks/backlog-phase-2.md" "workflows"
+download_file "$REPO_URL/specwright/workflows/core/execute-tasks/backlog-phase-3.md" "specwright/workflows/core/execute-tasks/backlog-phase-3.md" "workflows"
+download_file "$REPO_URL/specwright/workflows/core/execute-tasks/shared/resume-context.md" "specwright/workflows/core/execute-tasks/shared/resume-context.md" "workflows"
+download_file "$REPO_URL/specwright/workflows/core/execute-tasks/shared/error-handling.md" "specwright/workflows/core/execute-tasks/shared/error-handling.md" "workflows"
+download_file "$REPO_URL/specwright/workflows/core/execute-tasks/shared/skill-extraction.md" "specwright/workflows/core/execute-tasks/shared/skill-extraction.md" "workflows"
 
 # Backlog / Quick tasks
-download_file "$REPO_URL/agent-os/workflows/core/add-todo.md" "agent-os/workflows/core/add-todo.md" "workflows"
+download_file "$REPO_URL/specwright/workflows/core/add-todo.md" "specwright/workflows/core/add-todo.md" "workflows"
 
 # Concept planning
-download_file "$REPO_URL/agent-os/workflows/core/plan-concept.md" "agent-os/workflows/core/plan-concept.md" "workflows"
+download_file "$REPO_URL/specwright/workflows/core/plan-concept.md" "specwright/workflows/core/plan-concept.md" "workflows"
 
 # Brainstorming
-download_file "$REPO_URL/agent-os/workflows/core/start-brainstorming.md" "agent-os/workflows/core/start-brainstorming.md" "workflows"
-download_file "$REPO_URL/agent-os/workflows/core/transfer-and-create-spec.md" "agent-os/workflows/core/transfer-and-create-spec.md" "workflows"
-download_file "$REPO_URL/agent-os/workflows/core/transfer-and-create-bug.md" "agent-os/workflows/core/transfer-and-create-bug.md" "workflows"
-download_file "$REPO_URL/agent-os/workflows/core/transfer-and-plan-product.md" "agent-os/workflows/core/transfer-and-plan-product.md" "workflows"
+download_file "$REPO_URL/specwright/workflows/core/start-brainstorming.md" "specwright/workflows/core/start-brainstorming.md" "workflows"
+download_file "$REPO_URL/specwright/workflows/core/transfer-and-create-spec.md" "specwright/workflows/core/transfer-and-create-spec.md" "workflows"
+download_file "$REPO_URL/specwright/workflows/core/transfer-and-create-bug.md" "specwright/workflows/core/transfer-and-create-bug.md" "workflows"
+download_file "$REPO_URL/specwright/workflows/core/transfer-and-plan-product.md" "specwright/workflows/core/transfer-and-plan-product.md" "workflows"
 
 # Profile optimization
-download_file "$REPO_URL/agent-os/workflows/core/optimize-profile.md" "agent-os/workflows/core/optimize-profile.md" "workflows"
-download_file "$REPO_URL/agent-os/workflows/core/optimize-profile-phase2.md" "agent-os/workflows/core/optimize-profile-phase2.md" "workflows"
+download_file "$REPO_URL/specwright/workflows/core/optimize-profile.md" "specwright/workflows/core/optimize-profile.md" "workflows"
+download_file "$REPO_URL/specwright/workflows/core/optimize-profile-phase2.md" "specwright/workflows/core/optimize-profile-phase2.md" "workflows"
 
 # Skill management
-download_file "$REPO_URL/agent-os/workflows/core/add-skill.md" "agent-os/workflows/core/add-skill.md" "workflows"
-download_file "$REPO_URL/agent-os/workflows/core/migrate-devteam-v2.md" "agent-os/workflows/core/migrate-devteam-v2.md" "workflows"
+download_file "$REPO_URL/specwright/workflows/core/add-skill.md" "specwright/workflows/core/add-skill.md" "workflows"
+download_file "$REPO_URL/specwright/workflows/core/migrate-devteam-v2.md" "specwright/workflows/core/migrate-devteam-v2.md" "workflows"
 
 # Accessibility validation
-download_file "$REPO_URL/agent-os/workflows/core/validate-accessibility-report.md" "agent-os/workflows/core/validate-accessibility-report.md" "workflows"
+download_file "$REPO_URL/specwright/workflows/core/validate-accessibility-report.md" "specwright/workflows/core/validate-accessibility-report.md" "workflows"
 
 # Migration
-download_file "$REPO_URL/agent-os/workflows/core/migrate-kanban.md" "agent-os/workflows/core/migrate-kanban.md" "workflows"
+download_file "$REPO_URL/specwright/workflows/core/migrate-kanban.md" "specwright/workflows/core/migrate-kanban.md" "workflows"
 
 # Feedback processing
-download_file "$REPO_URL/agent-os/workflows/core/process-feedback.md" "agent-os/workflows/core/process-feedback.md" "workflows"
+download_file "$REPO_URL/specwright/workflows/core/process-feedback.md" "specwright/workflows/core/process-feedback.md" "workflows"
 
 # OpenClaw Strategy
-mkdir -p agent-os/workflows/openclaw
-mkdir -p agent-os/templates/openclaw
-download_file "$REPO_URL/agent-os/workflows/openclaw/openclaw-strategy.md" "agent-os/workflows/openclaw/openclaw-strategy.md" "workflows"
-download_file "$REPO_URL/agent-os/templates/openclaw/strategy-document-template.md" "agent-os/templates/openclaw/strategy-document-template.md" "templates"
+mkdir -p specwright/workflows/openclaw
+mkdir -p specwright/templates/openclaw
+download_file "$REPO_URL/specwright/workflows/openclaw/openclaw-strategy.md" "specwright/workflows/openclaw/openclaw-strategy.md" "workflows"
+download_file "$REPO_URL/specwright/templates/openclaw/strategy-document-template.md" "specwright/templates/openclaw/strategy-document-template.md" "templates"
 
 # ═══════════════════════════════════════════════════════════
 # CONFIGURATION
@@ -197,9 +210,9 @@ download_file "$REPO_URL/agent-os/templates/openclaw/strategy-document-template.
 echo ""
 echo "═══ Setting up Configuration ═══"
 
-if [[ ! -f "agent-os/config.yml" ]]; then
-    cat > agent-os/config.yml << 'EOF'
-# Agent OS DevTeam System Configuration
+if [[ ! -f "specwright/config.yml" ]]; then
+    cat > specwright/config.yml << 'EOF'
+# Specwright DevTeam System Configuration
 # Version: 2.1
 
 # Project Information
@@ -217,14 +230,14 @@ workflows:
 # Standards Lookup
 standards:
   # Order: project first, then global fallback
-  # Project: .agent-os/standards/code-style.md
-  # Global: ~/.agent-os/standards/code-style.md
+  # Project: .specwright/standards/code-style.md
+  # Global: ~/.specwright/standards/code-style.md
   use_global_fallback: true
 EOF
-    echo "✓ Created agent-os/config.yml"
-    echo "📝 Customize project.name in agent-os/config.yml"
+    echo "✓ Created specwright/config.yml"
+    echo "📝 Customize project.name in specwright/config.yml"
 else
-    echo "Skipping agent-os/config.yml (already exists)"
+    echo "Skipping specwright/config.yml (already exists)"
 fi
 
 # ═══════════════════════════════════════════════════════════
@@ -266,12 +279,12 @@ fi
 
 echo ""
 echo "═══════════════════════════════════════════"
-echo "✅ Agent OS DevTeam System v2.3 Installed!"
+echo "✅ Specwright DevTeam System v2.3 Installed!"
 echo "═══════════════════════════════════════════"
 echo ""
 echo "📁 Installed Structure:"
 echo ""
-echo "  agent-os/"
+echo "  specwright/"
 echo "    ├── standards/              (3 core files)"
 echo "    ├── workflows/core/         (25 core workflows)"
 echo "    │   └── execute-tasks/      (12 phase files - 80% less context)"
@@ -289,12 +302,12 @@ echo "  • Config: 1 file"
 echo "  • Total: 42 files + CLAUDE.md"
 echo ""
 echo "📚 Templates (53 files) installed globally:"
-echo "  Templates are loaded from ~/.agent-os/templates/"
+echo "  Templates are loaded from ~/.specwright/templates/"
 echo "  Run setup-devteam-global.sh if not yet installed."
 echo ""
 echo "  Hybrid lookup:"
-echo "    1. Check: agent-os/templates/ (project override)"
-echo "    2. Fallback: ~/.agent-os/templates/ (global)"
+echo "    1. Check: specwright/templates/ (project override)"
+echo "    2. Fallback: ~/.specwright/templates/ (global)"
 echo ""
 echo "🎯 Next Steps:"
 echo ""
@@ -303,7 +316,7 @@ echo "   nano CLAUDE.md"
 echo "   → Add your project name, description, tech stack hints"
 echo ""
 echo "2. Install Claude Code support:"
-echo "   curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/setup-claude-code.sh | bash"
+echo "   curl -sSL https://raw.githubusercontent.com/michsindlinger/specwright/main/setup-claude-code.sh | bash"
 echo "   → Installs .claude/commands/ and .claude/agents/"
 echo ""
 echo "3. Start your workflow:"
@@ -314,7 +327,7 @@ echo ""
 echo "4. Build your DevTeam:"
 echo "   /build-development-team"
 echo "   → Creates dev-team agents from templates"
-echo "   → Generates skills to agent-os/skills/ with skill-index.md"
+echo "   → Generates skills to specwright/skills/ with skill-index.md"
 echo "   → Creates dod.md and dor.md"
 echo ""
 echo "5. Concept planning (optional):"
@@ -342,15 +355,15 @@ echo "    /openclaw-strategy → Interactive strategy advisor for automation goa
 echo ""
 echo "📚 Documentation:"
 echo "  • Installation Guide: INSTALL.md (created after Claude Code setup)"
-echo "  • Workflow Diagram: agent-os-workflow-complete.md"
+echo "  • Workflow Diagram: specwright-workflow-complete.md"
 echo ""
 echo "⚠️  Prerequisites:"
 echo ""
-echo "  Templates are loaded from ~/.agent-os/templates/"
+echo "  Templates are loaded from ~/.specwright/templates/"
 echo "  If not yet installed, run:"
-echo "    curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/setup-devteam-global.sh | bash"
+echo "    curl -sSL https://raw.githubusercontent.com/michsindlinger/specwright/main/setup-devteam-global.sh | bash"
 echo ""
-echo "  This installs 70 templates + 3 global standards to ~/.agent-os/"
+echo "  This installs 70 templates + 3 global standards to ~/.specwright/"
 echo ""
-echo "For more info: https://github.com/michsindlinger/agent-os-extended"
+echo "For more info: https://github.com/michsindlinger/specwright"
 echo ""

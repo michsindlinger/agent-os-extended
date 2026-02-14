@@ -1,30 +1,39 @@
 #!/bin/bash
 
-# Agent OS Extended - Claude Code Setup
+# Specwright - Claude Code Setup
 # Installs Claude Code specific commands and agents for DevTeam workflow
 # Version: 3.0 - Direct Execution with Self-Learning Skills
 
 set -e
 
-REPO_URL="https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main"
+REPO_URL="https://raw.githubusercontent.com/michsindlinger/specwright/main"
 
-echo "🤖 Agent OS DevTeam System - Claude Code Setup"
+echo "🤖 Specwright DevTeam System - Claude Code Setup"
 echo "Installing Claude Code configuration in current project..."
 echo ""
 
-# Check if base Agent OS is installed in project
-if [[ ! -d "agent-os/templates" ]] || [[ ! -d "agent-os/workflows" ]]; then
-    echo "❌ Error: Agent OS base installation not found in current project."
+# Check if base Specwright is installed in project
+if [[ ! -d "specwright/templates" ]] || [[ ! -d "specwright/workflows" ]]; then
+    # Check for legacy agent-os/ installation
+    if [[ -d "agent-os/templates" ]] || [[ -d "agent-os/workflows" ]]; then
+        echo "⚠️  Detected existing agent-os/ installation (not yet migrated to Specwright)."
+        echo ""
+        echo "Please migrate first:"
+        echo "  curl -fsSL https://raw.githubusercontent.com/michsindlinger/specwright/main/migrate-to-specwright.sh | bash"
+        echo ""
+        exit 1
+    fi
+    echo "❌ Error: Specwright base installation not found in current project."
     echo ""
     echo "Please run the base setup first:"
-    echo "  curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/setup.sh | bash"
+    echo "  curl -sSL https://raw.githubusercontent.com/michsindlinger/specwright/main/setup.sh | bash"
     echo ""
     exit 1
 fi
 
 # Create Claude Code specific directories
 echo "Creating Claude Code directories..."
-mkdir -p .claude/commands/agent-os
+mkdir -p .claude/commands/specwright
 mkdir -p .claude/agents
 
 # Function to download file
@@ -112,7 +121,7 @@ command_files=(
 )
 
 for file in "${command_files[@]}"; do
-    download_file "$REPO_URL/.claude/commands/agent-os/$file" ".claude/commands/agent-os/$file"
+    download_file "$REPO_URL/.claude/commands/specwright/$file" ".claude/commands/specwright/$file"
 done
 
 # ═══════════════════════════════════════════════════════════
@@ -163,7 +172,7 @@ echo ""
 echo "📁 Installed Structure:"
 echo ""
 echo "  .claude/"
-echo "    ├── commands/agent-os/   (26 core commands)"
+echo "    ├── commands/specwright/   (26 core commands)"
 echo "    ├── skills/              (1 user-invocable skill)"
 echo "    └── agents/              (10 utility agents)"
 echo ""
@@ -297,8 +306,8 @@ echo "   → Executes quick tasks without git worktree"
 echo ""
 echo "📚 Learn More:"
 echo "  • See INSTALL.md for detailed guide"
-echo "  • See agent-os-workflow-complete.md for system diagram"
+echo "  • See specwright-workflow-complete.md for system diagram"
 echo "  • Check CLAUDE.md for project-specific instructions"
 echo ""
-echo "For more info: https://github.com/michsindlinger/agent-os-extended"
+echo "For more info: https://github.com/michsindlinger/specwright"
 echo ""

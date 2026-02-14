@@ -1,22 +1,22 @@
 #!/bin/bash
 
-# Agent OS Extended - Gemini CLI Project-level Setup
-# Installs Gemini CLI specific Agent OS files in the current project
+# Specwright - Gemini CLI Project-level Setup
+# Installs Gemini CLI specific Specwright files in the current project
 
 set -e
 
-REPO_URL="https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main"
+REPO_URL="https://raw.githubusercontent.com/michsindlinger/specwright/main"
 
-echo "🤖 Agent OS Extended - Gemini CLI Setup"
+echo "🤖 Specwright - Gemini CLI Setup"
 echo "Installing Gemini CLI configuration in current project..."
 echo ""
 
-# Check if base Agent OS is installed in project
-if [[ ! -d ".agent-os/standards" ]] || [[ ! -d ".agent-os/instructions" ]]; then
-    echo "❌ Error: Agent OS base installation not found in current project."
+# Check if base Specwright is installed in project
+if [[ ! -d ".specwright/standards" ]] || [[ ! -d ".specwright/instructions" ]]; then
+    echo "❌ Error: Specwright base installation not found in current project."
     echo ""
     echo "Please run the base setup first:"
-    echo "  curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/setup.sh | bash"
+    echo "  curl -sSL https://raw.githubusercontent.com/michsindlinger/specwright/main/setup.sh | bash"
     echo ""
     exit 1
 fi
@@ -47,7 +47,7 @@ create_gemini_tool() {
     # Add Gemini-specific header
     echo "# $tool_name Tool" > "$temp_file"
     echo "" >> "$temp_file"
-    echo "This tool provides Agent OS Extended functionality for $tool_name." >> "$temp_file"
+    echo "This tool provides Specwright functionality for $tool_name." >> "$temp_file"
     echo "" >> "$temp_file"
     echo "## Instructions" >> "$temp_file"
     echo "" >> "$temp_file"
@@ -103,13 +103,13 @@ echo "Setting up GEMINI.md context file..."
 if [[ -f "GEMINI.md" ]]; then
     echo "GEMINI.md already exists - creating GEMINI.md.template for reference"
     cat > "GEMINI.md.template" << 'EOF'
-# Agent OS Extended - Gemini CLI Context
+# Specwright - Gemini CLI Context
 
-This project uses Agent OS Extended for structured AI development workflows.
+This project uses Specwright for structured AI development workflows.
 
 ## Available Tools
 
-Use the tools in `.gemini/tools/` to execute Agent OS Extended workflows:
+Use the tools in `.gemini/tools/` to execute Specwright workflows:
 
 - **Product Planning**: analyze-product, plan-product, plan-b2b-application, plan-gift-book
 - **Feature Development**: create-spec, update-feature, document-feature
@@ -125,33 +125,33 @@ Use the tools in `.gemini/tools/` to execute Agent OS Extended workflows:
 
 ## Project Standards
 
-Refer to `.agent-os/standards/` for:
+Refer to `.specwright/standards/` for:
 - Tech stack preferences
 - Code style guidelines
 - Best practices philosophy
 
 ## Instructions
 
-Detailed workflow instructions are available in `.agent-os/instructions/core/`
+Detailed workflow instructions are available in `.specwright/instructions/core/`
 
 ## Usage
 
 To use these tools with Gemini CLI, reference them in your conversations:
 - "Use the create-spec tool to create a feature specification"
-- "Follow the standards in .agent-os/standards/ for this implementation"
+- "Follow the standards in .specwright/standards/ for this implementation"
 
 EOF
     echo "💡 Consider merging GEMINI.md.template into your existing GEMINI.md"
 else
     echo "Creating GEMINI.md from template..."
     cat > "GEMINI.md" << 'EOF'
-# Agent OS Extended - Gemini CLI Context
+# Specwright - Gemini CLI Context
 
-This project uses Agent OS Extended for structured AI development workflows.
+This project uses Specwright for structured AI development workflows.
 
 ## Available Tools
 
-Use the tools in `.gemini/tools/` to execute Agent OS Extended workflows:
+Use the tools in `.gemini/tools/` to execute Specwright workflows:
 
 - **Product Planning**: analyze-product, plan-product, plan-b2b-application, plan-gift-book
 - **Feature Development**: create-spec, update-feature, document-feature
@@ -167,20 +167,20 @@ Use the tools in `.gemini/tools/` to execute Agent OS Extended workflows:
 
 ## Project Standards
 
-Refer to `.agent-os/standards/` for:
+Refer to `.specwright/standards/` for:
 - Tech stack preferences
 - Code style guidelines
 - Best practices philosophy
 
 ## Instructions
 
-Detailed workflow instructions are available in `.agent-os/instructions/core/`
+Detailed workflow instructions are available in `.specwright/instructions/core/`
 
 ## Usage
 
 To use these tools with Gemini CLI, reference them in your conversations:
 - "Use the create-spec tool to create a feature specification"
-- "Follow the standards in .agent-os/standards/ for this implementation"
+- "Follow the standards in .specwright/standards/ for this implementation"
 
 EOF
     echo "📝 Please customize GEMINI.md with your project-specific information"
@@ -190,7 +190,7 @@ echo ""
 echo "✅ Gemini CLI setup complete!"
 echo ""
 echo "Project structure created:"
-echo "  .gemini/tools/        - Agent OS Extended tools for Gemini CLI"
+echo "  .gemini/tools/        - Specwright tools for Gemini CLI"
 echo "  .gemini/workflows/    - Custom workflows (empty, ready for your additions)"
 echo "  GEMINI.md             - Context file for Gemini CLI"
 echo ""
@@ -223,6 +223,6 @@ echo "  develop-positioning   - Develop positioning strategy from project specs"
 echo ""
 echo "Usage with Gemini CLI:
 echo "  'Use the create-spec tool to create a feature specification'"
-echo "  'Follow the standards in .agent-os/standards/ for this code'"
+echo "  'Follow the standards in .specwright/standards/ for this code'"
 echo ""
-echo "For more information, visit: https://github.com/michsindlinger/agent-os-extended"
+echo "For more information, visit: https://github.com/michsindlinger/specwright"

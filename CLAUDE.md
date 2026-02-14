@@ -1,26 +1,26 @@
-# CLAUDE.md - Agent OS Extended
+# CLAUDE.md - Specwright
 
-> Agent OS Extended Development Guide
+> Specwright Development Guide
 > Last Updated: 2026-01-16
 > Type: Framework Repository
 
 ## Purpose
-Essential guidance for Claude Code development in the Agent OS Extended repository. This is the **framework repository** that provides workflows, templates, agents, and skills for other projects.
+Essential guidance for Claude Code development in the Specwright repository. This is the **framework repository** that provides workflows, templates, agents, and skills for other projects.
 
 ## Repository Structure
 
-**This is NOT a product project - it's the Agent OS framework itself.**
+**This is NOT a product project - it's the Specwright framework itself.**
 
 ```
-agent-os-extended/
-├── agent-os/
+specwright/              # Repository root
+├── specwright/
 │   ├── workflows/core/       # Core workflows (plan-product, create-spec, etc.)
 │   ├── workflows/meta/       # Meta workflows (pre-flight)
 │   ├── templates/            # All templates (product, platform, docs, skills)
 │   ├── standards/            # Global coding standards
 │   └── docs/                 # Documentation and guides
 ├── .claude/
-│   ├── commands/agent-os/    # Slash command definitions
+│   ├── commands/specwright/    # Slash command definitions
 │   └── agents/               # Agent definitions
 ├── setup.sh                  # Project installation script
 ├── setup-claude-code.sh      # Claude Code installation script
@@ -28,9 +28,9 @@ agent-os-extended/
 ```
 
 ## Development Standards (load via context-fetcher when needed)
-- **Tech Stack Defaults**: agent-os/standards/tech-stack.md
-- **Code Style Preferences**: agent-os/standards/code-style.md
-- **Best Practices Philosophy**: agent-os/standards/best-practices.md
+- **Tech Stack Defaults**: specwright/standards/tech-stack.md
+- **Code Style Preferences**: specwright/standards/code-style.md
+- **Best Practices Philosophy**: specwright/standards/best-practices.md
 
 ## Critical Rules
 - **FOLLOW ALL INSTRUCTIONS** - Mandatory, not optional
@@ -47,13 +47,13 @@ agent-os-extended/
 - Update setup scripts if new files are added
 
 **When adding templates:**
-- Add to `agent-os/templates/` directory
+- Add to `specwright/templates/` directory
 - Update `setup-devteam-global.sh` to include in global installation
 - Use consistent placeholder naming: `[PLACEHOLDER_NAME]`
 
 **When adding commands:**
-- Create in `.claude/commands/agent-os/`
-- Reference corresponding workflow in `agent-os/workflows/core/`
+- Create in `.claude/commands/specwright/`
+- Reference corresponding workflow in `specwright/workflows/core/`
 
 ## Sub-Agents
 
@@ -66,9 +66,9 @@ agent-os-extended/
 ## File Organization Rules
 
 **CRITICAL - No Files in Project Root:**
-- Implementation reports: `agent-os/specs/[spec-name]/implementation-reports/`
-- Architecture docs: `agent-os/product/`
-- Team docs: `agent-os/team/`
+- Implementation reports: `specwright/specs/[spec-name]/implementation-reports/`
+- Architecture docs: `specwright/product/`
+- Team docs: `specwright/team/`
 
 ## Essential Commands (for testing the framework)
 
@@ -116,9 +116,9 @@ agent-os-extended/
 ## Workflow Development
 
 **Adding a new workflow:**
-1. Create workflow in `agent-os/workflows/core/[workflow-name].md`
-2. Create command in `.claude/commands/agent-os/[command-name].md`
-3. Add any new templates to `agent-os/templates/`
+1. Create workflow in `specwright/workflows/core/[workflow-name].md`
+2. Create command in `.claude/commands/specwright/[command-name].md`
+3. Add any new templates to `specwright/templates/`
 4. Update `setup.sh` to download the workflow
 5. Update `setup-claude-code.sh` to download the command
 6. Update `setup-devteam-global.sh` for new templates
@@ -132,4 +132,4 @@ agent-os-extended/
 
 ---
 
-**Remember:** This repository is used by many projects. Changes here affect all Agent OS users. Quality, backward compatibility, and documentation are paramount.
+**Remember:** This repository is used by many projects. Changes here affect all Specwright users. Quality, backward compatibility, and documentation are paramount.

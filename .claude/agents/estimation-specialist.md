@@ -130,7 +130,7 @@ Apply these adjustments to base estimates:
 
 **CRITICAL**: Modern estimation must account for AI agent acceleration!
 
-Load configuration from: `.agent-os/estimations/config/estimation-config.json`
+Load configuration from: `.specwright/estimations/config/estimation-config.json`
 
 ### Categorization Logic
 
@@ -316,7 +316,7 @@ Always validate estimates against industry benchmarks from:
 - IEEE Standards
 - Published case studies
 
-Load benchmarks from: `.agent-os/estimations/config/industry-benchmarks.json`
+Load benchmarks from: `.specwright/estimations/config/industry-benchmarks.json`
 
 If deviation > 50% from benchmark:
 - FLAG for review
@@ -360,7 +360,7 @@ END IF
 ## Historical Tracking Setup
 
 After estimation, create tracking file:
-`.agent-os/estimations/active/[YYYY-MM-DD]-[feature-name].json`
+`.specwright/estimations/active/[YYYY-MM-DD]-[feature-name].json`
 
 Structure:
 ```json

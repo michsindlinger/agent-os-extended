@@ -1,16 +1,16 @@
 # Migration Guide: v1.x → v2.0
 
-Complete migration guide for Agent OS Extended from v1.x to v2.0.
+Complete migration guide for Specwright from v1.x to v2.0.
 
 ## Overview
 
-Agent OS Extended v2.0 includes significant improvements in two phases:
+Specwright v2.0 includes significant improvements in two phases:
 - **Phase I**: Structural changes (directory naming, command isolation)
 - **Phase II**: Advanced features (profiles, skills, research, verification)
 
 ## Prerequisites
 
-- Existing project with Agent OS Extended v1.x installed (`.agent-os/` structure)
+- Existing project with Specwright v1.x installed (`.specwright/` structure)
 - Git repository (recommended for safety)
 - Backup of important files (automatic backup is created)
 
@@ -19,21 +19,21 @@ Agent OS Extended v2.0 includes significant improvements in two phases:
 ### Phase I: Structural Migration
 
 **What changes:**
-- `.agent-os/` → `agent-os/` (visible directory)
-- `agent-os/instructions/` → `agent-os/workflows/`
-- `.claude/commands/` → `.claude/commands/agent-os/`
-- All `@.agent-os/` references → `@agent-os/`
+- `.specwright/` → `specwright/` (visible directory)
+- `specwright/instructions/` → `specwright/workflows/`
+- `.claude/commands/` → `.claude/commands/specwright/`
+- All `@.specwright/` references → `@specwright/`
 
 **How to migrate:**
 
 ```bash
 cd your-project
-curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/update-to-v2.sh | bash
+curl -sSL https://raw.githubusercontent.com/michsindlinger/specwright/main/update-to-v2.sh | bash
 ```
 
 **What the script does:**
 1. Pre-flight checks (detects v1.x, checks git status)
-2. Creates timestamped backup (`.agent-os.backup-YYYY-MM-DD-HHMMSS/`)
+2. Creates timestamped backup (`.specwright.backup-YYYY-MM-DD-HHMMSS/`)
 3. Renames directories
 4. Updates all file references
 5. Verifies migration success
@@ -43,32 +43,32 @@ curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/mai
 **If issues occur:**
 ```bash
 # Rollback to v1.x
-curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/rollback-v2-migration.sh | bash
+curl -sSL https://raw.githubusercontent.com/michsindlinger/specwright/main/rollback-v2-migration.sh | bash
 ```
 
 **After Phase I:**
 - Test your commands: `/create-spec`, `/execute-tasks`, etc.
 - Verify files are in correct locations
 - Check that references work
-- Delete backup if everything works: `rm -rf .agent-os.backup-*`
+- Delete backup if everything works: `rm -rf .specwright.backup-*`
 
 ---
 
 ### Phase II: Advanced Features
 
 **What changes:**
-- Adds `agent-os/profiles/` (4 profiles: Java, React, Angular, Base)
-- Adds `agent-os/skills/` (11 contextual skills)
-- Adds research workflows (`agent-os/workflows/research/`)
-- Adds verification workflows (`agent-os/workflows/verification/`)
-- Creates `agent-os/config.yml` configuration
+- Adds `specwright/profiles/` (4 profiles: Java, React, Angular, Base)
+- Adds `specwright/skills/` (11 contextual skills)
+- Adds research workflows (`specwright/workflows/research/`)
+- Adds verification workflows (`specwright/workflows/verification/`)
+- Creates `specwright/config.yml` configuration
 - Symlinks skills to `.claude/skills/`
 
 **How to add Phase II:**
 
 ```bash
 cd your-project
-curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/update-to-v2-phase2.sh | bash
+curl -sSL https://raw.githubusercontent.com/michsindlinger/specwright/main/update-to-v2-phase2.sh | bash
 ```
 
 **What the script does:**
@@ -77,14 +77,14 @@ curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/mai
 3. Downloads 11 skills (organized by tech stack)
 4. Downloads research workflows and templates
 5. Downloads verification workflows and templates
-6. Creates/updates agent-os/config.yml
+6. Creates/updates specwright/config.yml
 7. Creates symlinks in .claude/skills/
 8. Updates /create-spec command to v2.0
 
 **Time**: ~2-3 minutes
 
 **After Phase II:**
-- Review `agent-os/config.yml` and set your `active_profile`
+- Review `specwright/config.yml` and set your `active_profile`
 - Test `/create-spec` to experience enhanced research phase
 - Skills activate automatically when working on relevant files
 
@@ -94,21 +94,21 @@ curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/mai
 
 ### Phase I Verification
 
-- [ ] `agent-os/` directory exists and visible
-- [ ] `agent-os/workflows/` exists (not `instructions/`)
-- [ ] `.claude/commands/agent-os/` exists
+- [ ] `specwright/` directory exists and visible
+- [ ] `specwright/workflows/` exists (not `instructions/`)
+- [ ] `.claude/commands/specwright/` exists
 - [ ] Run `/create-spec test` - should work without errors
-- [ ] Check one workflow file - references should use `@agent-os/`
+- [ ] Check one workflow file - references should use `@specwright/`
 - [ ] Old directories removed (`instructions/`, `standards/`, `commands/`, `agents/`)
 
 ### Phase II Verification
 
-- [ ] `agent-os/profiles/` contains 4 profiles
-- [ ] `agent-os/skills/` contains 11 skills
+- [ ] `specwright/profiles/` contains 4 profiles
+- [ ] `specwright/skills/` contains 11 skills
 - [ ] `.claude/skills/` contains 11 symlinks
-- [ ] `agent-os/config.yml` exists
-- [ ] Research workflows in `agent-os/workflows/research/`
-- [ ] Verification workflows in `agent-os/workflows/verification/`
+- [ ] `specwright/config.yml` exists
+- [ ] Research workflows in `specwright/workflows/research/`
+- [ ] Verification workflows in `specwright/workflows/verification/`
 - [ ] `/create-spec` references `create-spec-v2.md`
 
 ---
@@ -117,7 +117,7 @@ curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/mai
 
 ### Setting Your Profile
 
-Edit `agent-os/config.yml`:
+Edit `specwright/config.yml`:
 
 ```yaml
 # Choose your active profile
@@ -229,9 +229,9 @@ UI completed
 **Solution**:
 ```bash
 # Re-run setup with fixed scripts
-rm -rf agent-os .claude
-curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/setup.sh | bash
-curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/setup-claude-code.sh | bash
+rm -rf specwright .claude
+curl -sSL https://raw.githubusercontent.com/michsindlinger/specwright/main/setup.sh | bash
+curl -sSL https://raw.githubusercontent.com/michsindlinger/specwright/main/setup-claude-code.sh | bash
 ```
 
 ### Issue: Skills not activating
@@ -254,7 +254,7 @@ bash setup-claude-code.sh  # Re-run Claude Code setup
 **Solution**:
 ```bash
 # Find remaining old references
-grep -r "@\.agent-os/" agent-os/ 2>/dev/null
+grep -r "@\.specwright/" specwright/ 2>/dev/null
 
 # Manually update or re-run migration
 ```
@@ -268,13 +268,13 @@ grep -r "@\.agent-os/" agent-os/ 2>/dev/null
 If Phase I migration causes issues:
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/rollback-v2-migration.sh | bash
+curl -sSL https://raw.githubusercontent.com/michsindlinger/specwright/main/rollback-v2-migration.sh | bash
 ```
 
 **What happens:**
-- Removes `agent-os/` directory
-- Removes `.claude/commands/agent-os/`
-- Restores `.agent-os/` from backup
+- Removes `specwright/` directory
+- Removes `.claude/commands/specwright/`
+- Restores `.specwright/` from backup
 - Restores `.claude/commands/` from backup
 
 ### Rollback Phase II
@@ -283,13 +283,13 @@ Phase II is additive (doesn't modify existing files):
 
 ```bash
 # Simply remove Phase II additions
-rm -rf agent-os/profiles
-rm -rf agent-os/skills
-rm -rf agent-os/workflows/research
-rm -rf agent-os/workflows/verification
-rm -rf agent-os/templates
+rm -rf specwright/profiles
+rm -rf specwright/skills
+rm -rf specwright/workflows/research
+rm -rf specwright/workflows/verification
+rm -rf specwright/templates
 rm -rf .claude/skills
-rm agent-os/config.yml
+rm specwright/config.yml
 ```
 
 ---
@@ -305,14 +305,14 @@ rm agent-os/config.yml
 # Should:
 # 1. Start research phase
 # 2. Ask clarifying questions
-# 3. Create spec in agent-os/specs/2025-XX-XX-test-feature/
+# 3. Create spec in specwright/specs/2025-XX-XX-test-feature/
 ```
 
 ### Comprehensive Test
 
 1. Create a test spec: `/create-spec "Migration Test"`
 2. Verify research phase works (codebase analysis, Q&A)
-3. Check created files are in `agent-os/specs/`
+3. Check created files are in `specwright/specs/`
 4. Verify skills activate (create a `.java` file, check if skills appear)
 5. Test verification (if enabled in config)
 
@@ -322,9 +322,9 @@ rm agent-os/config.yml
 
 ### Resources
 
-- **Documentation**: `agent-os/profiles/README.md`, `agent-os/skills/README.md`
-- **GitHub**: [agent-os-extended repository](https://github.com/michsindlinger/agent-os-extended)
-- **Original Agent OS**: [buildermethods.com/agent-os](https://buildermethods.com/agent-os)
+- **Documentation**: `specwright/profiles/README.md`, `specwright/skills/README.md`
+- **GitHub**: [specwright repository](https://github.com/michsindlinger/specwright)
+- **Original Specwright**: [buildermethods.com/specwright](https://buildermethods.com/specwright)
 
 ### Reporting Issues
 
@@ -344,7 +344,7 @@ Your migration is successful when:
 
 ✅ `/create-spec` works with research phase
 ✅ Skills activate automatically (check in .claude/skills/)
-✅ Profile set in agent-os/config.yml
+✅ Profile set in specwright/config.yml
 ✅ All old directories removed
 ✅ Commands work without "404: Not Found" errors
 ✅ Verification system available (if enabled)
@@ -353,7 +353,7 @@ Your migration is successful when:
 
 ## Next Steps After Migration
 
-1. **Set Your Profile**: Edit `agent-os/config.yml`
+1. **Set Your Profile**: Edit `specwright/config.yml`
 2. **Try Enhanced Features**: Run `/create-spec` with a real feature
 3. **Explore Skills**: Create files in your tech stack, watch skills activate
 4. **Use Verification**: Enable verification in config, see quality gates
@@ -361,10 +361,10 @@ Your migration is successful when:
 
 ---
 
-**Congratulations on migrating to Agent OS Extended v2.0!** 🎉
+**Congratulations on migrating to Specwright v2.0!** 🎉
 
 You now have:
-- Clearer structure (visible `agent-os/` directory)
+- Clearer structure (visible `specwright/` directory)
 - Profile-based development (tech-stack-specific guidance)
 - Automatic skills (context-aware best practices)
 - Enhanced planning (research phase in specs)

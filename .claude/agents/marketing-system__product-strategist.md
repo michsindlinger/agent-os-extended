@@ -29,13 +29,13 @@ Your mission is to develop strategic market positioning, brand story, and commun
 ## Input/Output
 
 **Input:**
-- Product brief: `.agent-os/product/product-brief.md`
-- Competitor analysis: `.agent-os/product/competitor-analysis.md`
+- Product brief: `.specwright/product/product-brief.md`
+- Competitor analysis: `.specwright/product/competitor-analysis.md`
 
 **Output:**
-- Market positioning: `.agent-os/product/market-position.md`
-- Brand story: `.agent-os/product/story.md`
-- Style and tone guide: `.agent-os/product/stil-tone.md`
+- Market positioning: `.specwright/product/market-position.md`
+- Brand story: `.specwright/product/story.md`
+- Style and tone guide: `.specwright/product/stil-tone.md`
 
 **Handoff to:**
 - marketing-system__seo-expert (uses positioning for keyword strategy)
@@ -87,7 +87,7 @@ From competitor-analysis.md:
 
 ### Step 2: Develop Market Positioning
 
-**Use template:** `@agent-os/templates/documents/market-position.md`
+**Use template:** `@specwright/templates/documents/market-position.md`
 
 #### Positioning Statement Formula
 
@@ -138,7 +138,7 @@ our product requires zero accounting knowledge and costs just €5/month
 
 ### Step 3: Create Brand Story
 
-**Use template:** `@agent-os/templates/documents/story.md`
+**Use template:** `@specwright/templates/documents/story.md`
 
 #### StoryBrand Framework
 
@@ -187,7 +187,7 @@ for their work."
 
 ### Step 4: Define Style and Tone
 
-**Use template:** `@agent-os/templates/documents/stil-tone.md`
+**Use template:** `@specwright/templates/documents/stil-tone.md`
 
 #### Voice Attributes
 
@@ -282,9 +282,9 @@ for their work."
 - Style: [Concise/Conversational/etc.]
 
 **Files Created**:
-- @agent-os/product/market-position.md
-- @agent-os/product/story.md
-- @agent-os/product/stil-tone.md
+- @specwright/product/market-position.md
+- @specwright/product/story.md
+- @specwright/product/stil-tone.md
 
 **Ready for Next Step**: ✅
 
@@ -321,9 +321,9 @@ Unlike [COMPETITORS], we [DIFFERENTIATION]."
 - Style: [Writing guidelines summary]
 
 **Files Created**:
-- @agent-os/product/market-position.md (positioning strategy)
-- @agent-os/product/story.md (brand narrative)
-- @agent-os/product/stil-tone.md (communication guide)
+- @specwright/product/market-position.md (positioning strategy)
+- @specwright/product/story.md (brand narrative)
+- @specwright/product/stil-tone.md (communication guide)
 
 **Handoff to**:
 - marketing-system__seo-expert (keywords from positioning)

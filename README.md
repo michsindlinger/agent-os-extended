@@ -1,15 +1,15 @@
-# Agent OS Extended v2.0
+# Specwright
 
-> **Note**: This repository is based on the original [Agent OS](https://github.com/buildermethods/agent-os) by Builder Methods. This extended version includes enhancements specifically designed for enterprise project development.
+> **Formerly "Agent OS Extended"** - Renamed to Specwright for open-source release. See [MIGRATION-TO-SPECWRIGHT.md](MIGRATION-TO-SPECWRIGHT.md) for migration guide.
 
-Agent OS Extended is a project-level implementation of the Agent OS system, designed to improve AI coding workflows through structured context and guidance. Unlike the original global installation, this version installs configuration files directly within each project.
+Specwright is a framework for AI-assisted software development workflows. It provides structured specifications, templates, and agent orchestration to improve coding efficiency with AI assistants like Claude Code, Cursor, and Gemini CLI.
 
 ## What's New in v2.0
 
 ### Phase I: Structural Improvements
-- **Improved directory structure** - `agent-os/` (visible) instead of `.agent-os/` (hidden)
+- **Improved directory structure** - `specwright/` (visible) instead of `.specwright/` (hidden)
 - **Clearer naming** - `workflows/` instead of `instructions/` for better semantics
-- **Command isolation** - Commands organized in `.claude/commands/agent-os/` namespace
+- **Command isolation** - Commands organized in `.claude/commands/specwright/` namespace
 - **Migration tools** - Automated migration from v1.x with rollback support
 - **Enhanced workflow organization** - Better structure for complex projects
 
@@ -73,9 +73,9 @@ Agent OS Extended is a project-level implementation of the Agent OS system, desi
 - 2 new skills (testing-best-practices, devops-patterns)
 - 12 team templates (API specs, components, test plans, CI/CD configs)
 
-## Key Differences from Original Agent OS
+## Key Differences from Original Specwright
 
-- **Project-level installation** instead of global `~/agent-os/` installation
+- **Project-level installation** instead of global `~/specwright/` installation
 - **Enterprise-focused enhancements** for complex project development
 - **Project-specific customization** allowing different standards per project
 - **v2.0 structure alignment** with visible directories and clearer naming
@@ -85,7 +85,7 @@ Agent OS Extended is a project-level implementation of the Agent OS system, desi
 ### Base Installation
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/setup.sh | bash
+curl -sSL https://raw.githubusercontent.com/michsindlinger/specwright/main/setup.sh | bash
 ```
 
 ### Tool-Specific Setup
@@ -93,103 +93,38 @@ curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/mai
 #### Claude Code
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/setup-claude-code.sh | bash
+curl -sSL https://raw.githubusercontent.com/michsindlinger/specwright/main/setup-claude-code.sh | bash
 ```
 
 #### Cursor
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/setup-cursor.sh | bash
+curl -sSL https://raw.githubusercontent.com/michsindlinger/specwright/main/setup-cursor.sh | bash
 ```
 
 #### Gemini CLI
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/setup-gemini.sh | bash
+curl -sSL https://raw.githubusercontent.com/michsindlinger/specwright/main/setup-gemini.sh | bash
 ```
 
-#### Agent OS Manager (Desktop GUI)
+## Migration from Agent OS
 
-**Option 1: From Source** (requires Node.js 22+):
-```bash
-# Clone repository if not already done
-git clone https://github.com/michsindlinger/agent-os-extended.git
-cd agent-os-extended
-
-# Run setup script
-bash setup-agent-os-manager.sh
-```
-
-**Option 2: Download Binary** (Coming Soon):
-```bash
-# Download from GitHub Releases
-# https://github.com/michsindlinger/agent-os-extended/releases
-# Install DMG (macOS), EXE (Windows), or AppImage (Linux)
-```
-
-**What It Does**:
-- Builds and installs Agent OS Manager desktop app
-- Visual management for skills, agents, templates, config
-- Monaco Editor for component editing
-- Global vs project override visualization
-- Dark/Light mode support
-
-**After Installation**:
-```bash
-# Launch app (macOS)
-open "/Applications/Agent OS Manager.app"
-
-# Or from project directory
-cd your-project
-open "/Applications/Agent OS Manager.app"
-```
-
-## Migration from v1.x to v2.0
-
-If you have an existing project using Agent OS Extended v1.x (`.agent-os/` structure), migrate in two steps:
-
-### Step 1: Structural Migration (Phase I)
+If you have an existing project using "Agent OS" (the former name), migrate with:
 
 ```bash
-# Migrate directory structure to v2.0
-curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/update-to-v2.sh | bash
+curl -fsSL https://raw.githubusercontent.com/michsindlinger/specwright/main/migrate-to-specwright.sh | bash
 ```
 
-**What Phase I migration does:**  
-- Renames `.agent-os/` → `agent-os/`  
-- Renames `instructions/` → `workflows/`  
-- Moves commands to `.claude/commands/agent-os/`  
-- Updates all file references automatically  
-- Creates timestamped backup for safety  
-
-### Step 2: Phase II Features (Optional)
-
-```bash
-# Add advanced features (profiles, skills, research, verification)
-curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/update-to-v2-phase2.sh | bash
-```
-
-**What Phase II adds:**  
-- Profile System (4 profiles: Java, React, Angular, Base)  
-- Skills System (11 contextual skills)  
-- Enhanced Research (codebase analysis, Q&A, visuals)  
-- Verification System (spec, implementation, visual)  
-- Enhanced /create-spec workflow  
-
-### Rollback if needed:
-
-```bash
-# Rollback Phase I migration
-curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/rollback-v2-migration.sh | bash
-```
+See [MIGRATION-TO-SPECWRIGHT.md](MIGRATION-TO-SPECWRIGHT.md) for details, options, and rollback instructions.
 
 ## Updates
 
 ### Main Update Script
-Update your Agent OS Extended installation (recommended):
+Update your Specwright installation (recommended):
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/update-agent-os.sh | bash
+curl -sSL https://raw.githubusercontent.com/michsindlinger/specwright/main/update-specwright.sh | bash
 ```
 *Includes: workflows, commands, standards, and automatic tool detection*
 
@@ -198,10 +133,10 @@ For specific component updates only:
 
 ```bash
 # Standards only
-curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/update-standards.sh | bash
+curl -sSL https://raw.githubusercontent.com/michsindlinger/specwright/main/update-standards.sh | bash
 
 # Workflows only
-curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/update-workflows.sh | bash
+curl -sSL https://raw.githubusercontent.com/michsindlinger/specwright/main/update-workflows.sh | bash
 ```
 
 ## Project Structure (v2.0)
@@ -211,7 +146,7 @@ After installation, your project will contain:
 ```
 your-project/
 ├── CLAUDE.md (Claude Code configuration)
-├── agent-os/                                    # ← Visible directory (v2.0)
+├── specwright/                                    # ← Visible directory (v2.0)
 │   ├── specs/                                   # Feature specifications
 │   │   └── YYYY-MM-DD-feature-name/            # Timestamped specs
 │   ├── docs/                                    # User documentation
@@ -246,7 +181,7 @@ your-project/
 │           └── pre-flight.md
 ├── .claude/                                     # Claude Code specific
 │   ├── commands/
-│   │   └── agent-os/                           # ← Isolated namespace (v2.0)
+│   │   └── specwright/                           # ← Isolated namespace (v2.0)
 │   │       ├── plan-product.md
 │   │       ├── plan-b2b-application.md
 │   │       ├── start-brainstorming.md
@@ -271,9 +206,9 @@ your-project/
 ```
 
 **Key Changes in v2.0:**
-- `agent-os/` is visible (no dot prefix) for better discoverability
+- `specwright/` is visible (no dot prefix) for better discoverability
 - `workflows/` replaces `instructions/` for clearer semantics
-- Commands organized in `.claude/commands/agent-os/` namespace
+- Commands organized in `.claude/commands/specwright/` namespace
 
 ## Usage
 
@@ -307,7 +242,7 @@ Reference tools in conversations:
 
 ## Feature Management System
 
-Agent OS Extended includes a comprehensive Feature Lifecycle Management System:
+Specwright includes a comprehensive Feature Lifecycle Management System:
 
 ### 🔄 Complete Workflows
 
@@ -315,8 +250,8 @@ Agent OS Extended includes a comprehensive Feature Lifecycle Management System:
    ```
    /create-spec → Development → /document-feature
    ```
-   - Creates timestamped spec in `agent-os/specs/YYYY-MM-DD-feature-name/`
-   - Generates user documentation in `agent-os/docs/Feature-Name/`
+   - Creates timestamped spec in `specwright/specs/YYYY-MM-DD-feature-name/`
+   - Generates user documentation in `specwright/docs/Feature-Name/`
 
 2. **Feature Updates**
    ```
@@ -381,11 +316,11 @@ Agent OS Extended includes a comprehensive Feature Lifecycle Management System:
 
 ### 📁 Directory Structure
 
-- **`agent-os/specs/`** - Development-oriented specifications (timestamped, includes change history)
-- **`agent-os/docs/`** - User-oriented documentation (hierarchical, feature-focused)
-- **`agent-os/bugs/`** - Bug tracking with investigation, reproduction, and resolution documentation
-- **`agent-os/brainstorming/`** - Brainstorming sessions for feature and bug ideation
-- **`agent-os/market-validation/`** - Market validation campaigns (product briefs, competitor analysis, landing pages, results) 🆕
+- **`specwright/specs/`** - Development-oriented specifications (timestamped, includes change history)
+- **`specwright/docs/`** - User-oriented documentation (hierarchical, feature-focused)
+- **`specwright/bugs/`** - Bug tracking with investigation, reproduction, and resolution documentation
+- **`specwright/brainstorming/`** - Brainstorming sessions for feature and bug ideation
+- **`specwright/market-validation/`** - Market validation campaigns (product briefs, competitor analysis, landing pages, results) 🆕
 
 ## Customization
 
@@ -404,7 +339,7 @@ If you already have a `CLAUDE.md`, the script creates `CLAUDE.md.template` for r
 
 This extended version provides additional capabilities for enterprise development:
 
-- **Project-specific configuration management** - Each project maintains its own Agent OS configuration
+- **Project-specific configuration management** - Each project maintains its own Specwright configuration
 - **B2B Enterprise Planning** - Specialized workflows for B2B application development
 - **Compliance & Security Integration** - Built-in support for regulatory requirements (GDPR, SOX, HIPAA)
 - **Enterprise Integration Strategy** - Structured approach to system integration and migration
@@ -424,24 +359,24 @@ The Market Validation System supports **global installation** (recommended) with
 Install once, use in all projects:
 
 ```bash
-# Install market validation to ~/.agent-os/ and ~/.claude/
-curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/setup-market-validation-global.sh | bash
+# Install market validation to ~/.specwright/ and ~/.claude/
+curl -sSL https://raw.githubusercontent.com/michsindlinger/specwright/main/setup-market-validation-global.sh | bash
 ```
 
 **What This Installs**:
-- 6 skills → `~/.agent-os/skills/product/`, `~/.agent-os/skills/business/`, `~/.agent-os/skills/marketing/`
-- 7 templates → `~/.agent-os/templates/market-validation/`
-- 1 workflow → `~/.agent-os/workflows/validation/validate-market.md`
+- 6 skills → `~/.specwright/skills/product/`, `~/.specwright/skills/business/`, `~/.specwright/skills/marketing/`
+- 7 templates → `~/.specwright/templates/market-validation/`
+- 1 workflow → `~/.specwright/workflows/validation/validate-market.md`
 - 7 agents → `~/.claude/agents/` (product-strategist, market-researcher, etc.)
-- 1 command → `~/.claude/commands/agent-os/validate-market.md`
+- 1 command → `~/.claude/commands/specwright/validate-market.md`
 
 **Then in Each Project**:
 ```bash
 cd your-project
-curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/setup-market-validation-project.sh | bash
+curl -sSL https://raw.githubusercontent.com/michsindlinger/specwright/main/setup-market-validation-project.sh | bash
 ```
 
-Creates: `agent-os/market-validation/` directory for project-specific validation results.
+Creates: `specwright/market-validation/` directory for project-specific validation results.
 
 **Benefits**:
 - ✅ Install once, use everywhere
@@ -456,12 +391,12 @@ Install everything locally in one project:
 ```bash
 cd your-project
 # Run existing setup.sh (already includes market validation)
-curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/setup.sh | bash
-curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/setup-claude-code.sh | bash
+curl -sSL https://raw.githubusercontent.com/michsindlinger/specwright/main/setup.sh | bash
+curl -sSL https://raw.githubusercontent.com/michsindlinger/specwright/main/setup-claude-code.sh | bash
 ```
 
 **What This Does**:
-- Installs all components to `projekt/agent-os/` and `projekt/.claude/`
+- Installs all components to `projekt/specwright/` and `projekt/.claude/`
 - Self-contained (no global dependencies)
 - Useful for: Testing, isolated environments, per-project customization
 
@@ -490,7 +425,7 @@ System uses: projekt/.claude/agents/market-researcher.md (local override)
 System uses: ~/.claude/agents/market-researcher.md (global default)
 ```
 
-**Lookup Order** (configured in `agent-os/config.yml`):
+**Lookup Order** (configured in `specwright/config.yml`):
 
 ```yaml
 market_validation:
@@ -509,7 +444,7 @@ market_validation:
 
 2. **Custom Success Criteria** (B2B vs B2C thresholds):
    ```yaml
-   # In projekt/agent-os/config.yml
+   # In projekt/specwright/config.yml
    market_validation:
      decision_criteria:
        conversion_rate_threshold: 2.0  # Lower for B2B
@@ -518,8 +453,8 @@ market_validation:
 
 3. **Custom Template** (different product brief format):
    ```bash
-   mkdir -p agent-os/templates/market-validation
-   cp ~/.agent-os/templates/market-validation/product-brief.md agent-os/templates/
+   mkdir -p specwright/templates/market-validation
+   cp ~/.specwright/templates/market-validation/product-brief.md specwright/templates/
    # Edit to add industry-specific sections
    ```
 
@@ -579,7 +514,7 @@ market_validation:
 
 ### Deliverables
 
-**Per validation campaign** (in `agent-os/market-validation/YYYY-MM-DD-product-name/`):
+**Per validation campaign** (in `specwright/market-validation/YYYY-MM-DD-product-name/`):
 - `product-brief.md` - Sharp product definition with persona
 - `competitor-analysis.md` - 5-10 competitors with feature comparison matrix
 - `market-positioning.md` - Strategic positioning and messaging pillars
@@ -667,7 +602,7 @@ When you run `/plan-product` after successful validation:
 
 ### Configuration
 
-Customize thresholds in `agent-os/config.yml`:
+Customize thresholds in `specwright/config.yml`:
 ```yaml
 market_validation:
   decision_criteria:
@@ -676,7 +611,7 @@ market_validation:
     tam_threshold: 100000             # Adjust for your market
 ```
 
-**Learn More**: See `~/.agent-os/workflows/validation/README.md` (global) or `agent-os/workflows/validation/README.md` (if project-local) for complete guide.
+**Learn More**: See `~/.specwright/workflows/validation/README.md` (global) or `specwright/workflows/validation/README.md` (if project-local) for complete guide.
 
 ### Architecture: Global + Override Pattern
 
@@ -685,7 +620,7 @@ The Market Validation System uses a **layered architecture** inspired by Node.js
 ```
 Installation Layer:
 ┌─────────────────────────────────────────┐
-│ Global (~/.agent-os/, ~/.claude/)      │ ← Installed once
+│ Global (~/.specwright/, ~/.claude/)      │ ← Installed once
 │ - Skills (product, business, marketing)│
 │ - Templates (7 validation templates)   │
 │ - Workflow (validate-market.md)        │
@@ -695,7 +630,7 @@ Installation Layer:
          ↑ Fallback if not found locally
          │
 ┌─────────────────────────────────────────┐
-│ Project (projekt/agent-os/, .claude/)  │ ← Checked first
+│ Project (projekt/specwright/, .claude/)  │ ← Checked first
 │ - Overrides (optional, only if needed) │
 │ - Validation Results (always local)    │
 └─────────────────────────────────────────┘
@@ -712,13 +647,13 @@ User runs: /validate-market
    → Found! Use global version ✅
 
 2. Need: product-brief.md template
-   Check: projekt/agent-os/templates/market-validation/product-brief.md
+   Check: projekt/specwright/templates/market-validation/product-brief.md
    → Not found
-   Fallback: ~/.agent-os/templates/market-validation/product-brief.md
+   Fallback: ~/.specwright/templates/market-validation/product-brief.md
    → Found! Use global version ✅
 
 3. Create: validation results
-   Location: projekt/agent-os/market-validation/2025-12-27-product/
+   Location: projekt/specwright/market-validation/2025-12-27-product/
    → Always project-local (results belong to project) ✅
 ```
 
@@ -745,20 +680,20 @@ User runs: /validate-market
 **Configuration Hierarchy**:
 
 ```yaml
-# Global defaults: ~/.agent-os/config.yml (if exists)
+# Global defaults: ~/.specwright/config.yml (if exists)
 market_validation:
   decision_criteria:
     conversion_rate_threshold: 5.0
     cpa_threshold: 10.0
 
-# Project override: projekt/agent-os/config.yml
+# Project override: projekt/specwright/config.yml
 market_validation:
   decision_criteria:
     conversion_rate_threshold: 2.0  # B2B project, lower threshold
     # cpa_threshold inherits from global (10.0)
 ```
 
-**Learn More**: See `~/.agent-os/workflows/validation/README.md` (global) or `agent-os/workflows/validation/README.md` (if project-local) for complete guide.
+**Learn More**: See `~/.specwright/workflows/validation/README.md` (global) or `specwright/workflows/validation/README.md` (if project-local) for complete guide.
 
 ## Team Development System (Phase B) 🆕
 
@@ -773,23 +708,23 @@ The Team Development System supports **global installation** (recommended) with 
 Install once, use in all projects:
 
 ```bash
-# Install team development system to global agent-os/ and .claude/
-curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/setup-team-system-global.sh | bash
+# Install team development system to global specwright/ and .claude/
+curl -sSL https://raw.githubusercontent.com/michsindlinger/specwright/main/setup-team-system-global.sh | bash
 ```
 
 **What This Installs**:
-- 2 skills → `agent-os/skills/base/` (testing-best-practices, devops-patterns)
-- 12 templates → `agent-os/templates/team-development/` (4 backend, 4 frontend, 2 qa, 2 devops)
+- 2 skills → `specwright/skills/base/` (testing-best-practices, devops-patterns)
+- 12 templates → `specwright/templates/team-development/` (4 backend, 4 frontend, 2 qa, 2 devops)
 - 5 agents → `.claude/agents/` (backend-dev, frontend-dev, qa-specialist, devops-specialist, mock-generator)
-- Updates → `agent-os/workflows/core/execute-tasks.md` (smart task routing)
+- Updates → `specwright/workflows/core/execute-tasks.md` (smart task routing)
 
 **Then in Each Project**:
 ```bash
 cd your-project
-curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/setup-team-system-project.sh | bash
+curl -sSL https://raw.githubusercontent.com/michsindlinger/specwright/main/setup-team-system-project.sh | bash
 ```
 
-Creates: `agent-os/templates/team-development/` structure for project-specific template overrides.
+Creates: `specwright/templates/team-development/` structure for project-specific template overrides.
 
 **Benefits**:
 - ✅ Install once, use everywhere
@@ -804,12 +739,12 @@ Install everything locally in one project:
 ```bash
 cd your-project
 # Run existing setup.sh (includes team system)
-curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/setup.sh | bash
-curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/setup-claude-code.sh | bash
+curl -sSL https://raw.githubusercontent.com/michsindlinger/specwright/main/setup.sh | bash
+curl -sSL https://raw.githubusercontent.com/michsindlinger/specwright/main/setup-claude-code.sh | bash
 ```
 
 **What This Does**:
-- Installs all components to `projekt/agent-os/` and `projekt/.claude/`
+- Installs all components to `projekt/specwright/` and `projekt/.claude/`
 - Self-contained (no global dependencies)
 - Useful for: Testing, isolated environments, per-project customization
 
@@ -964,7 +899,7 @@ System uses: projekt/.claude/agents/backend-dev.md (local override)
 System uses: .claude/agents/backend-dev.md (global default)
 ```
 
-**Lookup Order** (configured in `agent-os/config.yml`):
+**Lookup Order** (configured in `specwright/config.yml`):
 ```yaml
 team_system:
   lookup_order:
@@ -976,7 +911,7 @@ team_system:
 
 1. **Custom Backend Stack** (Node.js instead of Java):
    ```yaml
-   # In projekt/agent-os/config.yml
+   # In projekt/specwright/config.yml
    team_system:
      specialists:
        backend_dev:
@@ -985,7 +920,7 @@ team_system:
 
 2. **Custom Frontend Framework** (Angular instead of React):
    ```yaml
-   # In projekt/agent-os/config.yml
+   # In projekt/specwright/config.yml
    team_system:
      specialists:
        frontend_dev:
@@ -994,14 +929,14 @@ team_system:
 
 3. **Custom API Spec Template** (different API structure):
    ```bash
-   mkdir -p agent-os/templates/team-development/backend
-   cp agent-os/templates/team-development/backend/api-spec.md agent-os/templates/
+   mkdir -p specwright/templates/team-development/backend
+   cp specwright/templates/team-development/backend/api-spec.md specwright/templates/
    # Edit to add GraphQL schema, custom pagination format, etc.
    ```
 
 4. **Higher Coverage Target** (critical application):
    ```yaml
-   # In projekt/agent-os/config.yml
+   # In projekt/specwright/config.yml
    team_system:
      quality_gates:
        coverage_minimum: 90  # Increase from default 80%
@@ -1009,7 +944,7 @@ team_system:
 
 5. **Disable Specialist** (manual DevOps for this project):
    ```yaml
-   # In projekt/agent-os/config.yml
+   # In projekt/specwright/config.yml
    team_system:
      specialists:
        devops_specialist:
@@ -1035,7 +970,7 @@ team_system:
 
 ### Configuration
 
-Enable in `agent-os/config.yml`:
+Enable in `specwright/config.yml`:
 
 ```yaml
 team_system:
@@ -1370,7 +1305,7 @@ team_system:
 - Auto-fix reduces manual debugging time
 - Templates ensure consistency
 
-**Learn More**: See `agent-os/workflows/team/README.md` for complete guide, examples, and troubleshooting.
+**Learn More**: See `specwright/workflows/team/README.md` for complete guide, examples, and troubleshooting.
 
 ---
 
@@ -1536,7 +1471,7 @@ Extracted: 2025-12-29
 # → business-analyst: Defines success criteria
 
 # 2. Deploy landing page (2 minutes)
-netlify deploy --dir=agent-os/market-validation/2025-12-29-invoice-automation/landing-page
+netlify deploy --dir=specwright/market-validation/2025-12-29-invoice-automation/landing-page
 
 # 3. Run ad campaigns (2-4 weeks)
 # → Execute Google Ads + Meta Ads campaigns
@@ -1625,157 +1560,6 @@ netlify deploy --dir=agent-os/market-validation/2025-12-29-invoice-automation/la
 
 ---
 
-## Agent OS Manager (Desktop GUI)
-
-**Visual management application for Agent OS Extended components.**
-
-### Overview
-
-Agent OS Manager is a desktop application (Electron) that provides a visual interface for managing all Agent OS components:
-- Skills, Agents, Templates, Configuration
-- Global vs Project override visualization
-- Monaco Editor integration for editing
-- One-click override creation
-- Dark/Light mode support
-
-### Installation
-
-**From Source** (requires Node.js 22+):
-```bash
-# Clone repository
-git clone https://github.com/michsindlinger/agent-os-extended.git
-cd agent-os-extended
-
-# Install and build
-bash setup-agent-os-manager.sh
-```
-
-**From Binary** (recommended when available):
-- Download DMG/EXE/AppImage from GitHub Releases
-- Install and launch
-- No development dependencies needed
-
-### Features
-
-**Dashboard**:
-- Component counts (Skills, Agents, Templates)
-- Global vs Project breakdown (✅ vs 🔶)
-- Global and project location display
-- Quick overview statistics
-
-**Skills Manager**:
-- List all skills (global + project merged)
-- Search and filter by name/description
-- Edit with Monaco Editor (Markdown + YAML frontmatter)
-- Override global → project (one-click copy)
-- Revert project → global (with confirmation)
-- Frontmatter validation before save
-
-**Agents Manager**:
-- List all specialist agents
-- Color dot indicators (from agent.color frontmatter)
-- Tools display (first 3 tools shown)
-- Edit, override, revert functionality
-- Agent-specific frontmatter validation
-
-**Templates Manager**:
-- Hierarchical tree view (System > Category > Template)
-- Expand/collapse folders
-- Template counts per folder
-- Edit templates with Monaco Editor
-- Source indicators per template
-
-**Config Editor**:
-- **Visual Form Mode**: Toggles, dropdowns, number inputs for all settings
-- **Raw YAML Mode**: Monaco Editor with YAML syntax highlighting
-- Mode toggle (Form ↔ YAML)
-- Auto-sync between modes
-- Real-time validation
-- Unsaved changes warning
-
-### Usage
-
-**Launch Application**:
-```bash
-# macOS
-open "/Applications/Agent OS Manager.app"
-
-# Or from project directory to see project components
-cd your-project
-open "/Applications/Agent OS Manager.app"
-```
-
-**Visual Workflow**:
-1. Open Agent OS Manager
-2. Dashboard shows component overview
-3. Click "Skills" → See all skills with ✅/🔶 badges
-4. Click "Edit" on a skill → Monaco Editor opens
-5. Modify content, click "Save"
-6. Or click "Override" → Copies global to project, opens editor
-7. Same workflow for Agents, Templates
-8. Config: Toggle Team System settings visually
-
-### Tech Stack
-
-- **Desktop**: Electron 39.2.7
-- **Frontend**: React 19 + TypeScript 5.9
-- **Styling**: TailwindCSS 4.0
-- **Editor**: Monaco Editor 4.7.0 (VS Code's editor)
-- **Icons**: Lucide React
-- **Parsing**: gray-matter (frontmatter), js-yaml (config)
-- **Build**: Vite 7.3 + electron-builder
-- **Testing**: Jest (15 unit tests)
-
-### When to Use
-
-**Ideal For**:
-- ✅ Visual overview of all Agent OS components
-- ✅ Easy editing without command line
-- ✅ Understanding global vs project overrides
-- ✅ Team onboarding (visual demonstration)
-- ✅ Quick config adjustments
-- ✅ Learning Agent OS structure
-
-**Not Needed For**:
-- ❌ Command-line-only workflows (use text editor)
-- ❌ Automated CI/CD (use config files directly)
-- ❌ Simple one-off edits (faster with vim/code)
-
-### Screenshots
-
-See `agent-os-manager/README.md` for detailed screenshots and usage guide.
-
-### Development
-
-```bash
-cd agent-os-manager
-
-# Install dependencies
-npm install
-
-# Run in development
-npm run dev
-
-# Run tests
-npm test
-
-# Build for production
-npm run build
-
-# Package for platform
-npm run package:mac    # macOS DMG
-npm run package:win    # Windows EXE
-npm run package:linux  # Linux AppImage
-```
-
-**Learn More**: See `agent-os-manager/README.md` and `agent-os-manager/INSTALLATION.md`
-
----
-
-## Original Agent OS
-
-For more information about the original Agent OS concept, visit [buildermethods.com/agent-os](https://buildermethods.com/agent-os).
-
 ## License
 
-This project maintains the same open-source license as the original Agent OS project.
+This project is open source. See LICENSE for details.

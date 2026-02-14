@@ -41,9 +41,9 @@ You don't need to explicitly reference these skills - they're automatically in y
 ### Step 1: Receive Validation Assets
 
 **Input Files**:
-- `@agent-os/market-validation/[DATE]-[PRODUCT]/product-brief.md`
-- `@agent-os/market-validation/[DATE]-[PRODUCT]/market-positioning.md`
-- `@agent-os/market-validation/[DATE]-[PRODUCT]/landing-page/index.html`
+- `@specwright/market-validation/[DATE]-[PRODUCT]/product-brief.md`
+- `@specwright/market-validation/[DATE]-[PRODUCT]/market-positioning.md`
+- `@specwright/market-validation/[DATE]-[PRODUCT]/landing-page/index.html`
 - Ad copy from content-creator (output, not file)
 - SEO specs from seo-specialist (output, not file)
 
@@ -56,7 +56,7 @@ You don't need to explicitly reference these skills - they're automatically in y
 
 ### Step 2: Apply Validation Plan Template
 
-**Template**: `@agent-os/templates/market-validation/validation-plan.md`
+**Template**: `@specwright/templates/market-validation/validation-plan.md`
 
 **Fill Sections**:
 
@@ -104,7 +104,7 @@ NO-GO:
 
 ### Step 3: Create Ad Campaign Plans
 
-**Template**: `@agent-os/templates/market-validation/ad-campaigns.md`
+**Template**: `@specwright/templates/market-validation/ad-campaigns.md`
 
 **Integrate Ad Copy** (from content-creator):
 - Take 7 Google ad variants from content-creator
@@ -148,7 +148,7 @@ Campaign: Facebook + Instagram Feed + Stories
 
 ### Step 4: Create Analytics Setup Guide
 
-**Template**: `@agent-os/templates/market-validation/analytics-setup.md`
+**Template**: `@specwright/templates/market-validation/analytics-setup.md`
 
 **Provide Step-by-Step**:
 
@@ -361,9 +361,9 @@ If CPA >€20 after Week 1:
 
 ### Files Created
 
-- @agent-os/market-validation/[DATE]-[PRODUCT]/ad-campaigns.md
-- @agent-os/market-validation/[DATE]-[PRODUCT]/analytics-setup.md
-- @agent-os/market-validation/[DATE]-[PRODUCT]/validation-plan.md
+- @specwright/market-validation/[DATE]-[PRODUCT]/ad-campaigns.md
+- @specwright/market-validation/[DATE]-[PRODUCT]/analytics-setup.md
+- @specwright/market-validation/[DATE]-[PRODUCT]/validation-plan.md
 
 ---
 

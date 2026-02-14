@@ -33,8 +33,8 @@ Your mission is to validate that landing pages are production-ready by testing r
 
 **Expected Input:**
 - Landing page HTML file: `landing-page/index.html`
-- Design system reference: `.agent-os/product/design-system.md`
-- SEO specifications: `.agent-os/product/seo-keywords.md`
+- Design system reference: `.specwright/product/design-system.md`
+- SEO specifications: `.specwright/product/seo-keywords.md`
 
 ## Workflow Process
 

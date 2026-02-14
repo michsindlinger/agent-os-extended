@@ -106,7 +106,7 @@ I have your initial idea. To create a complete product brief, I need a few more 
 
 ### Step 3: Structure the Brief
 
-**Use template from**: `@agent-os/templates/documents/product-brief.md`
+**Use template from**: `@specwright/templates/documents/product-brief.md`
 
 **Fill in sections:**
 
@@ -161,7 +161,7 @@ I have your initial idea. To create a complete product brief, I need a few more 
 
 ### Step 5: Output Product Brief
 
-**Create file**: `.agent-os/product/product-brief.md`
+**Create file**: `.specwright/product/product-brief.md`
 
 **Structure:**
 ```markdown
@@ -307,7 +307,7 @@ Unlike [MAIN_COMPETITOR], which [COMPETITOR_APPROACH], [PRODUCT_NAME] [YOUR_APPR
 **Core Problem**: [PROBLEM_STATEMENT]
 **Key Differentiator**: [DIFFERENTIATOR]
 
-**File Created**: `.agent-os/product/product-brief.md`
+**File Created**: `.specwright/product/product-brief.md`
 
 **Brief Summary**:
 - Elevator Pitch: [ONE_SENTENCE]

@@ -44,10 +44,10 @@ You don't need to explicitly reference this skill - it's automatically in your c
 ### Step 1: Receive Product Context
 
 **Input Files**:
-- Product brief: `.agent-os/product/product-brief.md`
-- Competitor analysis: `.agent-os/product/competitor-analysis.md`
-- Market position: `.agent-os/product/market-position.md`
-- Brand story: `.agent-os/product/story.md`
+- Product brief: `.specwright/product/product-brief.md`
+- Competitor analysis: `.specwright/product/competitor-analysis.md`
+- Market position: `.specwright/product/market-position.md`
+- Brand story: `.specwright/product/story.md`
 
 **Extract**:
 - Product category: [For primary keyword identification]
@@ -467,14 +467,14 @@ Optimized: "One-Click Invoice Generation"
 
 ### Step 8: Generate seo-keywords.md
 
-**Template Location:** `@agent-os/templates/documents/seo-keywords.md`
+**Template Location:** `@specwright/templates/documents/seo-keywords.md`
 
 **Process:**
-1. Read the template from `agent-os/templates/documents/seo-keywords.md`
+1. Read the template from `specwright/templates/documents/seo-keywords.md`
 2. Fill in ALL sections with your research findings
-3. Write the completed document to `.agent-os/product/seo-keywords.md`
+3. Write the completed document to `.specwright/product/seo-keywords.md`
 
-**Output File:** `.agent-os/product/seo-keywords.md`
+**Output File:** `.specwright/product/seo-keywords.md`
 
 ## Output Format
 
@@ -522,7 +522,7 @@ Optimized: "One-Click Invoice Generation"
 
 **SEO Keywords Document Created**: ✅
 
-**File Generated:** `.agent-os/product/seo-keywords.md`
+**File Generated:** `.specwright/product/seo-keywords.md`
 
 **Handoff to**:
 - marketing-system__content-creator (integrate keywords into landing page copy and ad variants)
@@ -640,7 +640,7 @@ Long-tail: "invoice automation for freelancers" (200/month)
 **Use this agent when**: Product positioning is complete and keyword research is needed BEFORE content creation.
 
 **Success Criteria**:
-- `seo-keywords.md` file created in `.agent-os/product/`
+- `seo-keywords.md` file created in `.specwright/product/`
 - Primary keyword identified with volume and difficulty
 - At least 3 secondary keywords documented
 - At least 5 long-tail keywords with metrics

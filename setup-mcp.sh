@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # ============================================================================
-# Kanban MCP Server Setup for Agent OS
+# Kanban MCP Server Setup for Specwright
 # ============================================================================
 #
-# Installs the Kanban MCP Server globally to ~/.agent-os/scripts/mcp/
+# Installs the Kanban MCP Server globally to ~/.specwright/scripts/mcp/
 # and configures it in the project's .mcp.json file.
 #
 # The MCP server provides safe, atomic operations for kanban.json management,
@@ -17,19 +17,26 @@
 
 set -e  # Exit on error
 
-echo "🔧 Installing Kanban MCP Server for Agent OS..."
+echo "🔧 Installing Kanban MCP Server for Specwright..."
 echo ""
 
+# Legacy detection
+if [[ -d "$HOME/.agent-os/scripts/mcp" && ! -d "$HOME/.specwright" ]]; then
+    echo "⚠️  Detected existing ~/.agent-os/ MCP installation."
+    echo "   Run migrate-to-specwright.sh --global-only first, or continue for fresh install."
+    echo ""
+fi
+
 # Create global MCP scripts directory
-MCP_DIR="$HOME/.agent-os/scripts/mcp"
+MCP_DIR="$HOME/.specwright/scripts/mcp"
 mkdir -p "$MCP_DIR"
 
 # Copy MCP server files to global location
 echo "📦 Copying MCP server files to $MCP_DIR..."
-cp agent-os/scripts/mcp/kanban-mcp-server.ts "$MCP_DIR/"
-cp agent-os/scripts/mcp/kanban-lock.ts "$MCP_DIR/"
-cp agent-os/scripts/mcp/story-parser.ts "$MCP_DIR/"
-cp agent-os/scripts/mcp/item-templates.ts "$MCP_DIR/"
+cp specwright/scripts/mcp/kanban-mcp-server.ts "$MCP_DIR/"
+cp specwright/scripts/mcp/kanban-lock.ts "$MCP_DIR/"
+cp specwright/scripts/mcp/story-parser.ts "$MCP_DIR/"
+cp specwright/scripts/mcp/item-templates.ts "$MCP_DIR/"
 echo "   ✅ Files copied"
 echo ""
 

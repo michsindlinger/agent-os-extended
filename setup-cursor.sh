@@ -1,22 +1,22 @@
 #!/bin/bash
 
-# Agent OS Extended - Cursor Project-level Setup
-# Installs Cursor specific Agent OS files in the current project
+# Specwright - Cursor Project-level Setup
+# Installs Cursor specific Specwright files in the current project
 
 set -e
 
-REPO_URL="https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main"
+REPO_URL="https://raw.githubusercontent.com/michsindlinger/specwright/main"
 
-echo "🤖 Agent OS Extended - Cursor Setup"
+echo "🤖 Specwright - Cursor Setup"
 echo "Installing Cursor configuration in current project..."
 echo ""
 
-# Check if base Agent OS is installed in project
-if [[ ! -d ".agent-os/standards" ]] || [[ ! -d ".agent-os/instructions" ]]; then
-    echo "❌ Error: Agent OS base installation not found in current project."
+# Check if base Specwright is installed in project
+if [[ ! -d ".specwright/standards" ]] || [[ ! -d ".specwright/instructions" ]]; then
+    echo "❌ Error: Specwright base installation not found in current project."
     echo ""
     echo "Please run the base setup first:"
-    echo "  curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/setup.sh | bash"
+    echo "  curl -sSL https://raw.githubusercontent.com/michsindlinger/specwright/main/setup.sh | bash"
     echo ""
     exit 1
 fi
@@ -63,7 +63,7 @@ echo ""
 echo "✅ Cursor setup complete!"
 echo ""
 echo "Project structure created:"
-echo "  .cursor/rules/      - Cursor Agent OS rules"
+echo "  .cursor/rules/      - Cursor Specwright rules"
 echo ""
 echo "Available Cursor commands:"
 echo "  @plan-product         - Plan your product roadmap"
@@ -76,4 +76,4 @@ echo "  @analyze-b2b-application - Analyze B2B enterprise application"
 echo "  @brainstorm-upselling-ideas - Generate upselling opportunities"
 echo "  @develop-positioning  - Develop positioning strategy from project specs"
 echo ""
-echo "For more information, visit: https://github.com/michsindlinger/agent-os-extended"
+echo "For more information, visit: https://github.com/michsindlinger/specwright"

@@ -4,24 +4,24 @@
 > Last Updated: [CURRENT_DATE]
 
 ## Purpose
-Essential guidance for Claude Code development in the [PROJECT_NAME] repository. All detailed standards and product information are maintained in Agent OS structure.
+Essential guidance for Claude Code development in the [PROJECT_NAME] repository. All detailed standards and product information are maintained in Specwright structure.
 
-## Agent OS References (Lazy Loading - Context Efficient)
+## Specwright References (Lazy Loading - Context Efficient)
 
 **IMPORTANT:** Documents are loaded on-demand to preserve context window. Use context-fetcher subagent when needed.
 
 ### Product Information (load via context-fetcher when needed)
-- **Product Vision**: agent-os/product/product-brief.md
-- **Technical Architecture**: agent-os/product/tech-stack.md
-- **Development Roadmap**: agent-os/product/roadmap.md
-- **Architecture Decision**: agent-os/product/architecture-decision.md
+- **Product Vision**: specwright/product/product-brief.md
+- **Technical Architecture**: specwright/product/tech-stack.md
+- **Development Roadmap**: specwright/product/roadmap.md
+- **Architecture Decision**: specwright/product/architecture-decision.md
 
 ### Development Standards (load via context-fetcher when needed)
-- **Tech Stack Defaults**: agent-os/standards/tech-stack.md
-- **Code Style Preferences**: agent-os/standards/code-style.md
-- **Best Practices Philosophy**: agent-os/standards/best-practices.md
+- **Tech Stack Defaults**: specwright/standards/tech-stack.md
+- **Code Style Preferences**: specwright/standards/code-style.md
+- **Best Practices Philosophy**: specwright/standards/best-practices.md
 
-### Agent OS Workflows (loaded automatically via slash commands)
+### Specwright Workflows (loaded automatically via slash commands)
 Available commands - workflow context loads only when invoked:
 - `/plan-product` - Single-product planning
 - `/plan-platform` - Multi-module platform planning
@@ -42,7 +42,7 @@ Available commands - workflow context loads only when invoked:
 
 **Delegation Strategy:**
 - **Strategic Planning** → You decide WHAT needs to be done
-- **Implementation Planning** → Delegate to Core Development specialists  
+- **Implementation Planning** → Delegate to Core Development specialists
 - **Execution Tasks** → Delegate to Utility & Support agents
 - **Context Optimization** → Use sub-agents to keep routine tasks out of your main context
 
@@ -60,9 +60,9 @@ Available commands - workflow context loads only when invoked:
 - **devops-specialist** - [YOUR_DEPLOYMENT_PLATFORM]
 
 ### Utility & Support
-- **context-fetcher** - Retrieve and extract relevant information from Agent OS documentation
+- **context-fetcher** - Retrieve and extract relevant information from Specwright documentation
 - **date-checker** - Determine today's date including current year, month and day
-- **file-creator** - Create files, directories, and apply templates for Agent OS workflows
+- **file-creator** - Create files, directories, and apply templates for Specwright workflows
 - **git-workflow** - Handle git operations, branch management, commits, and PR creation
 - **debugger** - Immediate bug fixes and runtime errors
 - **analyzer** - Strategic problem analysis (5-Why methodology)
@@ -106,17 +106,17 @@ Available commands - workflow context loads only when invoked:
 ## File Organization Rules
 
 **CRITICAL - No Files in Project Root:**
-- ❌ NEVER create markdown reports, checklists, or documentation in project root
-- ❌ NEVER create implementation reports like `STORY-001-IMPLEMENTATION.md` in root
-- ❌ NEVER create temporary files in root
+- NEVER create markdown reports, checklists, or documentation in project root
+- NEVER create implementation reports like `STORY-001-IMPLEMENTATION.md` in root
+- NEVER create temporary files in root
 
 **Correct Locations:**
-- ✅ Implementation reports: `agent-os/specs/[spec-name]/implementation-reports/`
-- ✅ Testing checklists: `agent-os/specs/[spec-name]/implementation-reports/`
-- ✅ Handover docs: `agent-os/specs/[spec-name]/handover-docs/`
-- ✅ Architecture docs: `agent-os/product/`
-- ✅ Team docs: `agent-os/team/`
-- ✅ Temporary files: `/tmp/` or `node_modules/.cache/`
+- Implementation reports: `specwright/specs/[spec-name]/implementation-reports/`
+- Testing checklists: `specwright/specs/[spec-name]/implementation-reports/`
+- Handover docs: `specwright/specs/[spec-name]/handover-docs/`
+- Architecture docs: `specwright/product/`
+- Team docs: `specwright/team/`
+- Temporary files: `/tmp/` or `node_modules/.cache/`
 
 **When delegating to DevTeam agents:**
 Explicitly instruct them on correct file placement for any reports or documentation.
@@ -134,7 +134,7 @@ Explicitly instruct them on correct file placement for any reports or documentat
 **CRITICAL RESTRICTIONS:**
 <!-- CUSTOMIZE: Add your production safety rules -->
 - Never modify [CRITICAL_SYSTEM] without approval
-- Never deploy [SENSITIVE_COMPONENT] without approval  
+- Never deploy [SENSITIVE_COMPONENT] without approval
 - Never create automatic Git commits
 - Always ask before infrastructure changes
 
@@ -154,7 +154,7 @@ Explicitly instruct them on correct file placement for any reports or documentat
 3. **Feature Development:**
    - `/create-spec` → Creates detailed specification
    - `/execute-tasks` → Executes planned tasks with DevTeam
-   - Creates spec in `agent-os/specs/YYYY-MM-DD-feature-name/`
+   - Creates spec in `specwright/specs/YYYY-MM-DD-feature-name/`
 
 4. **Bug Management:**
    - `/create-bug` → Creates bug specification
@@ -166,9 +166,9 @@ Explicitly instruct them on correct file placement for any reports or documentat
    - Perfect for legacy features
 
 **Directory Structure:**
-- `agent-os/product/` - Product vision, tech-stack, roadmap
-- `agent-os/specs/` - Feature specifications (development-oriented)
-- `agent-os/team/` - DevTeam agents and skills
+- `specwright/product/` - Product vision, tech-stack, roadmap
+- `specwright/specs/` - Feature specifications (development-oriented)
+- `specwright/team/` - DevTeam agents and skills
 
 ## Development Notes
 
@@ -179,4 +179,4 @@ Explicitly instruct them on correct file placement for any reports or documentat
 
 ---
 
-**Remember:** This is a [PRODUCTION/DEVELOPMENT] system serving [TARGET_AUDIENCE]. Quality, [KEY_REQUIREMENTS], and reliability are paramount. Always refer to Agent OS documentation for detailed guidance.
+**Remember:** This is a [PRODUCTION/DEVELOPMENT] system serving [TARGET_AUDIENCE]. Quality, [KEY_REQUIREMENTS], and reliability are paramount. Always refer to Specwright documentation for detailed guidance.

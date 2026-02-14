@@ -122,8 +122,8 @@ Nutze AskUserQuestion mit folgenden Optionen:
 
 ## Referenz-Dokumente
 
-- Guidelines: agent-os/standards/plan-review-guidelines.md
-- Template: agent-os/templates/docs/implementation-plan-template.md
+- Guidelines: specwright/standards/plan-review-guidelines.md
+- Template: specwright/templates/docs/implementation-plan-template.md
 
 ## Beispiel-Ausgabe
 

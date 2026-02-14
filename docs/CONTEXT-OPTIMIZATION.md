@@ -7,11 +7,11 @@ Wenn du in CLAUDE.md `@`-Referenzen verwendest, werden diese Dateien **sofort be
 ### Beispiel: Typische problematische CLAUDE.md
 
 ```markdown
-## Agent OS Workflows
-- **Plan Product**: @agent-os/workflows/core/plan-product.md
-- **Plan Platform**: @agent-os/workflows/core/plan-platform.md
-- **Create Spec**: @agent-os/workflows/core/create-spec.md
-- **Execute Tasks**: @agent-os/workflows/core/execute-tasks.md
+## Specwright Workflows
+- **Plan Product**: @specwright/workflows/core/plan-product.md
+- **Plan Platform**: @specwright/workflows/core/plan-platform.md
+- **Create Spec**: @specwright/workflows/core/create-spec.md
+- **Execute Tasks**: @specwright/workflows/core/execute-tasks.md
 ```
 
 **Folge:** ~20.000 Tokens werden beim Start geladen, bevor du überhaupt eine Frage stellst!
@@ -24,7 +24,7 @@ Die Workflows werden **automatisch** geladen, wenn du `/plan-product`, `/execute
 
 **Falsch:**
 ```markdown
-- **Plan Product**: @agent-os/workflows/core/plan-product.md
+- **Plan Product**: @specwright/workflows/core/plan-product.md
 ```
 
 **Richtig:**
@@ -38,13 +38,13 @@ Die Workflows werden **automatisch** geladen, wenn du `/plan-product`, `/execute
 
 Statt:
 ```markdown
-- **Product Vision**: @agent-os/product/product-brief.md
+- **Product Vision**: @specwright/product/product-brief.md
 ```
 
 Verwende:
 ```markdown
 ## Document Locations (load via context-fetcher when needed)
-- **Product Vision**: agent-os/product/product-brief.md
+- **Product Vision**: specwright/product/product-brief.md
 ```
 
 Und lade bei Bedarf mit dem context-fetcher Subagent.
@@ -71,17 +71,17 @@ Ersetze alle `@`-Referenzen durch reine Pfadangaben:
 
 ```bash
 # Vorher
-@agent-os/workflows/core/plan-product.md
+@specwright/workflows/core/plan-product.md
 
 # Nachher (kein @, nur Pfad als Dokumentation)
-agent-os/workflows/core/plan-product.md
+specwright/workflows/core/plan-product.md
 ```
 
 ### Schritt 2: Template verwenden
 
 Kopiere das optimierte Template:
 ```bash
-cp agent-os/templates/CLAUDE-LITE.md CLAUDE.md
+cp specwright/templates/CLAUDE-LITE.md CLAUDE.md
 ```
 
 ### Schritt 3: Projekt-spezifische Anpassungen

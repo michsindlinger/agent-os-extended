@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Agent OS Extended - Update Standards Only
+# Specwright - Update Standards Only
 # Updates only the standards files in the current project
 
-curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/setup.sh | bash -s -- --overwrite-standards
+curl -sSL https://raw.githubusercontent.com/michsindlinger/specwright/main/setup.sh | bash -s -- --overwrite-standards

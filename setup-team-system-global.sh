@@ -1,19 +1,19 @@
 #!/bin/bash
 
 # Team Development System - Global Installation
-# Installs to global agent-os/ and .claude/ for use across all projects
+# Installs to global specwright/ and .claude/ for use across all projects
 # Version: 2.0 (Phase B)
 
 set -e
 
-REPO_URL="https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main"
+REPO_URL="https://raw.githubusercontent.com/michsindlinger/specwright/main"
 
 echo "========================================="
 echo "Team Development System - Global Setup"
 echo "========================================="
 echo ""
 echo "This installs team development components to:"
-echo "  <global>/agent-os/        (base skills, templates)"
+echo "  <global>/specwright/        (base skills, templates)"
 echo ""
 echo "Projects create their own agents using /create-project-agents"
 echo "Projects create their own skills using /add-skill"
@@ -43,7 +43,7 @@ download_file() {
 }
 
 # Global installation always goes to HOME directory
-AGENT_OS_DIR="$HOME/.agent-os"
+AGENT_OS_DIR="$HOME/.specwright"
 
 echo "Installing to: $AGENT_OS_DIR"
 echo ""
@@ -64,78 +64,78 @@ mkdir -p "$AGENT_OS_DIR/templates/team-development/agents"
 echo ""
 echo "Downloading team development skills..."
 
-download_file "$REPO_URL/agent-os/skills/base/testing-best-practices.md" \
+download_file "$REPO_URL/specwright/skills/base/testing-best-practices.md" \
   "$AGENT_OS_DIR/skills/base/testing-best-practices.md" "skill"
 
-download_file "$REPO_URL/agent-os/skills/base/devops-patterns.md" \
+download_file "$REPO_URL/specwright/skills/base/devops-patterns.md" \
   "$AGENT_OS_DIR/skills/base/devops-patterns.md" "skill"
 
 # Download Backend Templates (4 new)
 echo ""
 echo "Downloading backend templates..."
 
-download_file "$REPO_URL/agent-os/templates/team-development/backend/api-spec.md" \
+download_file "$REPO_URL/specwright/templates/team-development/backend/api-spec.md" \
   "$AGENT_OS_DIR/templates/team-development/backend/api-spec.md" "template"
 
-download_file "$REPO_URL/agent-os/templates/team-development/backend/service-class.md" \
+download_file "$REPO_URL/specwright/templates/team-development/backend/service-class.md" \
   "$AGENT_OS_DIR/templates/team-development/backend/service-class.md" "template"
 
-download_file "$REPO_URL/agent-os/templates/team-development/backend/repository-class.md" \
+download_file "$REPO_URL/specwright/templates/team-development/backend/repository-class.md" \
   "$AGENT_OS_DIR/templates/team-development/backend/repository-class.md" "template"
 
-download_file "$REPO_URL/agent-os/templates/team-development/backend/backend-handoff.md" \
+download_file "$REPO_URL/specwright/templates/team-development/backend/backend-handoff.md" \
   "$AGENT_OS_DIR/templates/team-development/backend/backend-handoff.md" "template"
 
 # Download Frontend Templates (4 new)
 echo ""
 echo "Downloading frontend templates..."
 
-download_file "$REPO_URL/agent-os/templates/team-development/frontend/component-spec.md" \
+download_file "$REPO_URL/specwright/templates/team-development/frontend/component-spec.md" \
   "$AGENT_OS_DIR/templates/team-development/frontend/component-spec.md" "template"
 
-download_file "$REPO_URL/agent-os/templates/team-development/frontend/page-spec.md" \
+download_file "$REPO_URL/specwright/templates/team-development/frontend/page-spec.md" \
   "$AGENT_OS_DIR/templates/team-development/frontend/page-spec.md" "template"
 
-download_file "$REPO_URL/agent-os/templates/team-development/frontend/state-management.md" \
+download_file "$REPO_URL/specwright/templates/team-development/frontend/state-management.md" \
   "$AGENT_OS_DIR/templates/team-development/frontend/state-management.md" "template"
 
-download_file "$REPO_URL/agent-os/templates/team-development/frontend/frontend-handoff.md" \
+download_file "$REPO_URL/specwright/templates/team-development/frontend/frontend-handoff.md" \
   "$AGENT_OS_DIR/templates/team-development/frontend/frontend-handoff.md" "template"
 
 # Download QA Templates (2 new)
 echo ""
 echo "Downloading QA templates..."
 
-download_file "$REPO_URL/agent-os/templates/team-development/qa/test-plan.md" \
+download_file "$REPO_URL/specwright/templates/team-development/qa/test-plan.md" \
   "$AGENT_OS_DIR/templates/team-development/qa/test-plan.md" "template"
 
-download_file "$REPO_URL/agent-os/templates/team-development/qa/test-report.md" \
+download_file "$REPO_URL/specwright/templates/team-development/qa/test-report.md" \
   "$AGENT_OS_DIR/templates/team-development/qa/test-report.md" "template"
 
 # Download DevOps Templates (2 new)
 echo ""
 echo "Downloading DevOps templates..."
 
-download_file "$REPO_URL/agent-os/templates/team-development/devops/ci-cd-config.md" \
+download_file "$REPO_URL/specwright/templates/team-development/devops/ci-cd-config.md" \
   "$AGENT_OS_DIR/templates/team-development/devops/ci-cd-config.md" "template"
 
-download_file "$REPO_URL/agent-os/templates/team-development/devops/deployment-plan.md" \
+download_file "$REPO_URL/specwright/templates/team-development/devops/deployment-plan.md" \
   "$AGENT_OS_DIR/templates/team-development/devops/deployment-plan.md" "template"
 
 # Download Agent Templates (4 new)
 echo ""
 echo "Downloading agent templates..."
 
-download_file "$REPO_URL/agent-os/templates/team-development/agents/backend-dev-template.md" \
+download_file "$REPO_URL/specwright/templates/team-development/agents/backend-dev-template.md" \
   "$AGENT_OS_DIR/templates/team-development/agents/backend-dev-template.md" "agent template"
 
-download_file "$REPO_URL/agent-os/templates/team-development/agents/frontend-dev-template.md" \
+download_file "$REPO_URL/specwright/templates/team-development/agents/frontend-dev-template.md" \
   "$AGENT_OS_DIR/templates/team-development/agents/frontend-dev-template.md" "agent template"
 
-download_file "$REPO_URL/agent-os/templates/team-development/agents/qa-specialist-template.md" \
+download_file "$REPO_URL/specwright/templates/team-development/agents/qa-specialist-template.md" \
   "$AGENT_OS_DIR/templates/team-development/agents/qa-specialist-template.md" "agent template"
 
-download_file "$REPO_URL/agent-os/templates/team-development/agents/devops-specialist-template.md" \
+download_file "$REPO_URL/specwright/templates/team-development/agents/devops-specialist-template.md" \
   "$AGENT_OS_DIR/templates/team-development/agents/devops-specialist-template.md" "agent template"
 
 # Create Skills symlinks in ~/.claude/skills/
@@ -215,5 +215,5 @@ echo "  6. Use /execute-tasks with smart routing:"
 echo "     → Tasks are routed to specialists automatically"
 echo "     → Specialists use project skills + base skills"
 echo ""
-echo "For complete guide, see: agent-os/specs/2025-12-28-team-development-system/"
+echo "For complete guide, see: specwright/specs/2025-12-28-team-development-system/"
 echo ""

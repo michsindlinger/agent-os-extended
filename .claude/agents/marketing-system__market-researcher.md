@@ -30,10 +30,10 @@ Your mission is to conduct comprehensive competitive analysis based on the produ
 ## Input/Output
 
 **Input:**
-- Product brief from marketing-system__product-idea-refiner: `.agent-os/product/product-brief.md`
+- Product brief from marketing-system__product-idea-refiner: `.specwright/product/product-brief.md`
 
 **Output:**
-- Competitor analysis: `.agent-os/product/competitor-analysis.md`
+- Competitor analysis: `.specwright/product/competitor-analysis.md`
 
 **Handoff to:**
 - marketing-system__product-strategist (uses competitor analysis to create market positioning, story, and tone)
@@ -51,7 +51,7 @@ You don't need to explicitly reference this skill - it's automatically in your c
 
 ### Step 1: Receive Product Brief
 
-**Input**: `.agent-os/product/product-brief.md`
+**Input**: `.specwright/product/product-brief.md`
 
 **Extract Key Information**:
 - Target Audience: [Who to research competitors for]
@@ -194,7 +194,7 @@ Our Positioning: [How we fill this gap]
 **Generate File**:
 
 **competitor-analysis.md**:
-- Apply template: `@agent-os/templates/documents/competitor-analysis.md`
+- Apply template: `@specwright/templates/documents/competitor-analysis.md`
 - Fill with Perplexity + WebSearch findings
 - Include feature matrix, pricing table, gap analysis
 - Add research sources (Perplexity queries, URLs visited)
@@ -224,7 +224,7 @@ Our Positioning: [How we fill this gap]
 - Our Position: €[Z]/month ([Premium/Mid/Budget])
 
 **File Created**:
-- @agent-os/product/competitor-analysis.md
+- @specwright/product/competitor-analysis.md
 
 **Ready for Next Step**: ✅
 
@@ -261,7 +261,7 @@ Our Positioning: [How we fill this gap]
 - Competition Intensity: [High/Medium/Low]
 
 **File Created**:
-- @agent-os/product/competitor-analysis.md
+- @specwright/product/competitor-analysis.md
 
 **Handoff to**: product-strategist (create market positioning based on gaps and competitive landscape)
 ```

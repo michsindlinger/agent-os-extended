@@ -102,10 +102,10 @@ You don't need to explicitly reference these skills - they're automatically in y
 You are called BEFORE seo-expert and content-creator to define the page structure.
 
 **Input Files**:
-- Product brief: `.agent-os/product/product-brief.md`
-- Market position: `.agent-os/product/market-position.md`
-- Brand story: `.agent-os/product/story.md`
-- Design system: `.agent-os/product/design-system.md`
+- Product brief: `.specwright/product/product-brief.md`
+- Market position: `.specwright/product/market-position.md`
+- Brand story: `.specwright/product/story.md`
+- Design system: `.specwright/product/design-system.md`
 
 **Process**:
 1. Read all input documents
@@ -117,9 +117,9 @@ You are called BEFORE seo-expert and content-creator to define the page structur
 7. Identify A/B testing opportunities
 8. Generate landing-page-module-structure.md
 
-**Template Location**: `@agent-os/templates/documents/landing-page-module-structure.md`
+**Template Location**: `@specwright/templates/documents/landing-page-module-structure.md`
 
-**Output File**: `.agent-os/product/landing-page-module-structure.md`
+**Output File**: `.specwright/product/landing-page-module-structure.md`
 
 **Handoff to**: marketing-system__seo-expert
 
@@ -154,7 +154,7 @@ After completing structure mode, output:
 2. CTA button color/text
 3. Social proof format (logos vs stats)
 
-**File Generated**: `.agent-os/product/landing-page-module-structure.md`
+**File Generated**: `.specwright/product/landing-page-module-structure.md`
 
 **Handoff to**: marketing-system__seo-expert (conduct keyword research)
 ```
@@ -170,13 +170,13 @@ You are called AFTER content-creator has written all content.
 ### Step 1: Load All Input Documents
 
 **Input Files**:
-- Landing page structure: `.agent-os/product/landing-page-module-structure.md` (your previous output)
-- Landing page content: `.agent-os/product/landingpage-contents.md` (from content-creator)
-- SEO keywords: `.agent-os/product/seo-keywords.md` (from seo-expert)
-- Design system: `.agent-os/product/design-system.md`
+- Landing page structure: `.specwright/product/landing-page-module-structure.md` (your previous output)
+- Landing page content: `.specwright/product/landingpage-contents.md` (from content-creator)
+- SEO keywords: `.specwright/product/seo-keywords.md` (from seo-expert)
+- Design system: `.specwright/product/design-system.md`
 
 **Design System**:
-- **Source**: `.agent-os/product/design-system.md` OR `.claude/skills/frontend-design.md`
+- **Source**: `.specwright/product/design-system.md` OR `.claude/skills/frontend-design.md`
 - **Contains**: Extracted UI tokens (colors, fonts, spacing, components) + Design principles
 
 **Extract from Inputs**:
@@ -995,7 +995,7 @@ RE-VALIDATING... ✅ All issues fixed
 - Estimated deployment time: 2-10 minutes
 - SSL: Automatic on all platforms
 
-**File Created**: @agent-os/market-validation/[DATE]-[PRODUCT]/landing-page/index.html
+**File Created**: @specwright/market-validation/[DATE]-[PRODUCT]/landing-page/index.html
 
 **Next Steps**:
 1. marketing-system__quality-assurance adds GA4 and Meta Pixel tracking IDs
@@ -1271,7 +1271,7 @@ RE-VALIDATING... ✅ All issues fixed
 - **Final Build Mode**: After landingpage-contents.md exists, to generate production HTML
 
 **Success Criteria (Structure Mode)**:
-- `landing-page-module-structure.md` file created in `.agent-os/product/`
+- `landing-page-module-structure.md` file created in `.specwright/product/`
 - At least 6 modules defined with priorities (REQUIRED/OPTIONAL)
 - Layout specifications for each module
 - Responsive breakpoints documented

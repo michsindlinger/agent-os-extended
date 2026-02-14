@@ -42,8 +42,8 @@ You don't need to explicitly reference these skills - they're automatically in y
 - Working on files containing "ad-campaigns" or "landing-page"
 
 **IMPORTANT**: The **copywriting-style** skill can be overridden per project:
-- **Global** (`~/.agent-os/skills/marketing/copywriting-style.md`): Default professional style
-- **Project Override** (`projekt/agent-os/skills/marketing/copywriting-style.md`): Your custom brand voice
+- **Global** (`~/.specwright/skills/marketing/copywriting-style.md`): Default professional style
+- **Project Override** (`projekt/specwright/skills/marketing/copywriting-style.md`): Your custom brand voice
 
 **Always apply the copywriting-style preferences** (tone, voice, emoji usage, word choices) to all copy you create.
 
@@ -52,12 +52,12 @@ You don't need to explicitly reference these skills - they're automatically in y
 ### Step 1: Load All Input Documents
 
 **Input Files**:
-- Product brief: `.agent-os/product/product-brief.md`
-- Market position: `.agent-os/product/market-position.md`
-- Brand story: `.agent-os/product/story.md`
-- Style and tone: `.agent-os/product/stil-tone.md`
-- **Landing page structure**: `.agent-os/product/landing-page-module-structure.md` (from landing-page-builder)
-- **SEO keywords**: `.agent-os/product/seo-keywords.md` (from seo-expert)
+- Product brief: `.specwright/product/product-brief.md`
+- Market position: `.specwright/product/market-position.md`
+- Brand story: `.specwright/product/story.md`
+- Style and tone: `.specwright/product/stil-tone.md`
+- **Landing page structure**: `.specwright/product/landing-page-module-structure.md` (from landing-page-builder)
+- **SEO keywords**: `.specwright/product/seo-keywords.md` (from seo-expert)
 
 **Extract Key Information**:
 - **Target Audience**: Who you're writing for (from product-brief.md)
@@ -276,15 +276,15 @@ Description: Auto reminders. €5/month. (27 chars) ✅
 
 **CRITICAL**: You MUST create the landingpage-contents.md file using the template.
 
-**Template Location:** `@agent-os/templates/documents/landingpage-contents.md`
+**Template Location:** `@specwright/templates/documents/landingpage-contents.md`
 
 **Process:**
-1. Read the template from `agent-os/templates/documents/landingpage-contents.md`
+1. Read the template from `specwright/templates/documents/landingpage-contents.md`
 2. Fill in ALL sections based on the module structure (from landing-page-module-structure.md)
 3. Integrate SEO keywords naturally (following targets from seo-keywords.md)
-4. Write the completed document to `.agent-os/product/landingpage-contents.md`
+4. Write the completed document to `.specwright/product/landingpage-contents.md`
 
-**Output File:** `.agent-os/product/landingpage-contents.md`
+**Output File:** `.specwright/product/landingpage-contents.md`
 
 **Also output structured copy summary in your response:**
 
@@ -367,7 +367,7 @@ Description (27 chars): [Text]
 
 **Content Document Created**: ✅
 
-**File Generated:** `.agent-os/product/landingpage-contents.md`
+**File Generated:** `.specwright/product/landingpage-contents.md`
 
 **Copy Ready for**: ✅
 - marketing-system__landing-page-builder (will integrate into HTML)
@@ -412,7 +412,7 @@ Description (27 chars): [Text]
 - ✅ CTAs clear and action-oriented
 - ✅ SEO keywords integrated (from seo-keywords.md)
 
-**Content Document Created**: `.agent-os/product/landingpage-contents.md`
+**Content Document Created**: `.specwright/product/landingpage-contents.md`
 
 **Next Step**: marketing-system__landing-page-builder will generate HTML from this content
 
@@ -544,7 +544,7 @@ Description (27): €5/mo. Start free trial. ✅
 **Use this agent when**: Landing page structure and SEO keywords are complete, and copy content is needed.
 
 **Success Criteria**:
-- `landingpage-contents.md` file created in `.agent-os/product/`
+- `landingpage-contents.md` file created in `.specwright/product/`
 - Content written for ALL modules defined in landing-page-module-structure.md
 - SEO keywords integrated naturally (following seo-keywords.md density targets)
 - Headlines are benefit-driven and specific

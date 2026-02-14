@@ -1,18 +1,18 @@
 #!/bin/bash
 
-# Agent OS DevTeam System - Global Installation
-# Installs standards and templates to ~/.agent-os/ as fallback for all projects
+# Specwright DevTeam System - Global Installation
+# Installs standards and templates to ~/.specwright/ as fallback for all projects
 # Version: 4.0 - JSON Kanban Migration + New skill structure for Direct Execution
 
 set -e
 
-REPO_URL="https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main"
+REPO_URL="https://raw.githubusercontent.com/michsindlinger/specwright/main"
 
 echo "========================================="
-echo "Agent OS DevTeam - Global Installation"
+echo "Specwright DevTeam - Global Installation"
 echo "========================================="
 echo ""
-echo "This installs to ~/.agent-os/:"
+echo "This installs to ~/.specwright/:"
 echo "  • Global coding standards (fallback)"
 echo "  • All DevTeam templates (~80 files)"
 echo ""
@@ -41,7 +41,19 @@ download_file() {
 }
 
 # Global installation directory
-GLOBAL_DIR="$HOME/.agent-os"
+GLOBAL_DIR="$HOME/.specwright"
+
+# Legacy detection: Check for existing ~/.agent-os/ installation
+if [[ -d "$HOME/.agent-os" && ! -L "$HOME/.agent-os" && ! -d "$GLOBAL_DIR" ]]; then
+    echo "⚠️  Detected existing ~/.agent-os/ installation."
+    echo "   Agent OS has been renamed to Specwright."
+    echo ""
+    echo "   To migrate, run:"
+    echo "   curl -fsSL https://raw.githubusercontent.com/michsindlinger/specwright/main/migrate-to-specwright.sh | bash -s -- --global-only"
+    echo ""
+    echo "   Continuing with fresh install to ~/.specwright/ ..."
+    echo ""
+fi
 
 echo "Installing to: $GLOBAL_DIR"
 echo ""
@@ -82,16 +94,16 @@ mkdir -p "$GLOBAL_DIR/templates/concept"
 echo ""
 echo "═══ Installing Global Standards ═══"
 
-download_file "$REPO_URL/agent-os/standards/code-style.md" \
+download_file "$REPO_URL/specwright/standards/code-style.md" \
   "$GLOBAL_DIR/standards/code-style.md" "code-style"
 
-download_file "$REPO_URL/agent-os/standards/best-practices.md" \
+download_file "$REPO_URL/specwright/standards/best-practices.md" \
   "$GLOBAL_DIR/standards/best-practices.md" "best-practices"
 
-download_file "$REPO_URL/agent-os/standards/tech-stack.md" \
+download_file "$REPO_URL/specwright/standards/tech-stack.md" \
   "$GLOBAL_DIR/standards/tech-stack.md" "tech-stack template"
 
-download_file "$REPO_URL/agent-os/standards/plan-review-guidelines.md" \
+download_file "$REPO_URL/specwright/standards/plan-review-guidelines.md" \
   "$GLOBAL_DIR/standards/plan-review-guidelines.md" "plan-review-guidelines"
 
 # ═══════════════════════════════════════════════════════════
@@ -103,138 +115,138 @@ echo "═══ Installing Templates (~80 files) ═══"
 
 # CLAUDE templates (2)
 echo "→ CLAUDE templates (2)..."
-download_file "$REPO_URL/agent-os/templates/CLAUDE-LITE.md" "$GLOBAL_DIR/templates/CLAUDE-LITE.md"
-download_file "$REPO_URL/agent-os/templates/CLAUDE-PLATFORM.md" "$GLOBAL_DIR/templates/CLAUDE-PLATFORM.md"
+download_file "$REPO_URL/specwright/templates/CLAUDE-LITE.md" "$GLOBAL_DIR/templates/CLAUDE-LITE.md"
+download_file "$REPO_URL/specwright/templates/CLAUDE-PLATFORM.md" "$GLOBAL_DIR/templates/CLAUDE-PLATFORM.md"
 
 # Product templates (10)
 echo "→ Product templates (10)..."
-download_file "$REPO_URL/agent-os/templates/product/product-brief-template.md" "$GLOBAL_DIR/templates/product/product-brief-template.md"
-download_file "$REPO_URL/agent-os/templates/product/product-brief-lite-template.md" "$GLOBAL_DIR/templates/product/product-brief-lite-template.md"
-download_file "$REPO_URL/agent-os/templates/product/tech-stack-template.md" "$GLOBAL_DIR/templates/product/tech-stack-template.md"
-download_file "$REPO_URL/agent-os/templates/product/roadmap-template.md" "$GLOBAL_DIR/templates/product/roadmap-template.md"
-download_file "$REPO_URL/agent-os/templates/product/architecture-decision-template.md" "$GLOBAL_DIR/templates/product/architecture-decision-template.md"
-download_file "$REPO_URL/agent-os/templates/product/boilerplate-structure-template.md" "$GLOBAL_DIR/templates/product/boilerplate-structure-template.md"
-download_file "$REPO_URL/agent-os/templates/product/design-system-template.md" "$GLOBAL_DIR/templates/product/design-system-template.md"
-download_file "$REPO_URL/agent-os/templates/product/ux-patterns-template.md" "$GLOBAL_DIR/templates/product/ux-patterns-template.md"
-download_file "$REPO_URL/agent-os/templates/product/blocker-analysis-template.md" "$GLOBAL_DIR/templates/product/blocker-analysis-template.md"
-download_file "$REPO_URL/agent-os/templates/product/milestone-plan-template.md" "$GLOBAL_DIR/templates/product/milestone-plan-template.md"
-download_file "$REPO_URL/agent-os/templates/product/secrets-template.md" "$GLOBAL_DIR/templates/product/secrets-template.md"
+download_file "$REPO_URL/specwright/templates/product/product-brief-template.md" "$GLOBAL_DIR/templates/product/product-brief-template.md"
+download_file "$REPO_URL/specwright/templates/product/product-brief-lite-template.md" "$GLOBAL_DIR/templates/product/product-brief-lite-template.md"
+download_file "$REPO_URL/specwright/templates/product/tech-stack-template.md" "$GLOBAL_DIR/templates/product/tech-stack-template.md"
+download_file "$REPO_URL/specwright/templates/product/roadmap-template.md" "$GLOBAL_DIR/templates/product/roadmap-template.md"
+download_file "$REPO_URL/specwright/templates/product/architecture-decision-template.md" "$GLOBAL_DIR/templates/product/architecture-decision-template.md"
+download_file "$REPO_URL/specwright/templates/product/boilerplate-structure-template.md" "$GLOBAL_DIR/templates/product/boilerplate-structure-template.md"
+download_file "$REPO_URL/specwright/templates/product/design-system-template.md" "$GLOBAL_DIR/templates/product/design-system-template.md"
+download_file "$REPO_URL/specwright/templates/product/ux-patterns-template.md" "$GLOBAL_DIR/templates/product/ux-patterns-template.md"
+download_file "$REPO_URL/specwright/templates/product/blocker-analysis-template.md" "$GLOBAL_DIR/templates/product/blocker-analysis-template.md"
+download_file "$REPO_URL/specwright/templates/product/milestone-plan-template.md" "$GLOBAL_DIR/templates/product/milestone-plan-template.md"
+download_file "$REPO_URL/specwright/templates/product/secrets-template.md" "$GLOBAL_DIR/templates/product/secrets-template.md"
 
 # Feasibility templates (1)
 echo "→ Feasibility templates (1)..."
-download_file "$REPO_URL/agent-os/templates/feasibility/feasibility-report.md" "$GLOBAL_DIR/templates/feasibility/feasibility-report.md"
+download_file "$REPO_URL/specwright/templates/feasibility/feasibility-report.md" "$GLOBAL_DIR/templates/feasibility/feasibility-report.md"
 
 # Concept templates (7)
 echo "→ Concept templates (7)..."
 mkdir -p "$GLOBAL_DIR/templates/concept"
-download_file "$REPO_URL/agent-os/templates/concept/concept-analysis-template.md" "$GLOBAL_DIR/templates/concept/concept-analysis-template.md"
-download_file "$REPO_URL/agent-os/templates/concept/domain-research-template.md" "$GLOBAL_DIR/templates/concept/domain-research-template.md"
-download_file "$REPO_URL/agent-os/templates/concept/competence-map-template.md" "$GLOBAL_DIR/templates/concept/competence-map-template.md"
-download_file "$REPO_URL/agent-os/templates/concept/proposal-concept-template.md" "$GLOBAL_DIR/templates/concept/proposal-concept-template.md"
-download_file "$REPO_URL/agent-os/templates/concept/pitch-script-template.md" "$GLOBAL_DIR/templates/concept/pitch-script-template.md"
-download_file "$REPO_URL/agent-os/templates/concept/poc-plan-template.md" "$GLOBAL_DIR/templates/concept/poc-plan-template.md"
-download_file "$REPO_URL/agent-os/templates/concept/overview-template.md" "$GLOBAL_DIR/templates/concept/overview-template.md"
+download_file "$REPO_URL/specwright/templates/concept/concept-analysis-template.md" "$GLOBAL_DIR/templates/concept/concept-analysis-template.md"
+download_file "$REPO_URL/specwright/templates/concept/domain-research-template.md" "$GLOBAL_DIR/templates/concept/domain-research-template.md"
+download_file "$REPO_URL/specwright/templates/concept/competence-map-template.md" "$GLOBAL_DIR/templates/concept/competence-map-template.md"
+download_file "$REPO_URL/specwright/templates/concept/proposal-concept-template.md" "$GLOBAL_DIR/templates/concept/proposal-concept-template.md"
+download_file "$REPO_URL/specwright/templates/concept/pitch-script-template.md" "$GLOBAL_DIR/templates/concept/pitch-script-template.md"
+download_file "$REPO_URL/specwright/templates/concept/poc-plan-template.md" "$GLOBAL_DIR/templates/concept/poc-plan-template.md"
+download_file "$REPO_URL/specwright/templates/concept/overview-template.md" "$GLOBAL_DIR/templates/concept/overview-template.md"
 
 # Platform templates (7)
 echo "→ Platform templates (7)..."
-download_file "$REPO_URL/agent-os/templates/platform/platform-brief-template.md" "$GLOBAL_DIR/templates/platform/platform-brief-template.md"
-download_file "$REPO_URL/agent-os/templates/platform/module-brief-template.md" "$GLOBAL_DIR/templates/platform/module-brief-template.md"
-download_file "$REPO_URL/agent-os/templates/platform/module-dependencies-template.md" "$GLOBAL_DIR/templates/platform/module-dependencies-template.md"
-download_file "$REPO_URL/agent-os/templates/platform/platform-architecture-template.md" "$GLOBAL_DIR/templates/platform/platform-architecture-template.md"
-download_file "$REPO_URL/agent-os/templates/platform/platform-roadmap-template.md" "$GLOBAL_DIR/templates/platform/platform-roadmap-template.md"
-download_file "$REPO_URL/agent-os/templates/platform/module-roadmap-template.md" "$GLOBAL_DIR/templates/platform/module-roadmap-template.md"
-download_file "$REPO_URL/agent-os/templates/platform/platform-blocker-analysis-template.md" "$GLOBAL_DIR/templates/platform/platform-blocker-analysis-template.md"
+download_file "$REPO_URL/specwright/templates/platform/platform-brief-template.md" "$GLOBAL_DIR/templates/platform/platform-brief-template.md"
+download_file "$REPO_URL/specwright/templates/platform/module-brief-template.md" "$GLOBAL_DIR/templates/platform/module-brief-template.md"
+download_file "$REPO_URL/specwright/templates/platform/module-dependencies-template.md" "$GLOBAL_DIR/templates/platform/module-dependencies-template.md"
+download_file "$REPO_URL/specwright/templates/platform/platform-architecture-template.md" "$GLOBAL_DIR/templates/platform/platform-architecture-template.md"
+download_file "$REPO_URL/specwright/templates/platform/platform-roadmap-template.md" "$GLOBAL_DIR/templates/platform/platform-roadmap-template.md"
+download_file "$REPO_URL/specwright/templates/platform/module-roadmap-template.md" "$GLOBAL_DIR/templates/platform/module-roadmap-template.md"
+download_file "$REPO_URL/specwright/templates/platform/platform-blocker-analysis-template.md" "$GLOBAL_DIR/templates/platform/platform-blocker-analysis-template.md"
 
 # Global agents (1)
 echo "→ Global agents (1)..."
-download_file "$REPO_URL/.agent-os/agents/platform-architect.md" "$GLOBAL_DIR/agents/platform-architect.md"
+download_file "$REPO_URL/.specwright/agents/platform-architect.md" "$GLOBAL_DIR/agents/platform-architect.md"
 
 # DevTeam v3.0: Universal Skills (always created)
 # Quality Gates (1 file)
 echo "→ Quality Gates skill (1 file)..."
-download_file "$REPO_URL/agent-os/templates/skills/quality-gates/SKILL.md" "$GLOBAL_DIR/templates/skills/quality-gates/SKILL.md"
+download_file "$REPO_URL/specwright/templates/skills/quality-gates/SKILL.md" "$GLOBAL_DIR/templates/skills/quality-gates/SKILL.md"
 
 # PO Requirements (1 file) - for story creation
 echo "→ PO Requirements skill (1 file)..."
-download_file "$REPO_URL/agent-os/templates/skills/po-requirements/SKILL.md" "$GLOBAL_DIR/templates/skills/po-requirements/SKILL.md"
+download_file "$REPO_URL/specwright/templates/skills/po-requirements/SKILL.md" "$GLOBAL_DIR/templates/skills/po-requirements/SKILL.md"
 
 # Architect Refinement (1 file) - for technical refinement
 echo "→ Architect Refinement skill (1 file)..."
-download_file "$REPO_URL/agent-os/templates/skills/architect-refinement/SKILL.md" "$GLOBAL_DIR/templates/skills/architect-refinement/SKILL.md"
+download_file "$REPO_URL/specwright/templates/skills/architect-refinement/SKILL.md" "$GLOBAL_DIR/templates/skills/architect-refinement/SKILL.md"
 
 # DevTeam v3.0: Technology Skills
 
 # Frontend Angular (6 files)
 echo "→ Frontend Angular skill (6 files)..."
-download_file "$REPO_URL/agent-os/templates/skills/frontend/angular/SKILL.md" "$GLOBAL_DIR/templates/skills/frontend/angular/SKILL.md"
-download_file "$REPO_URL/agent-os/templates/skills/frontend/angular/components.md" "$GLOBAL_DIR/templates/skills/frontend/angular/components.md"
-download_file "$REPO_URL/agent-os/templates/skills/frontend/angular/state-management.md" "$GLOBAL_DIR/templates/skills/frontend/angular/state-management.md"
-download_file "$REPO_URL/agent-os/templates/skills/frontend/angular/api-integration.md" "$GLOBAL_DIR/templates/skills/frontend/angular/api-integration.md"
-download_file "$REPO_URL/agent-os/templates/skills/frontend/angular/forms-validation.md" "$GLOBAL_DIR/templates/skills/frontend/angular/forms-validation.md"
-download_file "$REPO_URL/agent-os/templates/skills/frontend/angular/dos-and-donts.md" "$GLOBAL_DIR/templates/skills/frontend/angular/dos-and-donts.md"
+download_file "$REPO_URL/specwright/templates/skills/frontend/angular/SKILL.md" "$GLOBAL_DIR/templates/skills/frontend/angular/SKILL.md"
+download_file "$REPO_URL/specwright/templates/skills/frontend/angular/components.md" "$GLOBAL_DIR/templates/skills/frontend/angular/components.md"
+download_file "$REPO_URL/specwright/templates/skills/frontend/angular/state-management.md" "$GLOBAL_DIR/templates/skills/frontend/angular/state-management.md"
+download_file "$REPO_URL/specwright/templates/skills/frontend/angular/api-integration.md" "$GLOBAL_DIR/templates/skills/frontend/angular/api-integration.md"
+download_file "$REPO_URL/specwright/templates/skills/frontend/angular/forms-validation.md" "$GLOBAL_DIR/templates/skills/frontend/angular/forms-validation.md"
+download_file "$REPO_URL/specwright/templates/skills/frontend/angular/dos-and-donts.md" "$GLOBAL_DIR/templates/skills/frontend/angular/dos-and-donts.md"
 
 # Frontend React (6 files)
 echo "→ Frontend React skill (6 files)..."
-download_file "$REPO_URL/agent-os/templates/skills/frontend/react/SKILL.md" "$GLOBAL_DIR/templates/skills/frontend/react/SKILL.md"
-download_file "$REPO_URL/agent-os/templates/skills/frontend/react/components.md" "$GLOBAL_DIR/templates/skills/frontend/react/components.md"
-download_file "$REPO_URL/agent-os/templates/skills/frontend/react/state-management.md" "$GLOBAL_DIR/templates/skills/frontend/react/state-management.md"
-download_file "$REPO_URL/agent-os/templates/skills/frontend/react/api-integration.md" "$GLOBAL_DIR/templates/skills/frontend/react/api-integration.md"
-download_file "$REPO_URL/agent-os/templates/skills/frontend/react/forms-validation.md" "$GLOBAL_DIR/templates/skills/frontend/react/forms-validation.md"
-download_file "$REPO_URL/agent-os/templates/skills/frontend/react/dos-and-donts.md" "$GLOBAL_DIR/templates/skills/frontend/react/dos-and-donts.md"
+download_file "$REPO_URL/specwright/templates/skills/frontend/react/SKILL.md" "$GLOBAL_DIR/templates/skills/frontend/react/SKILL.md"
+download_file "$REPO_URL/specwright/templates/skills/frontend/react/components.md" "$GLOBAL_DIR/templates/skills/frontend/react/components.md"
+download_file "$REPO_URL/specwright/templates/skills/frontend/react/state-management.md" "$GLOBAL_DIR/templates/skills/frontend/react/state-management.md"
+download_file "$REPO_URL/specwright/templates/skills/frontend/react/api-integration.md" "$GLOBAL_DIR/templates/skills/frontend/react/api-integration.md"
+download_file "$REPO_URL/specwright/templates/skills/frontend/react/forms-validation.md" "$GLOBAL_DIR/templates/skills/frontend/react/forms-validation.md"
+download_file "$REPO_URL/specwright/templates/skills/frontend/react/dos-and-donts.md" "$GLOBAL_DIR/templates/skills/frontend/react/dos-and-donts.md"
 
 # Frontend Vue (6 files)
 echo "→ Frontend Vue skill (6 files)..."
-download_file "$REPO_URL/agent-os/templates/skills/frontend/vue/SKILL.md" "$GLOBAL_DIR/templates/skills/frontend/vue/SKILL.md"
-download_file "$REPO_URL/agent-os/templates/skills/frontend/vue/components.md" "$GLOBAL_DIR/templates/skills/frontend/vue/components.md"
-download_file "$REPO_URL/agent-os/templates/skills/frontend/vue/state-management.md" "$GLOBAL_DIR/templates/skills/frontend/vue/state-management.md"
-download_file "$REPO_URL/agent-os/templates/skills/frontend/vue/api-integration.md" "$GLOBAL_DIR/templates/skills/frontend/vue/api-integration.md"
-download_file "$REPO_URL/agent-os/templates/skills/frontend/vue/forms-validation.md" "$GLOBAL_DIR/templates/skills/frontend/vue/forms-validation.md"
-download_file "$REPO_URL/agent-os/templates/skills/frontend/vue/dos-and-donts.md" "$GLOBAL_DIR/templates/skills/frontend/vue/dos-and-donts.md"
+download_file "$REPO_URL/specwright/templates/skills/frontend/vue/SKILL.md" "$GLOBAL_DIR/templates/skills/frontend/vue/SKILL.md"
+download_file "$REPO_URL/specwright/templates/skills/frontend/vue/components.md" "$GLOBAL_DIR/templates/skills/frontend/vue/components.md"
+download_file "$REPO_URL/specwright/templates/skills/frontend/vue/state-management.md" "$GLOBAL_DIR/templates/skills/frontend/vue/state-management.md"
+download_file "$REPO_URL/specwright/templates/skills/frontend/vue/api-integration.md" "$GLOBAL_DIR/templates/skills/frontend/vue/api-integration.md"
+download_file "$REPO_URL/specwright/templates/skills/frontend/vue/forms-validation.md" "$GLOBAL_DIR/templates/skills/frontend/vue/forms-validation.md"
+download_file "$REPO_URL/specwright/templates/skills/frontend/vue/dos-and-donts.md" "$GLOBAL_DIR/templates/skills/frontend/vue/dos-and-donts.md"
 
 # Backend Rails (6 files)
 echo "→ Backend Rails skill (6 files)..."
-download_file "$REPO_URL/agent-os/templates/skills/backend/rails/SKILL.md" "$GLOBAL_DIR/templates/skills/backend/rails/SKILL.md"
-download_file "$REPO_URL/agent-os/templates/skills/backend/rails/services.md" "$GLOBAL_DIR/templates/skills/backend/rails/services.md"
-download_file "$REPO_URL/agent-os/templates/skills/backend/rails/models.md" "$GLOBAL_DIR/templates/skills/backend/rails/models.md"
-download_file "$REPO_URL/agent-os/templates/skills/backend/rails/api-design.md" "$GLOBAL_DIR/templates/skills/backend/rails/api-design.md"
-download_file "$REPO_URL/agent-os/templates/skills/backend/rails/testing.md" "$GLOBAL_DIR/templates/skills/backend/rails/testing.md"
-download_file "$REPO_URL/agent-os/templates/skills/backend/rails/dos-and-donts.md" "$GLOBAL_DIR/templates/skills/backend/rails/dos-and-donts.md"
+download_file "$REPO_URL/specwright/templates/skills/backend/rails/SKILL.md" "$GLOBAL_DIR/templates/skills/backend/rails/SKILL.md"
+download_file "$REPO_URL/specwright/templates/skills/backend/rails/services.md" "$GLOBAL_DIR/templates/skills/backend/rails/services.md"
+download_file "$REPO_URL/specwright/templates/skills/backend/rails/models.md" "$GLOBAL_DIR/templates/skills/backend/rails/models.md"
+download_file "$REPO_URL/specwright/templates/skills/backend/rails/api-design.md" "$GLOBAL_DIR/templates/skills/backend/rails/api-design.md"
+download_file "$REPO_URL/specwright/templates/skills/backend/rails/testing.md" "$GLOBAL_DIR/templates/skills/backend/rails/testing.md"
+download_file "$REPO_URL/specwright/templates/skills/backend/rails/dos-and-donts.md" "$GLOBAL_DIR/templates/skills/backend/rails/dos-and-donts.md"
 
 # Backend NestJS (6 files)
 echo "→ Backend NestJS skill (6 files)..."
-download_file "$REPO_URL/agent-os/templates/skills/backend/nestjs/SKILL.md" "$GLOBAL_DIR/templates/skills/backend/nestjs/SKILL.md"
-download_file "$REPO_URL/agent-os/templates/skills/backend/nestjs/services.md" "$GLOBAL_DIR/templates/skills/backend/nestjs/services.md"
-download_file "$REPO_URL/agent-os/templates/skills/backend/nestjs/models.md" "$GLOBAL_DIR/templates/skills/backend/nestjs/models.md"
-download_file "$REPO_URL/agent-os/templates/skills/backend/nestjs/api-design.md" "$GLOBAL_DIR/templates/skills/backend/nestjs/api-design.md"
-download_file "$REPO_URL/agent-os/templates/skills/backend/nestjs/testing.md" "$GLOBAL_DIR/templates/skills/backend/nestjs/testing.md"
-download_file "$REPO_URL/agent-os/templates/skills/backend/nestjs/dos-and-donts.md" "$GLOBAL_DIR/templates/skills/backend/nestjs/dos-and-donts.md"
+download_file "$REPO_URL/specwright/templates/skills/backend/nestjs/SKILL.md" "$GLOBAL_DIR/templates/skills/backend/nestjs/SKILL.md"
+download_file "$REPO_URL/specwright/templates/skills/backend/nestjs/services.md" "$GLOBAL_DIR/templates/skills/backend/nestjs/services.md"
+download_file "$REPO_URL/specwright/templates/skills/backend/nestjs/models.md" "$GLOBAL_DIR/templates/skills/backend/nestjs/models.md"
+download_file "$REPO_URL/specwright/templates/skills/backend/nestjs/api-design.md" "$GLOBAL_DIR/templates/skills/backend/nestjs/api-design.md"
+download_file "$REPO_URL/specwright/templates/skills/backend/nestjs/testing.md" "$GLOBAL_DIR/templates/skills/backend/nestjs/testing.md"
+download_file "$REPO_URL/specwright/templates/skills/backend/nestjs/dos-and-donts.md" "$GLOBAL_DIR/templates/skills/backend/nestjs/dos-and-donts.md"
 
 # Backend Spring (6 files)
 echo "→ Backend Spring skill (6 files)..."
-download_file "$REPO_URL/agent-os/templates/skills/backend/spring/SKILL.md" "$GLOBAL_DIR/templates/skills/backend/spring/SKILL.md"
-download_file "$REPO_URL/agent-os/templates/skills/backend/spring/services.md" "$GLOBAL_DIR/templates/skills/backend/spring/services.md"
-download_file "$REPO_URL/agent-os/templates/skills/backend/spring/models.md" "$GLOBAL_DIR/templates/skills/backend/spring/models.md"
-download_file "$REPO_URL/agent-os/templates/skills/backend/spring/api-design.md" "$GLOBAL_DIR/templates/skills/backend/spring/api-design.md"
-download_file "$REPO_URL/agent-os/templates/skills/backend/spring/testing.md" "$GLOBAL_DIR/templates/skills/backend/spring/testing.md"
-download_file "$REPO_URL/agent-os/templates/skills/backend/spring/dos-and-donts.md" "$GLOBAL_DIR/templates/skills/backend/spring/dos-and-donts.md"
+download_file "$REPO_URL/specwright/templates/skills/backend/spring/SKILL.md" "$GLOBAL_DIR/templates/skills/backend/spring/SKILL.md"
+download_file "$REPO_URL/specwright/templates/skills/backend/spring/services.md" "$GLOBAL_DIR/templates/skills/backend/spring/services.md"
+download_file "$REPO_URL/specwright/templates/skills/backend/spring/models.md" "$GLOBAL_DIR/templates/skills/backend/spring/models.md"
+download_file "$REPO_URL/specwright/templates/skills/backend/spring/api-design.md" "$GLOBAL_DIR/templates/skills/backend/spring/api-design.md"
+download_file "$REPO_URL/specwright/templates/skills/backend/spring/testing.md" "$GLOBAL_DIR/templates/skills/backend/spring/testing.md"
+download_file "$REPO_URL/specwright/templates/skills/backend/spring/dos-and-donts.md" "$GLOBAL_DIR/templates/skills/backend/spring/dos-and-donts.md"
 
 # DevOps Docker/GitHub (4 files)
 echo "→ DevOps Docker/GitHub skill (4 files)..."
-download_file "$REPO_URL/agent-os/templates/skills/devops/docker-github/SKILL.md" "$GLOBAL_DIR/templates/skills/devops/docker-github/SKILL.md"
-download_file "$REPO_URL/agent-os/templates/skills/devops/docker-github/docker.md" "$GLOBAL_DIR/templates/skills/devops/docker-github/docker.md"
-download_file "$REPO_URL/agent-os/templates/skills/devops/docker-github/ci-cd.md" "$GLOBAL_DIR/templates/skills/devops/docker-github/ci-cd.md"
-download_file "$REPO_URL/agent-os/templates/skills/devops/docker-github/dos-and-donts.md" "$GLOBAL_DIR/templates/skills/devops/docker-github/dos-and-donts.md"
+download_file "$REPO_URL/specwright/templates/skills/devops/docker-github/SKILL.md" "$GLOBAL_DIR/templates/skills/devops/docker-github/SKILL.md"
+download_file "$REPO_URL/specwright/templates/skills/devops/docker-github/docker.md" "$GLOBAL_DIR/templates/skills/devops/docker-github/docker.md"
+download_file "$REPO_URL/specwright/templates/skills/devops/docker-github/ci-cd.md" "$GLOBAL_DIR/templates/skills/devops/docker-github/ci-cd.md"
+download_file "$REPO_URL/specwright/templates/skills/devops/docker-github/dos-and-donts.md" "$GLOBAL_DIR/templates/skills/devops/docker-github/dos-and-donts.md"
 
 # Domain skill templates (2 files)
 echo "→ Domain skill templates (2 files)..."
-download_file "$REPO_URL/agent-os/templates/skills/domain/SKILL.md" "$GLOBAL_DIR/templates/skills/domain/SKILL.md"
-download_file "$REPO_URL/agent-os/templates/skills/domain/process.md" "$GLOBAL_DIR/templates/skills/domain/process.md"
+download_file "$REPO_URL/specwright/templates/skills/domain/SKILL.md" "$GLOBAL_DIR/templates/skills/domain/SKILL.md"
+download_file "$REPO_URL/specwright/templates/skills/domain/process.md" "$GLOBAL_DIR/templates/skills/domain/process.md"
 
 # Custom skill templates (3 files) - for specialized technologies
 echo "→ Custom skill templates (3 files)..."
-download_file "$REPO_URL/agent-os/templates/skills/custom-skill-template.md" "$GLOBAL_DIR/templates/skills/custom-skill-template.md"
-download_file "$REPO_URL/agent-os/templates/skills/custom-skill-module-template.md" "$GLOBAL_DIR/templates/skills/custom-skill-module-template.md"
-download_file "$REPO_URL/agent-os/templates/skills/custom-skill-dos-and-donts-template.md" "$GLOBAL_DIR/templates/skills/custom-skill-dos-and-donts-template.md"
+download_file "$REPO_URL/specwright/templates/skills/custom-skill-template.md" "$GLOBAL_DIR/templates/skills/custom-skill-template.md"
+download_file "$REPO_URL/specwright/templates/skills/custom-skill-module-template.md" "$GLOBAL_DIR/templates/skills/custom-skill-module-template.md"
+download_file "$REPO_URL/specwright/templates/skills/custom-skill-dos-and-donts-template.md" "$GLOBAL_DIR/templates/skills/custom-skill-dos-and-donts-template.md"
 
 # Platform skills (4) - NEW STRUCTURE: each skill in own directory with SKILL.md
 echo "→ Platform skill templates (4)..."
@@ -242,24 +254,24 @@ mkdir -p "$GLOBAL_DIR/templates/skills/platform/system-integration-patterns"
 mkdir -p "$GLOBAL_DIR/templates/skills/platform/dependency-management"
 mkdir -p "$GLOBAL_DIR/templates/skills/platform/modular-architecture"
 mkdir -p "$GLOBAL_DIR/templates/skills/platform/platform-scalability"
-download_file "$REPO_URL/agent-os/templates/skills/platform/system-integration-patterns/SKILL.md" "$GLOBAL_DIR/templates/skills/platform/system-integration-patterns/SKILL.md"
-download_file "$REPO_URL/agent-os/templates/skills/platform/dependency-management/SKILL.md" "$GLOBAL_DIR/templates/skills/platform/dependency-management/SKILL.md"
-download_file "$REPO_URL/agent-os/templates/skills/platform/modular-architecture/SKILL.md" "$GLOBAL_DIR/templates/skills/platform/modular-architecture/SKILL.md"
-download_file "$REPO_URL/agent-os/templates/skills/platform/platform-scalability/SKILL.md" "$GLOBAL_DIR/templates/skills/platform/platform-scalability/SKILL.md"
+download_file "$REPO_URL/specwright/templates/skills/platform/system-integration-patterns/SKILL.md" "$GLOBAL_DIR/templates/skills/platform/system-integration-patterns/SKILL.md"
+download_file "$REPO_URL/specwright/templates/skills/platform/dependency-management/SKILL.md" "$GLOBAL_DIR/templates/skills/platform/dependency-management/SKILL.md"
+download_file "$REPO_URL/specwright/templates/skills/platform/modular-architecture/SKILL.md" "$GLOBAL_DIR/templates/skills/platform/modular-architecture/SKILL.md"
+download_file "$REPO_URL/specwright/templates/skills/platform/platform-scalability/SKILL.md" "$GLOBAL_DIR/templates/skills/platform/platform-scalability/SKILL.md"
 
 # Orchestration skill (1)
 echo "→ Orchestration skill template (1)..."
 mkdir -p "$GLOBAL_DIR/templates/skills/orchestration/orchestration"
-download_file "$REPO_URL/agent-os/templates/skills/orchestration/orchestration/SKILL.md" "$GLOBAL_DIR/templates/skills/orchestration/orchestration/SKILL.md"
+download_file "$REPO_URL/specwright/templates/skills/orchestration/orchestration/SKILL.md" "$GLOBAL_DIR/templates/skills/orchestration/orchestration/SKILL.md"
 
 # Generic skill template (1)
 echo "→ Generic skill template (1)..."
 mkdir -p "$GLOBAL_DIR/templates/skills/generic-skill"
-download_file "$REPO_URL/agent-os/templates/skills/generic-skill/SKILL.md" "$GLOBAL_DIR/templates/skills/generic-skill/SKILL.md"
+download_file "$REPO_URL/specwright/templates/skills/generic-skill/SKILL.md" "$GLOBAL_DIR/templates/skills/generic-skill/SKILL.md"
 
 # Base skill template (1) - YAML frontmatter template
 echo "→ Base skill template (1)..."
-download_file "$REPO_URL/agent-os/templates/skills/skill/SKILL.md" "$GLOBAL_DIR/templates/skills/skill/SKILL.md"
+download_file "$REPO_URL/specwright/templates/skills/skill/SKILL.md" "$GLOBAL_DIR/templates/skills/skill/SKILL.md"
 
 # Additional root-level skills (4)
 echo "→ Additional skill templates (4)..."
@@ -268,44 +280,44 @@ mkdir -p "$GLOBAL_DIR/templates/skills/component-architecture"
 mkdir -p "$GLOBAL_DIR/templates/skills/deployment-automation"
 mkdir -p "$GLOBAL_DIR/templates/skills/file-organization-patterns"
 mkdir -p "$GLOBAL_DIR/templates/skills/testing-strategies"
-download_file "$REPO_URL/agent-os/templates/skills/api-implementation-patterns/SKILL.md" "$GLOBAL_DIR/templates/skills/api-implementation-patterns/SKILL.md"
-download_file "$REPO_URL/agent-os/templates/skills/component-architecture/SKILL.md" "$GLOBAL_DIR/templates/skills/component-architecture/SKILL.md"
-download_file "$REPO_URL/agent-os/templates/skills/deployment-automation/SKILL.md" "$GLOBAL_DIR/templates/skills/deployment-automation/SKILL.md"
-download_file "$REPO_URL/agent-os/templates/skills/file-organization-patterns/SKILL.md" "$GLOBAL_DIR/templates/skills/file-organization-patterns/SKILL.md"
-download_file "$REPO_URL/agent-os/templates/skills/testing-strategies/SKILL.md" "$GLOBAL_DIR/templates/skills/testing-strategies/SKILL.md"
+download_file "$REPO_URL/specwright/templates/skills/api-implementation-patterns/SKILL.md" "$GLOBAL_DIR/templates/skills/api-implementation-patterns/SKILL.md"
+download_file "$REPO_URL/specwright/templates/skills/component-architecture/SKILL.md" "$GLOBAL_DIR/templates/skills/component-architecture/SKILL.md"
+download_file "$REPO_URL/specwright/templates/skills/deployment-automation/SKILL.md" "$GLOBAL_DIR/templates/skills/deployment-automation/SKILL.md"
+download_file "$REPO_URL/specwright/templates/skills/file-organization-patterns/SKILL.md" "$GLOBAL_DIR/templates/skills/file-organization-patterns/SKILL.md"
+download_file "$REPO_URL/specwright/templates/skills/testing-strategies/SKILL.md" "$GLOBAL_DIR/templates/skills/testing-strategies/SKILL.md"
 
 # Documentation templates (15)
 echo "→ Documentation templates (15)..."
-download_file "$REPO_URL/agent-os/templates/docs/spec-template.md" "$GLOBAL_DIR/templates/docs/spec-template.md"
-download_file "$REPO_URL/agent-os/templates/docs/spec-lite-template.md" "$GLOBAL_DIR/templates/docs/spec-lite-template.md"
-download_file "$REPO_URL/agent-os/templates/docs/user-stories-template.md" "$GLOBAL_DIR/templates/docs/user-stories-template.md"
-download_file "$REPO_URL/agent-os/templates/docs/story-template.md" "$GLOBAL_DIR/templates/docs/story-template.md"
-download_file "$REPO_URL/agent-os/templates/docs/story-index-template.md" "$GLOBAL_DIR/templates/docs/story-index-template.md"
-download_file "$REPO_URL/agent-os/templates/docs/backlog-story-index-template.md" "$GLOBAL_DIR/templates/docs/backlog-story-index-template.md"
-download_file "$REPO_URL/agent-os/templates/docs/cross-cutting-decisions-template.md" "$GLOBAL_DIR/templates/docs/cross-cutting-decisions-template.md"
-download_file "$REPO_URL/agent-os/templates/docs/bug-description-template.md" "$GLOBAL_DIR/templates/docs/bug-description-template.md"
-download_file "$REPO_URL/agent-os/templates/docs/kanban-board-template.md" "$GLOBAL_DIR/templates/docs/kanban-board-template.md"
-download_file "$REPO_URL/agent-os/templates/docs/handover-doc-template.md" "$GLOBAL_DIR/templates/docs/handover-doc-template.md"
-download_file "$REPO_URL/agent-os/templates/docs/changelog-entry-template.md" "$GLOBAL_DIR/templates/docs/changelog-entry-template.md"
-download_file "$REPO_URL/agent-os/templates/docs/dod-template.md" "$GLOBAL_DIR/templates/docs/dod-template.md"
-download_file "$REPO_URL/agent-os/templates/docs/dor-template.md" "$GLOBAL_DIR/templates/docs/dor-template.md"
-download_file "$REPO_URL/agent-os/templates/docs/effort-estimation-template.md" "$GLOBAL_DIR/templates/docs/effort-estimation-template.md"
-download_file "$REPO_URL/agent-os/templates/docs/implementation-plan-template.md" "$GLOBAL_DIR/templates/docs/implementation-plan-template.md"
-download_file "$REPO_URL/agent-os/templates/docs/test-scenarios-template.md" "$GLOBAL_DIR/templates/docs/test-scenarios-template.md"
-download_file "$REPO_URL/agent-os/templates/docs/user-todos-template.md" "$GLOBAL_DIR/templates/docs/user-todos-template.md"
+download_file "$REPO_URL/specwright/templates/docs/spec-template.md" "$GLOBAL_DIR/templates/docs/spec-template.md"
+download_file "$REPO_URL/specwright/templates/docs/spec-lite-template.md" "$GLOBAL_DIR/templates/docs/spec-lite-template.md"
+download_file "$REPO_URL/specwright/templates/docs/user-stories-template.md" "$GLOBAL_DIR/templates/docs/user-stories-template.md"
+download_file "$REPO_URL/specwright/templates/docs/story-template.md" "$GLOBAL_DIR/templates/docs/story-template.md"
+download_file "$REPO_URL/specwright/templates/docs/story-index-template.md" "$GLOBAL_DIR/templates/docs/story-index-template.md"
+download_file "$REPO_URL/specwright/templates/docs/backlog-story-index-template.md" "$GLOBAL_DIR/templates/docs/backlog-story-index-template.md"
+download_file "$REPO_URL/specwright/templates/docs/cross-cutting-decisions-template.md" "$GLOBAL_DIR/templates/docs/cross-cutting-decisions-template.md"
+download_file "$REPO_URL/specwright/templates/docs/bug-description-template.md" "$GLOBAL_DIR/templates/docs/bug-description-template.md"
+download_file "$REPO_URL/specwright/templates/docs/kanban-board-template.md" "$GLOBAL_DIR/templates/docs/kanban-board-template.md"
+download_file "$REPO_URL/specwright/templates/docs/handover-doc-template.md" "$GLOBAL_DIR/templates/docs/handover-doc-template.md"
+download_file "$REPO_URL/specwright/templates/docs/changelog-entry-template.md" "$GLOBAL_DIR/templates/docs/changelog-entry-template.md"
+download_file "$REPO_URL/specwright/templates/docs/dod-template.md" "$GLOBAL_DIR/templates/docs/dod-template.md"
+download_file "$REPO_URL/specwright/templates/docs/dor-template.md" "$GLOBAL_DIR/templates/docs/dor-template.md"
+download_file "$REPO_URL/specwright/templates/docs/effort-estimation-template.md" "$GLOBAL_DIR/templates/docs/effort-estimation-template.md"
+download_file "$REPO_URL/specwright/templates/docs/implementation-plan-template.md" "$GLOBAL_DIR/templates/docs/implementation-plan-template.md"
+download_file "$REPO_URL/specwright/templates/docs/test-scenarios-template.md" "$GLOBAL_DIR/templates/docs/test-scenarios-template.md"
+download_file "$REPO_URL/specwright/templates/docs/user-todos-template.md" "$GLOBAL_DIR/templates/docs/user-todos-template.md"
 
 # JSON templates (3) - v4.0 Kanban Migration
 echo "→ JSON templates (3)..."
-download_file "$REPO_URL/agent-os/templates/json/backlog-template.json" "$GLOBAL_DIR/templates/json/backlog-template.json"
-download_file "$REPO_URL/agent-os/templates/json/execution-kanban-template.json" "$GLOBAL_DIR/templates/json/execution-kanban-template.json"
-download_file "$REPO_URL/agent-os/templates/json/spec-kanban-template.json" "$GLOBAL_DIR/templates/json/spec-kanban-template.json"
+download_file "$REPO_URL/specwright/templates/json/backlog-template.json" "$GLOBAL_DIR/templates/json/backlog-template.json"
+download_file "$REPO_URL/specwright/templates/json/execution-kanban-template.json" "$GLOBAL_DIR/templates/json/execution-kanban-template.json"
+download_file "$REPO_URL/specwright/templates/json/spec-kanban-template.json" "$GLOBAL_DIR/templates/json/spec-kanban-template.json"
 
 # JSON schemas (4) - v4.0 Kanban Migration + Feedback
 echo "→ JSON schemas (4)..."
-download_file "$REPO_URL/agent-os/templates/schemas/backlog-schema.json" "$GLOBAL_DIR/templates/schemas/backlog-schema.json"
-download_file "$REPO_URL/agent-os/templates/schemas/execution-kanban-schema.json" "$GLOBAL_DIR/templates/schemas/execution-kanban-schema.json"
-download_file "$REPO_URL/agent-os/templates/schemas/spec-kanban-schema.json" "$GLOBAL_DIR/templates/schemas/spec-kanban-schema.json"
-download_file "$REPO_URL/agent-os/templates/schemas/feedback-analysis-schema.json" "$GLOBAL_DIR/templates/schemas/feedback-analysis-schema.json"
+download_file "$REPO_URL/specwright/templates/schemas/backlog-schema.json" "$GLOBAL_DIR/templates/schemas/backlog-schema.json"
+download_file "$REPO_URL/specwright/templates/schemas/execution-kanban-schema.json" "$GLOBAL_DIR/templates/schemas/execution-kanban-schema.json"
+download_file "$REPO_URL/specwright/templates/schemas/spec-kanban-schema.json" "$GLOBAL_DIR/templates/schemas/spec-kanban-schema.json"
+download_file "$REPO_URL/specwright/templates/schemas/feedback-analysis-schema.json" "$GLOBAL_DIR/templates/schemas/feedback-analysis-schema.json"
 
 echo ""
 echo "✅ Global installation complete!"
@@ -353,12 +365,12 @@ echo ""
 echo "📚 Hybrid Lookup System:"
 echo ""
 echo "  Templates lookup order:"
-echo "    1. Project: agent-os/templates/ (local override)"
-echo "    2. Global: ~/.agent-os/templates/ (fallback)"
+echo "    1. Project: specwright/templates/ (local override)"
+echo "    2. Global: ~/.specwright/templates/ (fallback)"
 echo ""
 echo "  Standards lookup order:"
-echo "    1. Project: agent-os/standards/ (generated in /plan-product)"
-echo "    2. Global: ~/.agent-os/standards/ (fallback)"
+echo "    1. Project: specwright/standards/ (generated in /plan-product)"
+echo "    2. Global: ~/.specwright/standards/ (fallback)"
 echo ""
 echo "Benefits:"
 echo "  ✅ Templates available globally for all projects"
@@ -368,20 +380,20 @@ echo "  ✅ Project overrides when needed"
 echo ""
 echo "Next steps:"
 echo ""
-echo "1. Install Agent OS in your project:"
+echo "1. Install Specwright in your project:"
 echo "   cd your-project/"
-echo "   curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/setup.sh | bash"
+echo "   curl -sSL https://raw.githubusercontent.com/michsindlinger/specwright/main/setup.sh | bash"
 echo ""
 echo "2. Install Claude Code:"
-echo "   curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/setup-claude-code.sh | bash"
+echo "   curl -sSL https://raw.githubusercontent.com/michsindlinger/specwright/main/setup-claude-code.sh | bash"
 echo ""
 echo "3. Start workflow:"
 echo "   /plan-product         → Single-product projects"
 echo "   /plan-platform        → Multi-module platforms"
 echo "   /build-development-team → DevTeam setup"
 echo ""
-echo "Templates will be loaded from ~/.agent-os/templates/ automatically."
-echo "To customize templates, copy to project's agent-os/templates/ and modify."
+echo "Templates will be loaded from ~/.specwright/templates/ automatically."
+echo "To customize templates, copy to project's specwright/templates/ and modify."
 echo ""
-echo "For more info: https://github.com/michsindlinger/agent-os-extended"
+echo "For more info: https://github.com/michsindlinger/specwright"
 echo ""

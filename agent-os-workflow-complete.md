@@ -1,4 +1,4 @@
-# Agent OS - Complete Workflow Diagram
+# Specwright - Complete Workflow Diagram
 
 ```mermaid
 ---
@@ -38,7 +38,7 @@ flowchart TB
         PP5BA["👤 Generate project standards?"]
         PP5BB{"User choice?"}
         PP5BC["🤖 tech-architect<br>Generate code-style.md<br>best-practices.md<br>(tech-stack aware)"]
-        PP5BD["Skip - Use global standards<br>from ~/.agent-os/standards/"]
+        PP5BD["Skip - Use global standards<br>from ~/.specwright/standards/"]
   end
  subgraph PP6["Step 6: Roadmap"]
         PP6A["🤖 product-strategist<br>Generate roadmap"]
@@ -191,7 +191,7 @@ flowchart TB
  subgraph BUG3["/create-bug - Standalone Bug Spec"]
         BUG3A["🤖 dev-team__po"]
         BUG3B["PO fragt User:<br>• Bug Details<br>• Reproduktion<br>• Erwartung vs. Realität"]
-        BUG3C["Erstelle Bug-Spec:<br>.agent-os/bugs/<br>YYYY-MM-DD-bug-name/"]
+        BUG3C["Erstelle Bug-Spec:<br>.specwright/bugs/<br>YYYY-MM-DD-bug-name/"]
         BUG3D["Erstelle:<br>• bug-description.md<br>• user-stories.md (1 Bug)<br>• kanban-board.md"]
         BUG3E{Bug<br>komplex?}
         BUG3F["🤖 dev-team__architect<br>Quick Technical Analysis<br>(optional)"]
@@ -381,14 +381,14 @@ flowchart TB
         ST2["user-stories.md<br>• Fachliche Stories<br>• DoR/DoD<br>• WAS/WIE/WO/WER<br>• Dependencies"]
         ST3["handover-docs/<br>• API contracts<br>• Data structures<br>• Integration points"]
         ST4["cross-cutting-decisions.md<br>• External dependencies<br>• Global patterns<br>• Performance/Security<br>(optional)"]
-        ST5["Documentation Output:<br>• CHANGELOG.md<br>• docs/api/<br>• .agent-os/docs/<br>• README.md"]
+        ST5["Documentation Output:<br>• CHANGELOG.md<br>• docs/api/<br>• .specwright/docs/<br>• README.md"]
         ST6["Git Commits:<br>• 1 commit per story<br>• Atomic changes<br>• Conventional format<br>• Story references"]
   end
  subgraph CMP6["📚 Global Standards (Installed)"]
-        STD1["~/.agent-os/standards/<br>• code-style.md (global)<br>• best-practices.md (global)<br>• Fallback for all projects"]
+        STD1["~/.specwright/standards/<br>• code-style.md (global)<br>• best-practices.md (global)<br>• Fallback for all projects"]
   end
  subgraph CMP7["📚 Project Standards (Optional)"]
-        STD2[".agent-os/standards/<br>• code-style.md (project)<br>• best-practices.md (project)<br>• Overrides global if exists"]
+        STD2[".specwright/standards/<br>• code-style.md (project)<br>• best-practices.md (project)<br>• Overrides global if exists"]
   end
  subgraph Components["═══════════════ SYSTEM COMPONENTS (DevTeam Structure) ═══════════════"]
     direction LR

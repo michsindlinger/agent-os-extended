@@ -17,23 +17,23 @@ echo "  ✓ Global installation: setup-team-system-global.sh must be run first"
 echo "  ✓ Base skills and templates installed globally"
 echo ""
 echo "This script creates:"
-echo "  agent-os/templates/team-development/  (for project-specific template overrides)"
+echo "  specwright/templates/team-development/  (for project-specific template overrides)"
 echo "  .claude/agents/                       (project agents will be created here)"
 echo "  .claude/skills/                       (project skills will be created here)"
-echo "  Updates agent-os/config.yml           (enables team system)"
+echo "  Updates specwright/config.yml           (enables team system)"
 echo ""
 
-# Global installation is always at HOME/.agent-os
-GLOBAL_AGENT_OS="$HOME/.agent-os"
+# Global installation is always at HOME/.specwright
+GLOBAL_AGENT_OS="$HOME/.specwright"
 
 # Check if global installation exists
 if [[ ! -d "$GLOBAL_AGENT_OS/templates/team-development" ]]; then
     echo "❌ Error: Global Team Development System not found at $GLOBAL_AGENT_OS"
     echo ""
     echo "Please run global installation first:"
-    echo "  curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/setup-team-system-global.sh | bash"
+    echo "  curl -sSL https://raw.githubusercontent.com/michsindlinger/specwright/main/setup-team-system-global.sh | bash"
     echo ""
-    echo "This will install to: $HOME/.agent-os"
+    echo "This will install to: $HOME/.specwright"
     echo ""
     exit 1
 fi
@@ -43,10 +43,10 @@ echo ""
 
 # Create project directories
 echo "Creating project directories..."
-mkdir -p agent-os/templates/team-development/backend
-mkdir -p agent-os/templates/team-development/frontend
-mkdir -p agent-os/templates/team-development/qa
-mkdir -p agent-os/templates/team-development/devops
+mkdir -p specwright/templates/team-development/backend
+mkdir -p specwright/templates/team-development/frontend
+mkdir -p specwright/templates/team-development/qa
+mkdir -p specwright/templates/team-development/devops
 mkdir -p .claude/agents  # Project agents created with /create-project-agents
 mkdir -p .claude/skills  # Project skills created with /add-skill
 
@@ -54,7 +54,7 @@ echo ""
 echo "✅ Project structure created!"
 echo ""
 echo "Created directories:"
-echo "  agent-os/templates/team-development/  - Template overrides (optional)"
+echo "  specwright/templates/team-development/  - Template overrides (optional)"
 echo "    ├── backend/                         - Backend template overrides"
 echo "    ├── frontend/                        - Frontend template overrides"
 echo "    ├── qa/                              - QA template overrides"
@@ -82,7 +82,7 @@ echo "   /assign-skills-to-agent"
 echo "   → Choose agent and skills to assign"
 echo ""
 echo "4. Verify team system is enabled:"
-echo "   Check agent-os/config.yml: team_system.enabled: true"
+echo "   Check specwright/config.yml: team_system.enabled: true"
 echo ""
 echo "5. Use smart task routing:"
 echo "   /execute-tasks"
@@ -108,12 +108,12 @@ echo "  DevOps:   deploy, ci, cd, docker, pipeline"
 echo ""
 
 # Optional: Update project config.yml if it exists
-if [[ -f agent-os/config.yml ]]; then
+if [[ -f specwright/config.yml ]]; then
     echo "Updating project config.yml..."
 
     # Check if team_system section already exists
-    if ! grep -q "team_system:" agent-os/config.yml; then
-        cat >> agent-os/config.yml << 'EOF'
+    if ! grep -q "team_system:" specwright/config.yml; then
+        cat >> specwright/config.yml << 'EOF'
 
 # Team Development System Configuration (uses global installation)
 team_system:
@@ -121,8 +121,8 @@ team_system:
 
   # File lookup order (project-local first, then global fallback)
   lookup_order:
-    - project  # Check agent-os/ and .claude/ in project first
-    - global   # Fallback to global agent-os/ and .claude/
+    - project  # Check specwright/ and .claude/ in project first
+    - global   # Fallback to global specwright/ and .claude/
 
   # Coordination mode
   coordination_mode: sequential  # MVP: sequential execution
@@ -162,13 +162,13 @@ team_system:
     coverage_minimum: 80
     build_success_required: true
 EOF
-        echo "✓ Added team_system section to agent-os/config.yml"
+        echo "✓ Added team_system section to specwright/config.yml"
     else
-        echo "✓ team_system section already exists in agent-os/config.yml"
+        echo "✓ team_system section already exists in specwright/config.yml"
     fi
 else
-    echo "⚠ No agent-os/config.yml found - skipping config update"
-    echo "  To enable team system, create agent-os/config.yml with:"
+    echo "⚠ No specwright/config.yml found - skipping config update"
+    echo "  To enable team system, create specwright/config.yml with:"
     echo "  team_system:"
     echo "    enabled: true"
 fi
@@ -222,7 +222,7 @@ echo "  3. Specialist loads project skills + base skills"
 echo "  4. Specialist generates complete implementation"
 echo "  5. Handoff created for collaboration"
 echo ""
-echo "Customization (in agent-os/config.yml):"
+echo "Customization (in specwright/config.yml):"
 echo "  - Adjust default frameworks per specialist"
 echo "  - Set coverage targets"
 echo "  - Enable/disable specialists"

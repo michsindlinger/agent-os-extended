@@ -1,16 +1,16 @@
-# Agent OS Installation Guide
+# Specwright Installation Guide
 
-Complete installation guide for Agent OS with DevTeam System.
+Complete installation guide for Specwright with DevTeam System.
 
 ---
 
 ## 📋 Installation Overview
 
-Agent OS installation happens in **3 steps**:
+Specwright installation happens in **3 steps**:
 
 ```
-1. Global Standards (Optional) → ~/.agent-os/standards/
-2. Project Base           → agent-os/ in your project
+1. Global Standards (Optional) → ~/.specwright/standards/
+2. Project Base           → specwright/ in your project
 3. Claude Code Setup      → .claude/ in your project
 ```
 
@@ -22,14 +22,14 @@ Agent OS installation happens in **3 steps**:
 
 ```bash
 # Step 1: Global DevTeam Standards (Optional - Recommended)
-curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/setup-devteam-global.sh | bash
+curl -sSL https://raw.githubusercontent.com/michsindlinger/specwright/main/setup-devteam-global.sh | bash
 
 # Step 2: Project Base Installation
 cd your-project/
-curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/setup.sh | bash
+curl -sSL https://raw.githubusercontent.com/michsindlinger/specwright/main/setup.sh | bash
 
 # Step 3: Claude Code Setup
-curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/setup-claude-code.sh | bash
+curl -sSL https://raw.githubusercontent.com/michsindlinger/specwright/main/setup-claude-code.sh | bash
 ```
 
 ---
@@ -40,7 +40,7 @@ curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/mai
 
 **Purpose:** Install global coding standards that serve as fallback for all projects.
 
-**Location:** `~/.agent-os/standards/`
+**Location:** `~/.specwright/standards/`
 
 **What it installs:**
 - `code-style.md` - Universal code style guidelines
@@ -51,7 +51,7 @@ curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/mai
 
 **Installation:**
 ```bash
-curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/setup-devteam-global.sh | bash
+curl -sSL https://raw.githubusercontent.com/michsindlinger/specwright/main/setup-devteam-global.sh | bash
 ```
 
 **When to skip:** If you always want project-specific standards (you'll generate them in /plan-product)
@@ -60,9 +60,9 @@ curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/mai
 
 ### Step 2: Project Base Installation
 
-**Purpose:** Install Agent OS core structure in your project.
+**Purpose:** Install Specwright core structure in your project.
 
-**Location:** `agent-os/` in your project directory
+**Location:** `specwright/` in your project directory
 
 **What it installs:**
 - **Standards** (6 files): code-style.md, best-practices.md, code-style/*
@@ -80,12 +80,12 @@ curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/mai
 **Installation:**
 ```bash
 cd your-project/
-curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/setup.sh | bash
+curl -sSL https://raw.githubusercontent.com/michsindlinger/specwright/main/setup.sh | bash
 ```
 
 **After installation:**
 1. Customize `CLAUDE.md` with your project-specific information
-2. Review `agent-os/config.yml` and set your profile
+2. Review `specwright/config.yml` and set your profile
 
 ---
 
@@ -100,12 +100,12 @@ curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/mai
 - **Agents** (13 files):
   - Utility agents: test-runner, context-fetcher, git-workflow, file-creator, date-checker
   - Specialist agents: product-strategist, market-researcher, content-creator, seo-specialist, web-developer, validation-specialist, business-analyst, estimation-specialist
-- **Skills symlinks** (18): Symlinks to agent-os/skills/
+- **Skills symlinks** (18): Symlinks to specwright/skills/
 
 **Installation:**
 ```bash
 # Must run AFTER Step 2
-curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/setup-claude-code.sh | bash
+curl -sSL https://raw.githubusercontent.com/michsindlinger/specwright/main/setup-claude-code.sh | bash
 ```
 
 **Available commands after installation:**
@@ -133,16 +133,16 @@ curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/mai
 - Generates tech-stack.md
 - Creates roadmap.md
 - **Step 5.5:** Asks "Generate project-specific standards?"
-  - **Yes:** Creates .agent-os/standards/code-style.md (tech-stack aware)
-  - **No:** Uses global ~/.agent-os/standards/code-style.md
+  - **Yes:** Creates .specwright/standards/code-style.md (tech-stack aware)
+  - **No:** Uses global ~/.specwright/standards/code-style.md
 
 **Output:**
-- `.agent-os/product/product-brief.md`
-- `.agent-os/product/product-brief-lite.md`
-- `.agent-os/product/tech-stack.md`
-- `.agent-os/product/roadmap.md`
-- `.agent-os/product/architecture-decision.md`
-- `.agent-os/standards/` (if generated)
+- `.specwright/product/product-brief.md`
+- `.specwright/product/product-brief-lite.md`
+- `.specwright/product/tech-stack.md`
+- `.specwright/product/roadmap.md`
+- `.specwright/product/architecture-decision.md`
+- `.specwright/standards/` (if generated)
 
 ---
 
@@ -164,8 +164,8 @@ curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/mai
 **Output:**
 - `.claude/agents/dev-team/*.md` (7 agents)
 - `.claude/skills/dev-team/**/*.md` (project-specific skills)
-- `.agent-os/team/dod.md`
-- `.agent-os/team/dor.md`
+- `.specwright/team/dod.md`
+- `.specwright/team/dor.md`
 
 ---
 
@@ -184,10 +184,10 @@ curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/mai
 - Identifies dependencies
 
 **Output:**
-- `.agent-os/specs/YYYY-MM-DD-feature-name/spec.md`
-- `.agent-os/specs/YYYY-MM-DD-feature-name/spec-lite.md`
-- `.agent-os/specs/YYYY-MM-DD-feature-name/user-stories.md`
-- `.agent-os/specs/YYYY-MM-DD-feature-name/sub-specs/cross-cutting-decisions.md` (optional)
+- `.specwright/specs/YYYY-MM-DD-feature-name/spec.md`
+- `.specwright/specs/YYYY-MM-DD-feature-name/spec-lite.md`
+- `.specwright/specs/YYYY-MM-DD-feature-name/user-stories.md`
+- `.specwright/specs/YYYY-MM-DD-feature-name/sub-specs/cross-cutting-decisions.md` (optional)
 
 ---
 
@@ -208,8 +208,8 @@ curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/mai
 - Loops until all stories done
 
 **Output:**
-- `.agent-os/specs/[spec-name]/kanban-board.md` (execution state)
-- `.agent-os/specs/[spec-name]/handover-docs/*.md` (for dependencies)
+- `.specwright/specs/[spec-name]/kanban-board.md` (execution state)
+- `.specwright/specs/[spec-name]/handover-docs/*.md` (for dependencies)
 - `CHANGELOG.md` entries
 - Code implementation
 - Pull Request
@@ -236,7 +236,7 @@ curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/mai
 ```
 your-project/
 ├── CLAUDE.md                      # Project instructions (customize!)
-├── agent-os/
+├── specwright/
 │   ├── config.yml                 # Configuration
 │   ├── standards/
 │   │   ├── code-style.md          # Project standards (or uses global)
@@ -259,15 +259,15 @@ your-project/
 │   ├── profiles/                  # Tech-stack profiles
 │   └── skills/                    # Base skills
 ├── .claude/
-│   ├── commands/agent-os/         # 30+ slash commands
+│   ├── commands/specwright/         # 30+ slash commands
 │   ├── agents/                    # Utility agents
-│   └── skills/                    # Symlinks to agent-os/skills/
-└── .agent-os/                     # Created during usage
+│   └── skills/                    # Symlinks to specwright/skills/
+└── .specwright/                     # Created during usage
     ├── product/                   # Product planning output
     ├── team/                      # DevTeam config (dod.md, dor.md)
     └── specs/                     # Feature specs
 
-~/.agent-os/                       # Global (optional)
+~/.specwright/                       # Global (optional)
 └── standards/                     # Global fallback standards
     ├── code-style.md
     ├── best-practices.md
@@ -285,17 +285,17 @@ your-project/
 
 ```bash
 # 1. Install global standards (optional)
-curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/setup-devteam-global.sh | bash
+curl -sSL https://raw.githubusercontent.com/michsindlinger/specwright/main/setup-devteam-global.sh | bash
 
 # 2. Create new project
 mkdir my-awesome-app && cd my-awesome-app
 git init
 
-# 3. Install Agent OS
-curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/setup.sh | bash
+# 3. Install Specwright
+curl -sSL https://raw.githubusercontent.com/michsindlinger/specwright/main/setup.sh | bash
 
 # 4. Install Claude Code
-curl -sSL https://raw.githubusercontent.com/michsindlinger/agent-os-extended/main/setup-claude-code.sh | bash
+curl -sSL https://raw.githubusercontent.com/michsindlinger/specwright/main/setup-claude-code.sh | bash
 
 # 5. Customize CLAUDE.md
 nano CLAUDE.md  # Add your project details
@@ -330,7 +330,7 @@ nano CLAUDE.md  # Add your project details
 
 ## 🛠 Troubleshooting
 
-### "Agent OS base installation not found"
+### "Specwright base installation not found"
 
 **Problem:** Running Claude Code setup before base installation.
 
@@ -357,8 +357,8 @@ curl -sSL .../setup.sh | bash
 ### Global vs Project Standards Confusion
 
 **How it works:**
-1. Agent checks: `.agent-os/standards/code-style.md` (project)
-2. If not found, uses: `~/.agent-os/standards/code-style.md` (global)
+1. Agent checks: `.specwright/standards/code-style.md` (project)
+2. If not found, uses: `~/.specwright/standards/code-style.md` (global)
 
 **Create project standards:**
 ```bash
@@ -378,13 +378,13 @@ curl -sSL .../setup.sh | bash
 
 ### Hybrid Standards System
 
-- **Global:** `~/.agent-os/standards/` - Fallback for all projects
-- **Project:** `.agent-os/standards/` - Optional project-specific override
+- **Global:** `~/.specwright/standards/` - Fallback for all projects
+- **Project:** `.specwright/standards/` - Optional project-specific override
 - **Lookup:** Project first, then global fallback
 
 ### DevTeam System
 
-- **Templates:** agent-os/templates/ - Generic templates
+- **Templates:** specwright/templates/ - Generic templates
 - **Agents:** .claude/agents/dev-team/ - Project-specific agents created from templates
 - **Skills:** .claude/skills/dev-team/ - Project-specific skills created from templates
 - **Orchestrator:** Claude Code + Orchestration Skill = Smart delegation
@@ -402,10 +402,10 @@ curl -sSL .../setup.sh | bash
 
 | Component | Location | Installed By | Purpose |
 |-----------|----------|--------------|---------|
-| Global Standards | ~/.agent-os/standards/ | setup-devteam-global.sh | Fallback standards |
-| Project Templates | agent-os/templates/ | setup.sh | Template library |
-| Project Workflows | agent-os/workflows/ | setup.sh | Command workflows |
-| Project Standards | agent-os/standards/ | setup.sh | Default standards |
+| Global Standards | ~/.specwright/standards/ | setup-devteam-global.sh | Fallback standards |
+| Project Templates | specwright/templates/ | setup.sh | Template library |
+| Project Workflows | specwright/workflows/ | setup.sh | Command workflows |
+| Project Standards | specwright/standards/ | setup.sh | Default standards |
 | Claude Commands | .claude/commands/ | setup-claude-code.sh | Slash commands |
 | Claude Agents | .claude/agents/ | setup-claude-code.sh | Utility agents |
 | DevTeam Agents | .claude/agents/dev-team/ | /build-development-team | Specialist agents |
@@ -418,17 +418,17 @@ curl -sSL .../setup.sh | bash
 ### After Global Standards Installation:
 
 ```bash
-ls ~/.agent-os/standards/
+ls ~/.specwright/standards/
 # Should show: code-style.md, best-practices.md, code-style/
 ```
 
 ### After Project Base Installation:
 
 ```bash
-ls agent-os/
+ls specwright/
 # Should show: standards/, workflows/, templates/, profiles/, skills/, config.yml
 
-ls agent-os/templates/
+ls specwright/templates/
 # Should show: product/, agents/, skills/, docs/
 ```
 
@@ -438,7 +438,7 @@ ls agent-os/templates/
 ls .claude/
 # Should show: commands/, agents/, skills/
 
-ls .claude/commands/agent-os/ | wc -l
+ls .claude/commands/specwright/ | wc -l
 # Should show: ~30+ commands
 ```
 
@@ -451,7 +451,7 @@ ls .claude/agents/dev-team/
 ls .claude/skills/dev-team/
 # Should show: PROJECT-architect-pattern-enforcement.md, etc.
 
-ls .agent-os/team/
+ls .specwright/team/
 # Should show: dod.md, dor.md
 ```
 
@@ -482,7 +482,7 @@ curl -sSL .../setup-claude-code.sh | bash
 ## 🎓 Learning Path
 
 ### Day 1: Setup & Planning
-1. Install Agent OS (3 scripts)
+1. Install Specwright (3 scripts)
 2. Run `/plan-product`
 3. Review generated files
 
@@ -514,7 +514,7 @@ After installation:
 
 1. **Read:** `CLAUDE.md` - Understand the system
 2. **Customize:** `CLAUDE.md` with your project specifics
-3. **Configure:** `agent-os/config.yml` with your preferences
+3. **Configure:** `specwright/config.yml` with your preferences
 4. **Plan:** Run `/plan-product` to start
 5. **Build:** Run `/build-development-team` to create your team
 6. **Develop:** Use `/create-spec` and `/execute-tasks`
@@ -523,9 +523,9 @@ After installation:
 
 ## 🆘 Support
 
-- **Issues:** https://github.com/michsindlinger/agent-os-extended/issues
-- **Workflow Diagram:** See `agent-os-workflow-complete.md`
-- **Documentation:** See `.agent-os/` directories after running commands
+- **Issues:** https://github.com/michsindlinger/specwright/issues
+- **Workflow Diagram:** See `specwright-workflow-complete.md`
+- **Documentation:** See `.specwright/` directories after running commands
 
 ---
 
@@ -537,4 +537,4 @@ After installation:
 
 ---
 
-**Happy building with Agent OS + DevTeam! 🚀**
+**Happy building with Specwright + DevTeam! 🚀**

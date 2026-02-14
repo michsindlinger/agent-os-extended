@@ -101,7 +101,7 @@ CPA: €500 ÷ 62 = €8.06
 
 **Total Addressable Market (TAM)**:
 ```
-Source: @agent-os/market-validation/[DATE]-[PRODUCT]/competitor-analysis.md
+Source: @specwright/market-validation/[DATE]-[PRODUCT]/competitor-analysis.md
 (market-researcher already estimated TAM)
 
 Cross-validate with campaign data if possible:
@@ -114,7 +114,7 @@ If conversion rate = 6.2% and we reached 1,000 users:
 
 **Load Validation Plan** for criteria:
 ```
-From @agent-os/market-validation/[DATE]-[PRODUCT]/validation-plan.md:
+From @specwright/market-validation/[DATE]-[PRODUCT]/validation-plan.md:
 
 GO Thresholds:
 - Conversion ≥ 5%
@@ -390,7 +390,7 @@ ROI: €90k ÷ €54k = 167% return
 
 ### Step 8: Generate validation-results.md
 
-**Template**: `@agent-os/templates/market-validation/validation-results.md`
+**Template**: `@specwright/templates/market-validation/validation-results.md`
 
 **Fill All Sections**:
 - Executive Summary (decision + confidence + rationale)
@@ -544,7 +544,7 @@ ROI: €90k ÷ €54k = 167% return
 
 ---
 
-**File Created**: @agent-os/market-validation/[DATE]-[PRODUCT]/validation-results.md
+**File Created**: @specwright/market-validation/[DATE]-[PRODUCT]/validation-results.md
 
 **Recommendation**: **Proceed to /plan-product** ✅
 
